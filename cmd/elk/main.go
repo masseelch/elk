@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/masseelch/elk/pkg/commands"
+	"github.com/masseelch/elk/pkg/gen"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
@@ -29,7 +29,7 @@ var (
 				log.Fatal(err)
 			}
 
-			if err := commands.Generate(s, t); err != nil {
+			if err := gen.Generate(s, t); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -38,7 +38,6 @@ var (
 		Use:   "handler",
 		Short: "generate api handlers for your defined schemas",
 		Run: func(cmd *cobra.Command, args []string) {
-			// Flags
 			s, err := cmd.Flags().GetString("source")
 			if err != nil {
 				log.Fatal(err)
@@ -48,7 +47,7 @@ var (
 				log.Fatal(err)
 			}
 
-			if err := commands.Handler(s, t); err != nil {
+			if err := gen.Handler(s, t); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -57,7 +56,17 @@ var (
 		Use:   "flutter",
 		Short: "A brief description of your command",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := commands.Flutter(); err != nil {
+			s, err := cmd.Flags().GetString("source")
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			t, err := cmd.Flags().GetString("target")
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			if err := gen.Flutter(s, t); err != nil {
 				log.Fatal(err)
 			}
 		},
