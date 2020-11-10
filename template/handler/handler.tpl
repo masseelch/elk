@@ -46,6 +46,7 @@ import (
     func (h *{{ $.Name }}Handler) EnableAllEndpoints() *{{ $.Name }}Handler {
         h.EnableCreateEndpoint()
         h.EnableReadEndpoint()
+        h.EnableUpdateEndpoint()
         h.EnableListEndpoint()
         return h
     }
@@ -62,6 +63,12 @@ import (
         return h
     }
 
+    // Enable the update operation.
+    func (h *{{ $.Name }}Handler) EnableUpdateEndpoint() *{{ $.Name }}Handler {
+        h.r.Get("/{id:\\d+}", h.Update)
+        return h
+    }
+
     // Enable the list operation.
     func (h *{{ $.Name }}Handler) EnableListEndpoint() *{{ $.Name }}Handler {
         h.r.Get("/", h.List)
@@ -70,7 +77,7 @@ import (
 
     {{ template "create" $ }}
     {{ template "read" $ }}
-{{/*    {{ template "update" $ }}*/}}
+    {{ template "update" $ }}
 {{/*    {{ template "delete" $ }}*/}}
     {{ template "list" $ }}
 

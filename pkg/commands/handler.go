@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package commands
 
 import (
 	"bytes"
@@ -27,7 +27,6 @@ import (
 	"github.com/facebook/ent/entc"
 	"github.com/facebook/ent/entc/gen"
 	"github.com/masseelch/elk/internal"
-	"github.com/spf13/cobra"
 	"golang.org/x/tools/imports"
 	"io/ioutil"
 	"log"
@@ -35,66 +34,6 @@ import (
 	"path/filepath"
 	"text/template"
 )
-
-// handlerCmd represents the handler command
-var handlerCmd = &cobra.Command{
-	Use:   "handler",
-	Short: "generate api handlers for your defined schemas",
-	Run: func(cmd *cobra.Command, args []string) {
-		// Flags
-		s, err := cmd.Flags().GetString("source")
-		if err != nil {
-			log.Fatal(err)
-		}
-		t, err := cmd.Flags().GetString("target")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// Load the graph
-		g, err := entc.LoadGraph(s, &gen.Config{
-			Target: t,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// Create the template
-		tpl := template.New("handler").Funcs(gen.Funcs)
-		tpl = template.Must(tpl.Parse(string(internal.MustAsset("header.tpl"))))
-		tpl = template.Must(tpl.Parse(string(internal.MustAsset("handler/handler.tpl"))))
-		tpl = template.Must(tpl.Parse(string(internal.MustAsset("handler/create.tpl"))))
-		tpl = template.Must(tpl.Parse(string(internal.MustAsset("handler/read.tpl"))))
-		// tpl = template.Must(tpl.Parse(string(internal.MustAsset("handler/update.tpl"))))
-		// tpl = template.Must(tpl.Parse(string(internal.MustAsset("handler/delete.tpl"))))
-		tpl = template.Must(tpl.Parse(string(internal.MustAsset("handler/list.tpl"))))
-
-		var assets assets
-		for _, n := range g.Nodes {
-			// assets.dirs = append(assets.dirs, filepath.Join(g.Config.Target, "handler"))
-			b := bytes.NewBuffer(nil)
-			if err := tpl.Execute(b, n); err != nil {
-				panic(err)
-			}
-			assets.files = append(assets.files, file{
-				path:    filepath.Join(g.Config.Target, fmt.Sprintf("%s.go", gen.Funcs["snake"].(func(string) string)(n.Name))),
-				content: b.Bytes(),
-			})
-
-			if err := assets.write(); err != nil {
-				panic(err)
-			}
-
-			if err := assets.format(); err != nil {
-				panic(err)
-			}
-		}
-	},
-}
-
-func init() {
-	generateCmd.AddCommand(handlerCmd)
-}
 
 type (
 	file struct {
@@ -106,6 +45,65 @@ type (
 		files []file
 	}
 )
+
+func Handler(source string, target string) error {
+	cfg := &gen.Config{Target: target}
+	if cfg.Target == "" {
+		abs, err := filepath.Abs(source)
+		if err != nil {
+			return err
+		}
+		// Default target-path for codegen is one dir above the schema.
+		cfg.Target = filepath.Dir(abs)
+	}
+
+	// Load the graph
+	g, err := entc.LoadGraph(source, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create the template
+	tpl := template.New("handler").Funcs(gen.Funcs)
+	for _, n := range []string{
+		"header.tpl",
+		"handler/handler.tpl",
+		"handler/create.tpl",
+		"handler/read.tpl",
+		"handler/update.tpl",
+		// "handler/delete.tpl",
+		"handler/list.tpl",
+	} {
+		d, err := internal.Asset(n)
+		if err != nil {
+			return err
+		}
+		tpl, err = tpl.Parse(string(d))
+		if err != nil {
+			return err
+		}
+	}
+
+	var assets assets
+	for _, n := range g.Nodes {
+		assets.dirs = append(assets.dirs, filepath.Join(g.Config.Target, "handler"))
+		b := bytes.NewBuffer(nil)
+		if err := tpl.Execute(b, n); err != nil {
+			panic(err)
+		}
+		assets.files = append(assets.files, file{
+			path:    filepath.Join(g.Config.Target, "handler", fmt.Sprintf("%s.go", gen.Funcs["snake"].(func(string) string)(n.Name))),
+			content: b.Bytes(),
+		})
+
+	}
+
+	if err := assets.write(); err != nil {
+		return err
+	}
+
+	return assets.format()
+}
 
 // write files and dirs in the assets.
 func (a assets) write() error {

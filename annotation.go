@@ -19,44 +19,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package elk
 
-import (
-	"github.com/facebook/ent/entc"
-	"github.com/facebook/ent/entc/gen"
-	"github.com/masseelch/elk/internal"
-	"github.com/spf13/cobra"
+type (
+	// Used on a schema to pass options to the handler generator.
+	HandlerAnnotation struct {
+		SkipGeneration bool
+		CreateGroups   []string
+		ListGroups     []string
+		ReadGroups     []string
+		UpdateGroups   []string
+	}
+	// Used on fields pass options to the handler generator.
+	FieldAnnotation struct {
+		Create              bool
+		CreateValidationTag string
+		Update              bool
+		UpdateValidationTag string
+		Patch               bool
+		PatchValidationTag  string
+	}
 )
 
-// generateCmd represents the generate command
-var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "generate code for your defined schemas",
-	Run: func(cmd *cobra.Command, args []string) {
-		s, err := cmd.Flags().GetString("source")
-		if err != nil {
-			panic(err)
-		}
-
-		t, err := cmd.Flags().GetString("target")
-		if err != nil {
-			panic(err)
-		}
-
-		if err := entc.Generate(s, &gen.Config{
-			Target: t,
-			Templates: []*gen.Template{
-				gen.MustParse(gen.NewTemplate("").Parse(string(internal.MustAsset("sheriff.tpl")))),
-			},
-		}); err != nil {
-			panic(err)
-		}
-	},
+func (HandlerAnnotation) Name() string {
+	return "HandlerGen"
 }
 
-func init() {
-	rootCmd.AddCommand(generateCmd)
-
-	generateCmd.PersistentFlags().StringP("source", "s", "./ent/schema", "path/to/schema/definitions")
-	generateCmd.PersistentFlags().StringP("target", "t", "", "path/to/target/dir")
+func (FieldAnnotation) Name() string {
+	return "FieldGen"
 }

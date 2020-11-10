@@ -19,39 +19,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package commands
 
 import (
-	"fmt"
-
-	"github.com/spf13/cobra"
+	"github.com/facebook/ent/entc"
+	"github.com/facebook/ent/entc/gen"
+	"github.com/masseelch/elk/internal"
 )
 
-// flutterCmd represents the flutter command
-var flutterCmd = &cobra.Command{
-	Use:   "flutter",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("flutter called")
-	},
-}
-
-func init() {
-	generateCmd.AddCommand(flutterCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// flutterCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// flutterCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+func Generate(source string, target string) error {
+	return entc.Generate(source, &gen.Config{
+		Target: target,
+		Templates: []*gen.Template{
+			gen.MustParse(gen.NewTemplate("").Parse(string(internal.MustAsset("sheriff.tpl")))),
+		},
+	})
 }
