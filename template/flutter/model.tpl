@@ -4,7 +4,7 @@
 
     part '{{ $.Name | snake }}.g.dart';
 
-{{/*    @JsonSerializable()*/}}
+    @JsonSerializable()
     class {{ $.Name }} {
         {{ $.Name }}();
 
