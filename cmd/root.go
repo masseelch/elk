@@ -29,8 +29,6 @@ import (
 	"strings"
 )
 
-var cfgFile string
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "elk",
@@ -48,23 +46,10 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Allow setting flags by config file.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "config.yaml", "/path/to/config.yaml")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-
-		if err := viper.ReadInConfig(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	}
-
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }
