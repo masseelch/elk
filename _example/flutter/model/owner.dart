@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'owner.g.dart';
 
+@JsonSerializable()
 class Owner {
   Owner();
 

@@ -52,24 +52,33 @@ func Flutter(source string, target string) error {
 	}
 
 	for _, n := range g.Nodes {
-		m := bytes.NewBuffer(nil)
-		if err := tpl.ExecuteTemplate(m, "model", n); err != nil {
+		b := bytes.NewBuffer(nil)
+		if err := tpl.ExecuteTemplate(b, "model", n); err != nil {
 			panic(err)
 		}
 		assets.files = append(assets.files, file{
 			path:    filepath.Join(g.Config.Target, "model", fmt.Sprintf("%s.dart", gen.Funcs["snake"].(func(string) string)(n.Name))),
-			content: m.Bytes(),
+			content: b.Bytes(),
 		})
 
-		r := bytes.NewBuffer(nil)
-		if err := tpl.ExecuteTemplate(r, "repository", n); err != nil {
+		b = bytes.NewBuffer(nil)
+		if err := tpl.ExecuteTemplate(b, "repository", n); err != nil {
 			panic(err)
 		}
 		assets.files = append(assets.files, file{
 			path:    filepath.Join(g.Config.Target, "repository", fmt.Sprintf("%s.dart", gen.Funcs["snake"].(func(string) string)(n.Name))),
-			content: r.Bytes(),
+			content: b.Bytes(),
 		})
 	}
+
+	b := bytes.NewBuffer(nil)
+	if err := tpl.ExecuteTemplate(b, "repository/provider", g); err != nil {
+		return err
+	}
+	assets.files = append(assets.files, file{
+		path:    filepath.Join(g.Config.Target, "repository", "provider.dart"),
+		content: b.Bytes(),
+	})
 
 	if err := assets.write(); err != nil {
 		return err

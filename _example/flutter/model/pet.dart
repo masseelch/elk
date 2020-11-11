@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'pet.g.dart';
 
+@JsonSerializable()
 class Pet {
   Pet();
 
