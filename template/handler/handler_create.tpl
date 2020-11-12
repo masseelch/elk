@@ -1,4 +1,10 @@
-{{ define "create" }}
+{{ define "handler/create" }}
+    // Enable the create operation.
+    func (h *{{ $.Name }}Handler) EnableCreateEndpoint() *{{ $.Name }}Handler {
+        h.Post("/", h.Create)
+        return h
+    }
+
     // struct to bind the post body to.
     type {{ $.Name | camel }}CreateRequest struct {
         {{/* Add all fields that are not excluded. */}}

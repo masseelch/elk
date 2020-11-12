@@ -1,21 +1,22 @@
-{{ define "repository" }}
+{{ define "client" }}
     {{ template "header" -}}
+    {{ $url := (replace ($.Name | snake) "_" "-") | plural }}
     import 'package:dio/dio.dart';
-    import 'package:flutter/foundation.dart';
+    import 'package:flutter/widgets.dart';
+    import 'package:provider/provider.dart';
 
     import '../model/{{ $.Name | snake }}.dart';
+    {{ range $e := $.Edges -}}
+        import '../model/{{ $e.Type.Name | snake }}.dart';
+    {{ end }}
 
-    class {{ $.Name }}Repository {
-        {{ $.Name }}Repository(
-            @required this.dio,
-            @required this.url,
-        ) : assert(dio != null), assert(url != null && url != '');
+    class {{ $.Name }}Client {
+        {{ $.Name }}Client({@required this.dio}) : assert(dio != null);
 
         final Dio dio;
-        final String url;
 
         Future<{{ $.Name }}> find({{ $.ID.Type | dartType }} id) async {
-            final r = await dio.get('/$url/$id');
+            final r = await dio.get('/{{ $url }}/$id');
             return {{ $.Name }}.fromJson(r.data);
         }
 
@@ -44,7 +45,7 @@
                 }
             {{ end }}
 
-            final r = await dio.get('/$url');
+            final r = await dio.get('/{{ $url }}');
 
             if (r.data == null) {
                 return [];
@@ -54,18 +55,31 @@
         }
 
         Future<{{ $.Name }}> create({{ $.Name }} e) async {
-            final r = await dio.post('/$url', data: e.toJson());
+            final r = await dio.post('/{{ $url }}', data: e.toJson());
             return ({{ $.Name }}.fromJson(r.data));
         }
 
         Future<{{ $.Name }}> update({{ $.Name }} e) async {
-            final r = await dio.patch('/$url', data: e.toJson());
+            final r = await dio.patch('/{{ $url }}', data: e.toJson());
             return ({{ $.Name }}.fromJson(r.data));
         }
+
+        {{ range $e := $.Edges}}
+            Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | camel }}({{ $.Name }} e) async {
+                final r = await dio.get('/{{ $url }}/${e.{{ $.ID.Name }}}/{{ replace ($e.Name | snake) "_" "-" }}');
+                {{ if $e.Unique -}}
+                    return ({{ $e.Type.Name }}.fromJson(r.data));
+                {{ else -}}
+                    return (r.data as List).map((i) => {{ $e.Type.Name }}.fromJson(i)).toList();
+                {{ end -}}
+            }
+        {{ end }}
+
+        static {{ $.Name }}Client of(BuildContext context) => Provider.of<{{ $.Name }}Client>(context, listen: false);
     }
 {{ end }}
 
-{{ define "repository/provider" }}
+{{ define "client/provider" }}
     {{ template "header" -}}
     import 'package:dio/dio.dart';
     import 'package:flutter/widgets.dart';
@@ -76,24 +90,23 @@
         import '{{ $n.Name | snake }}.dart';
     {{ end -}}
 
-    typedef PrefixFn = String Function(String prefix);
-
-    class GeneratedRepositoryProvider extends SingleChildStatelessWidget {
-        GeneratedRepositoryProvider({
+    class ClientProvider extends SingleChildStatelessWidget {
+        ClientProvider({
+            Key key,
             @required this.dio,
-            this.prefixFn = _defaultPrefixFn,
-        }) : assert(dio != null), assert(prefixFn != null);
+            this.child,
+        }) : assert(dio != null), super(key: key, child: child);
 
         final Dio dio;
-        final PrefixFn prefixFn;
+        final Widget child;
 
         @override
         Widget buildWithChild(BuildContext context, Widget child) {
             return MultiProvider(
                 providers: [
                     {{ range $n := $.Nodes -}}
-                        Provider<{{ $n.Name }}Repository>(
-                            create: (_) => {{ $n.Name }}Repository(dio: dio, url: prefixFn('{{ replace ($n.Name | snake) "_" "-" }}')),
+                        Provider<{{ $n.Name }}Client>(
+                            create: (_) => {{ $n.Name }}Client(dio: dio),
                         ),
                     {{ end -}}
                 ],
@@ -101,6 +114,4 @@
             );
         }
     }
-
-    String _defaultPrefixFn(String url) => url;
 {{ end }}

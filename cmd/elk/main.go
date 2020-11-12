@@ -14,6 +14,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "elk",
 		Short: "A wrapper around facebook/ent to add code generation features",
+		Version: "0.0.5",
 	}
 	generateCmd = &cobra.Command{
 		Use:   "generate",

@@ -1,4 +1,10 @@
-{{ define "update" }}
+{{ define "handler/update" }}
+    // Enable the update operation.
+    func (h *{{ $.Name }}Handler) EnableUpdateEndpoint() *{{ $.Name }}Handler {
+        h.Get("/{id:\\d+}", h.Update)
+        return h
+    }
+
     // struct to bind the post body to.
     type {{ $.Name | camel }}UpdateRequest struct {
         {{/* Add all fields that are not excluded. */}}
@@ -19,8 +25,10 @@
 
     // This function updates a given {{ $.Name }} model and saves the changes in the database.
     func(h {{ $.Name }}Handler) Update(w http.ResponseWriter, r *http.Request) {
+        {{ template "id-from-request-param" $ }}
+
         // Get the post data.
-        d := {{ $.Name | snake }}UpdateRequest{} // todo - allow form-url-encdoded/xml/protobuf data.
+        d := {{ $.Name | snake }}UpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.
         if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
             h.logger.WithError(err).Error("error decoding json")
             render.BadRequest(w, r, "invalid json string")
@@ -41,7 +49,7 @@
         }
 
         // Save the data.
-        b := h.client.{{ $.Name }}.Update()
+        b := h.client.{{ $.Name }}.UpdateOneID(id)
         {{- range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
             {{- if or (not $a) $a.Create }}.
@@ -50,11 +58,11 @@
         {{ end }}
         {{- range $e := $.Edges -}}
             {{- $a := $e.Annotations.FieldGen }}
-            {{- if and (not $e.Type.Annotations.HandlerGen.SkipGeneration) (or (not $a) $a.Create) }}.
+            {{- if and (not $e.Type.Annotations.HandlerGen.SkipGeneration) (or (not $a) $a.Update) }}.
                 {{- if $e.Unique }}
                     Set{{ $e.Type.Name }}ID(d.{{ $e.StructField }})
                 {{- else }}
-                    Add{{ $e.Type.Name }}IDs(d.{{ $e.StructField }}...) // todo - remove ids that are not given in the patch-data
+                    Add{{ $e.Type.Name }}IDs(d.{{ $e.StructField }}...) {{/*// todo - remove ids that are not given in the patch-data*/}}
                 {{- end }}
             {{- end -}}
         {{ end }}

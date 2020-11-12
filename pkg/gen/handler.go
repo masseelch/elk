@@ -2,7 +2,6 @@ package gen
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/facebook/ent/entc"
 	"github.com/facebook/ent/entc/gen"
 	"github.com/masseelch/elk/internal"
@@ -29,16 +28,20 @@ func Handler(source string, target string) error {
 
 	// Create the template
 	tpl := template.New("handler").Funcs(gen.Funcs)
-	for _, n := range []string{
-		"header/go.tpl",
-		"handler/handler.tpl",
-		"handler/create.tpl",
-		"handler/read.tpl",
-		"handler/update.tpl",
-		// "handler/delete.tpl",
-		"handler/list.tpl",
-	} {
-		d, err := internal.Asset(n)
+
+	// Attach header template.
+	tpl, err = tpl.Parse(string(internal.MustAsset("header/go.tpl")))
+	if err != nil {
+		return err
+	}
+
+	// Load all handler templates.
+	ts, err := internal.AssetDir("handler")
+	if err != nil {
+		return err
+	}
+	for _, n := range ts {
+		d, err := internal.Asset("handler/" + n)
 		if err != nil {
 			return err
 		}
@@ -48,19 +51,18 @@ func Handler(source string, target string) error {
 		}
 	}
 
+	// Generate the code.
 	assets := assets{dirs: []string{filepath.Join(g.Config.Target, "handler")}}
-	for _, n := range g.Nodes {
-		b := bytes.NewBuffer(nil)
-		if err := tpl.Execute(b, n); err != nil {
-			panic(err)
-		}
-		assets.files = append(assets.files, file{
-			path:    filepath.Join(g.Config.Target, "handler", fmt.Sprintf("%s.go", gen.Funcs["snake"].(func(string) string)(n.Name))),
-			content: b.Bytes(),
-		})
-
+	b := bytes.NewBuffer(nil)
+	if err := tpl.Execute(b, g); err != nil {
+		panic(err)
 	}
+	assets.files = append(assets.files, file{
+		path:    filepath.Join(g.Config.Target, "handler", "handler.go"),
+		content: b.Bytes(),
+	})
 
+	// Write and format the generated code files.
 	if err := assets.write(); err != nil {
 		return err
 	}

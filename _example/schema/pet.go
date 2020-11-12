@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/facebook/ent"
+	"github.com/facebook/ent/schema/edge"
 	"github.com/facebook/ent/schema/field"
 )
 
@@ -13,6 +14,15 @@ type Pet struct {
 // Fields of the Pet.
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name"),
+		field.String("name").StructTag(`groups:"pet:list"`),
+	}
+}
+
+// Edges of the Pet.
+func (Pet) Edges() []ent.Edge {
+	return []ent.Edge {
+		edge.From("owner", Owner.Type).
+			Ref("pets").
+			Unique(),
 	}
 }

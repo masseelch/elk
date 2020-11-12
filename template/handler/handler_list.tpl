@@ -1,4 +1,10 @@
-{{ define "list" }}
+{{ define "handler/list" }}
+    // Enable the list operation.
+    func (h *{{ $.Name }}Handler) EnableListEndpoint() *{{ $.Name }}Handler {
+        h.Get("/", h.List)
+        return h
+    }
+
     // This function queries for {{ $.Name }} models. Can be filtered by query parameters.
     func(h {{ $.Name }}Handler) List(w http.ResponseWriter, r *http.Request) {
         q := h.client.{{ $.Name }}.Query()
@@ -10,13 +16,13 @@
 
         // Pagination
         var err error
-        page = 1
-        itemsPerPage = 30
+        page := 1
+        itemsPerPage := 30
 
         if d := r.URL.Query().Get("itemsPerPage"); d != "" {
             itemsPerPage, err = strconv.Atoi(d)
             if err != nil {
-                l.WithField("itemsPerPage", d).Info("error parsing query parameter 'itemsPerPage'")
+                h.logger.WithField("itemsPerPage", d).Info("error parsing query parameter 'itemsPerPage'")
                 render.BadRequest(w, r, "itemsPerPage must be a positive integer greater zero")
                 return
             }
@@ -25,7 +31,7 @@
         if d := r.URL.Query().Get("page"); d != "" {
             page, err = strconv.Atoi(d)
             if err != nil {
-                l.WithField("page", d).Info("error parsing query parameter 'page'")
+                h.logger.WithField("page", d).Info("error parsing query parameter 'page'")
                 render.BadRequest(w, r, "page must be a positive integer greater zero")
                 return
             }
@@ -77,7 +83,7 @@
             {{- if $groups }}
                 {{- range $g := $groups}}"{{$g}}",{{ end -}}
             {{ else -}}
-                "{{ $.Name | snake }}:read"
+                "{{ $.Name | snake }}:list"
             {{- end -}}
         }}, es)
         if err != nil {
@@ -86,7 +92,7 @@
             return
         }
 
-        h.logger.WithField("amount", len(es)).Info("jobs rendered")
+        h.logger.WithField("amount", len(es)).Info("{{ $.Name | snake }} rendered")
         render.OK(w, r, d)
     }
 {{end}}

@@ -16,69 +16,46 @@ import (
     "{{ $.Config.Package }}"
 )
 
-{{ if not $.Annotations.HandlerGen.SkipGeneration }}
+{{ range $n := $.Nodes }}
+    {{ if not $n.Annotations.HandlerGen.SkipGeneration }}
 
-    // The {{ $.Name }}Handler.
-    type {{ $.Name }}Handler struct {
-        r *chi.Mux
+        // The {{ $n.Name }}Handler.
+        type {{ $n.Name }}Handler struct {
+            *chi.Mux
 
-        client    *ent.Client
-        validator *validator.Validate
-        logger    *logrus.Logger
-    }
-
-    // Create a new {{ $.Name }}Handler
-    func New{{ $.Name }}Handler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *{{ $.Name }}Handler {
-        return &{{ $.Name }}Handler{
-            r:         chi.NewRouter(),
-            client:    c,
-            validator: v,
-            logger:    log,
+            client    *ent.Client
+            validator *validator.Validate
+            logger    *logrus.Logger
         }
-    }
 
-    // Implement the net/http Handler interface.
-    func (h {{ $.Name }}Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-        h.r.ServeHTTP(w, r)
-    }
+        // Create a new {{ $n.Name }}Handler
+        func New{{ $n.Name }}Handler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *{{ $n.Name }}Handler {
+            return &{{ $n.Name }}Handler{
+                Mux:         chi.NewRouter(),
+                client:    c,
+                validator: v,
+                logger:    log,
+            }
+        }
 
-    // Enable all endpoints.
-    func (h *{{ $.Name }}Handler) EnableAllEndpoints() *{{ $.Name }}Handler {
-        h.EnableCreateEndpoint()
-        h.EnableReadEndpoint()
-        h.EnableUpdateEndpoint()
-        h.EnableListEndpoint()
-        return h
-    }
+        // Enable all endpoints.
+        func (h *{{ $n.Name }}Handler) EnableAllEndpoints() *{{ $n.Name }}Handler {
+            h.EnableCreateEndpoint()
+            h.EnableReadEndpoint()
+            h.EnableUpdateEndpoint()
+            h.EnableListEndpoint()
+            {{ range $e := $n.Edges -}}
+                h.Enable{{ $e.Name | pascal }}Endpoint()
+            {{ end -}}
+            return h
+        }
 
-    // Enable the create operation.
-    func (h *{{ $.Name }}Handler) EnableCreateEndpoint() *{{ $.Name }}Handler {
-        h.r.Post("/", h.Create)
-        return h
-    }
+        {{ template "handler/create" $n }}
+        {{ template "handler/read" $n }}
+        {{ template "handler/update" $n }}
+    {{/*    {{ template "delete" $ }}*/}}
+        {{ template "handler/list" $n }}
 
-    // Enable the read operation.
-    func (h *{{ $.Name }}Handler) EnableReadEndpoint() *{{ $.Name }}Handler {
-        h.r.Get("/{id:\\d+}", h.Read)
-        return h
-    }
-
-    // Enable the update operation.
-    func (h *{{ $.Name }}Handler) EnableUpdateEndpoint() *{{ $.Name }}Handler {
-        h.r.Get("/{id:\\d+}", h.Update)
-        return h
-    }
-
-    // Enable the list operation.
-    func (h *{{ $.Name }}Handler) EnableListEndpoint() *{{ $.Name }}Handler {
-        h.r.Get("/", h.List)
-        return h
-    }
-
-    {{ template "create" $ }}
-    {{ template "read" $ }}
-    {{ template "update" $ }}
-{{/*    {{ template "delete" $ }}*/}}
-    {{ template "list" $ }}
-
+        {{ template "handler/subressources" $n }}
+    {{ end }}
 {{ end }}

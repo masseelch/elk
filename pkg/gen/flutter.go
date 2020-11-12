@@ -32,7 +32,7 @@ func Flutter(source string, target string) error {
 	for _, n := range []string{
 		"header/dart.tpl",
 		"flutter/model.tpl",
-		"flutter/repository.tpl",
+		"flutter/client.tpl",
 	} {
 		d, err := internal.Asset(n)
 		if err != nil {
@@ -47,7 +47,7 @@ func Flutter(source string, target string) error {
 	assets := assets{
 		dirs: []string{
 			filepath.Join(g.Config.Target, "model"),
-			filepath.Join(g.Config.Target, "repository"),
+			filepath.Join(g.Config.Target, "client"),
 		},
 	}
 
@@ -62,21 +62,21 @@ func Flutter(source string, target string) error {
 		})
 
 		b = bytes.NewBuffer(nil)
-		if err := tpl.ExecuteTemplate(b, "repository", n); err != nil {
+		if err := tpl.ExecuteTemplate(b, "client", n); err != nil {
 			panic(err)
 		}
 		assets.files = append(assets.files, file{
-			path:    filepath.Join(g.Config.Target, "repository", fmt.Sprintf("%s.dart", gen.Funcs["snake"].(func(string) string)(n.Name))),
+			path:    filepath.Join(g.Config.Target, "client", fmt.Sprintf("%s.dart", gen.Funcs["snake"].(func(string) string)(n.Name))),
 			content: b.Bytes(),
 		})
 	}
 
 	b := bytes.NewBuffer(nil)
-	if err := tpl.ExecuteTemplate(b, "repository/provider", g); err != nil {
+	if err := tpl.ExecuteTemplate(b, "client/provider", g); err != nil {
 		return err
 	}
 	assets.files = append(assets.files, file{
-		path:    filepath.Join(g.Config.Target, "repository", "provider.dart"),
+		path:    filepath.Join(g.Config.Target, "client", "provider.dart"),
 		content: b.Bytes(),
 	})
 

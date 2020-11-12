@@ -1,5 +1,5 @@
 {{ define "model" }}
-    {{ template "header" }}
+    {{ template "header" -}}
     import 'package:json_annotation/json_annotation.dart';
 
     part '{{ $.Name | snake }}.g.dart';
