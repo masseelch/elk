@@ -1,14 +1,13 @@
-{{ define "handler/read" }}
-    // Enable the read operation.
-    func (h *{{ $.Name }}Handler) EnableReadEndpoint() *{{ $.Name }}Handler {
-        h.Get("/{id:\\d+}", h.Read)
-        return h
-    }
+{{ define "handler/read/route" }}h.Get("/{id:\\d+}", h.Read){{ end }}
 
+{{ define "handler/read" }}
     // This function fetches the {{ $.Name }} model identified by a give url-parameter from
     // database and returns it to the client.
     func(h {{ $.Name }}Handler) Read(w http.ResponseWriter, r *http.Request) {
-        {{- template "id-from-request-param" $ }}
+        id, err := h.urlParamInt(w, r, "id")
+        if err != nil {
+            return
+        }
 
         qb := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id))
         {{ template "read/qb" $ }}

@@ -1,24 +1,3 @@
-{{ define "id-from-request-param" }}
-    idp := chi.URLParam(r, "id")
-    if idp == "" {
-        h.logger.WithField("id", idp).Info("empty 'id' url param")
-        render.BadRequest(w, r, "id cannot be ''")
-        return
-    }
-    {{ if $.ID.HasGoType -}}
-        id := {{ $.ID.Type.String }}(idp)
-    {{ else if $.ID.IsString -}}
-        id := idp
-    {{ else if $.ID.IsInt -}}
-        id, err := strconv.Atoi(idp)
-        if err != nil {
-            h.logger.WithField("id", idp).Info("error parsing url parameter 'id'")
-            render.BadRequest(w, r, "id must be a positive integer greater zero")
-            return
-        }
-    {{- end}}
-{{ end }}
-
 {{ define "read/qb" }}
     {{/* If one of the given handler groups is set on the edge eager join it.*/}}
     {{/* todo - nested eager loading? */}}

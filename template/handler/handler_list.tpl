@@ -1,10 +1,6 @@
-{{ define "handler/list" }}
-    // Enable the list operation.
-    func (h *{{ $.Name }}Handler) EnableListEndpoint() *{{ $.Name }}Handler {
-        h.Get("/", h.List)
-        return h
-    }
+{{ define "handler/list/route" }}h.Get("/", h.List){{ end }}
 
+{{ define "handler/list" }}
     // This function queries for {{ $.Name }} models. Can be filtered by query parameters.
     func(h {{ $.Name }}Handler) List(w http.ResponseWriter, r *http.Request) {
         q := h.client.{{ $.Name }}.Query()
@@ -15,26 +11,9 @@
         {{ end }}
 
         // Pagination
-        var err error
-        page := 1
-        itemsPerPage := 30
-
-        if d := r.URL.Query().Get("itemsPerPage"); d != "" {
-            itemsPerPage, err = strconv.Atoi(d)
-            if err != nil {
-                h.logger.WithField("itemsPerPage", d).Info("error parsing query parameter 'itemsPerPage'")
-                render.BadRequest(w, r, "itemsPerPage must be a positive integer greater zero")
-                return
-            }
-        }
-
-        if d := r.URL.Query().Get("page"); d != "" {
-            page, err = strconv.Atoi(d)
-            if err != nil {
-                h.logger.WithField("page", d).Info("error parsing query parameter 'page'")
-                render.BadRequest(w, r, "page must be a positive integer greater zero")
-                return
-            }
+        page, itemsPerPage, err := h.paginationInfo(w, r)
+        if err != nil {
+            return
         }
         
         q = q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)

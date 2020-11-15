@@ -1,10 +1,6 @@
-{{ define "handler/update" }}
-    // Enable the update operation.
-    func (h *{{ $.Name }}Handler) EnableUpdateEndpoint() *{{ $.Name }}Handler {
-        h.Get("/{id:\\d+}", h.Update)
-        return h
-    }
+{{ define "handler/update/route" }}h.Get("/{id:\\d+}", h.Update){{ end }}
 
+{{ define "handler/update" }}
     // struct to bind the post body to.
     type {{ $.Name | camel }}UpdateRequest struct {
         {{/* Add all fields that are not excluded. */}}
@@ -25,7 +21,10 @@
 
     // This function updates a given {{ $.Name }} model and saves the changes in the database.
     func(h {{ $.Name }}Handler) Update(w http.ResponseWriter, r *http.Request) {
-        {{ template "id-from-request-param" $ }}
+        id, err := h.urlParamInt(w, r, "id")
+        if err != nil {
+            return
+        }
 
         // Get the post data.
         d := {{ $.Name | snake }}UpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.

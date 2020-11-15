@@ -1,14 +1,17 @@
-{{ define "handler/subressources" }}
+{{ define "handler/subresource/get/route" -}}
+    {{ range $e := $.Edges -}}
+        h.Get("/{id:\\d+}/{{ replace ($e.Name | snake) "_" "-" }}", h.{{ $e.Name | pascal }})
+    {{ end -}}
+{{ end -}}
+
+{{ define "handler/subresource/get" }}
     {{ range $e := $.Edges }}
         {{/* Read/List operations on subressources */}}
-        // Enable the read operation on the {{ $e.Name }} edge.
-        func (h *{{ $.Name }}Handler) Enable{{ $e.Name | pascal }}Endpoint() *{{ $.Name }}Handler {
-            h.Get("/{id:\\d+}/{{ replace ($e.Name | snake) "_" "-" }}", h.{{ $e.Name | pascal }})
-            return h
-        }
-
         func(h {{ $.Name }}Handler) {{ $e.Name | pascal }}(w http.ResponseWriter, r *http.Request) {
-            {{- template "id-from-request-param" $ }}
+            id, err := h.urlParamInt(w, r, "id")
+                if err != nil {
+                return
+            }
             qb := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id)).Query{{ $e.Name | pascal }}()
 
             {{ if $e.Unique }}

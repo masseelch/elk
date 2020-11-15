@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/facebook/ent/entc/integration/ent/pet"
 	"github.com/go-chi/chi"
@@ -16,8 +17,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// The OwnerHandler.
-type OwnerHandler struct {
+// Shared handler.
+type handler struct {
 	*chi.Mux
 
 	client    *ent.Client
@@ -25,29 +26,30 @@ type OwnerHandler struct {
 	logger    *logrus.Logger
 }
 
+// The OwnerHandler.
+type OwnerHandler struct {
+	*handler
+}
+
 // Create a new OwnerHandler
 func NewOwnerHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *OwnerHandler {
-	return &OwnerHandler{
-		Mux:       chi.NewRouter(),
-		client:    c,
-		validator: v,
-		logger:    log,
+	h := &OwnerHandler{
+		&handler{
+			Mux:       chi.NewRouter(),
+			client:    c,
+			validator: v,
+			logger:    log,
+		},
 	}
-}
 
-// Enable all endpoints.
-func (h *OwnerHandler) EnableAllEndpoints() *OwnerHandler {
-	h.EnableCreateEndpoint()
-	h.EnableReadEndpoint()
-	h.EnableUpdateEndpoint()
-	h.EnableListEndpoint()
-	h.EnablePetsEndpoint()
-	return h
-}
-
-// Enable the create operation.
-func (h *OwnerHandler) EnableCreateEndpoint() *OwnerHandler {
 	h.Post("/", h.Create)
+	h.Get("/{id:\\d+}", h.Read)
+	h.Get("/{id:\\d+}", h.Update)
+
+	h.Get("/", h.List)
+
+	h.Get("/{id:\\d+}/pets", h.Pets)
+
 	return h
 }
 
@@ -105,25 +107,11 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Enable the read operation.
-func (h *OwnerHandler) EnableReadEndpoint() *OwnerHandler {
-	h.Get("/{id:\\d+}", h.Read)
-	return h
-}
-
 // This function fetches the Owner model identified by a give url-parameter from
 // database and returns it to the client.
 func (h OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
-	idp := chi.URLParam(r, "id")
-	if idp == "" {
-		h.logger.WithField("id", idp).Info("empty 'id' url param")
-		render.BadRequest(w, r, "id cannot be ''")
-		return
-	}
-	id, err := strconv.Atoi(idp)
+	id, err := h.urlParamInt(w, r, "id")
 	if err != nil {
-		h.logger.WithField("id", idp).Info("error parsing url parameter 'id'")
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
 		return
 	}
 
@@ -161,12 +149,6 @@ func (h OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, d)
 }
 
-// Enable the update operation.
-func (h *OwnerHandler) EnableUpdateEndpoint() *OwnerHandler {
-	h.Get("/{id:\\d+}", h.Update)
-	return h
-}
-
 // struct to bind the post body to.
 type ownerUpdateRequest struct {
 	Name string `json:"name,omitempty" `
@@ -175,17 +157,8 @@ type ownerUpdateRequest struct {
 
 // This function updates a given Owner model and saves the changes in the database.
 func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
-
-	idp := chi.URLParam(r, "id")
-	if idp == "" {
-		h.logger.WithField("id", idp).Info("empty 'id' url param")
-		render.BadRequest(w, r, "id cannot be ''")
-		return
-	}
-	id, err := strconv.Atoi(idp)
+	id, err := h.urlParamInt(w, r, "id")
 	if err != nil {
-		h.logger.WithField("id", idp).Info("error parsing url parameter 'id'")
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
 		return
 	}
 
@@ -235,37 +208,14 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Enable the list operation.
-func (h *OwnerHandler) EnableListEndpoint() *OwnerHandler {
-	h.Get("/", h.List)
-	return h
-}
-
 // This function queries for Owner models. Can be filtered by query parameters.
 func (h OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
 	q := h.client.Owner.Query()
 
 	// Pagination
-	var err error
-	page := 1
-	itemsPerPage := 30
-
-	if d := r.URL.Query().Get("itemsPerPage"); d != "" {
-		itemsPerPage, err = strconv.Atoi(d)
-		if err != nil {
-			h.logger.WithField("itemsPerPage", d).Info("error parsing query parameter 'itemsPerPage'")
-			render.BadRequest(w, r, "itemsPerPage must be a positive integer greater zero")
-			return
-		}
-	}
-
-	if d := r.URL.Query().Get("page"); d != "" {
-		page, err = strconv.Atoi(d)
-		if err != nil {
-			h.logger.WithField("page", d).Info("error parsing query parameter 'page'")
-			render.BadRequest(w, r, "page must be a positive integer greater zero")
-			return
-		}
+	page, itemsPerPage, err := h.paginationInfo(w, r)
+	if err != nil {
+		return
 	}
 
 	q = q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
@@ -300,19 +250,10 @@ func (h *OwnerHandler) EnablePetsEndpoint() *OwnerHandler {
 }
 
 func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
-	idp := chi.URLParam(r, "id")
-	if idp == "" {
-		h.logger.WithField("id", idp).Info("empty 'id' url param")
-		render.BadRequest(w, r, "id cannot be ''")
-		return
-	}
-	id, err := strconv.Atoi(idp)
+	id, err := h.urlParamInt(w, r, "id")
 	if err != nil {
-		h.logger.WithField("id", idp).Info("error parsing url parameter 'id'")
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
 		return
 	}
-
 	qb := h.client.Owner.Query().Where(owner.ID(id)).QueryPets()
 
 	es, err := qb.All(r.Context())
@@ -336,36 +277,28 @@ func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 
 // The PetHandler.
 type PetHandler struct {
-	*chi.Mux
-
-	client    *ent.Client
-	validator *validator.Validate
-	logger    *logrus.Logger
+	*handler
 }
 
 // Create a new PetHandler
 func NewPetHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *PetHandler {
-	return &PetHandler{
-		Mux:       chi.NewRouter(),
-		client:    c,
-		validator: v,
-		logger:    log,
+	h := &PetHandler{
+		&handler{
+			Mux:       chi.NewRouter(),
+			client:    c,
+			validator: v,
+			logger:    log,
+		},
 	}
-}
 
-// Enable all endpoints.
-func (h *PetHandler) EnableAllEndpoints() *PetHandler {
-	h.EnableCreateEndpoint()
-	h.EnableReadEndpoint()
-	h.EnableUpdateEndpoint()
-	h.EnableListEndpoint()
-	h.EnableOwnerEndpoint()
-	return h
-}
-
-// Enable the create operation.
-func (h *PetHandler) EnableCreateEndpoint() *PetHandler {
 	h.Post("/", h.Create)
+	h.Get("/{id:\\d+}", h.Read)
+	h.Get("/{id:\\d+}", h.Update)
+
+	h.Get("/", h.List)
+
+	h.Get("/{id:\\d+}/owner", h.Owner)
+
 	return h
 }
 
@@ -423,25 +356,11 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Enable the read operation.
-func (h *PetHandler) EnableReadEndpoint() *PetHandler {
-	h.Get("/{id:\\d+}", h.Read)
-	return h
-}
-
 // This function fetches the Pet model identified by a give url-parameter from
 // database and returns it to the client.
 func (h PetHandler) Read(w http.ResponseWriter, r *http.Request) {
-	idp := chi.URLParam(r, "id")
-	if idp == "" {
-		h.logger.WithField("id", idp).Info("empty 'id' url param")
-		render.BadRequest(w, r, "id cannot be ''")
-		return
-	}
-	id, err := strconv.Atoi(idp)
+	id, err := h.urlParamInt(w, r, "id")
 	if err != nil {
-		h.logger.WithField("id", idp).Info("error parsing url parameter 'id'")
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
 		return
 	}
 
@@ -477,12 +396,6 @@ func (h PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, d)
 }
 
-// Enable the update operation.
-func (h *PetHandler) EnableUpdateEndpoint() *PetHandler {
-	h.Get("/{id:\\d+}", h.Update)
-	return h
-}
-
 // struct to bind the post body to.
 type petUpdateRequest struct {
 	Name  string `json:"name,omitempty" `
@@ -491,17 +404,8 @@ type petUpdateRequest struct {
 
 // This function updates a given Pet model and saves the changes in the database.
 func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
-
-	idp := chi.URLParam(r, "id")
-	if idp == "" {
-		h.logger.WithField("id", idp).Info("empty 'id' url param")
-		render.BadRequest(w, r, "id cannot be ''")
-		return
-	}
-	id, err := strconv.Atoi(idp)
+	id, err := h.urlParamInt(w, r, "id")
 	if err != nil {
-		h.logger.WithField("id", idp).Info("error parsing url parameter 'id'")
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
 		return
 	}
 
@@ -551,37 +455,14 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Enable the list operation.
-func (h *PetHandler) EnableListEndpoint() *PetHandler {
-	h.Get("/", h.List)
-	return h
-}
-
 // This function queries for Pet models. Can be filtered by query parameters.
 func (h PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	q := h.client.Pet.Query()
 
 	// Pagination
-	var err error
-	page := 1
-	itemsPerPage := 30
-
-	if d := r.URL.Query().Get("itemsPerPage"); d != "" {
-		itemsPerPage, err = strconv.Atoi(d)
-		if err != nil {
-			h.logger.WithField("itemsPerPage", d).Info("error parsing query parameter 'itemsPerPage'")
-			render.BadRequest(w, r, "itemsPerPage must be a positive integer greater zero")
-			return
-		}
-	}
-
-	if d := r.URL.Query().Get("page"); d != "" {
-		page, err = strconv.Atoi(d)
-		if err != nil {
-			h.logger.WithField("page", d).Info("error parsing query parameter 'page'")
-			render.BadRequest(w, r, "page must be a positive integer greater zero")
-			return
-		}
+	page, itemsPerPage, err := h.paginationInfo(w, r)
+	if err != nil {
+		return
 	}
 
 	q = q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
@@ -616,19 +497,10 @@ func (h *PetHandler) EnableOwnerEndpoint() *PetHandler {
 }
 
 func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
-	idp := chi.URLParam(r, "id")
-	if idp == "" {
-		h.logger.WithField("id", idp).Info("empty 'id' url param")
-		render.BadRequest(w, r, "id cannot be ''")
-		return
-	}
-	id, err := strconv.Atoi(idp)
+	id, err := h.urlParamInt(w, r, "id")
 	if err != nil {
-		h.logger.WithField("id", idp).Info("error parsing url parameter 'id'")
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
 		return
 	}
-
 	qb := h.client.Pet.Query().Where(pet.ID(id)).QueryOwner()
 
 	qb.WithPets()
@@ -662,4 +534,274 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 	h.logger.WithField("owner", e.ID).Info("owner rendered")
 	render.OK(w, r, d)
 
+}
+
+// The SkipGenerationModelHandler.
+type SkipGenerationModelHandler struct {
+	*handler
+}
+
+// Create a new SkipGenerationModelHandler
+func NewSkipGenerationModelHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *SkipGenerationModelHandler {
+	h := &SkipGenerationModelHandler{
+		&handler{
+			Mux:       chi.NewRouter(),
+			client:    c,
+			validator: v,
+			logger:    log,
+		},
+	}
+
+	h.Post("/", h.Create)
+	h.Get("/{id:\\d+}", h.Read)
+	h.Get("/{id:\\d+}", h.Update)
+
+	h.Get("/", h.List)
+
+	return h
+}
+
+// struct to bind the post body to.
+type skipgenerationmodelCreateRequest struct {
+	Name string `json:"name,omitempty" `
+}
+
+// This function creates a new SkipGenerationModel model and stores it in the database.
+func (h SkipGenerationModelHandler) Create(w http.ResponseWriter, r *http.Request) {
+	// Get the post data.
+	d := skip_generation_modelCreateRequest{} // todo - allow form-url-encdoded/xml/protobuf data.
+	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+		h.logger.WithError(err).Error("error decoding json")
+		render.BadRequest(w, r, "invalid json string")
+		return
+	}
+
+	// Validate the data.
+	if err := h.validator.Struct(d); err != nil {
+		if err, ok := err.(*validator.InvalidValidationError); ok {
+			h.logger.WithError(err).Error("error validating request data")
+			render.InternalServerError(w, r, nil)
+			return
+		}
+
+		h.logger.WithError(err).Info("validation failed")
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	// Save the data.
+	b := h.client.SkipGenerationModel.Create().
+		SetName(d.Name)
+
+	// Store in database.
+	e, err := b.Save(r.Context())
+	if err != nil {
+		h.logger.WithError(err).Error("error saving SkipGenerationModel")
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
+	// Serialize the data.
+	j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"skip_generation_model:read"}}, e)
+	if err != nil {
+		h.logger.WithError(err).WithField("SkipGenerationModel.id", e.ID).Error("serialization error")
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
+	h.logger.WithField("skip_generation_model", e.ID).Info("skip_generation_model rendered")
+	render.OK(w, r, j)
+}
+
+// This function fetches the SkipGenerationModel model identified by a give url-parameter from
+// database and returns it to the client.
+func (h SkipGenerationModelHandler) Read(w http.ResponseWriter, r *http.Request) {
+	id, err := h.urlParamInt(w, r, "id")
+	if err != nil {
+		return
+	}
+
+	qb := h.client.SkipGenerationModel.Query().Where(skip_generation_model.ID(id))
+
+	e, err := qb.Only(r.Context())
+
+	if err != nil {
+		switch err.(type) {
+		case *ent.NotFoundError:
+			h.logger.WithError(err).WithField("SkipGenerationModel.id", id).Debug("job not found")
+			render.NotFound(w, r, err)
+			return
+		case *ent.NotSingularError:
+			h.logger.WithError(err).WithField("SkipGenerationModel.id", id).Error("duplicate entry for id")
+			render.InternalServerError(w, r, nil)
+			return
+		default:
+			h.logger.WithError(err).WithField("SkipGenerationModel.id", id).Error("error fetching node from db")
+			render.InternalServerError(w, r, nil)
+			return
+		}
+	}
+
+	d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"skip_generation_model:read"}}, e)
+	if err != nil {
+		h.logger.WithError(err).WithField("SkipGenerationModel.id", id).Error("serialization error")
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
+	h.logger.WithField("skip_generation_model", e.ID).Info("skip_generation_model rendered")
+	render.OK(w, r, d)
+}
+
+// struct to bind the post body to.
+type skipgenerationmodelUpdateRequest struct {
+	Name string `json:"name,omitempty" `
+}
+
+// This function updates a given SkipGenerationModel model and saves the changes in the database.
+func (h SkipGenerationModelHandler) Update(w http.ResponseWriter, r *http.Request) {
+	id, err := h.urlParamInt(w, r, "id")
+	if err != nil {
+		return
+	}
+
+	// Get the post data.
+	d := skip_generation_modelUpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.
+	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+		h.logger.WithError(err).Error("error decoding json")
+		render.BadRequest(w, r, "invalid json string")
+		return
+	}
+
+	// Validate the data.
+	if err := h.validator.Struct(d); err != nil {
+		if err, ok := err.(*validator.InvalidValidationError); ok {
+			h.logger.WithError(err).Error("error validating request data")
+			render.InternalServerError(w, r, nil)
+			return
+		}
+
+		h.logger.WithError(err).Info("validation failed")
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	// Save the data.
+	b := h.client.SkipGenerationModel.UpdateOneID(id).
+		SetName(d.Name)
+
+	// Save in database.
+	e, err := b.Save(r.Context())
+	if err != nil {
+		h.logger.WithError(err).Error("error saving SkipGenerationModel")
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
+	// Serialize the data.
+	j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"skip_generation_model:read"}}, e)
+	if err != nil {
+		h.logger.WithError(err).WithField("SkipGenerationModel.id", e.ID).Error("serialization error")
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
+	h.logger.WithField("skip_generation_model", e.ID).Info("skip_generation_model rendered")
+	render.OK(w, r, j)
+}
+
+// This function queries for SkipGenerationModel models. Can be filtered by query parameters.
+func (h SkipGenerationModelHandler) List(w http.ResponseWriter, r *http.Request) {
+	q := h.client.SkipGenerationModel.Query()
+
+	// Pagination
+	page, itemsPerPage, err := h.paginationInfo(w, r)
+	if err != nil {
+		return
+	}
+
+	q = q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+
+	// Use the query parameters to filter the query. todo - nested filter?
+	if f := r.URL.Query().Get("name"); f != "" {
+		q = q.Where(skipgenerationmodel.Name(f))
+	}
+
+	es, err := q.All(r.Context())
+	if err != nil {
+		h.logger.WithError(err).Error("error querying database") // todo - better error
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
+	d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"skip_generation_model:list"}}, es)
+	if err != nil {
+		h.logger.WithError(err).Error("serialization error")
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
+	h.logger.WithField("amount", len(es)).Info("skip_generation_model rendered")
+	render.OK(w, r, d)
+}
+
+func (h handler) urlParamInt(w http.ResponseWriter, r *http.Request, param string) (id int, err error) {
+	p := chi.URLParam(r, param)
+	if p == "" {
+		h.logger.WithField("param", param).Info("empty url param")
+		render.BadRequest(w, r, param+" cannot be ''")
+		return
+	}
+
+	id, err = strconv.Atoi(p)
+	if err != nil {
+		h.logger.WithField(param, p).Info("error parsing url parameter")
+		render.BadRequest(w, r, param+" must be a positive integer greater zero")
+		return
+	}
+
+	return
+}
+
+func (h handler) urlParamTime(w http.ResponseWriter, r *http.Request, param string) (date time.Time, err error) {
+	p := chi.URLParam(r, param)
+	if p == "" {
+		h.logger.WithField("param", param).Info("empty url param")
+		render.BadRequest(w, r, param+" cannot be ''")
+		return
+	}
+
+	date, err = time.Parse("2006-01-02", p)
+	if err != nil {
+		h.logger.WithField(param, p).Info("error parsing url parameter")
+		render.BadRequest(w, r, param+" must be a valid date in yyyy-mm-dd format")
+		return
+	}
+
+	return
+}
+
+func (h handler) paginationInfo(w http.ResponseWriter, r *http.Request) (page int, itemsPerPage int, err error) {
+	page = 1
+	itemsPerPage = 30
+
+	if d := r.URL.Query().Get("itemsPerPage"); d != "" {
+		itemsPerPage, err = strconv.Atoi(d)
+		if err != nil {
+			h.logger.WithField("itemsPerPage", d).Info("error parsing query parameter 'itemsPerPage'")
+			render.BadRequest(w, r, "itemsPerPage must be a positive integer greater zero")
+			return
+		}
+	}
+
+	if d := r.URL.Query().Get("page"); d != "" {
+		page, err = strconv.Atoi(d)
+		if err != nil {
+			h.logger.WithField("page", d).Info("error parsing query parameter 'page'")
+			render.BadRequest(w, r, "page must be a positive integer greater zero")
+			return
+		}
+	}
+
+	return
 }

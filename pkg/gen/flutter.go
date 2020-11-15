@@ -33,6 +33,7 @@ func Flutter(source string, target string) error {
 		"header/dart.tpl",
 		"flutter/model.tpl",
 		"flutter/client.tpl",
+		"flutter/client_provider.tpl",
 	} {
 		d, err := internal.Asset(n)
 		if err != nil {
@@ -61,14 +62,17 @@ func Flutter(source string, target string) error {
 			content: b.Bytes(),
 		})
 
-		b = bytes.NewBuffer(nil)
-		if err := tpl.ExecuteTemplate(b, "client", n); err != nil {
-			panic(err)
+		// Only generate the client if the generation should not be skipped.
+		if n.Annotations["HandlerGen"] == nil || !n.Annotations["HandlerGen"].(map[string]interface{})["SkipGeneration"].(bool) {
+			b = bytes.NewBuffer(nil)
+			if err := tpl.ExecuteTemplate(b, "client", n); err != nil {
+				panic(err)
+			}
+			assets.files = append(assets.files, file{
+				path:    filepath.Join(g.Config.Target, "client", fmt.Sprintf("%s.dart", gen.Funcs["snake"].(func(string) string)(n.Name))),
+				content: b.Bytes(),
+			})
 		}
-		assets.files = append(assets.files, file{
-			path:    filepath.Join(g.Config.Target, "client", fmt.Sprintf("%s.dart", gen.Funcs["snake"].(func(string) string)(n.Name))),
-			content: b.Bytes(),
-		})
 	}
 
 	b := bytes.NewBuffer(nil)
