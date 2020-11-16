@@ -59,7 +59,17 @@
                     // Eager load edges.
                     q
                     {{- range $e := $es -}}
-                        {{ if not (eq $e.Type $) }}.With{{ pascal $e.Name }}(){{ end }}
+                        {{ if not (eq $e.Type $) }}.With{{ pascal $e.Name }}(
+                            {{- if $do := $e.Type.Annotations.HandlerGen.DefaultListOrder -}}
+                                func(q *{{ $.Config.Package | base }}.{{ $e.Type.Name }}Query) {
+                                    q.Order(
+                                        {{- range $o := $do -}}
+                                            ent.{{ if eq ($o.Order | lower) "desc" }}Desc{{ else }}Asc{{ end }}("{{ $o.Field }}"),
+                                        {{- end -}}
+                                    )
+                                }
+                            {{- end -}}
+                        ){{ end }}
                     {{- end }}
                 {{ end }}
 
