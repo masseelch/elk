@@ -19,7 +19,7 @@
                 e, err := qb.Only(r.Context())
                 {{ template "read/error-handling" $e.Type }}
 
-                {{ $groups := $e.Annotations.HandlerGen.ReadGroups }}
+                {{ $groups := $e.Type.Annotations.HandlerGen.ReadGroups }}
                 d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{
                     {{- if $groups }}
                         {{- range $g := $groups}}"{{$g}}",{{ end -}}
