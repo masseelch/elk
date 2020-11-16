@@ -11,6 +11,7 @@ class Pet {
 
   int id;
   String name;
+  int age;
 
   PetEdges edges;
 

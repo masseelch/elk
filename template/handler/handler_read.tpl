@@ -9,9 +9,9 @@
             return
         }
 
-        qb := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id))
+        q := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id))
         {{ template "read/qb" $ }}
-        e, err := qb.Only(r.Context())
+        e, err := q.Only(r.Context())
         {{ template "read/error-handling" $ }}
 
         {{ $groups := $.Annotations.HandlerGen.ReadGroups }}

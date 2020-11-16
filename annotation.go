@@ -24,16 +24,17 @@ package elk
 type (
 	// Used on a schema to pass options to the handler generator.
 	HandlerAnnotation struct {
-		Skip         bool
-		SkipCreate   bool
-		SkipRead     bool
-		SkipUpdate   bool
-		SkipDelete   bool
-		SkipList     bool
-		CreateGroups []string
-		ReadGroups   []string
-		UpdateGroups []string
-		ListGroups   []string
+		Skip             bool
+		SkipCreate       bool
+		SkipRead         bool
+		SkipUpdate       bool
+		SkipDelete       bool
+		SkipList         bool
+		CreateGroups     []string
+		ReadGroups       []string
+		UpdateGroups     []string
+		ListGroups       []string
+		DefaultListOrder []Order
 	}
 	// Used on fields pass options to the handler generator.
 	FieldAnnotation struct {
@@ -44,6 +45,14 @@ type (
 		Patch               bool
 		PatchValidationTag  string
 	}
+	// Used on (list) edges to specify a default order.
+	EdgeAnnotation struct {
+		DefaultOrder []Order
+	}
+	Order struct {
+		Order string
+		Field string
+	}
 )
 
 func (HandlerAnnotation) Name() string {
@@ -52,4 +61,8 @@ func (HandlerAnnotation) Name() string {
 
 func (FieldAnnotation) Name() string {
 	return "FieldGen"
+}
+
+func (EdgeAnnotation) Name() string {
+	return "EdgeGen"
 }

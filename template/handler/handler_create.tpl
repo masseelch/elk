@@ -13,7 +13,7 @@
         {{/* Add all edges that are not excluded. */}}
         {{- range $e := $.Edges -}}
             {{- $a := $e.Annotations.FieldGen }}
-            {{- if and (not $e.Type.Annotations.HandlerGen.SkipGeneration) (or (not $a) $a.Create) }}
+            {{- if and (not $e.Type.Annotations.HandlerGen.Skip) (or (not $a) $a.Create) }}
                 {{ $e.StructField }} {{ if not $e.Unique }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ tagLookup $e.StructTag "json" }}" {{ if $a.CreateValidationTag }}validate:"{{ $a.CreateValidationTag }}"{{ end }}`
             {{- end -}}
         {{- end }}
@@ -52,7 +52,7 @@
         {{ end }}
         {{- range $e := $.Edges -}}
             {{- $a := $e.Annotations.FieldGen }}
-            {{- if and (not $e.Type.Annotations.HandlerGen.SkipGeneration) (or (not $a) $a.Create) }}.
+            {{- if and (not $e.Type.Annotations.HandlerGen.Skip) (or (not $a) $a.Create) }}.
                 {{- if $e.Unique }}
                     Set{{ $e.Type.Name }}ID(d.{{ $e.StructField }})
                 {{- else }}

@@ -26,7 +26,7 @@ type handler struct {
 }
 
 {{ range $n := $.Nodes }}
-    {{ if not $n.Annotations.HandlerGen.SkipGeneration }}
+    {{ if not $n.Annotations.HandlerGen.Skip }}
 
         // The {{ $n.Name }}Handler.
         type {{ $n.Name }}Handler struct {

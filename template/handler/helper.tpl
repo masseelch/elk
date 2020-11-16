@@ -4,7 +4,7 @@
     {{- range $e := $.Edges }}
         {{- range $g := $.Annotations.HandlerGen.ReadGroups }}
             {{- range $eg := split (tagLookup $e.StructTag "groups") "," }}
-                {{- if eq $g $eg }}qb.With{{ pascal $e.Name }}(){{ end -}}
+                {{- if eq $g $eg }}q.With{{ pascal $e.Name }}(){{ end -}}
             {{- end }}
         {{- end }}
     {{- end }}

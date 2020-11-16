@@ -2,8 +2,10 @@ package schema
 
 import (
 	"github.com/facebook/ent"
+	"github.com/facebook/ent/schema"
 	"github.com/facebook/ent/schema/edge"
 	"github.com/facebook/ent/schema/field"
+	"github.com/masseelch/elk"
 )
 
 // Pet holds the schema definition for the Pet entity.
@@ -15,6 +17,7 @@ type Pet struct {
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").StructTag(`groups:"pet:list"`),
+		field.Int("age").StructTag(`groups:"pet:list"`),
 	}
 }
 
@@ -23,6 +26,15 @@ func (Pet) Edges() []ent.Edge {
 	return []ent.Edge {
 		edge.From("owner", Owner.Type).
 			Ref("pets").
-			Unique(),
+			Unique().
+			StructTag(`json:"owner" groups:"pet:list"`),
+	}
+}
+
+// Annotations of the Pet.
+func (Pet) Annotations() []schema.Annotation {
+	return []schema.Annotation {
+		edge.Annotation{StructTag: `json:"edges" groups:"pet:list"`},
+		elk.HandlerAnnotation{ListGroups: []string{"pet:list", "owner:list"}},
 	}
 }

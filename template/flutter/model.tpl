@@ -16,7 +16,7 @@
 
         {{/* The fields of the model. */}}
         {{ $.ID.Type | dartType }} {{ $.ID.Name }};
-        {{- range $f := $.Fields }}
+        {{- range $f := $.Fields -}}
             {{ $f.Type | dartType }} {{ $f.Name }};
         {{ end }}
 

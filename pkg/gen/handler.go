@@ -27,7 +27,7 @@ func Handler(source string, target string) error {
 	}
 
 	// Create the template
-	tpl := template.New("handler").Funcs(gen.Funcs)
+	tpl := template.New("handler").Funcs(gen.Funcs).Funcs(template.FuncMap{"eagerLoadedEdges": eagerLoadedEdges})
 
 	// Attach header template.
 	tpl, err = tpl.Parse(string(internal.MustAsset("header/go.tpl")))

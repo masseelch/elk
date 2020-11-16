@@ -12,11 +12,11 @@
                 if err != nil {
                 return
             }
-            qb := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id)).Query{{ $e.Name | pascal }}()
+            q := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id)).Query{{ $e.Name | pascal }}()
 
             {{ if $e.Unique }}
                 {{ template "read/qb" $e.Type }}
-                e, err := qb.Only(r.Context())
+                e, err := q.Only(r.Context())
                 {{ template "read/error-handling" $e.Type }}
 
                 {{ $groups := $e.Type.Annotations.HandlerGen.ReadGroups }}
@@ -36,15 +36,51 @@
                 h.logger.WithField("{{ $e.Type.Name | snake }}", e.ID).Info("{{ $e.Type.Name | snake }} rendered")
                 render.OK(w, r, d)
             {{ else }}
-                {{/* todo - this is a list route. Enable query filtering. */}}
-                es, err := qb.All(r.Context())
+                {{ if $do := $e.Annotations.EdgeGen.DefaultOrder }}
+                    if r.URL.Query().Get("order") == "" {
+                        q.Order(
+                            {{- range $o := $do -}}
+                                ent.{{ if eq ($o.Order | lower) "desc" }}Desc{{ else }}Asc{{ end }}("{{ $o.Field }}"),
+                            {{- end -}}
+                        )
+                    }
+                {{ else if $do := $e.Type.Annotations.HandlerGen.DefaultListOrder }}
+                    if r.URL.Query().Get("order") == "" {
+                        q.Order(
+                            {{- range $o := $do -}}
+                                ent.{{ if eq ($o.Order | lower) "desc" }}Desc{{ else }}Asc{{ end }}("{{ $o.Field }}"),
+                            {{- end -}}
+                        )
+                    }
+                {{ end }}
+
+                {{- $es := eagerLoadedEdges $e.Type "ListGroups" }}
+                {{ if $es }}
+                    // Eager load edges.
+                    q
+                    {{- range $e := $es -}}
+                        {{ if not (eq $e.Type $) }}.With{{ pascal $e.Name }}(){{ end }}
+                    {{- end }}
+                {{ end }}
+
+                // Pagination
+                page, itemsPerPage, err := h.paginationInfo(w, r)
+                if err != nil {
+                    return
+                }
+
+                q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+
+                {{ template "handler/list/query-filter" $e.Type }}
+
+                es, err := q.All(r.Context())
                 if err != nil {
                     h.logger.WithError(err).Error("error querying database") // todo - better error
                     render.InternalServerError(w, r, nil)
                     return
                 }
 
-                {{ $groups := $e.Type.Annotations.HandlerGen.ReadGroups }}
+                {{ $groups := $e.Type.Annotations.HandlerGen.ListGroups }}
                 d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{
                     {{- if $groups }}
                         {{- range $g := $groups}}"{{$g}}",{{ end -}}

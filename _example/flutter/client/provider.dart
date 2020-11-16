@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import 'owner.dart';
+
 import 'pet.dart';
-import 'skip_generation_model.dart';
 
 class ClientProvider extends SingleChildStatelessWidget {
   ClientProvider({

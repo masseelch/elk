@@ -63,7 +63,7 @@ func Flutter(source string, target string) error {
 		})
 
 		// Only generate the client if the generation should not be skipped.
-		if n.Annotations["HandlerGen"] == nil || !n.Annotations["HandlerGen"].(map[string]interface{})["SkipGeneration"].(bool) {
+		if n.Annotations["HandlerGen"] == nil || !n.Annotations["HandlerGen"].(map[string]interface{})["Skip"].(bool) {
 			b = bytes.NewBuffer(nil)
 			if err := tpl.ExecuteTemplate(b, "client", n); err != nil {
 				panic(err)

@@ -7,7 +7,7 @@
 
     {{/* Import every node */}}
     {{ range $n := $.Nodes -}}
-        {{- if not $n.Annotations.HandlerGen.SkipGeneration }}
+        {{- if not $n.Annotations.HandlerGen.Skip }}
             import '{{ $n.Name | snake }}.dart';
         {{ end -}}
     {{ end -}}
@@ -28,7 +28,7 @@
             return MultiProvider(
                 providers: [
                     {{ range $n := $.Nodes -}}
-                        {{- if not $n.Annotations.HandlerGen.SkipGeneration }}
+                        {{- if not $n.Annotations.HandlerGen.Skip }}
                             Provider<{{ $n.Name }}Client>(
                                 create: (_) => {{ $n.Name }}Client(dio: dio),
                             ),

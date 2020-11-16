@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/facebook/ent/entc/integration/ent/pet"
 	"github.com/go-chi/chi"
 	"github.com/go-playground/validator/v10"
 	"github.com/liip/sheriff"
@@ -115,11 +114,11 @@ func (h OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	qb := h.client.Owner.Query().Where(owner.ID(id))
+	q := h.client.Owner.Query().Where(owner.ID(id))
 
-	qb.WithPets()
+	q.WithPets()
 
-	e, err := qb.Only(r.Context())
+	e, err := q.Only(r.Context())
 
 	if err != nil {
 		switch err.(type) {
@@ -212,17 +211,21 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
 	q := h.client.Owner.Query()
 
+	if r.URL.Query().Get("order") == "" {
+		q.Order(ent.Desc("name"))
+	}
+
 	// Pagination
 	page, itemsPerPage, err := h.paginationInfo(w, r)
 	if err != nil {
 		return
 	}
 
-	q = q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
 
 	// Use the query parameters to filter the query. todo - nested filter?
 	if f := r.URL.Query().Get("name"); f != "" {
-		q = q.Where(owner.Name(f))
+		q.Where(owner.Name(f))
 	}
 
 	es, err := q.All(r.Context())
@@ -243,27 +246,51 @@ func (h OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, d)
 }
 
-// Enable the read operation on the pets edge.
-func (h *OwnerHandler) EnablePetsEndpoint() *OwnerHandler {
-	h.Get("/{id:\\d+}/pets", h.Pets)
-	return h
-}
-
 func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	id, err := h.urlParamInt(w, r, "id")
 	if err != nil {
 		return
 	}
-	qb := h.client.Owner.Query().Where(owner.ID(id)).QueryPets()
+	q := h.client.Owner.Query().Where(owner.ID(id)).QueryPets()
 
-	es, err := qb.All(r.Context())
+	if r.URL.Query().Get("order") == "" {
+		q.Order(ent.Asc("name"), ent.Desc("id"))
+	}
+
+	// Eager load edges.
+	q
+
+	// Pagination
+	page, itemsPerPage, err := h.paginationInfo(w, r)
+	if err != nil {
+		return
+	}
+
+	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+
+	// Use the query parameters to filter the query. todo - nested filter?
+	if f := r.URL.Query().Get("name"); f != "" {
+		q.Where(pet.Name(f))
+	}
+
+	if f := r.URL.Query().Get("age"); f != "" {
+		i, err := strconv.Atoi(f)
+		if err != nil {
+			h.logger.WithError(err).WithField("age", f).Debug("could not parse query parameter")
+			render.BadRequest(w, r, "'age' must be an integer")
+			return
+		}
+		q.Where(pet.Age(i))
+	}
+
+	es, err := q.All(r.Context())
 	if err != nil {
 		h.logger.WithError(err).Error("error querying database") // todo - better error
 		render.InternalServerError(w, r, nil)
 		return
 	}
 
-	d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"pet:list"}}, es)
+	d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"pet:list", "owner:list"}}, es)
 	if err != nil {
 		h.logger.WithError(err).Error("serialization error")
 		render.InternalServerError(w, r, nil)
@@ -305,7 +332,8 @@ func NewPetHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *Pe
 // struct to bind the post body to.
 type petCreateRequest struct {
 	Name  string `json:"name,omitempty" `
-	Owner int    `json:"" `
+	Age   int    `json:"age,omitempty" `
+	Owner int    `json:"owner" `
 }
 
 // This function creates a new Pet model and stores it in the database.
@@ -334,6 +362,7 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// Save the data.
 	b := h.client.Pet.Create().
 		SetName(d.Name).
+		SetAge(d.Age).
 		SetOwnerID(d.Owner)
 
 	// Store in database.
@@ -364,9 +393,9 @@ func (h PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	qb := h.client.Pet.Query().Where(pet.ID(id))
+	q := h.client.Pet.Query().Where(pet.ID(id))
 
-	e, err := qb.Only(r.Context())
+	e, err := q.Only(r.Context())
 
 	if err != nil {
 		switch err.(type) {
@@ -399,7 +428,8 @@ func (h PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 // struct to bind the post body to.
 type petUpdateRequest struct {
 	Name  string `json:"name,omitempty" `
-	Owner int    `json:"" `
+	Age   int    `json:"age,omitempty" `
+	Owner int    `json:"owner" `
 }
 
 // This function updates a given Pet model and saves the changes in the database.
@@ -433,6 +463,7 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	// Save the data.
 	b := h.client.Pet.UpdateOneID(id).
 		SetName(d.Name).
+		SetAge(d.Age).
 		SetOwnerID(d.Owner)
 
 	// Save in database.
@@ -459,17 +490,30 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	q := h.client.Pet.Query()
 
+	// Eager load edges.
+	q.WithOwner()
+
 	// Pagination
 	page, itemsPerPage, err := h.paginationInfo(w, r)
 	if err != nil {
 		return
 	}
 
-	q = q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
+	q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
 
 	// Use the query parameters to filter the query. todo - nested filter?
 	if f := r.URL.Query().Get("name"); f != "" {
-		q = q.Where(pet.Name(f))
+		q.Where(pet.Name(f))
+	}
+
+	if f := r.URL.Query().Get("age"); f != "" {
+		i, err := strconv.Atoi(f)
+		if err != nil {
+			h.logger.WithError(err).WithField("age", f).Debug("could not parse query parameter")
+			render.BadRequest(w, r, "'age' must be an integer")
+			return
+		}
+		q.Where(pet.Age(i))
 	}
 
 	es, err := q.All(r.Context())
@@ -490,22 +534,16 @@ func (h PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, d)
 }
 
-// Enable the read operation on the owner edge.
-func (h *PetHandler) EnableOwnerEndpoint() *PetHandler {
-	h.Get("/{id:\\d+}/owner", h.Owner)
-	return h
-}
-
 func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 	id, err := h.urlParamInt(w, r, "id")
 	if err != nil {
 		return
 	}
-	qb := h.client.Pet.Query().Where(pet.ID(id)).QueryOwner()
+	q := h.client.Pet.Query().Where(pet.ID(id)).QueryOwner()
 
-	qb.WithPets()
+	q.WithPets()
 
-	e, err := qb.Only(r.Context())
+	e, err := q.Only(r.Context())
 
 	if err != nil {
 		switch err.(type) {
@@ -524,7 +562,7 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"owner:read"}}, e)
+	d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"owner:read", "pet:list"}}, e)
 	if err != nil {
 		h.logger.WithError(err).WithField("Owner.id", id).Error("serialization error")
 		render.InternalServerError(w, r, nil)
@@ -534,215 +572,6 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 	h.logger.WithField("owner", e.ID).Info("owner rendered")
 	render.OK(w, r, d)
 
-}
-
-// The SkipGenerationModelHandler.
-type SkipGenerationModelHandler struct {
-	*handler
-}
-
-// Create a new SkipGenerationModelHandler
-func NewSkipGenerationModelHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *SkipGenerationModelHandler {
-	h := &SkipGenerationModelHandler{
-		&handler{
-			Mux:       chi.NewRouter(),
-			client:    c,
-			validator: v,
-			logger:    log,
-		},
-	}
-
-	h.Post("/", h.Create)
-	h.Get("/{id:\\d+}", h.Read)
-	h.Get("/{id:\\d+}", h.Update)
-
-	h.Get("/", h.List)
-
-	return h
-}
-
-// struct to bind the post body to.
-type skipgenerationmodelCreateRequest struct {
-	Name string `json:"name,omitempty" `
-}
-
-// This function creates a new SkipGenerationModel model and stores it in the database.
-func (h SkipGenerationModelHandler) Create(w http.ResponseWriter, r *http.Request) {
-	// Get the post data.
-	d := skip_generation_modelCreateRequest{} // todo - allow form-url-encdoded/xml/protobuf data.
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-		h.logger.WithError(err).Error("error decoding json")
-		render.BadRequest(w, r, "invalid json string")
-		return
-	}
-
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			h.logger.WithError(err).Error("error validating request data")
-			render.InternalServerError(w, r, nil)
-			return
-		}
-
-		h.logger.WithError(err).Info("validation failed")
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	// Save the data.
-	b := h.client.SkipGenerationModel.Create().
-		SetName(d.Name)
-
-	// Store in database.
-	e, err := b.Save(r.Context())
-	if err != nil {
-		h.logger.WithError(err).Error("error saving SkipGenerationModel")
-		render.InternalServerError(w, r, nil)
-		return
-	}
-
-	// Serialize the data.
-	j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"skip_generation_model:read"}}, e)
-	if err != nil {
-		h.logger.WithError(err).WithField("SkipGenerationModel.id", e.ID).Error("serialization error")
-		render.InternalServerError(w, r, nil)
-		return
-	}
-
-	h.logger.WithField("skip_generation_model", e.ID).Info("skip_generation_model rendered")
-	render.OK(w, r, j)
-}
-
-// This function fetches the SkipGenerationModel model identified by a give url-parameter from
-// database and returns it to the client.
-func (h SkipGenerationModelHandler) Read(w http.ResponseWriter, r *http.Request) {
-	id, err := h.urlParamInt(w, r, "id")
-	if err != nil {
-		return
-	}
-
-	qb := h.client.SkipGenerationModel.Query().Where(skip_generation_model.ID(id))
-
-	e, err := qb.Only(r.Context())
-
-	if err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
-			h.logger.WithError(err).WithField("SkipGenerationModel.id", id).Debug("job not found")
-			render.NotFound(w, r, err)
-			return
-		case *ent.NotSingularError:
-			h.logger.WithError(err).WithField("SkipGenerationModel.id", id).Error("duplicate entry for id")
-			render.InternalServerError(w, r, nil)
-			return
-		default:
-			h.logger.WithError(err).WithField("SkipGenerationModel.id", id).Error("error fetching node from db")
-			render.InternalServerError(w, r, nil)
-			return
-		}
-	}
-
-	d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"skip_generation_model:read"}}, e)
-	if err != nil {
-		h.logger.WithError(err).WithField("SkipGenerationModel.id", id).Error("serialization error")
-		render.InternalServerError(w, r, nil)
-		return
-	}
-
-	h.logger.WithField("skip_generation_model", e.ID).Info("skip_generation_model rendered")
-	render.OK(w, r, d)
-}
-
-// struct to bind the post body to.
-type skipgenerationmodelUpdateRequest struct {
-	Name string `json:"name,omitempty" `
-}
-
-// This function updates a given SkipGenerationModel model and saves the changes in the database.
-func (h SkipGenerationModelHandler) Update(w http.ResponseWriter, r *http.Request) {
-	id, err := h.urlParamInt(w, r, "id")
-	if err != nil {
-		return
-	}
-
-	// Get the post data.
-	d := skip_generation_modelUpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-		h.logger.WithError(err).Error("error decoding json")
-		render.BadRequest(w, r, "invalid json string")
-		return
-	}
-
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			h.logger.WithError(err).Error("error validating request data")
-			render.InternalServerError(w, r, nil)
-			return
-		}
-
-		h.logger.WithError(err).Info("validation failed")
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	// Save the data.
-	b := h.client.SkipGenerationModel.UpdateOneID(id).
-		SetName(d.Name)
-
-	// Save in database.
-	e, err := b.Save(r.Context())
-	if err != nil {
-		h.logger.WithError(err).Error("error saving SkipGenerationModel")
-		render.InternalServerError(w, r, nil)
-		return
-	}
-
-	// Serialize the data.
-	j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"skip_generation_model:read"}}, e)
-	if err != nil {
-		h.logger.WithError(err).WithField("SkipGenerationModel.id", e.ID).Error("serialization error")
-		render.InternalServerError(w, r, nil)
-		return
-	}
-
-	h.logger.WithField("skip_generation_model", e.ID).Info("skip_generation_model rendered")
-	render.OK(w, r, j)
-}
-
-// This function queries for SkipGenerationModel models. Can be filtered by query parameters.
-func (h SkipGenerationModelHandler) List(w http.ResponseWriter, r *http.Request) {
-	q := h.client.SkipGenerationModel.Query()
-
-	// Pagination
-	page, itemsPerPage, err := h.paginationInfo(w, r)
-	if err != nil {
-		return
-	}
-
-	q = q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage)
-
-	// Use the query parameters to filter the query. todo - nested filter?
-	if f := r.URL.Query().Get("name"); f != "" {
-		q = q.Where(skipgenerationmodel.Name(f))
-	}
-
-	es, err := q.All(r.Context())
-	if err != nil {
-		h.logger.WithError(err).Error("error querying database") // todo - better error
-		render.InternalServerError(w, r, nil)
-		return
-	}
-
-	d, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"skip_generation_model:list"}}, es)
-	if err != nil {
-		h.logger.WithError(err).Error("serialization error")
-		render.InternalServerError(w, r, nil)
-		return
-	}
-
-	h.logger.WithField("amount", len(es)).Info("skip_generation_model rendered")
-	render.OK(w, r, d)
 }
 
 func (h handler) urlParamInt(w http.ResponseWriter, r *http.Request, param string) (id int, err error) {

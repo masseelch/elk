@@ -23,6 +23,7 @@ class PetClient {
     int page,
     int itemsPerPage,
     String name,
+    int age,
   }) async {
     final params = const {};
 
@@ -36,6 +37,10 @@ class PetClient {
 
     if (name != null) {
       params['name'] = name;
+    }
+
+    if (age != null) {
+      params['age'] = age;
     }
 
     final r = await dio.get('/$petUrl');

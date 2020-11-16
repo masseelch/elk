@@ -2,11 +2,14 @@ package gen
 
 import (
 	"fmt"
+	"github.com/facebook/ent/entc/gen"
 	"github.com/facebook/ent/schema/field"
 	"golang.org/x/tools/imports"
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"reflect"
+	"strings"
 )
 
 var (
@@ -97,4 +100,30 @@ func (a assets) formatDart() error {
 // Dart type for a given go type.
 func dartType(t *field.TypeInfo) string {
 	return dartTypeNames[t.Type]
+}
+
+// What edges to eager-load.
+func eagerLoadedEdges(n *gen.Type, groupKey string) []*gen.Edge {
+	r := make([]*gen.Edge, 0)
+
+	if n.Annotations["HandlerGen"] != nil {
+		if as, ok := n.Annotations["HandlerGen"].(map[string]interface{}); ok {
+			if ls, ok := as[groupKey].([]interface{}); ok {
+				for _, e := range n.Edges {
+					if t, ok := reflect.StructTag(e.StructTag).Lookup("groups"); ok {
+						gs := strings.Split(t, ",")
+						for _, g := range ls {
+							for _, g1 := range gs {
+								if g == g1 {
+									r = append(r, e)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return r
 }
