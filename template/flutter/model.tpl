@@ -2,6 +2,11 @@
     {{ template "header" -}}
     import 'package:json_annotation/json_annotation.dart';
 
+    {{/* Import the custom dart types. */}}
+    {{ range $.TypeMappings }}
+        import '{{ .Import }}';
+    {{ end }}
+
     {{/* For every edge import the generated model. */}}
     {{ range $e := $.Edges }}
         import '../model/{{ $e.Type.Name | snake }}.dart';

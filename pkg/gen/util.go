@@ -13,27 +13,27 @@ import (
 )
 
 var (
-	dartTypeNames = [...]string{
-		field.TypeInvalid: "dynamic",
-		field.TypeBool:    "bool",
-		field.TypeTime:    "DateTime",
-		field.TypeJSON:    "Map<String, dynamic>",
-		field.TypeUUID:    "String",
-		field.TypeBytes:   "dynamic",
-		field.TypeEnum:    "String",
-		field.TypeString:  "String",
-		field.TypeInt:     "int",
-		field.TypeInt8:    "int",
-		field.TypeInt16:   "int",
-		field.TypeInt32:   "int",
-		field.TypeInt64:   "int",
-		field.TypeUint:    "int",
-		field.TypeUint8:   "int",
-		field.TypeUint16:  "int",
-		field.TypeUint32:  "int",
-		field.TypeUint64:  "int",
-		field.TypeFloat32: "double",
-		field.TypeFloat64: "double",
+	dartTypeNames = map[string]string{
+		"invalid": "dynamic",
+		"bool":    "bool",
+		"time":    "DateTime",
+		"jSON":    "Map<String, dynamic>",
+		"uUID":    "String",
+		"bytes":   "dynamic",
+		"enum":    "String",
+		"string":  "String",
+		"int":     "int",
+		"int8":    "int",
+		"int16":   "int",
+		"int32":   "int",
+		"int64":   "int",
+		"uint":    "int",
+		"uint8":   "int",
+		"uint16":  "int",
+		"uint32":  "int",
+		"uint64":  "int",
+		"float32": "double",
+		"float64": "double",
 	}
 )
 
@@ -45,6 +45,10 @@ type (
 	assets struct {
 		dirs  []string
 		files []file
+	}
+	Config struct {
+		Source string
+		Target string
 	}
 )
 
@@ -98,8 +102,20 @@ func (a assets) formatDart() error {
 }
 
 // Dart type for a given go type.
-func dartType(t *field.TypeInfo) string {
-	return dartTypeNames[t.Type]
+func dartType(typeMappings []*TypeMapping) func(*field.TypeInfo) string {
+	mappings := dartTypeNames
+
+	for _, m := range typeMappings {
+		mappings[m.Go] = m.Dart
+	}
+
+	return func(t *field.TypeInfo) string {
+		if s, ok := mappings[t.String()]; ok {
+			return s
+		}
+
+		return dartTypeNames["invalid"]
+	}
 }
 
 // What edges to eager-load.

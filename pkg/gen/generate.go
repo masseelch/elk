@@ -6,9 +6,9 @@ import (
 	"github.com/masseelch/elk/internal"
 )
 
-func Generate(source string, target string) error {
-	return entc.Generate(source, &gen.Config{
-		Target: target,
+func Generate(c *Config) error {
+	return entc.Generate(c.Source, &gen.Config{
+		Target: c.Target,
 		Templates: []*gen.Template{
 			gen.MustParse(gen.NewTemplate("").Parse(string(internal.MustAsset("sheriff.tpl")))),
 		},

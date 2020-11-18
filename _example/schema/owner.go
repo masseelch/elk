@@ -6,8 +6,6 @@ import (
 	"github.com/facebook/ent/schema/edge"
 	"github.com/facebook/ent/schema/field"
 	"github.com/masseelch/elk"
-	"github.com/masseelch/elk/_example/owner"
-	"github.com/masseelch/elk/_example/pet"
 )
 
 // Owner holds the schema definition for the Owner entity.
@@ -30,8 +28,8 @@ func (Owner) Edges() []ent.Edge {
 			Annotations(
 				elk.EdgeAnnotation{
 					DefaultOrder: []elk.Order{
-						{Order: "asc", Field: pet.FieldName},
-						{Order: "desc", Field: pet.FieldID},
+						{Order: "asc", Field: "name"},
+						{Order: "desc", Field: "id"},
 					},
 				},
 			),
@@ -49,7 +47,7 @@ func (Owner) Annotations() []schema.Annotation {
 				"owner:read",
 				"pet:list",
 			},
-			DefaultListOrder: []elk.Order{{Order: "desc", Field: owner.FieldName}},
+			DefaultListOrder: []elk.Order{{Order: "desc", Field: "name"}},
 		},
 	}
 }

@@ -18,12 +18,13 @@ func (Pet) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").StructTag(`groups:"pet:list"`),
 		field.Int("age").StructTag(`groups:"pet:list"`),
+		field.Uint32("color").GoType(Color(0)).StructTag(`groups:"pet:list"`),
 	}
 }
 
 // Edges of the Pet.
 func (Pet) Edges() []ent.Edge {
-	return []ent.Edge {
+	return []ent.Edge{
 		edge.From("owner", Owner.Type).
 			Ref("pets").
 			Unique().
@@ -33,8 +34,10 @@ func (Pet) Edges() []ent.Edge {
 
 // Annotations of the Pet.
 func (Pet) Annotations() []schema.Annotation {
-	return []schema.Annotation {
+	return []schema.Annotation{
 		edge.Annotation{StructTag: `json:"edges" groups:"pet:list"`},
 		elk.HandlerAnnotation{ListGroups: []string{"pet:list", "owner:list"}},
 	}
 }
+
+type Color uint32

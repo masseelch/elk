@@ -11,26 +11,33 @@ import (
 )
 
 var (
+	cfgFile string
+
 	rootCmd = &cobra.Command{
-		Use:   "elk",
-		Short: "A wrapper around facebook/ent to add code generation features",
+		Use:     "elk",
+		Short:   "A wrapper around facebook/ent to add code generation features",
 		Version: "0.0.5",
 	}
 	generateCmd = &cobra.Command{
 		Use:   "generate",
-		Short: "generate code for your defined schemas",
+		Short: "generate code for your defined schemas (client, handler and flutter)",
 		Run: func(cmd *cobra.Command, args []string) {
-			s, err := cmd.Flags().GetString("source")
-			if err != nil {
+			entCmd.Run(cmd, args)
+			handlerCmd.Run(cmd, args)
+			flutterCmd.Run(cmd, args)
+		},
+	}
+	entCmd = &cobra.Command{
+		Use:   "ent",
+		Short: "generate db client code for your defined schemas",
+		Run: func(cmd *cobra.Command, args []string) {
+			cfg := &gen.Config{}
+
+			if err := viper.UnmarshalKey("ent", cfg); err != nil {
 				log.Fatal(err)
 			}
 
-			t, err := cmd.Flags().GetString("target")
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			if err := gen.Generate(s, t); err != nil {
+			if err := gen.Generate(cfg); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -39,16 +46,13 @@ var (
 		Use:   "handler",
 		Short: "generate api handlers for your defined schemas",
 		Run: func(cmd *cobra.Command, args []string) {
-			s, err := cmd.Flags().GetString("source")
-			if err != nil {
-				log.Fatal(err)
-			}
-			t, err := cmd.Flags().GetString("target")
-			if err != nil {
+			cfg := &gen.Config{}
+
+			if err := viper.UnmarshalKey("handler", cfg); err != nil {
 				log.Fatal(err)
 			}
 
-			if err := gen.Handler(s, t); err != nil {
+			if err := gen.Handler(cfg); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -57,17 +61,13 @@ var (
 		Use:   "flutter",
 		Short: "A brief description of your command",
 		Run: func(cmd *cobra.Command, args []string) {
-			s, err := cmd.Flags().GetString("source")
-			if err != nil {
+			cfg := &gen.FlutterConfig{}
+
+			if err := viper.UnmarshalKey("flutter", cfg); err != nil {
 				log.Fatal(err)
 			}
 
-			t, err := cmd.Flags().GetString("target")
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			if err := gen.Flutter(s, t); err != nil {
+			if err := gen.Flutter(cfg); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -85,14 +85,31 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.AddCommand(generateCmd)
-	generateCmd.AddCommand(handlerCmd, flutterCmd)
+	generateCmd.AddCommand(entCmd, handlerCmd, flutterCmd)
+
+	// Allow setting flags by config file.
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "config.yaml", "/path/to/config.yaml")
 
 	// Persistent flags for the generate command.
 	generateCmd.PersistentFlags().StringP("source", "s", "./ent/schema", "path/to/schema/definitions")
 	generateCmd.PersistentFlags().StringP("target", "t", "", "path/to/target/dir (default: dir one above source)")
+	if err := viper.BindPFlags(generateCmd.PersistentFlags()); err != nil {
+		panic(err)
+	}
+
 }
 
 func initConfig() {
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+
+		if err := viper.ReadInConfig(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }

@@ -10,10 +10,27 @@ import (
 	"text/template"
 )
 
-func Flutter(source string, target string) error {
-	cfg := &gen.Config{Target: target}
+type (
+	ExtendedType struct {
+		*gen.Type
+		TypeMappings []*TypeMapping
+	}
+	FlutterConfig struct {
+		Config `mapstructure:",squash"`
+
+		TypeMappings []*TypeMapping `mapstructure:"type_mappings"`
+	}
+	TypeMapping struct {
+		Go     string
+		Dart   string
+		Import string
+	}
+)
+
+func Flutter(c *FlutterConfig) error {
+	cfg := &gen.Config{Target: c.Target}
 	if cfg.Target == "" {
-		abs, err := filepath.Abs(source)
+		abs, err := filepath.Abs(c.Source)
 		if err != nil {
 			return err
 		}
@@ -22,13 +39,13 @@ func Flutter(source string, target string) error {
 	}
 
 	// Load the graph
-	g, err := entc.LoadGraph(source, cfg)
+	g, err := entc.LoadGraph(c.Source, cfg)
 	if err != nil {
 		return err
 	}
 
 	// Create the template
-	tpl := template.New("flutter").Funcs(gen.Funcs).Funcs(template.FuncMap{"dartType": dartType})
+	tpl := template.New("flutter").Funcs(gen.Funcs).Funcs(template.FuncMap{"dartType": dartType(c.TypeMappings)})
 	for _, n := range []string{
 		"header/dart.tpl",
 		"flutter/model.tpl",
@@ -53,8 +70,9 @@ func Flutter(source string, target string) error {
 	}
 
 	for _, n := range g.Nodes {
+		en := &ExtendedType{Type: n, TypeMappings: c.TypeMappings}
 		b := bytes.NewBuffer(nil)
-		if err := tpl.ExecuteTemplate(b, "model", n); err != nil {
+		if err := tpl.ExecuteTemplate(b, "model", en); err != nil {
 			panic(err)
 		}
 		assets.files = append(assets.files, file{
@@ -65,7 +83,7 @@ func Flutter(source string, target string) error {
 		// Only generate the client if the generation should not be skipped.
 		if n.Annotations["HandlerGen"] == nil || !n.Annotations["HandlerGen"].(map[string]interface{})["Skip"].(bool) {
 			b = bytes.NewBuffer(nil)
-			if err := tpl.ExecuteTemplate(b, "client", n); err != nil {
+			if err := tpl.ExecuteTemplate(b, "client", en); err != nil {
 				panic(err)
 			}
 			assets.files = append(assets.files, file{

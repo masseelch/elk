@@ -9,10 +9,10 @@ import (
 	"text/template"
 )
 
-func Handler(source string, target string) error {
-	cfg := &gen.Config{Target: target}
+func Handler(c *Config) error {
+	cfg := &gen.Config{Target: c.Target}
 	if cfg.Target == "" {
-		abs, err := filepath.Abs(source)
+		abs, err := filepath.Abs(c.Source)
 		if err != nil {
 			return err
 		}
@@ -21,7 +21,7 @@ func Handler(source string, target string) error {
 	}
 
 	// Load the graph
-	g, err := entc.LoadGraph(source, cfg)
+	g, err := entc.LoadGraph(c.Source, cfg)
 	if err != nil {
 		return err
 	}
