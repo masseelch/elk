@@ -21,9 +21,10 @@ type (
 		TypeMappings []*TypeMapping `mapstructure:"type_mappings"`
 	}
 	TypeMapping struct {
-		Go     string
-		Dart   string
-		Import string
+		Go        string
+		Dart      string
+		Import    string
+		Converter string
 	}
 )
 
@@ -45,7 +46,11 @@ func Flutter(c *FlutterConfig) error {
 	}
 
 	// Create the template
-	tpl := template.New("flutter").Funcs(gen.Funcs).Funcs(template.FuncMap{"dartType": dartType(c.TypeMappings)})
+	tpl := template.New("flutter").
+		Funcs(gen.Funcs).
+		Funcs(template.FuncMap{
+			"dartType": dartType(c.TypeMappings),
+		})
 	for _, n := range []string{
 		"header/dart.tpl",
 		"flutter/model.tpl",

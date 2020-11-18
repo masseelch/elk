@@ -14,6 +14,12 @@ import (
     "github.com/sirupsen/logrus"
 
     "{{ $.Config.Package }}"
+    {{/* Import all types used in the fields */}}
+    {{ range $n := $.Nodes -}}
+        {{ range $f := $n.Fields -}}
+            {{ if $f.HasGoType }}"{{ $f.Type.PkgPath }}"{{ end }}
+        {{ end }}
+    {{ end }}
 )
 
 // Shared handler.

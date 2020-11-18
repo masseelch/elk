@@ -14,12 +14,12 @@ import (
 
 var (
 	dartTypeNames = map[string]string{
-		"invalid": "dynamic",
-		"bool":    "bool",
-		"time":    "DateTime",
-		"jSON":    "Map<String, dynamic>",
-		"uUID":    "String",
-		"bytes":   "dynamic",
+		"invalid":   "dynamic",
+		"bool":      "bool",
+		"time.Time": "DateTime",
+		// "JSON":    "Map<String, dynamic>",
+		// "UUID":    "String",
+		// "bytes":   "dynamic",
 		"enum":    "String",
 		"string":  "String",
 		"int":     "int",

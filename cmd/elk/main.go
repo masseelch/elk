@@ -90,13 +90,7 @@ func init() {
 	// Allow setting flags by config file.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "config.yaml", "/path/to/config.yaml")
 
-	// Persistent flags for the generate command.
-	generateCmd.PersistentFlags().StringP("source", "s", "./ent/schema", "path/to/schema/definitions")
-	generateCmd.PersistentFlags().StringP("target", "t", "", "path/to/target/dir (default: dir one above source)")
-	if err := viper.BindPFlags(generateCmd.PersistentFlags()); err != nil {
-		panic(err)
-	}
-
+	registerSourceAndTargetFlag(entCmd, handlerCmd, flutterCmd)
 }
 
 func initConfig() {
@@ -112,4 +106,11 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+}
+
+func registerSourceAndTargetFlag(cmds ...*cobra.Command) {
+	for _, cmd := range cmds {
+		cmd.Flags().StringP("source", "s", "./ent/schema", "path/to/schema/definitions")
+		cmd.Flags().StringP("target", "t", "", "path/to/target/dir (default: dir one above source)")
+	}
 }

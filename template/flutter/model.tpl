@@ -3,12 +3,13 @@
     import 'package:json_annotation/json_annotation.dart';
 
     {{/* Import the custom dart types. */}}
-    {{ range $.TypeMappings }}
+    {{ range $.TypeMappings -}}
         import '{{ .Import }}';
+        {{- if .Converter }}import '{{ .Converter }}';{{ end -}}
     {{ end }}
 
     {{/* For every edge import the generated model. */}}
-    {{ range $e := $.Edges }}
+    {{ range $e := $.Edges -}}
         import '../model/{{ $e.Type.Name | snake }}.dart';
     {{ end }}
 
@@ -22,6 +23,7 @@
         {{/* The fields of the model. */}}
         {{ $.ID.Type | dartType }} {{ $.ID.Name }};
         {{- range $f := $.Fields -}}
+            {{- if $f.HasGoType }}@{{ $f.Type | dartType }}Converter(){{ end -}}
             {{ $f.Type | dartType }} {{ $f.Name }};
         {{ end }}
 
@@ -37,7 +39,7 @@
     class {{ $.Name }}Edges {
         {{ $.Name }}Edges();
 
-        {{ range $e := $.Edges }}
+        {{ range $e := $.Edges -}}
             {{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }} {{ $e.Name }};
         {{ end }}
 
