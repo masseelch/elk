@@ -8,7 +8,7 @@ flutter:
   source: ./_example/schema
   target: ./_example/flutter
   type_mappings:
-    - go: color.Color
+    - go: schema.Color
       dart: Color
       import: ../color.dart
 

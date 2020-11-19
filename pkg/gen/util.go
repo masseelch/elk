@@ -38,6 +38,12 @@ var (
 )
 
 type (
+	dartField struct {
+		Name      string
+		Type      string
+		Converter string
+		IsEdge    bool
+	}
 	file struct {
 		path    string
 		content []byte
@@ -118,6 +124,40 @@ func dartType(typeMappings []*TypeMapping) func(*field.TypeInfo) string {
 	}
 }
 
+// Extract the dart fields of a given type.
+func dartFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartField {
+	return func(t *gen.Type, a string) []dartField {
+		s := make([]dartField, 0)
+
+		for _, f := range t.Fields {
+			if f.Annotations["FieldGen"] == nil || f.Annotations["FieldGen"].(map[string]interface{})[a].(bool) {
+				df := dartField{Name: f.Name, Type: dt(f.Type)}
+
+				if f.HasGoType() {
+					df.Converter = fmt.Sprintf("@%sConverter()", dt(f.Type))
+				}
+
+				s = append(s, df)
+			}
+		}
+
+		for _, e := range t.Edges {
+			skip := e.Type.Annotations["HandlerGen"] != nil && e.Type.Annotations["HandlerGen"].(map[string]interface{})["Skip"].(bool)
+			include := e.Annotations["FieldGen"] == nil || e.Annotations["FieldGen"].(map[string]interface{})[a].(bool)
+			if !skip && include {
+				t := e.Type.Name
+				if !e.Unique {
+					t = fmt.Sprintf("List<%s>", t)
+				}
+
+				s = append(s, dartField{Name: e.Name, Type: t, IsEdge: true})
+			}
+		}
+
+		return s
+	}
+}
+
 // What edges to eager-load.
 func eagerLoadedEdges(n *gen.Type, groupKey string) []*gen.Edge {
 	r := make([]*gen.Edge, 0)
@@ -142,4 +182,8 @@ func eagerLoadedEdges(n *gen.Type, groupKey string) []*gen.Edge {
 	}
 
 	return r
+}
+
+func dec(i int) int {
+	return i - 1
 }

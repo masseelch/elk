@@ -1,11 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
+
+import '../color.dart';
 
 import '../model/pet.dart';
 import '../model/owner.dart';
 import '../client/owner.dart';
+
+part 'pet.g.dart';
 
 const petUrl = 'pets';
 
@@ -24,7 +29,7 @@ class PetClient {
     int itemsPerPage,
     String name,
     int age,
-    dynamic color,
+    Color color,
   }) async {
     final params = const {};
 
@@ -57,13 +62,13 @@ class PetClient {
     return (r.data as List).map((i) => Pet.fromJson(i)).toList();
   }
 
-  Future<Pet> create(Pet e) async {
-    final r = await dio.post('/$petUrl', data: e.toJson());
+  Future<Pet> create(PetCreateRequest req) async {
+    final r = await dio.post('/$petUrl', data: req.toJson());
     return (Pet.fromJson(r.data));
   }
 
-  Future<Pet> update(Pet e) async {
-    final r = await dio.patch('/$petUrl', data: e.toJson());
+  Future<Pet> update(PetUpdateRequest req) async {
+    final r = await dio.patch('/$petUrl/${req.id}', data: req.toJson());
     return (Pet.fromJson(r.data));
   }
 
@@ -74,4 +79,52 @@ class PetClient {
 
   static PetClient of(BuildContext context) =>
       Provider.of<PetClient>(context, listen: false);
+}
+
+@JsonSerializable(createFactory: false)
+class PetCreateRequest {
+  PetCreateRequest({
+    this.name,
+    this.age,
+    this.color,
+    this.owner,
+  });
+
+  PetCreateRequest.fromPet(Pet e)
+      : name = e.name,
+        age = e.age,
+        color = e.color,
+        owner = e.edges.owner;
+
+  String name;
+  int age;
+  @ColorConverter()
+  Color color;
+  Owner owner;
+
+  Map<String, dynamic> toJson() => _$PetCreateRequestToJson(this);
+}
+
+@JsonSerializable(createFactory: false)
+class PetUpdateRequest {
+  PetUpdateRequest({
+    this.name,
+    this.age,
+    this.color,
+    this.owner,
+  });
+
+  PetUpdateRequest.fromPet(Pet e)
+      : name = e.name,
+        age = e.age,
+        color = e.color,
+        owner = e.edges.owner;
+
+  String name;
+  int age;
+  @ColorConverter()
+  Color color;
+  Owner owner;
+
+  Map<String, dynamic> toJson() => _$PetUpdateRequestToJson(this);
 }

@@ -14,7 +14,8 @@ class Pet {
   int id;
   String name;
   int age;
-  dynamic color;
+  @ColorConverter()
+  Color color;
 
   PetEdges edges;
 

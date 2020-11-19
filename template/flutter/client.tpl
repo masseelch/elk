@@ -2,7 +2,14 @@
     {{ template "header" -}}
     import 'package:dio/dio.dart';
     import 'package:flutter/widgets.dart';
+    import 'package:json_annotation/json_annotation.dart';
     import 'package:provider/provider.dart';
+
+    {{/* Import the custom dart types. */}}
+    {{ range $.TypeMappings -}}
+        import '{{ .Import }}';
+        {{- if .Converter }}import '{{ .Converter }}';{{ end -}}
+    {{ end }}
 
     {{/* Import the node itself and all of the edges target nodes / clients. */}}
     import '../model/{{ $.Name | snake }}.dart';
@@ -11,9 +18,13 @@
         import '../client/{{ $e.Type.Name | snake }}.dart';
     {{ end }}
 
+    {{/* JsonSerializable puts the generated code in this file. */}}
+    part '{{ $.Name | snake }}.g.dart';
+
     {{/* Make the url of this node accessible to other dart files. */}}
     const {{ $.Name | snake }}Url = '{{ (replace ($.Name | snake) "_" "-") | plural }}';
 
+    {{/* The client for a model. Consumes the generated api. */}}
     class {{ $.Name }}Client {
         {{ $.Name }}Client({@required this.dio}) : assert(dio != null);
 
@@ -61,14 +72,14 @@
         }
 
         {{/* Create a new node on the remote. */}}
-        Future<{{ $.Name }}> create({{ $.Name }} e) async {
-            final r = await dio.post('/${{ $.Name | snake }}Url', data: e.toJson());
+        Future<{{ $.Name }}> create({{ $.Name }}CreateRequest req) async {
+            final r = await dio.post('/${{ $.Name | snake }}Url', data: req.toJson());
             return ({{ $.Name }}.fromJson(r.data));
         }
 
         {{/* Update a node on the remote. */}}
-        Future<{{ $.Name }}> update({{ $.Name }} e) async {
-            final r = await dio.patch('/${{ $.Name | snake }}Url', data: e.toJson());
+        Future<{{ $.Name }}> update({{ $.Name }}UpdateRequest req) async {
+            final r = await dio.patch('/${{ $.Name | snake }}Url/${req.{{ $.ID.Name }}}', data: req.toJson());
             return ({{ $.Name }}.fromJson(r.data));
         }
 
@@ -87,5 +98,56 @@
         {{/* Make this node acceessible by the dart provider package. */}}
         static {{ $.Name }}Client of(BuildContext context) => Provider.of<{{ $.Name }}Client>(context, listen: false);
     }
-{{ end }}
 
+
+    {{/* The message used to create a new model on the remote. */}}
+    {{ $dfc := dartFields $.Type "Create" }}
+    @JsonSerializable(createFactory: false)
+    class {{ $.Name }}CreateRequest {
+        {{ $.Name }}CreateRequest({
+            {{ range $dfc -}}
+                this.{{ .Name }},
+            {{ end -}}
+        });
+
+        {{ $.Name }}CreateRequest.from{{ $.Name }}({{ $.Name }} e) :
+            {{ range $i, $f := $dfc -}}
+                {{ $f.Name }} = e.{{ if $f.IsEdge }}edges.{{ end }}{{ $f.Name }}{{ if not (eq $i (dec (len $dfc))) }},{{ end }}
+            {{ end }}
+        ;
+
+        {{ range $dfc -}}
+            {{ if .Converter }}{{ .Converter }}{{ end -}}
+            {{ .Type }} {{ .Name }};
+        {{ end }}
+
+        Map<String, dynamic> toJson() => _${{ $.Name }}CreateRequestToJson(this);
+    }
+
+        {{/* The message used to update a model on the remote. */}}
+        {{ $dfu := dartFields $.Type "Update" }}
+        @JsonSerializable(createFactory: false)
+        class {{ $.Name }}UpdateRequest {
+            {{ $.Name }}UpdateRequest({
+                this.{{ $.ID.Name }},
+                {{ range $dfu -}}
+                    this.{{ .Name }},
+                {{ end -}}
+            });
+
+            {{ $.Name }}UpdateRequest.from{{ $.Name }}({{ $.Name }} e) :
+                {{ $.ID.Name }} = e.{{ $.ID.Name }}{{ if len $dfu }},{{ end }}
+                {{ range $i, $f := $dfu -}}
+                    {{ $f.Name }} = e.{{ if $f.IsEdge }}edges.{{ end }}{{ $f.Name }}{{ if not (eq $i (dec (len $dfu))) }},{{ end }}
+                {{ end }}
+            ;
+
+            {{ $.ID.Type | dartType }} {{ $.ID.Name }};
+            {{ range $dfu -}}
+                {{ if .Converter }}{{ .Converter }}{{ end -}}
+                {{ .Type }} {{ .Name }};
+            {{ end }}
+
+            Map<String, dynamic> toJson() => _${{ $.Name }}UpdateRequestToJson(this);
+        }
+{{ end }}

@@ -1,11 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
+
+import '../color.dart';
 
 import '../model/owner.dart';
 import '../model/pet.dart';
 import '../client/pet.dart';
+
+part 'owner.g.dart';
 
 const ownerUrl = 'owners';
 
@@ -47,13 +52,13 @@ class OwnerClient {
     return (r.data as List).map((i) => Owner.fromJson(i)).toList();
   }
 
-  Future<Owner> create(Owner e) async {
-    final r = await dio.post('/$ownerUrl', data: e.toJson());
+  Future<Owner> create(OwnerCreateRequest req) async {
+    final r = await dio.post('/$ownerUrl', data: req.toJson());
     return (Owner.fromJson(r.data));
   }
 
-  Future<Owner> update(Owner e) async {
-    final r = await dio.patch('/$ownerUrl', data: e.toJson());
+  Future<Owner> update(OwnerUpdateRequest req) async {
+    final r = await dio.patch('/$ownerUrl/${req.id}', data: req.toJson());
     return (Owner.fromJson(r.data));
   }
 
@@ -64,4 +69,38 @@ class OwnerClient {
 
   static OwnerClient of(BuildContext context) =>
       Provider.of<OwnerClient>(context, listen: false);
+}
+
+@JsonSerializable(createFactory: false)
+class OwnerCreateRequest {
+  OwnerCreateRequest({
+    this.name,
+    this.pets,
+  });
+
+  OwnerCreateRequest.fromOwner(Owner e)
+      : name = e.name,
+        pets = e.edges.pets;
+
+  String name;
+  List<Pet> pets;
+
+  Map<String, dynamic> toJson() => _$OwnerCreateRequestToJson(this);
+}
+
+@JsonSerializable(createFactory: false)
+class OwnerUpdateRequest {
+  OwnerUpdateRequest({
+    this.name,
+    this.pets,
+  });
+
+  OwnerUpdateRequest.fromOwner(Owner e)
+      : name = e.name,
+        pets = e.edges.pets;
+
+  String name;
+  List<Pet> pets;
+
+  Map<String, dynamic> toJson() => _$OwnerUpdateRequestToJson(this);
 }
