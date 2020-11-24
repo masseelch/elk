@@ -30,6 +30,12 @@
         {{/* The edges of the model. */}}
         {{ $.Name }}Edges edges;
 
+        @override
+        int get hashCode => {{ $.ID.Name }};
+
+        @override
+        bool operator ==(Object other) => other is {{ $.Name }} && {{ $.ID.Name }} == other.{{ $.ID.Name }};
+
         factory {{ $.Name }}.fromJson(Map<String, dynamic> json) => _${{ $.Name }}FromJson(json);
         Map<String, dynamic> toJson() => _${{ $.Name }}ToJson(this);
     }
