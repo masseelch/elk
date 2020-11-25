@@ -101,7 +101,7 @@
 
 
     {{/* The message used to create a new model on the remote. */}}
-    {{ $dfc := dartFields $.Type "Create" }}
+    {{ $dfc := dartFields $.Type "SkipCreate" }}
     @JsonSerializable(createFactory: false)
     class {{ $.Name }}CreateRequest {
         {{ $.Name }}CreateRequest({
@@ -112,7 +112,7 @@
 
         {{ $.Name }}CreateRequest.from{{ $.Name }}({{ $.Name }} e) :
             {{ range $i, $f := $dfc -}}
-                {{ $f.Name }} = e.{{ if $f.IsEdge }}edges.{{ end }}{{ $f.Name }}{{ if not (eq $i (dec (len $dfc))) }},{{ end }}
+                {{ $f.Name }} = e.{{ if $f.IsEdge }}edges?.{{ end }}{{ $f.Name }}{{ if not (eq $i (dec (len $dfc))) }},{{ end }}
             {{ end }}
         ;
 
@@ -125,7 +125,7 @@
     }
 
         {{/* The message used to update a model on the remote. */}}
-        {{ $dfu := dartFields $.Type "Update" }}
+        {{ $dfu := dartFields $.Type "SkipUpdate" }}
         @JsonSerializable(createFactory: false)
         class {{ $.Name }}UpdateRequest {
             {{ $.Name }}UpdateRequest({
@@ -138,7 +138,7 @@
             {{ $.Name }}UpdateRequest.from{{ $.Name }}({{ $.Name }} e) :
                 {{ $.ID.Name }} = e.{{ $.ID.Name }}{{ if len $dfu }},{{ end }}
                 {{ range $i, $f := $dfu -}}
-                    {{ $f.Name }} = e.{{ if $f.IsEdge }}edges.{{ end }}{{ $f.Name }}{{ if not (eq $i (dec (len $dfu))) }},{{ end }}
+                    {{ $f.Name }} = e.{{ if $f.IsEdge }}edges?.{{ end }}{{ $f.Name }}{{ if not (eq $i (dec (len $dfu))) }},{{ end }}
                 {{ end }}
             ;
 

@@ -42,8 +42,6 @@ type (
 		CreateValidationTag string
 		SkipUpdate          bool
 		UpdateValidationTag string
-		SkipPatch           bool
-		PatchValidationTag  string
 	}
 	// Used on (list) edges to specify a default order.
 	EdgeAnnotation struct {

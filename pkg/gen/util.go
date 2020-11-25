@@ -130,7 +130,7 @@ func dartFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartF
 		s := make([]dartField, 0)
 
 		for _, f := range t.Fields {
-			if f.Annotations["FieldGen"] == nil || f.Annotations["FieldGen"].(map[string]interface{})[a].(bool) {
+			if f.Annotations["FieldGen"] == nil || !f.Annotations["FieldGen"].(map[string]interface{})[a].(bool) {
 				df := dartField{Name: f.Name, Type: dt(f.Type)}
 
 				if f.HasGoType() {
@@ -143,7 +143,7 @@ func dartFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartF
 
 		for _, e := range t.Edges {
 			skip := e.Type.Annotations["HandlerGen"] != nil && e.Type.Annotations["HandlerGen"].(map[string]interface{})["Skip"].(bool)
-			include := e.Annotations["FieldGen"] == nil || e.Annotations["FieldGen"].(map[string]interface{})[a].(bool)
+			include := e.Annotations["FieldGen"] == nil || !e.Annotations["FieldGen"].(map[string]interface{})[a].(bool)
 			if !skip && include {
 				t := e.Type.Name
 				if !e.Unique {

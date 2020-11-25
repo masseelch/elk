@@ -6,15 +6,15 @@
         {{/* Add all fields that are not excluded. */}}
         {{ range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
-            {{- if or (not $a) $a.Update }}
-                {{ $f.StructField }} {{ $f.Type.String }} `json:"{{ tagLookup $f.StructTag "json" }}" {{ if $a.UpdateValidationTag }}validate:"{{ $a.UpdateValidationTag }}"{{ end }}`
+            {{- if not (and $a $a.SkipUpdate) }}
+                {{ $f.StructField }} {{ $f.Type.String }} `json:"{{ tagLookup $f.StructTag "json" }}"{{ if $a.UpdateValidationTag }} {{ $a.UpdateValidationTag }}{{ end }}`
             {{- end }}
         {{- end -}}
         {{/* Add all edges that are not excluded. */}}
         {{- range $e := $.Edges -}}
             {{- $a := $e.Annotations.FieldGen }}
-            {{- if and (not $e.Type.Annotations.HandlerGen.Skip) (or (not $a) $a.Update) }}
-                {{ $e.StructField }} {{ if not $e.Unique }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ tagLookup $e.StructTag "json" }}" {{ if $a.UpdateValidationTag }}validate:"{{ $a.UpdateValidationTag }}"{{ end }}`
+            {{- if and (not $e.Type.Annotations.HandlerGen.Skip) (not (and $a $a.SkipUpdate)) }}
+                {{ $e.StructField }} {{ if not $e.Unique }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ tagLookup $e.StructTag "json" }}"{{ if $a.UpdateValidationTag }} {{ $a.UpdateValidationTag }}{{ end }}`
             {{- end -}}
         {{- end }}
     }
@@ -51,13 +51,13 @@
         b := h.client.{{ $.Name }}.UpdateOneID(id)
         {{- range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
-            {{- if or (not $a) $a.Create }}.
+            {{- if not (and $a $a.SkipUpdate) }}.
                 Set{{ $f.StructField }}(d.{{ $f.StructField }})
             {{- end -}}
         {{ end }}
         {{- range $e := $.Edges -}}
             {{- $a := $e.Annotations.FieldGen }}
-            {{- if and (not $e.Type.Annotations.HandlerGen.Skip) (or (not $a) $a.Update) }}.
+            {{- if and (not $e.Type.Annotations.HandlerGen.Skip) (not (and $a $a.SkipUpdate)) }}.
                 {{- if $e.Unique }}
                     Set{{ $e.Type.Name }}ID(d.{{ $e.StructField }})
                 {{- else }}
