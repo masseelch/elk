@@ -38,11 +38,11 @@ type (
 	}
 	// Used on fields pass options to the handler generator.
 	FieldAnnotation struct {
-		Create              bool
+		SkipCreate          bool
 		CreateValidationTag string
-		Update              bool
+		SkipUpdate          bool
 		UpdateValidationTag string
-		Patch               bool
+		SkipPatch           bool
 		PatchValidationTag  string
 	}
 	// Used on (list) edges to specify a default order.

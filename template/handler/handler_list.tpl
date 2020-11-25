@@ -5,7 +5,9 @@
     {{- range $f := $.Fields }}
         {{- $jsonName := index (split (tagLookup $f.StructTag "json") ",") 0 }}
         if f := r.URL.Query().Get("{{ $jsonName }}"); f != "" {
-            {{- if $f.IsBool }}
+            {{- if $f.HasGoType }}
+                // todo
+            {{else if $f.IsBool }}
                 var b bool
                 if f == "true" {
                     b = true

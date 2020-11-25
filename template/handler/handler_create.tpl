@@ -6,7 +6,7 @@
         {{/* Add all fields that are not excluded. */}}
         {{ range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
-            {{- if or (not $a) $a.Create }}
+            {{- if not (and $a $a.SkipCreate) }}
                 {{ $f.StructField }} {{ $f.Type.String }} `json:"{{ tagLookup $f.StructTag "json" }}" {{ if $a.CreateValidationTag }}validate:"{{ $a.CreateValidationTag }}"{{ end }}`
             {{- end }}
         {{- end -}}

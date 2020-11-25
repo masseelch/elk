@@ -184,6 +184,25 @@ func eagerLoadedEdges(n *gen.Type, groupKey string) []*gen.Edge {
 	return r
 }
 
+func pkgImports(g *gen.Graph) []string {
+	i := make(map[string]struct{})
+
+	for _, n := range g.Nodes {
+		for _, f := range n.Fields {
+			if f.HasGoType() {
+				i[f.Type.PkgPath] = struct{}{}
+			}
+		}
+	}
+
+	r := make([]string, 0)
+	for k := range i {
+		r = append(r, k)
+	}
+
+	return r
+}
+
 func dec(i int) int {
 	return i - 1
 }
