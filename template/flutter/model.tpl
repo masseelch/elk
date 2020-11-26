@@ -1,5 +1,7 @@
 {{ define "model" }}
     {{ template "header" -}}
+    import 'dart:convert';
+
     import 'package:json_annotation/json_annotation.dart';
 
     {{/* Import the custom dart types. */}}
@@ -38,6 +40,8 @@
 
         factory {{ $.Name }}.fromJson(Map<String, dynamic> json) => _${{ $.Name }}FromJson(json);
         Map<String, dynamic> toJson() => _${{ $.Name }}ToJson(this);
+
+        String toString() => jsonEncode(toJson());
     }
 
     {{/* The edges of the model. */}}
