@@ -69,6 +69,22 @@
             return
         }
 
+        // Read new entry.
+        q := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(e.ID))
+        {{- range $e := $.Edges }}
+            {{ range $g := $.Annotations.HandlerGen.CreateGroups }}
+                {{ range $eg := split (tagLookup $e.StructTag "groups") "," }}
+                    {{ if eq $g $eg }}q.With{{ pascal $e.Name }}(){{ end }}
+                {{ end }}
+            {{ end }}
+        {{ end }}
+        e1, err := q.Only(r.Context())
+        if err != nil {
+            h.logger.WithError(err).Error("error reading {{ $.Name }}")
+            render.InternalServerError(w, r, nil)
+            return
+        }
+
         // Serialize the data.
         {{- $groups := $.Annotations.HandlerGen.CreateGroups }}
         j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{
@@ -77,7 +93,7 @@
             {{ else -}}
                 "{{ $.Name | snake }}:read"
             {{- end -}}
-        }}, e)
+        }}, e1)
         if err != nil {
             h.logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", e.ID).Error("serialization error")
             render.InternalServerError(w, r, nil)

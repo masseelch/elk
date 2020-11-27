@@ -4,6 +4,8 @@
 
     import 'package:json_annotation/json_annotation.dart';
 
+    import '../date_utc_converter.dart';
+
     {{/* Import the custom dart types. */}}
     {{ range $.TypeMappings -}}
         import '{{ .Import }}';
@@ -19,6 +21,7 @@
     part '{{ $.Name | snake }}.g.dart';
 
     @JsonSerializable()
+    @DateUtcConverter()
     class {{ $.Name }} {
         {{ $.Name }}();
 

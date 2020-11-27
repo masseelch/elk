@@ -39,10 +39,10 @@ var (
 
 type (
 	dartField struct {
-		Name      string
 		Type      string
 		Converter string
-		IsEdge    bool
+		Field     *gen.Field
+		Edge      *gen.Edge
 	}
 	file struct {
 		path    string
@@ -57,6 +57,18 @@ type (
 		Target string
 	}
 )
+
+func (d dartField) IsEdge() bool {
+	return d.Edge != nil
+}
+
+func (d dartField) Name() string {
+	if d.IsEdge() {
+		return d.Edge.Name
+	}
+
+	return d.Field.Name
+}
 
 // write files and dirs in the assets.
 func (a assets) write() error {
@@ -131,7 +143,7 @@ func dartFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartF
 
 		for _, f := range t.Fields {
 			if f.Annotations["FieldGen"] == nil || !f.Annotations["FieldGen"].(map[string]interface{})[a].(bool) {
-				df := dartField{Name: f.Name, Type: dt(f.Type)}
+				df := dartField{Type: dt(f.Type), Field: f}
 
 				if f.HasGoType() {
 					df.Converter = fmt.Sprintf("@%sConverter()", dt(f.Type))
@@ -145,12 +157,12 @@ func dartFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartF
 			skip := e.Type.Annotations["HandlerGen"] != nil && e.Type.Annotations["HandlerGen"].(map[string]interface{})["Skip"].(bool)
 			include := e.Annotations["FieldGen"] == nil || !e.Annotations["FieldGen"].(map[string]interface{})[a].(bool)
 			if !skip && include {
-				t := e.Type.Name
+				t := dt(e.Type.ID.Type)
 				if !e.Unique {
 					t = fmt.Sprintf("List<%s>", t)
 				}
 
-				s = append(s, dartField{Name: e.Name, Type: t, IsEdge: true})
+				s = append(s, dartField{Type: t, Edge: e})
 			}
 		}
 

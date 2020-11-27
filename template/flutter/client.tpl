@@ -5,6 +5,8 @@
     import 'package:json_annotation/json_annotation.dart';
     import 'package:provider/provider.dart';
 
+    import '../date_utc_converter.dart';
+
     {{/* Import the custom dart types. */}}
     {{ range $.TypeMappings -}}
         import '{{ .Import }}';
@@ -103,6 +105,7 @@
     {{/* The message used to create a new model on the remote. */}}
     {{ $dfc := dartFields $.Type "SkipCreate" }}
     @JsonSerializable(createFactory: false)
+    @DateUtcConverter()
     class {{ $.Name }}CreateRequest {
         {{ $.Name }}CreateRequest({
             {{ range $dfc -}}
@@ -112,8 +115,18 @@
 
         {{ $.Name }}CreateRequest.from{{ $.Name }}({{ $.Name }} e) :
             {{ range $i, $f := $dfc -}}
-                {{ $f.Name }} = e.{{ if $f.IsEdge }}edges?.{{ end }}{{ $f.Name }}{{ if not (eq $i (dec (len $dfc))) }},{{ end }}
-            {{ end }}
+                {{ $f.Name }} = e.
+                {{- if $f.IsEdge }}edges?.{{ end -}}
+                {{ $f.Name }}
+                {{- if $f.IsEdge }}?.
+                    {{- if $f.Edge.Unique -}}
+                        {{ $f.Edge.Type.ID.Name }}
+                    {{- else -}}
+                        map((e) => e.{{ $f.Edge.Type.ID.Name }})?.toList()
+                    {{- end -}}
+                {{ end -}}
+                {{- if not (eq $i (dec (len $dfc))) }},{{ end }}
+            {{- end -}}
         ;
 
         {{ range $dfc -}}
@@ -124,30 +137,41 @@
         Map<String, dynamic> toJson() => _${{ $.Name }}CreateRequestToJson(this);
     }
 
-        {{/* The message used to update a model on the remote. */}}
-        {{ $dfu := dartFields $.Type "SkipUpdate" }}
-        @JsonSerializable(createFactory: false)
-        class {{ $.Name }}UpdateRequest {
-            {{ $.Name }}UpdateRequest({
-                this.{{ $.ID.Name }},
-                {{ range $dfu -}}
-                    this.{{ .Name }},
-                {{ end -}}
-            });
-
-            {{ $.Name }}UpdateRequest.from{{ $.Name }}({{ $.Name }} e) :
-                {{ $.ID.Name }} = e.{{ $.ID.Name }}{{ if len $dfu }},{{ end }}
-                {{ range $i, $f := $dfu -}}
-                    {{ $f.Name }} = e.{{ if $f.IsEdge }}edges?.{{ end }}{{ $f.Name }}{{ if not (eq $i (dec (len $dfu))) }},{{ end }}
-                {{ end }}
-            ;
-
-            {{ $.ID.Type | dartType }} {{ $.ID.Name }};
+    {{/* The message used to update a model on the remote. */}}
+    {{ $dfu := dartFields $.Type "SkipUpdate" }}
+    @JsonSerializable(createFactory: false)
+    @DateUtcConverter()
+    class {{ $.Name }}UpdateRequest {
+        {{ $.Name }}UpdateRequest({
+            this.{{ $.ID.Name }},
             {{ range $dfu -}}
-                {{ if .Converter }}{{ .Converter }}{{ end -}}
-                {{ .Type }} {{ .Name }};
-            {{ end }}
+                this.{{ .Name }},
+            {{ end -}}
+        });
 
-            Map<String, dynamic> toJson() => _${{ $.Name }}UpdateRequestToJson(this);
-        }
+        {{ $.Name }}UpdateRequest.from{{ $.Name }}({{ $.Name }} e) :
+            {{ $.ID.Name }} = e.{{ $.ID.Name }}{{ if len $dfu }},{{ end }}
+            {{ range $i, $f := $dfu -}}
+                {{ $f.Name }} = e.
+                {{- if $f.IsEdge }}edges?.{{ end -}}
+                {{ $f.Name }}
+                {{- if $f.IsEdge }}?.
+                    {{- if $f.Edge.Unique -}}
+                        {{ $f.Edge.Type.ID.Name }}
+                    {{- else -}}
+                        map((e) => e.{{ $f.Edge.Type.ID.Name }})?.toList()
+                    {{- end -}}
+                {{ end -}}
+                {{- if not (eq $i (dec (len $dfu))) }},{{ end }}
+            {{- end -}}
+        ;
+
+        {{ $.ID.Type | dartType }} {{ $.ID.Name }};
+        {{ range $dfu -}}
+            {{ if .Converter }}{{ .Converter }}{{ end -}}
+            {{ .Type }} {{ .Name }};
+        {{ end }}
+
+        Map<String, dynamic> toJson() => _${{ $.Name }}UpdateRequestToJson(this);
+    }
 {{ end }}
