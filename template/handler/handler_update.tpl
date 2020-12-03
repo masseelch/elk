@@ -1,4 +1,4 @@
-{{ define "handler/update/route" }}h.Get("/{id:\\d+}", h.Update){{ end }}
+{{ define "handler/update/route" }}h.Patch("/{id{{ if $.ID.IsInt }}:\\d+{{ end }}}", h.Update){{ end }}
 
 {{ define "handler/update" }}
     // struct to bind the post body to.
@@ -21,7 +21,11 @@
 
     // This function updates a given {{ $.Name }} model and saves the changes in the database.
     func(h {{ $.Name }}Handler) Update(w http.ResponseWriter, r *http.Request) {
-        id, err := h.urlParamInt(w, r, "id")
+        {{- if $.ID.IsInt }}
+            id, err := h.urlParamInt(w, r, "id")
+        {{ else }}
+            id, err := h.urlParamString(w, r, "id")
+        {{ end -}}
         if err != nil {
             return
         }

@@ -1,10 +1,14 @@
-{{ define "handler/read/route" }}h.Get("/{id:\\d+}", h.Read){{ end }}
+{{ define "handler/read/route" }}h.Get("/{id{{ if $.ID.IsInt }}:\\d+{{ end }}}", h.Read){{ end }}
 
 {{ define "handler/read" }}
     // This function fetches the {{ $.Name }} model identified by a give url-parameter from
     // database and returns it to the client.
     func(h {{ $.Name }}Handler) Read(w http.ResponseWriter, r *http.Request) {
-        id, err := h.urlParamInt(w, r, "id")
+        {{- if $.ID.IsInt }}
+            id, err := h.urlParamInt(w, r, "id")
+        {{ else }}
+            id, err := h.urlParamString(w, r, "id")
+        {{ end -}}
         if err != nil {
             return
         }

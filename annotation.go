@@ -21,6 +21,11 @@ THE SOFTWARE.
 */
 package elk
 
+const (
+	OrderASC  = "asc"
+	OrderDESC = "desc"
+)
+
 type (
 	// Used on a schema to pass options to the handler generator.
 	HandlerAnnotation struct {

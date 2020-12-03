@@ -17,7 +17,9 @@
     import '../model/{{ $.Name | snake }}.dart';
     {{ range $e := $.Edges -}}
         import '../model/{{ $e.Type.Name | snake }}.dart';
-        import '../client/{{ $e.Type.Name | snake }}.dart';
+        {{- if or (not $e.Type.Annotations.HandlerGen) (not $e.Type.Annotations.HandlerGen.Skip) }}
+            import '../client/{{ $e.Type.Name | snake }}.dart';
+        {{ end -}}
     {{ end }}
 
     {{/* JsonSerializable puts the generated code in this file. */}}
@@ -87,14 +89,16 @@
 
         {{/* Fetch the nodes edges. */}}
         {{ range $e := $.Edges}}
-            Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | camel }}({{ $.Name }} e) async {
-                final r = await dio.get('/${{ $.Name | snake }}Url/${e.{{ $.ID.Name }}}/${{ $e.Type.Name | snake }}Url');
-                {{ if $e.Unique -}}
-                    return ({{ $e.Type.Name }}.fromJson(r.data));
-                {{ else -}}
-                    return (r.data as List).map((i) => {{ $e.Type.Name }}.fromJson(i)).toList();
-                {{ end -}}
-            }
+            {{ if or (not $e.Type.Annotations.HandlerGen) (not $e.Type.Annotations.HandlerGen.Skip) }}
+                Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | camel }}({{ $.Name }} e) async {
+                    final r = await dio.get('/${{ $.Name | snake }}Url/${e.{{ $.ID.Name }}}/${{ $e.Type.Name | snake }}Url');
+                    {{ if $e.Unique -}}
+                        return ({{ $e.Type.Name }}.fromJson(r.data));
+                    {{ else -}}
+                        return (r.data as List).map((i) => {{ $e.Type.Name }}.fromJson(i)).toList();
+                    {{ end -}}
+                }
+            {{ end }}
         {{ end }}
 
         {{/* Make this node acceessible by the dart provider package. */}}

@@ -36,7 +36,7 @@
         {{ $.Name }}Edges edges;
 
         @override
-        int get hashCode => {{ $.ID.Name }};
+        int get hashCode => {{ $.ID.Name }}.hashCode;
 
         @override
         bool operator ==(Object other) => other is {{ $.Name }} && {{ $.ID.Name }} == other.{{ $.ID.Name }};

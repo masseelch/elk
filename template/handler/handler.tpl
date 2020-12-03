@@ -46,11 +46,11 @@ type handler struct {
                 },
             }
 
-            {{ if not $n.Annotations.HandlerGen.SkipCreate }}{{ template "handler/create/route" }}{{ end }}
-            {{ if not $n.Annotations.HandlerGen.SkipRead }}{{ template "handler/read/route" }}{{ end }}
-            {{ if not $n.Annotations.HandlerGen.SkipUpdate }}{{ template "handler/update/route" }}{{ end }}
+            {{ if not $n.Annotations.HandlerGen.SkipCreate }}{{ template "handler/create/route" $n }}{{ end }}
+            {{ if not $n.Annotations.HandlerGen.SkipRead }}{{ template "handler/read/route" $n }}{{ end }}
+            {{ if not $n.Annotations.HandlerGen.SkipUpdate }}{{ template "handler/update/route" $n }}{{ end }}
 {{/*            {{ if not $n.Annotations.HandlerGen.SkipDelete }}{{ template "handler/delete/route" }}{{ end }}*/}}
-            {{ if not $n.Annotations.HandlerGen.SkipList }}{{ template "handler/list/route" }}{{ end }}
+            {{ if not $n.Annotations.HandlerGen.SkipList }}{{ template "handler/list/route" $n }}{{ end }}
 
             {{/* todo - skip resources */}}
             {{ template "handler/subresource/get/route" $n }}
@@ -70,9 +70,20 @@ type handler struct {
 {{ end }}
 
 {{/* Some helpers */}}
+func (h handler) urlParamString(w http.ResponseWriter, r *http.Request, param string) (id string, err error) {
+    id = chi.URLParam(r, param)
+    if id == "" {
+        err = errors.New("empty url param")
+        h.logger.WithField("param", param).Info("empty url param")
+        render.BadRequest(w, r, param + " cannot be ''")
+    }
+
+    return
+}
 func (h handler) urlParamInt(w http.ResponseWriter, r *http.Request, param string) (id int, err error) {
     p := chi.URLParam(r, param)
     if p == "" {
+        err = errors.New("empty url param")
         h.logger.WithField("param", param).Info("empty url param")
         render.BadRequest(w, r, param + " cannot be ''")
         return
