@@ -33,6 +33,14 @@ func (pc *PetCreate) SetAge(i int) *PetCreate {
 	return pc
 }
 
+// SetNillableAge sets the age field if the given value is not nil.
+func (pc *PetCreate) SetNillableAge(i *int) *PetCreate {
+	if i != nil {
+		pc.SetAge(*i)
+	}
+	return pc
+}
+
 // SetColor sets the color field.
 func (pc *PetCreate) SetColor(s schema.Color) *PetCreate {
 	pc.mutation.SetColor(s)
@@ -112,9 +120,6 @@ func (pc *PetCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New("_example: missing required field \"name\"")}
 	}
-	if _, ok := pc.mutation.Age(); !ok {
-		return &ValidationError{Name: "age", err: errors.New("_example: missing required field \"age\"")}
-	}
 	if _, ok := pc.mutation.Color(); !ok {
 		return &ValidationError{Name: "color", err: errors.New("_example: missing required field \"color\"")}
 	}
@@ -159,7 +164,7 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: pet.FieldAge,
 		})
-		_node.Age = value
+		_node.Age = &value
 	}
 	if value, ok := pc.mutation.Color(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

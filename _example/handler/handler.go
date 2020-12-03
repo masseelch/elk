@@ -4,6 +4,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -14,6 +15,8 @@ import (
 	"github.com/masseelch/go-api-skeleton/ent"
 	"github.com/masseelch/render"
 	"github.com/sirupsen/logrus"
+
+	"github.com/masseelch/elk/_example/schema"
 )
 
 // Shared handler.
@@ -43,7 +46,7 @@ func NewOwnerHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *
 
 	h.Post("/", h.Create)
 	h.Get("/{id:\\d+}", h.Read)
-	h.Get("/{id:\\d+}", h.Update)
+	h.Patch("/{id:\\d+}", h.Update)
 
 	h.Get("/", h.List)
 
@@ -54,8 +57,8 @@ func NewOwnerHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *
 
 // struct to bind the post body to.
 type ownerCreateRequest struct {
-	Name string `json:"name,omitempty" `
-	Pets []int  `json:"pets" `
+	Name string `json:"name,omitempty"`
+	Pets []int  `json:"pets"`
 }
 
 // This function creates a new Owner model and stores it in the database.
@@ -94,8 +97,18 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Read new entry.
+	q := h.client.Owner.Query().Where(owner.ID(e.ID))
+
+	e1, err := q.Only(r.Context())
+	if err != nil {
+		h.logger.WithError(err).Error("error reading Owner")
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
 	// Serialize the data.
-	j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"owner:read"}}, e)
+	j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"owner:read"}}, e1)
 	if err != nil {
 		h.logger.WithError(err).WithField("Owner.id", e.ID).Error("serialization error")
 		render.InternalServerError(w, r, nil)
@@ -150,8 +163,8 @@ func (h OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 
 // struct to bind the post body to.
 type ownerUpdateRequest struct {
-	Name string `json:"name,omitempty" `
-	Pets []int  `json:"pets" `
+	Name *string `json:"name"`
+	Pets []int   `json:"pets"`
 }
 
 // This function updates a given Owner model and saves the changes in the database.
@@ -183,9 +196,13 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the data.
-	b := h.client.Owner.UpdateOneID(id).
-		SetName(d.Name).
-		AddPetIDs(d.Pets...)
+	b := h.client.Owner.UpdateOneID(id)
+	if d.Name != nil {
+		b.SetName(d.Name)
+	}
+	if d.Pets != nil {
+		b.AddPetIDs(d.Pets...)
+	}
 
 	// Save in database.
 	e, err := b.Save(r.Context())
@@ -251,6 +268,7 @@ func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+
 	q := h.client.Owner.Query().Where(owner.ID(id)).QueryPets()
 
 	if r.URL.Query().Get("order") == "" {
@@ -284,6 +302,7 @@ func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if f := r.URL.Query().Get("color"); f != "" {
+		// todo
 	}
 
 	es, err := q.All(r.Context())
@@ -323,7 +342,7 @@ func NewPetHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *Pe
 
 	h.Post("/", h.Create)
 	h.Get("/{id:\\d+}", h.Read)
-	h.Get("/{id:\\d+}", h.Update)
+	h.Patch("/{id:\\d+}", h.Update)
 
 	h.Get("/", h.List)
 
@@ -334,10 +353,10 @@ func NewPetHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *Pe
 
 // struct to bind the post body to.
 type petCreateRequest struct {
-	Name  string       `json:"name,omitempty" `
-	Age   int          `json:"age,omitempty" `
-	Color schema.Color `json:"color,omitempty" `
-	Owner int          `json:"owner" `
+	Name  string       `json:"name,omitempty"`
+	Age   int          `json:"age,omitempty"`
+	Color schema.Color `json:"color,omitempty"`
+	Owner int          `json:"owner"`
 }
 
 // This function creates a new Pet model and stores it in the database.
@@ -378,8 +397,18 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Read new entry.
+	q := h.client.Pet.Query().Where(pet.ID(e.ID))
+
+	e1, err := q.Only(r.Context())
+	if err != nil {
+		h.logger.WithError(err).Error("error reading Pet")
+		render.InternalServerError(w, r, nil)
+		return
+	}
+
 	// Serialize the data.
-	j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"pet:read"}}, e)
+	j, err := sheriff.Marshal(&sheriff.Options{Groups: []string{"pet:read"}}, e1)
 	if err != nil {
 		h.logger.WithError(err).WithField("Pet.id", e.ID).Error("serialization error")
 		render.InternalServerError(w, r, nil)
@@ -432,10 +461,10 @@ func (h PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 
 // struct to bind the post body to.
 type petUpdateRequest struct {
-	Name  string       `json:"name,omitempty" `
-	Age   int          `json:"age,omitempty" `
-	Color schema.Color `json:"color,omitempty" `
-	Owner int          `json:"owner" `
+	Name  *string       `json:"name"`
+	Age   int           `json:"age"`
+	Color *schema.Color `json:"color"`
+	Owner *int          `json:"owner"`
 }
 
 // This function updates a given Pet model and saves the changes in the database.
@@ -467,11 +496,19 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the data.
-	b := h.client.Pet.UpdateOneID(id).
-		SetName(d.Name).
-		SetAge(d.Age).
-		SetColor(d.Color).
-		SetOwnerID(d.Owner)
+	b := h.client.Pet.UpdateOneID(id)
+	if d.Name != nil {
+		b.SetName(d.Name)
+	}
+	if d.Age != nil {
+		b.SetAge(d.Age)
+	}
+	if d.Color != nil {
+		b.SetColor(d.Color)
+	}
+	if d.Owner != nil {
+		b.SetOwnerID(d.Owner)
+	}
 
 	// Save in database.
 	e, err := b.Save(r.Context())
@@ -524,6 +561,7 @@ func (h PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if f := r.URL.Query().Get("color"); f != "" {
+		// todo
 	}
 
 	es, err := q.All(r.Context())
@@ -549,6 +587,7 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+
 	q := h.client.Pet.Query().Where(pet.ID(id)).QueryOwner()
 
 	q.WithPets()
@@ -584,9 +623,20 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (h handler) urlParamString(w http.ResponseWriter, r *http.Request, param string) (id string, err error) {
+	id = chi.URLParam(r, param)
+	if id == "" {
+		err = errors.New("empty url param")
+		h.logger.WithField("param", param).Info("empty url param")
+		render.BadRequest(w, r, param+" cannot be ''")
+	}
+
+	return
+}
 func (h handler) urlParamInt(w http.ResponseWriter, r *http.Request, param string) (id int, err error) {
 	p := chi.URLParam(r, param)
 	if p == "" {
+		err = errors.New("empty url param")
 		h.logger.WithField("param", param).Info("empty url param")
 		render.BadRequest(w, r, param+" cannot be ''")
 		return

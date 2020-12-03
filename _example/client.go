@@ -153,7 +153,7 @@ func (c *OwnerClient) Create() *OwnerCreate {
 	return &OwnerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// BulkCreate returns a builder for creating a bulk of Owner entities.
+// CreateBulk returns a builder for creating a bulk of Owner entities.
 func (c *OwnerClient) CreateBulk(builders ...*OwnerCreate) *OwnerCreateBulk {
 	return &OwnerCreateBulk{config: c.config, builders: builders}
 }
@@ -257,7 +257,7 @@ func (c *PetClient) Create() *PetCreate {
 	return &PetCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// BulkCreate returns a builder for creating a bulk of Pet entities.
+// CreateBulk returns a builder for creating a bulk of Pet entities.
 func (c *PetClient) CreateBulk(builders ...*PetCreate) *PetCreateBulk {
 	return &PetCreateBulk{config: c.config, builders: builders}
 }
@@ -361,7 +361,7 @@ func (c *SkipGenerationModelClient) Create() *SkipGenerationModelCreate {
 	return &SkipGenerationModelCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// BulkCreate returns a builder for creating a bulk of SkipGenerationModel entities.
+// CreateBulk returns a builder for creating a bulk of SkipGenerationModel entities.
 func (c *SkipGenerationModelClient) CreateBulk(builders ...*SkipGenerationModelCreate) *SkipGenerationModelCreateBulk {
 	return &SkipGenerationModelCreateBulk{config: c.config, builders: builders}
 }

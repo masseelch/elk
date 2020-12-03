@@ -41,9 +41,23 @@ func (pu *PetUpdate) SetAge(i int) *PetUpdate {
 	return pu
 }
 
+// SetNillableAge sets the age field if the given value is not nil.
+func (pu *PetUpdate) SetNillableAge(i *int) *PetUpdate {
+	if i != nil {
+		pu.SetAge(*i)
+	}
+	return pu
+}
+
 // AddAge adds i to age.
 func (pu *PetUpdate) AddAge(i int) *PetUpdate {
 	pu.mutation.AddAge(i)
+	return pu
+}
+
+// ClearAge clears the value of age.
+func (pu *PetUpdate) ClearAge() *PetUpdate {
+	pu.mutation.ClearAge()
 	return pu
 }
 
@@ -90,7 +104,7 @@ func (pu *PetUpdate) ClearOwner() *PetUpdate {
 	return pu
 }
 
-// Save executes the query and returns the number of rows/vertices matched by this operation.
+// Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *PetUpdate) Save(ctx context.Context) (int, error) {
 	var (
 		err      error
@@ -180,6 +194,12 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: pet.FieldAge,
 		})
 	}
+	if pu.mutation.AgeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: pet.FieldAge,
+		})
+	}
 	if value, ok := pu.mutation.Color(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint32,
@@ -260,9 +280,23 @@ func (puo *PetUpdateOne) SetAge(i int) *PetUpdateOne {
 	return puo
 }
 
+// SetNillableAge sets the age field if the given value is not nil.
+func (puo *PetUpdateOne) SetNillableAge(i *int) *PetUpdateOne {
+	if i != nil {
+		puo.SetAge(*i)
+	}
+	return puo
+}
+
 // AddAge adds i to age.
 func (puo *PetUpdateOne) AddAge(i int) *PetUpdateOne {
 	puo.mutation.AddAge(i)
+	return puo
+}
+
+// ClearAge clears the value of age.
+func (puo *PetUpdateOne) ClearAge() *PetUpdateOne {
+	puo.mutation.ClearAge()
 	return puo
 }
 
@@ -394,6 +428,12 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
+			Column: pet.FieldAge,
+		})
+	}
+	if puo.mutation.AgeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
 			Column: pet.FieldAge,
 		})
 	}

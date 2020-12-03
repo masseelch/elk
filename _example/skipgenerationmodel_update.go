@@ -37,7 +37,7 @@ func (sgmu *SkipGenerationModelUpdate) Mutation() *SkipGenerationModelMutation {
 	return sgmu.mutation
 }
 
-// Save executes the query and returns the number of rows/vertices matched by this operation.
+// Save executes the query and returns the number of nodes affected by the update operation.
 func (sgmu *SkipGenerationModelUpdate) Save(ctx context.Context) (int, error) {
 	var (
 		err      error

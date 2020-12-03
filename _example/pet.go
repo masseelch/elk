@@ -19,7 +19,7 @@ type Pet struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty" groups:"pet:list"`
 	// Age holds the value of the "age" field.
-	Age int `json:"age,omitempty" groups:"pet:list"`
+	Age *int `json:"age,omitempty" groups:"pet:list"`
 	// Color holds the value of the "color" field.
 	Color schema.Color `json:"color,omitempty" groups:"pet:list"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -88,7 +88,8 @@ func (pe *Pet) assignValues(values ...interface{}) error {
 	if value, ok := values[1].(*sql.NullInt64); !ok {
 		return fmt.Errorf("unexpected type %T for field age", values[1])
 	} else if value.Valid {
-		pe.Age = int(value.Int64)
+		pe.Age = new(int)
+		*pe.Age = int(value.Int64)
 	}
 	if value, ok := values[2].(*sql.NullInt64); !ok {
 		return fmt.Errorf("unexpected type %T for field color", values[2])

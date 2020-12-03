@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
 
+import '../date_utc_converter.dart';
+
 import '../color.dart';
 
 import '../model/pet.dart';
@@ -82,6 +84,7 @@ class PetClient {
 }
 
 @JsonSerializable(createFactory: false)
+@DateUtcConverter()
 class PetCreateRequest {
   PetCreateRequest({
     this.name,
@@ -94,20 +97,22 @@ class PetCreateRequest {
       : name = e.name,
         age = e.age,
         color = e.color,
-        owner = e.edges.owner;
+        owner = e.edges?.owner?.id;
 
   String name;
   int age;
   @ColorConverter()
   Color color;
-  Owner owner;
+  int owner;
 
   Map<String, dynamic> toJson() => _$PetCreateRequestToJson(this);
 }
 
 @JsonSerializable(createFactory: false)
+@DateUtcConverter()
 class PetUpdateRequest {
   PetUpdateRequest({
+    this.id,
     this.name,
     this.age,
     this.color,
@@ -115,16 +120,18 @@ class PetUpdateRequest {
   });
 
   PetUpdateRequest.fromPet(Pet e)
-      : name = e.name,
+      : id = e.id,
+        name = e.name,
         age = e.age,
         color = e.color,
-        owner = e.edges.owner;
+        owner = e.edges?.owner?.id;
 
+  int id;
   String name;
   int age;
   @ColorConverter()
   Color color;
-  Owner owner;
+  int owner;
 
   Map<String, dynamic> toJson() => _$PetUpdateRequestToJson(this);
 }

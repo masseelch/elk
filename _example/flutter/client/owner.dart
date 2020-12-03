@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
 
+import '../date_utc_converter.dart';
+
 import '../color.dart';
 
 import '../model/owner.dart';
@@ -72,6 +74,7 @@ class OwnerClient {
 }
 
 @JsonSerializable(createFactory: false)
+@DateUtcConverter()
 class OwnerCreateRequest {
   OwnerCreateRequest({
     this.name,
@@ -80,27 +83,31 @@ class OwnerCreateRequest {
 
   OwnerCreateRequest.fromOwner(Owner e)
       : name = e.name,
-        pets = e.edges.pets;
+        pets = e.edges?.pets?.map((e) => e.id)?.toList();
 
   String name;
-  List<Pet> pets;
+  List<int> pets;
 
   Map<String, dynamic> toJson() => _$OwnerCreateRequestToJson(this);
 }
 
 @JsonSerializable(createFactory: false)
+@DateUtcConverter()
 class OwnerUpdateRequest {
   OwnerUpdateRequest({
+    this.id,
     this.name,
     this.pets,
   });
 
   OwnerUpdateRequest.fromOwner(Owner e)
-      : name = e.name,
-        pets = e.edges.pets;
+      : id = e.id,
+        name = e.name,
+        pets = e.edges?.pets?.map((e) => e.id)?.toList();
 
+  int id;
   String name;
-  List<Pet> pets;
+  List<int> pets;
 
   Map<String, dynamic> toJson() => _$OwnerUpdateRequestToJson(this);
 }

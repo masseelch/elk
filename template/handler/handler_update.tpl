@@ -57,7 +57,8 @@
             {{- $a := $f.Annotations.FieldGen }}
             {{- if not (and $a $a.SkipUpdate) }}
                 if d.{{ $f.StructField }} != nil {
-                    b.Set{{ $f.StructField }}(d.{{ $f.StructField }})
+                    {{/* todo - what about slice fields that have custom marshallers? */}}
+                    b.Set{{ $f.StructField }}(*d.{{ $f.StructField }})
                 }
             {{- end -}}
         {{ end }}
@@ -65,11 +66,10 @@
             {{- $a := $e.Annotations.FieldGen }}
             {{- if and (not $e.Type.Annotations.HandlerGen.Skip) (not (and $a $a.SkipUpdate)) }}
                 if d.{{ $e.StructField }} != nil {
-                    b.
                     {{- if $e.Unique }}
-                        Set{{ $e.Type.Name }}ID(d.{{ $e.StructField }})
+                        b.Set{{ $e.Type.Name }}ID(*d.{{ $e.StructField }})
                     {{- else }}
-                        Add{{ $e.Type.Name }}IDs(d.{{ $e.StructField }}...) {{/*// todo - remove ids that are not given in the patch-data*/}}
+                        b.Add{{ $e.Type.Name }}IDs(d.{{ $e.StructField }}...) {{/*// todo - remove ids that are not given in the patch-data*/}}
                     {{- end }}
                 }
             {{- end -}}

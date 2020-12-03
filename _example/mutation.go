@@ -571,7 +571,7 @@ func (m *PetMutation) Age() (r int, exists bool) {
 // If the Pet object wasn't provided to the builder, the object is fetched
 // from the database.
 // An error is returned if the mutation operation is not UpdateOne, or database query fails.
-func (m *PetMutation) OldAge(ctx context.Context) (v int, err error) {
+func (m *PetMutation) OldAge(ctx context.Context) (v *int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldAge is allowed only on UpdateOne operations")
 	}
@@ -603,10 +603,24 @@ func (m *PetMutation) AddedAge() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearAge clears the value of age.
+func (m *PetMutation) ClearAge() {
+	m.age = nil
+	m.addage = nil
+	m.clearedFields[pet.FieldAge] = struct{}{}
+}
+
+// AgeCleared returns if the field age was cleared in this mutation.
+func (m *PetMutation) AgeCleared() bool {
+	_, ok := m.clearedFields[pet.FieldAge]
+	return ok
+}
+
 // ResetAge reset all changes of the "age" field.
 func (m *PetMutation) ResetAge() {
 	m.age = nil
 	m.addage = nil
+	delete(m.clearedFields, pet.FieldAge)
 }
 
 // SetColor sets the color field.
@@ -844,7 +858,11 @@ func (m *PetMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared
 // during this mutation.
 func (m *PetMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(pet.FieldAge) {
+		fields = append(fields, pet.FieldAge)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicates if this field was
@@ -857,6 +875,11 @@ func (m *PetMutation) FieldCleared(name string) bool {
 // ClearField clears the value for the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *PetMutation) ClearField(name string) error {
+	switch name {
+	case pet.FieldAge:
+		m.ClearAge()
+		return nil
+	}
 	return fmt.Errorf("unknown Pet nullable field %s", name)
 }
 

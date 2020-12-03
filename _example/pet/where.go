@@ -301,6 +301,20 @@ func AgeLTE(v int) predicate.Pet {
 	})
 }
 
+// AgeIsNil applies the IsNil predicate on the "age" field.
+func AgeIsNil() predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAge)))
+	})
+}
+
+// AgeNotNil applies the NotNil predicate on the "age" field.
+func AgeNotNil() predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAge)))
+	})
+}
+
 // ColorEQ applies the EQ predicate on the "color" field.
 func ColorEQ(v schema.Color) predicate.Pet {
 	vc := uint32(v)

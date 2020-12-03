@@ -24,7 +24,7 @@ var (
 	PetsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "age", Type: field.TypeInt},
+		{Name: "age", Type: field.TypeInt, Nullable: true},
 		{Name: "color", Type: field.TypeUint32},
 		{Name: "owner_pets", Type: field.TypeInt, Nullable: true},
 	}
