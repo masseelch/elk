@@ -28,7 +28,7 @@
         {{/* The fields of the model. */}}
         {{ $.ID.Type | dartType }} {{ $.ID.Name }};
         {{- range $f := $.Fields -}}
-            {{- if $f.HasGoType }}@{{ $f.Type | dartType }}Converter(){{ end -}}
+            {{- if and $f.Annotations.MapGoType $f.HasGoType }}@{{ $f.Type | dartType }}Converter(){{ end -}}
             {{ $f.Type | dartType }} {{ $f.Name }};
         {{ end }}
 

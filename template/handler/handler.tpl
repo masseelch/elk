@@ -15,7 +15,9 @@ import (
 
     "{{ $.Config.Package }}"
     {{/* Import all types used in the fields */}}
-    {{- range pkgImports $ }}"{{ . }}"{{ end }}
+    {{ range pkgImports $ -}}
+        "{{ . }}"
+    {{ end }}
 )
 
 // Shared handler.

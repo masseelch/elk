@@ -50,9 +50,9 @@ func Flutter(c *FlutterConfig) error {
 	tpl := template.New("flutter").
 		Funcs(gen.Funcs).
 		Funcs(template.FuncMap{
-			"dartType": dt,
-			"dartFields": dartFields(dt),
-			"dec": dec,
+			"dartType":          dt,
+			"dartRequestFields": dartRequestFields(dt),
+			"dec":               dec,
 		})
 	for _, n := range []string{
 		"header/dart.tpl",

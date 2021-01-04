@@ -137,12 +137,12 @@ func dartType(typeMappings []*TypeMapping) func(*field.TypeInfo) string {
 }
 
 // Extract the dart fields of a given type.
-func dartFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartField {
+func dartRequestFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartField {
 	return func(t *gen.Type, a string) []dartField {
 		s := make([]dartField, 0)
 
 		for _, f := range t.Fields {
-			if f.Annotations["FieldGen"] == nil || !f.Annotations["FieldGen"].(map[string]interface{})[a].(bool) {
+			if f.Annotations["FieldGen"] == nil || (a != "" && !f.Annotations["FieldGen"].(map[string]interface{})[a].(bool)) {
 				df := dartField{Type: dt(f.Type), Field: f}
 
 				if f.HasGoType() {
@@ -155,7 +155,7 @@ func dartFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartF
 
 		for _, e := range t.Edges {
 			skip := e.Type.Annotations["HandlerGen"] != nil && e.Type.Annotations["HandlerGen"].(map[string]interface{})["Skip"].(bool)
-			include := e.Annotations["FieldGen"] == nil || !e.Annotations["FieldGen"].(map[string]interface{})[a].(bool)
+			include := e.Annotations["FieldGen"] == nil || (a != "" && !e.Annotations["FieldGen"].(map[string]interface{})[a].(bool))
 			if !skip && include {
 				t := dt(e.Type.ID.Type)
 				if !e.Unique {

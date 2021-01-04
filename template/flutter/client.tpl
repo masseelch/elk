@@ -107,7 +107,7 @@
 
 
     {{/* The message used to create a new model on the remote. */}}
-    {{ $dfc := dartFields $.Type "SkipCreate" }}
+    {{ $dfc := dartRequestFields $.Type "SkipCreate" }}
     @JsonSerializable(createFactory: false)
     @DateUtcConverter()
     class {{ $.Name }}CreateRequest {
@@ -142,7 +142,7 @@
     }
 
     {{/* The message used to update a model on the remote. */}}
-    {{ $dfu := dartFields $.Type "SkipUpdate" }}
+    {{ $dfu := dartRequestFields $.Type "SkipUpdate" }}
     @JsonSerializable(createFactory: false)
     @DateUtcConverter()
     class {{ $.Name }}UpdateRequest {

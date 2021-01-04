@@ -47,6 +47,7 @@ type (
 		CreateValidationTag string
 		SkipUpdate          bool
 		UpdateValidationTag string
+		MapGoType           bool
 	}
 	// Used on (list) edges to specify a default order.
 	EdgeAnnotation struct {
