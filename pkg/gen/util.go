@@ -38,7 +38,8 @@ var (
 )
 
 type (
-	dartField struct {
+	dartFields []dartField
+	dartField  struct {
 		Type      string
 		Converter string
 		Field     *gen.Field
@@ -68,6 +69,44 @@ func (d dartField) Name() string {
 	}
 
 	return d.Field.Name
+}
+
+func (d dartFields) String() string {
+	b := new(strings.Builder)
+
+	b.WriteString("[")
+
+	for i, df := range d {
+		if i != 0 {
+			b.WriteString("; ")
+		}
+
+		if df.IsEdge() {
+			b.WriteString(fmt.Sprintf("edge: %s, type: %s, conv: %s", df.Edge.Name, df.Type, df.Converter))
+		} else {
+			b.WriteString(fmt.Sprintf("field: %s, type: %s, conv: %s", df.Field.Name, df.Type, df.Converter))
+		}
+	}
+
+	return b.String()
+}
+
+func (d dartFields) ConverterFor(f *gen.Field) string {
+	if f == nil {
+		return ""
+	}
+
+	for _, df := range d {
+		if df.IsEdge() {
+			continue
+		}
+
+		if df.Field.Name == f.Name {
+			return df.Converter
+		}
+	}
+
+	return ""
 }
 
 // write files and dirs in the assets.
@@ -132,21 +171,27 @@ func dartType(typeMappings []*TypeMapping) func(*field.TypeInfo) string {
 			return s
 		}
 
-		return dartTypeNames["invalid"]
+		// Try to guess the type. dynamic otherwise.
+		return dartTypeNames[t.Type.String()]
 	}
 }
 
 // Extract the dart fields of a given type.
-func dartRequestFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) []dartField {
-	return func(t *gen.Type, a string) []dartField {
-		s := make([]dartField, 0)
+func dartRequestFields(c *FlutterConfig, dt func(*field.TypeInfo) string) func(*gen.Type, string) dartFields {
+	return func(t *gen.Type, a string) dartFields {
+		s := make(dartFields, 0)
 
 		for _, f := range t.Fields {
-			if f.Annotations["FieldGen"] == nil || (a != "" && !f.Annotations["FieldGen"].(map[string]interface{})[a].(bool)) {
+			if f.Annotations["FieldGen"] == nil || a == "" || (a != "" && !f.Annotations["FieldGen"].(map[string]interface{})[a].(bool)) {
 				df := dartField{Type: dt(f.Type), Field: f}
 
-				if f.HasGoType() {
-					df.Converter = fmt.Sprintf("@%sConverter()", dt(f.Type))
+				if f.Annotations["FieldGen"] != nil && f.Annotations["FieldGen"].(map[string]interface{})["MapGoType"].(bool) && f.HasGoType() {
+					// Find the Type-Mapping. If a converter is needed use it.
+					for _, tm := range c.TypeMappings {
+						if tm.Go == f.Type.String() && tm.ConverterNeeded {
+							df.Converter = fmt.Sprintf("@%sConverter()", dt(f.Type))
+						}
+					}
 				}
 
 				s = append(s, df)
@@ -155,7 +200,7 @@ func dartRequestFields(dt func(*field.TypeInfo) string) func(*gen.Type, string) 
 
 		for _, e := range t.Edges {
 			skip := e.Type.Annotations["HandlerGen"] != nil && e.Type.Annotations["HandlerGen"].(map[string]interface{})["Skip"].(bool)
-			include := e.Annotations["FieldGen"] == nil || (a != "" && !e.Annotations["FieldGen"].(map[string]interface{})[a].(bool))
+			include := e.Annotations["FieldGen"] == nil || a == "" || (a != "" && !e.Annotations["FieldGen"].(map[string]interface{})[a].(bool))
 			if !skip && include {
 				t := dt(e.Type.ID.Type)
 				if !e.Unique {

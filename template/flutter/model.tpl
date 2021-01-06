@@ -6,10 +6,12 @@
 
     import '../date_utc_converter.dart';
 
+    {{ $df := dartRequestFields $.Type "" }}
+
     {{/* Import the custom dart types. */}}
     {{ range $.TypeMappings -}}
         import '{{ .Import }}';
-        {{- if .Converter }}import '{{ .Converter }}';{{ end -}}
+        {{- if .ConverterImport }}import '{{ .ConverterImport }}';{{ end -}}
     {{ end }}
 
     {{/* For every edge import the generated model. */}}
@@ -28,7 +30,10 @@
         {{/* The fields of the model. */}}
         {{ $.ID.Type | dartType }} {{ $.ID.Name }};
         {{- range $f := $.Fields -}}
-            {{- if and $f.Annotations.MapGoType $f.HasGoType }}@{{ $f.Type | dartType }}Converter(){{ end -}}
+            {{- $c := $df.ConverterFor $f }}
+            {{- if and $f.Annotations.FieldGen.MapGoType $f.HasGoType -}}
+                {{- if $c }}{{ $c }}{{ end -}}
+            {{ end -}}
             {{ $f.Type | dartType }} {{ $f.Name }};
         {{ end }}
 

@@ -21,10 +21,11 @@ type (
 		TypeMappings []*TypeMapping `mapstructure:"type_mappings"`
 	}
 	TypeMapping struct {
-		Go        string
-		Dart      string
-		Import    string
-		Converter string
+		Go              string
+		Dart            string
+		Import          string
+		ConverterImport string `mapstructure:"converter_import"`
+		ConverterNeeded bool   `mapstructure:"converter_needed"`
 	}
 )
 
@@ -51,7 +52,7 @@ func Flutter(c *FlutterConfig) error {
 		Funcs(gen.Funcs).
 		Funcs(template.FuncMap{
 			"dartType":          dt,
-			"dartRequestFields": dartRequestFields(dt),
+			"dartRequestFields": dartRequestFields(c, dt),
 			"dec":               dec,
 		})
 	for _, n := range []string{

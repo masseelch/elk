@@ -10,7 +10,7 @@
     {{/* Import the custom dart types. */}}
     {{ range $.TypeMappings -}}
         import '{{ .Import }}';
-        {{- if .Converter }}import '{{ .Converter }}';{{ end -}}
+        {{- if .ConverterImport }}import '{{ .ConverterImport }}';{{ end -}}
     {{ end }}
 
     {{/* Import the node itself and all of the edges target nodes / clients. */}}
