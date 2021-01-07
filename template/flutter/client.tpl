@@ -61,9 +61,11 @@
 
             {{ range $f := $.Fields }}
                 {{- $jsonName := index (split (tagLookup $f.StructTag "json") ",") 0 }}
-                if ({{ $jsonName }} != null) {
-                    params['{{ $jsonName }}'] = {{ $jsonName }};
-                }
+                    {{ if not (eq $jsonName "-") }}
+                        if ({{ $jsonName }} != null) {
+                            params['{{ $jsonName }}'] = {{ $jsonName }};
+                        }
+                    {{ end }}
             {{ end }}
 
             final r = await dio.get('/${{ $.Name | snake }}Url');
