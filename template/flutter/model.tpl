@@ -34,8 +34,7 @@
             {{- if and $f.Annotations.FieldGen.MapGoType $f.HasGoType -}}
                 {{- if $c }}{{ $c }}{{ end -}}
             {{ end -}}
-                // {{ $f.StructField }}
-            {{ $f.Type | dartType }} {{ $f.StructField | camel }};
+            {{ $f.Type | dartType }} {{ $f.Name | camel }};
         {{ end }}
 
         {{/* The edges of the model. */}}
