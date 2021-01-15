@@ -71,6 +71,14 @@ func (d dartField) Name() string {
 	return d.Field.Name
 }
 
+func (d dartField) StructField() string {
+	if d.IsEdge() {
+		return d.Edge.StructField()
+	}
+
+	return d.Field.StructField()
+}
+
 func (d dartFields) String() string {
 	b := new(strings.Builder)
 

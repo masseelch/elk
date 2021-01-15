@@ -46,7 +46,9 @@
             int itemsPerPage,
             {{- range $f := $.Fields }}
                 {{- $jsonName := index (split (tagLookup $f.StructTag "json") ",") 0 }}
-                {{ $f.Type | dartType }} {{ $jsonName }},
+                    {{ if not (eq $jsonName "-") -}}
+                        {{ $f.Type | dartType }} {{ $f.StructField | camel }},
+                    {{ end }}
             {{ end }}
         }) async {
             final params = const {};
@@ -62,8 +64,8 @@
             {{ range $f := $.Fields }}
                 {{- $jsonName := index (split (tagLookup $f.StructTag "json") ",") 0 }}
                     {{ if not (eq $jsonName "-") }}
-                        if ({{ $jsonName }} != null) {
-                            params['{{ $jsonName }}'] = {{ $jsonName }};
+                        if ({{ $f.StructField | camel }} != null) {
+                            params['{{ $jsonName }}'] = {{ $f.StructField | camel }};
                         }
                     {{ end }}
             {{ end }}
@@ -115,15 +117,15 @@
     class {{ $.Name }}CreateRequest {
         {{ $.Name }}CreateRequest({
             {{ range $dfc -}}
-                this.{{ .Name }},
+                this.{{ .StructField | camel }},
             {{ end -}}
         });
 
         {{ $.Name }}CreateRequest.from{{ $.Name }}({{ $.Name }} e) :
             {{ range $i, $f := $dfc -}}
-                {{ $f.Name }} = e.
+                {{ $f.StructField | camel }} = e.
                 {{- if $f.IsEdge }}edges?.{{ end -}}
-                {{ $f.Name }}
+                {{ $f.StructField | camel }}
                 {{- if $f.IsEdge }}?.
                     {{- if $f.Edge.Unique -}}
                         {{ $f.Edge.Type.ID.Name }}
@@ -137,7 +139,7 @@
 
         {{ range $dfc -}}
             {{ if .Converter }}{{ .Converter }}{{ end -}}
-            {{ .Type }} {{ .Name }};
+            {{ .Type }} {{ .StructField | camel }};
         {{ end }}
 
         Map<String, dynamic> toJson() => _${{ $.Name }}CreateRequestToJson(this);
@@ -151,16 +153,16 @@
         {{ $.Name }}UpdateRequest({
             this.{{ $.ID.Name }},
             {{ range $dfu -}}
-                this.{{ .Name }},
+                this.{{ .StructField | camel }},
             {{ end -}}
         });
 
         {{ $.Name }}UpdateRequest.from{{ $.Name }}({{ $.Name }} e) :
             {{ $.ID.Name }} = e.{{ $.ID.Name }}{{ if len $dfu }},{{ end }}
             {{ range $i, $f := $dfu -}}
-                {{ $f.Name }} = e.
+                {{ $f.StructField | camel }} = e.
                 {{- if $f.IsEdge }}edges?.{{ end -}}
-                {{ $f.Name }}
+                {{ $f.StructField | camel }}
                 {{- if $f.IsEdge }}?.
                     {{- if $f.Edge.Unique -}}
                         {{ $f.Edge.Type.ID.Name }}
@@ -175,7 +177,7 @@
         {{ $.ID.Type | dartType }} {{ $.ID.Name }};
         {{ range $dfu -}}
             {{ if .Converter }}{{ .Converter }}{{ end -}}
-            {{ .Type }} {{ .Name }};
+            {{ .Type }} {{ .StructField | camel }};
         {{ end }}
 
         Map<String, dynamic> toJson() => _${{ $.Name }}UpdateRequestToJson(this);
