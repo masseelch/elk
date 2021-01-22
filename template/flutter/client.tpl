@@ -91,6 +91,10 @@
             return ({{ $.Name }}.fromJson(r.data));
         }
 
+        {{/* Delete a node on the remote. */}}
+        Future delete({{ $.ID.Type | dartType }} id) =>
+            dio.delete('/${{ $.Name | snake }}Url/$id');
+
         {{/* Fetch the nodes edges. */}}
         {{ range $e := $.Edges}}
             {{ if or (not $e.Type.Annotations.HandlerGen) (not $e.Type.Annotations.HandlerGen.Skip) }}
@@ -108,7 +112,6 @@
         {{/* Make this node acceessible by the dart provider package. */}}
         static {{ $.Name }}Client of(BuildContext context) => Provider.of<{{ $.Name }}Client>(context, listen: false);
     }
-
 
     {{/* The message used to create a new model on the remote. */}}
     {{ $dfc := dartRequestFields $.Type "SkipCreate" }}

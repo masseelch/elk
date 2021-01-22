@@ -51,7 +51,7 @@ type handler struct {
             {{ if not $n.Annotations.HandlerGen.SkipCreate }}{{ template "handler/create/route" $n }}{{ end }}
             {{ if not $n.Annotations.HandlerGen.SkipRead }}{{ template "handler/read/route" $n }}{{ end }}
             {{ if not $n.Annotations.HandlerGen.SkipUpdate }}{{ template "handler/update/route" $n }}{{ end }}
-{{/*            {{ if not $n.Annotations.HandlerGen.SkipDelete }}{{ template "handler/delete/route" }}{{ end }}*/}}
+            {{ if not $n.Annotations.HandlerGen.SkipDelete }}{{ template "handler/delete/route" }}{{ end }}
             {{ if not $n.Annotations.HandlerGen.SkipList }}{{ template "handler/list/route" $n }}{{ end }}
 
             {{/* todo - skip resources */}}
@@ -63,7 +63,7 @@ type handler struct {
         {{ if not $n.Annotations.HandlerGen.SkipCreate }}{{ template "handler/create" $n }}{{ end }}
         {{ if not $n.Annotations.HandlerGen.SkipRead }}{{ template "handler/read" $n }}{{ end }}
         {{ if not $n.Annotations.HandlerGen.SkipUpdate }}{{ template "handler/update" $n }}{{ end }}
-{{/*        {{ if not $n.Annotations.HandlerGen.SkipDelete }}{{ template "handler/delete" }}{{ end }}*/}}
+        {{ if not $n.Annotations.HandlerGen.SkipDelete }}{{ template "handler/delete" $n }}{{ end }}
         {{ if not $n.Annotations.HandlerGen.SkipList }}{{ template "handler/list" $n }}{{ end }}
 
         {{/* todo - skip resources */}}

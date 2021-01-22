@@ -57,8 +57,7 @@
             {{- $a := $f.Annotations.FieldGen }}
             {{- if not (and $a $a.SkipUpdate) }}
                 if d.{{ $f.StructField }} != nil {
-                    {{/* todo - what about slice fields that have custom marshallers? */}}
-                    b.Set{{ $f.StructField }}(*d.{{ $f.StructField }})
+                    b.Set{{ $f.StructField }}(*d.{{ $f.StructField }}) {{/* todo - what about slice fields that have custom marshallers? */}}
                 }
             {{- end -}}
         {{ end }}
