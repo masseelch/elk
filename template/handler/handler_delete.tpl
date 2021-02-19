@@ -1,4 +1,4 @@
-{{ define "handler/delete/route" }}h.Get("/{id{{ if $.ID.IsInt }}:\\d+{{ end }}}", h.Delete){{ end }}
+{{ define "handler/delete/route" }}h.Mux.Delete("/{id{{ if $.ID.IsInt }}:\\d+{{ end }}}", h.Delete){{ end }}
 
 {{ define "handler/delete" }}
     // This function deletes the {{ $.Name }} model identified by a given url-parameter.

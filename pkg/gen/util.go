@@ -54,8 +54,9 @@ type (
 		files []file
 	}
 	Config struct {
-		Source string
-		Target string
+		Source  string
+		Target  string
+		Package string
 	}
 )
 

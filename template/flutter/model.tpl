@@ -58,7 +58,7 @@
         {{ $.Name }}Edges();
 
         {{ range $e := $.Edges -}}
-            {{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }} {{ $e.Name }};
+            {{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }} {{ $e.Name | camel }};
         {{ end }}
 
         factory {{ $.Name }}Edges.fromJson(Map<String, dynamic> json) => _${{ $.Name }}EdgesFromJson(json);

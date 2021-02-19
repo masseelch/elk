@@ -7,7 +7,7 @@
         {{ range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
             {{- if not (and $a $a.SkipCreate) }}
-                {{ $f.StructField }} {{ if not $f.Nillable}}*{{ end }}{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ if $a.CreateValidationTag }} {{ $a.CreateValidationTag }}{{ end }}`
+                {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ if $a.CreateValidationTag }} {{ $a.CreateValidationTag }}{{ end }}`
             {{- end }}
         {{- end -}}
         {{/* Add all edges that are not excluded. */}}
@@ -57,9 +57,9 @@
             {{- if and (not $e.Type.Annotations.HandlerGen.Skip) (not (and $a $a.SkipCreate)) }}
                 if d.{{ $e.StructField }} != nil {
                     {{- if $e.Unique }}
-                        b.Set{{ $e.Type.Name }}ID(*d.{{ $e.StructField }})
+                        b.{{ $e.MutationSet }}(*d.{{ $e.StructField }})
                     {{- else }}
-                        b.Add{{ $e.Type.Name }}IDs(d.{{ $e.StructField }}...)
+                        b.{{ $e.MutationAdd }}(d.{{ $e.StructField }}...)
                     {{- end }}
                 }
             {{- end -}}
