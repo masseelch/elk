@@ -3,8 +3,8 @@ package gen
 import (
 	"bytes"
 	"fmt"
-	"github.com/facebook/ent/entc"
-	"github.com/facebook/ent/entc/gen"
+	"entgo.io/ent/entc"
+	"entgo.io/ent/entc/gen"
 	"github.com/masseelch/elk/internal"
 	"path/filepath"
 	"text/template"
