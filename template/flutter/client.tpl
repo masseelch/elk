@@ -1,6 +1,7 @@
 {{ define "client" }}
-    {{ template "header" -}}
-    import 'package:dio/dio.dart';
+    {{  template "header" -}}
+    import 'dart:convert';
+    import '../../services/api_client.dart'; {{/* todo - Make this a flag or sth */}}
     import 'package:flutter/widgets.dart';
     import 'package:json_annotation/json_annotation.dart';
     import 'package:provider/provider.dart';
@@ -30,28 +31,28 @@
 
     {{/* The client for a model. Consumes the generated api. */}}
     class {{ $.Name }}Client {
-        {{ $.Name }}Client({@required this.dio}) : assert(dio != null);
+        {{ $.Name }}Client({required this.apiClient});
 
-        final Dio dio;
+        final ApiClient apiClient;
 
         {{/* Find a single node by id. */}}
         Future<{{ $.Name }}> find({{ $.ID.Type | dartType }} id) async {
-            final r = await dio.get('/${{ $.Name | snake }}Url/$id');
-            return {{ $.Name }}.fromJson(r.data);
+            final r = await apiClient.get(Uri(path: '/${{ $.Name | snake }}Url/$id'));
+            return {{ $.Name }}.fromJson(jsonDecode(r.body));
         }
 
         {{/* List multiple nodes filtered by query params. */}}
         Future<List<{{ $.Name }}>> list({
-            int page,
-            int itemsPerPage,
+            int? page,
+            int? itemsPerPage,
             {{- range $f := $.Fields }}
                 {{- $jsonName := index (split (tagLookup $f.StructTag "json") ",") 0 }}
                     {{ if not (eq $jsonName "-") -}}
-                        {{ $f.Type | dartType }} {{ $f.Name | camel }},
+                        {{ $f.Type | dartType }}? {{ $f.Name | camel }},
                     {{ end }}
             {{ end }}
         }) async {
-            final params = const {};
+            final params = const <String, dynamic>{};
 
             if (page != null) {
                 params['page'] = page;
@@ -70,40 +71,51 @@
                     {{ end }}
             {{ end }}
 
-            final r = await dio.get('/${{ $.Name | snake }}Url');
+            final r = await apiClient.get(Uri(
+                path: '/${{ $.Name | snake }}Url',
+                queryParameters: params,
+            ));
 
-            if (r.data == null) {
+            if (r.body.isEmpty) {
                 return [];
             }
 
-            return (r.data as List).map((i) => {{ $.Name }}.fromJson(i)).toList();
+            return (jsonDecode(r.body) as List).map((i) => {{ $.Name }}.fromJson(i)).toList();
         }
 
         {{/* Create a new node on the remote. */}}
         Future<{{ $.Name }}> create({{ $.Name }}CreateRequest req) async {
-            final r = await dio.post('/${{ $.Name | snake }}Url', data: req.toJson());
-            return ({{ $.Name }}.fromJson(r.data));
+            final r = await apiClient.post(
+                Uri(path: '/${{ $.Name | snake }}Url'),
+                body: jsonEncode(req.toJson()),
+            );
+
+            return ({{ $.Name }}.fromJson(jsonDecode(r.body)));
         }
 
         {{/* Update a node on the remote. */}}
         Future<{{ $.Name }}> update({{ $.Name }}UpdateRequest req) async {
-            final r = await dio.patch('/${{ $.Name | snake }}Url/${req.{{ $.ID.Name }}}', data: req.toJson());
-            return ({{ $.Name }}.fromJson(r.data));
+            final r = await apiClient.patch(
+                Uri(path: '/${{ $.Name | snake }}Url/${req.{{ $.ID.Name }}}'),
+                body: jsonEncode(req.toJson()),
+            );
+
+            return ({{ $.Name }}.fromJson(jsonDecode(r.body)));
         }
 
         {{/* Delete a node on the remote. */}}
         Future delete({{ $.ID.Type | dartType }} id) =>
-            dio.delete('/${{ $.Name | snake }}Url/$id');
+            apiClient.delete(Uri(path: '/${{ $.Name | snake }}Url/$id'));
 
         {{/* Fetch the nodes edges. */}}
         {{ range $e := $.Edges}}
             {{ if or (not $e.Type.Annotations.HandlerGen) (not $e.Type.Annotations.HandlerGen.Skip) }}
                 Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | camel }}({{ $.Name }} e) async {
-                    final r = await dio.get('/${{ $.Name | snake }}Url/${e.{{ $.ID.Name }}}/${{ $e.Type.Name | snake }}Url');
+                    final r = await apiClient.get(Uri(path: '/${{ $.Name | snake }}Url/${e.{{ $.ID.Name }}}/${{ $e.Type.Name | snake }}Url'));
                     {{ if $e.Unique -}}
-                        return ({{ $e.Type.Name }}.fromJson(r.data));
+                        return ({{ $e.Type.Name }}.fromJson(jsonDecode(r.body)));
                     {{ else -}}
-                        return (r.data as List).map((i) => {{ $e.Type.Name }}.fromJson(i)).toList();
+                        return (jsonDecode(r.body) as List).map((i) => {{ $e.Type.Name }}.fromJson(i)).toList();
                     {{ end -}}
                 }
             {{ end }}
@@ -133,7 +145,7 @@
                     {{- if $f.Edge.Unique -}}
                         {{ $f.Edge.Type.ID.Name }}
                     {{- else -}}
-                        map((e) => e.{{ $f.Edge.Type.ID.Name }})?.toList()
+                        map((e) => e.{{ $f.Edge.Type.ID.Name }}).toList()
                     {{- end -}}
                 {{ end -}}
                 {{- if not (eq $i (dec (len $dfc))) }},{{ end }}
@@ -170,14 +182,14 @@
                     {{- if $f.Edge.Unique -}}
                         {{ $f.Edge.Type.ID.Name }}
                     {{- else -}}
-                        map((e) => e.{{ $f.Edge.Type.ID.Name }})?.toList()
+                        map((e) => e.{{ $f.Edge.Type.ID.Name }}).toList()
                     {{- end -}}
                 {{ end -}}
                 {{- if not (eq $i (dec (len $dfu))) }},{{ end }}
             {{- end -}}
         ;
 
-        {{ $.ID.Type | dartType }} {{ $.ID.Name }};
+        {{ $.ID.Type | dartType }}? {{ $.ID.Name }};
         {{ range $dfu -}}
             {{ if .Converter }}{{ .Converter }}{{ end -}}
             {{ .Type }} {{ .Name | camel }};

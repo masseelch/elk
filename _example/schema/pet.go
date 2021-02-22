@@ -1,10 +1,10 @@
 package schema
 
 import (
-	"github.com/facebook/ent"
-	"github.com/facebook/ent/schema"
-	"github.com/facebook/ent/schema/edge"
-	"github.com/facebook/ent/schema/field"
+	"entgo.io/ent"
+	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/field"
 	"github.com/masseelch/elk"
 )
 
@@ -19,6 +19,7 @@ func (Pet) Fields() []ent.Field {
 		field.String("name").StructTag(`groups:"pet:list"`),
 		field.Int("age").Optional().Nillable().StructTag(`groups:"pet:list"`),
 		field.Uint32("color").GoType(Color(0)).StructTag(`groups:"pet:list"`),
+		field.Strings("string_list").StructTag(`groups:"pet:list"`),
 	}
 }
 

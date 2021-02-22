@@ -28,17 +28,17 @@
         {{ $.Name }}();
 
         {{/* The fields of the model. */}}
-        {{ $.ID.Type | dartType }} {{ $.ID.Name }};
+        {{ $.ID.Type | dartType }}? {{ $.ID.Name }};
         {{- range $f := $.Fields -}}
             {{- $c := $df.ConverterFor $f }}
             {{- if and $f.Annotations.FieldGen.MapGoType $f.HasGoType -}}
                 {{- if $c }}{{ $c }}{{ end -}}
             {{ end -}}
-            {{ $f.Type | dartType }} {{ $f.Name | camel }};
+            {{ $f.Type | dartType }}? {{ $f.Name | camel }};
         {{ end }}
 
         {{/* The edges of the model. */}}
-        {{ $.Name }}Edges edges;
+        {{ $.Name }}Edges? edges;
 
         @override
         int get hashCode => {{ $.ID.Name }}.hashCode;
@@ -58,7 +58,7 @@
         {{ $.Name }}Edges();
 
         {{ range $e := $.Edges -}}
-            {{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }} {{ $e.Name | camel }};
+            {{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}? {{ $e.Name | camel }};
         {{ end }}
 
         factory {{ $.Name }}Edges.fromJson(Map<String, dynamic> json) => _${{ $.Name }}EdgesFromJson(json);

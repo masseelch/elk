@@ -1,9 +1,9 @@
 package gen
 
 import (
-	"fmt"
 	"entgo.io/ent/entc/gen"
 	"entgo.io/ent/schema/field"
+	"fmt"
 	"golang.org/x/tools/imports"
 	"io/ioutil"
 	"os"
@@ -20,20 +20,21 @@ var (
 		// "JSON":    "Map<String, dynamic>",
 		// "UUID":    "String",
 		// "bytes":   "dynamic",
-		"enum":    "String",
-		"string":  "String",
-		"int":     "int",
-		"int8":    "int",
-		"int16":   "int",
-		"int32":   "int",
-		"int64":   "int",
-		"uint":    "int",
-		"uint8":   "int",
-		"uint16":  "int",
-		"uint32":  "int",
-		"uint64":  "int",
-		"float32": "double",
-		"float64": "double",
+		"enum":     "String",
+		"string":   "String",
+		"int":      "int",
+		"int8":     "int",
+		"int16":    "int",
+		"int32":    "int",
+		"int64":    "int",
+		"uint":     "int",
+		"uint8":    "int",
+		"uint16":   "int",
+		"uint32":   "int",
+		"uint64":   "int",
+		"float32":  "double",
+		"float64":  "double",
+		"[]string": "List<String>",
 	}
 )
 
@@ -180,6 +181,10 @@ func dartType(typeMappings []*TypeMapping) func(*field.TypeInfo) string {
 			return s
 		}
 
+		if t.Type == field.TypeJSON {
+			fmt.Println(t)
+		}
+
 		// Try to guess the type. dynamic otherwise.
 		return dartTypeNames[t.Type.String()]
 	}
@@ -192,7 +197,7 @@ func dartRequestFields(c *FlutterConfig, dt func(*field.TypeInfo) string) func(*
 
 		for _, f := range t.Fields {
 			if f.Annotations["FieldGen"] == nil || a == "" || (a != "" && !f.Annotations["FieldGen"].(map[string]interface{})[a].(bool)) {
-				df := dartField{Type: dt(f.Type), Field: f}
+				df := dartField{Type: dt(f.Type) + "?", Field: f}
 
 				if f.Annotations["FieldGen"] != nil && f.Annotations["FieldGen"].(map[string]interface{})["MapGoType"].(bool) && f.HasGoType() {
 					// Find the Type-Mapping. If a converter is needed use it.
@@ -213,10 +218,10 @@ func dartRequestFields(c *FlutterConfig, dt func(*field.TypeInfo) string) func(*
 			if !skip && include {
 				t := dt(e.Type.ID.Type)
 				if !e.Unique {
-					t = fmt.Sprintf("List<%s>", t)
+					t = fmt.Sprintf("List<%s?>", t)
 				}
 
-				s = append(s, dartField{Type: t, Edge: e})
+				s = append(s, dartField{Type: t + "?", Edge: e})
 			}
 		}
 

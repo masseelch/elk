@@ -1,6 +1,6 @@
 {{ define "client/provider" }}
     {{ template "header" -}}
-    import 'package:dio/dio.dart';
+    import '../../services/api_client.dart'; {{/* todo - Make this a flag or sth */}}
     import 'package:flutter/widgets.dart';
     import 'package:provider/provider.dart';
     import 'package:provider/single_child_widget.dart';
@@ -15,22 +15,22 @@
     {{/* Provide the clients down the widget tree. */}}
     class ClientProvider extends SingleChildStatelessWidget {
         ClientProvider({
-            Key key,
-            @required this.dio,
+            Key? key,
+            required this.apiClient,
             this.child,
-        }) : assert(dio != null), super(key: key, child: child);
+        }) : super(key: key, child: child);
 
-        final Dio dio;
-        final Widget child;
+        final ApiClient apiClient;
+        final Widget? child;
 
         @override
-        Widget buildWithChild(BuildContext context, Widget child) {
+        Widget buildWithChild(BuildContext context, Widget? child) {
             return MultiProvider(
                 providers: [
                     {{ range $n := $.Nodes -}}
                         {{- if not $n.Annotations.HandlerGen.Skip }}
                             Provider<{{ $n.Name }}Client>(
-                                create: (_) => {{ $n.Name }}Client(dio: dio),
+                                create: (_) => {{ $n.Name }}Client(apiClient: apiClient),
                             ),
                         {{ end -}}
                     {{ end -}}
