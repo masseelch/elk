@@ -1,9 +1,10 @@
 {{ define "client/provider" }}
     {{ template "header" -}}
-    import '../../services/api_client.dart'; {{/* todo - Make this a flag or sth */}}
     import 'package:flutter/widgets.dart';
     import 'package:provider/provider.dart';
     import 'package:provider/single_child_widget.dart';
+
+    import '../api_client.dart';
 
     {{/* Import every node */}}
     {{ range $n := $.Nodes -}}

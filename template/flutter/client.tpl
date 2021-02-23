@@ -1,12 +1,12 @@
 {{ define "client" }}
     {{  template "header" -}}
     import 'dart:convert';
-    import '../../services/api_client.dart'; {{/* todo - Make this a flag or sth */}}
     import 'package:flutter/widgets.dart';
     import 'package:json_annotation/json_annotation.dart';
     import 'package:provider/provider.dart';
 
     import '../date_utc_converter.dart';
+    import '../api_client.dart';
 
     {{/* Import the custom dart types. */}}
     {{ range $.TypeMappings -}}
