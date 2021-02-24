@@ -20,7 +20,7 @@
                     return
                 }
 
-                q := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id)).Query{{ $e.Name | pascal }}()
+                q := h.Client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id)).Query{{ $e.Name | pascal }}()
 
                 {{ if $e.Unique }}
                     {{ template "read/qb" $e.Type }}
@@ -36,12 +36,12 @@
                         {{- end -}}
                     }}, e)
                     if err != nil {
-                        h.logger.WithError(err).WithField("{{ $e.Type.Name }}.{{ $e.Type.ID.Name }}", id).Error("serialization error")
+                        h.Logger.WithError(err).WithField("{{ $e.Type.Name }}.{{ $e.Type.ID.Name }}", id).Error("serialization error")
                         render.InternalServerError(w, r, nil)
                         return
                     }
 
-                    h.logger.WithField("{{ $e.Type.Name | snake }}", e.ID).Info("{{ $e.Type.Name | snake }} rendered")
+                    h.Logger.WithField("{{ $e.Type.Name | snake }}", e.ID).Info("{{ $e.Type.Name | snake }} rendered")
                     render.OK(w, r, d)
                 {{ else }}
                     {{ if $do := $e.Annotations.EdgeGen.DefaultOrder }}
@@ -93,7 +93,7 @@
 
                     es, err := q.All(r.Context())
                     if err != nil {
-                        h.logger.WithError(err).Error("error querying database") // todo - better error
+                        h.Logger.WithError(err).Error("error querying database") // todo - better error
                         render.InternalServerError(w, r, nil)
                         return
                     }
@@ -107,12 +107,12 @@
                         {{- end -}}
                     }}, es)
                     if err != nil {
-                        h.logger.WithError(err).Error("serialization error")
+                        h.Logger.WithError(err).Error("serialization error")
                         render.InternalServerError(w, r, nil)
                         return
                     }
 
-                    h.logger.WithField("amount", len(es)).Info("{{ $e.Type.Name | snake }} rendered")
+                    h.Logger.WithField("amount", len(es)).Info("{{ $e.Type.Name | snake }} rendered")
                     render.OK(w, r, d)
                 {{ end }}
             }

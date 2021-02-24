@@ -14,15 +14,15 @@
     if err != nil {
         switch err.(type) {
             case *ent.NotFoundError:
-                h.logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Debug("job not found")
+                h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Debug("job not found")
                 render.NotFound(w, r, err)
                 return
             case *ent.NotSingularError:
-                h.logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("duplicate entry for id")
+                h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("duplicate entry for id")
                 render.InternalServerError(w, r, nil)
                 return
             default:
-                h.logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("error fetching node from db")
+                h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("error fetching node from db")
                 render.InternalServerError(w, r, nil)
                 return
         }

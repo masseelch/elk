@@ -20,13 +20,22 @@ import (
     {{ end }}
 )
 
-// Shared handler.
-type handler struct {
+// Handler is embedded by all entity handlers. Provided some convenience methods.
+type Handler struct {
     *chi.Mux
 
-    client    *ent.Client
-    validator *validator.Validate
-    logger    *logrus.Logger
+    Client    *ent.Client
+    Validator *validator.Validate
+    Logger    *logrus.Logger
+}
+
+func NewHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *Handler {
+    return &Handler {
+        Mux:       chi.NewRouter(),
+        Client:    c,
+        Validator: v,
+        Logger:    log,
+    }
 }
 
 {{ range $n := $.Nodes }}
@@ -34,19 +43,12 @@ type handler struct {
 
         // The {{ $n.Name }}Handler.
         type {{ $n.Name }}Handler struct {
-            *handler
+            *Handler
         }
 
         // Create a new {{ $n.Name }}Handler
         func New{{ $n.Name }}Handler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *{{ $n.Name }}Handler {
-            h := &{{ $n.Name }}Handler{
-                &handler{
-                    Mux:         chi.NewRouter(),
-                    client:    c,
-                    validator: v,
-                    logger:    log,
-                },
-            }
+            h := &{{ $n.Name }}Handler{NewHandler(c, v, log)}
 
             {{ if not $n.Annotations.HandlerGen.SkipCreate }}{{ template "handler/create/route" $n }}{{ end }}
             {{ if not $n.Annotations.HandlerGen.SkipRead }}{{ template "handler/read/route" $n }}{{ end }}
@@ -72,28 +74,28 @@ type handler struct {
 {{ end }}
 
 {{/* Some helpers */}}
-func (h handler) urlParamString(w http.ResponseWriter, r *http.Request, param string) (id string, err error) {
+func (h Handler) urlParamString(w http.ResponseWriter, r *http.Request, param string) (id string, err error) {
     id = chi.URLParam(r, param)
     if id == "" {
         err = errors.New("empty url param")
-        h.logger.WithField("param", param).Info("empty url param")
+        h.Logger.WithField("param", param).Info("empty url param")
         render.BadRequest(w, r, param + " cannot be ''")
     }
 
     return
 }
-func (h handler) urlParamInt(w http.ResponseWriter, r *http.Request, param string) (id int, err error) {
+func (h Handler) urlParamInt(w http.ResponseWriter, r *http.Request, param string) (id int, err error) {
     p := chi.URLParam(r, param)
     if p == "" {
         err = errors.New("empty url param")
-        h.logger.WithField("param", param).Info("empty url param")
+        h.Logger.WithField("param", param).Info("empty url param")
         render.BadRequest(w, r, param + " cannot be ''")
         return
     }
 
     id, err = strconv.Atoi(p)
     if err != nil {
-        h.logger.WithField(param, p).Info("error parsing url parameter")
+        h.Logger.WithField(param, p).Info("error parsing url parameter")
         render.BadRequest(w, r, param + " must be a positive integer greater zero")
         return
     }
@@ -101,17 +103,17 @@ func (h handler) urlParamInt(w http.ResponseWriter, r *http.Request, param strin
     return
 }
 
-func (h handler) urlParamTime(w http.ResponseWriter, r *http.Request, param string) (date time.Time, err error) {
+func (h Handler) urlParamTime(w http.ResponseWriter, r *http.Request, param string) (date time.Time, err error) {
     p := chi.URLParam(r, param)
     if p == "" {
-        h.logger.WithField("param", param).Info("empty url param")
+        h.Logger.WithField("param", param).Info("empty url param")
         render.BadRequest(w, r, param + " cannot be ''")
         return
     }
 
     date, err = time.Parse("2006-01-02", p)
     if err != nil {
-        h.logger.WithField(param, p).Info("error parsing url parameter")
+        h.Logger.WithField(param, p).Info("error parsing url parameter")
         render.BadRequest(w, r, param + " must be a valid date in yyyy-mm-dd format")
         return
     }
@@ -119,14 +121,14 @@ func (h handler) urlParamTime(w http.ResponseWriter, r *http.Request, param stri
     return
 }
 
-func (h handler) paginationInfo(w http.ResponseWriter, r *http.Request) (page int, itemsPerPage int, err error) {
+func (h Handler) paginationInfo(w http.ResponseWriter, r *http.Request) (page int, itemsPerPage int, err error) {
     page = 1
     itemsPerPage = 30
 
     if d := r.URL.Query().Get("itemsPerPage"); d != "" {
         itemsPerPage, err = strconv.Atoi(d)
         if err != nil {
-            h.logger.WithField("itemsPerPage", d).Info("error parsing query parameter 'itemsPerPage'")
+            h.Logger.WithField("itemsPerPage", d).Info("error parsing query parameter 'itemsPerPage'")
             render.BadRequest(w, r, "itemsPerPage must be a positive integer greater zero")
             return
         }
@@ -135,7 +137,7 @@ func (h handler) paginationInfo(w http.ResponseWriter, r *http.Request) (page in
     if d := r.URL.Query().Get("page"); d != "" {
         page, err = strconv.Atoi(d)
         if err != nil {
-            h.logger.WithField("page", d).Info("error parsing query parameter 'page'")
+            h.Logger.WithField("page", d).Info("error parsing query parameter 'page'")
             render.BadRequest(w, r, "page must be a positive integer greater zero")
             return
         }

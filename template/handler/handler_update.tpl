@@ -33,26 +33,26 @@
         // Get the post data.
         d := {{ $.Name | snake }}UpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.
         if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-            h.logger.WithError(err).Error("error decoding json")
+            h.Logger.WithError(err).Error("error decoding json")
             render.BadRequest(w, r, "invalid json string")
             return
         }
 
         // Validate the data.
-        if err := h.validator.Struct(d); err != nil {
+        if err := h.Validator.Struct(d); err != nil {
             if err, ok := err.(*validator.InvalidValidationError); ok {
-                h.logger.WithError(err).Error("error validating request data")
+                h.Logger.WithError(err).Error("error validating request data")
                 render.InternalServerError(w, r, nil)
                 return
             }
 
-            h.logger.WithError(err).Info("validation failed")
+            h.Logger.WithError(err).Info("validation failed")
             render.BadRequest(w, r, err)
             return
         }
 
         // Save the data.
-        b := h.client.{{ $.Name }}.UpdateOneID(id)
+        b := h.Client.{{ $.Name }}.UpdateOneID(id)
         {{- range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
             {{- if not (and $a $a.SkipUpdate) }}
@@ -77,7 +77,7 @@
         // Save in database.
         e, err := b.Save(r.Context())
         if err != nil {
-            h.logger.WithError(err).Error("error saving {{ $.Name }}")
+            h.Logger.WithError(err).Error("error saving {{ $.Name }}")
             render.InternalServerError(w, r, nil)
             return
         }
@@ -92,12 +92,12 @@
             {{- end -}}
         }}, e)
         if err != nil {
-            h.logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", e.ID).Error("serialization error")
+            h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", e.ID).Error("serialization error")
             render.InternalServerError(w, r, nil)
             return
         }
 
-        h.logger.WithField("{{ $.Name | snake }}", e.ID).Info("{{ $.Name | snake }} rendered")
+        h.Logger.WithField("{{ $.Name | snake }}", e.ID).Info("{{ $.Name | snake }} rendered")
         render.OK(w, r, j)
     }
 {{ end }}

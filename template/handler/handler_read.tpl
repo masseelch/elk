@@ -13,7 +13,7 @@
             return
         }
 
-        q := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id))
+        q := h.Client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id))
         {{ template "read/qb" $ }}
         e, err := q.Only(r.Context())
         {{ template "read/error-handling" $ }}
@@ -27,12 +27,12 @@
             {{- end -}}
         }}, e)
         if err != nil {
-            h.logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("serialization error")
+            h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("serialization error")
             render.InternalServerError(w, r, nil)
             return
         }
 
-        h.logger.WithField("{{ $.Name | snake }}", e.ID).Info("{{ $.Name | snake }} rendered")
+        h.Logger.WithField("{{ $.Name | snake }}", e.ID).Info("{{ $.Name | snake }} rendered")
         render.OK(w, r, d)
     }
 {{end}}

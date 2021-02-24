@@ -24,26 +24,26 @@
         // Get the post data.
         d := {{ $.Name | snake }}CreateRequest{} // todo - allow form-url-encdoded/xml/protobuf data.
         if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-            h.logger.WithError(err).Error("error decoding json")
+            h.Logger.WithError(err).Error("error decoding json")
             render.BadRequest(w, r, "invalid json string")
             return
         }
 
         // Validate the data.
-        if err := h.validator.Struct(d); err != nil {
+        if err := h.Validator.Struct(d); err != nil {
             if err, ok := err.(*validator.InvalidValidationError); ok {
-                h.logger.WithError(err).Error("error validating request data")
+                h.Logger.WithError(err).Error("error validating request data")
                 render.InternalServerError(w, r, nil)
                 return
             }
 
-            h.logger.WithError(err).Info("validation failed")
+            h.Logger.WithError(err).Info("validation failed")
             render.BadRequest(w, r, err)
             return
         }
 
         // Save the data.
-        b := h.client.{{ $.Name }}.Create()
+        b := h.Client.{{ $.Name }}.Create()
         {{- range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
             {{- if not (and $a $a.SkipCreate) }}
@@ -68,13 +68,13 @@
         // Store in database.
         e, err := b.Save(r.Context())
         if err != nil {
-            h.logger.WithError(err).Error("error saving {{ $.Name }}")
+            h.Logger.WithError(err).Error("error saving {{ $.Name }}")
             render.InternalServerError(w, r, nil)
             return
         }
 
         // Read new entry.
-        q := h.client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(e.ID))
+        q := h.Client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(e.ID))
         {{- range $e := $.Edges }}
             {{ range $g := $.Annotations.HandlerGen.CreateGroups }}
                 {{ range $eg := split (tagLookup $e.StructTag "groups") "," }}
@@ -84,7 +84,7 @@
         {{ end }}
         e1, err := q.Only(r.Context())
         if err != nil {
-            h.logger.WithError(err).Error("error reading {{ $.Name }}")
+            h.Logger.WithError(err).Error("error reading {{ $.Name }}")
             render.InternalServerError(w, r, nil)
             return
         }
@@ -99,12 +99,12 @@
             {{- end -}}
         }}, e1)
         if err != nil {
-            h.logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", e.ID).Error("serialization error")
+            h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", e.ID).Error("serialization error")
             render.InternalServerError(w, r, nil)
             return
         }
 
-        h.logger.WithField("{{ $.Name | snake }}", e.ID).Info("{{ $.Name | snake }} rendered")
+        h.Logger.WithField("{{ $.Name | snake }}", e.ID).Info("{{ $.Name | snake }} rendered")
         render.OK(w, r, j)
     }
 {{ end }}

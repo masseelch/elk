@@ -135,5 +135,5 @@ func Flutter(c *FlutterConfig) error {
 		return err
 	}
 
-	return assets.formatDart()
+	return assets.formatDart([]string{g.Config.Target})
 }

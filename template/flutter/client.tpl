@@ -38,6 +38,7 @@
         {{/* Find a single node by id. */}}
         Future<{{ $.Name }}> find({{ $.ID.Type | dartType }} id) async {
             final r = await apiClient.get(Uri(path: '/${{ $.Name | snake }}Url/$id'));
+
             return {{ $.Name }}.fromJson(jsonDecode(r.body));
         }
 

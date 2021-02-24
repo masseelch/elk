@@ -12,13 +12,13 @@
             return
         }
 
-        if err := h.client.{{ $.Name }}.DeleteOneID(id).Exec(r.Context()); err != nil {
-            h.logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("error deleting node from db")
+        if err := h.Client.{{ $.Name }}.DeleteOneID(id).Exec(r.Context()); err != nil {
+            h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("error deleting node from db")
             render.InternalServerError(w, r, nil)
             return
         }
 
-        h.logger.WithField("{{ $.Name | snake }}", id).Info("{{ $.Name | snake }} deleted")
+        h.Logger.WithField("{{ $.Name | snake }}", id).Info("{{ $.Name | snake }} deleted")
         render.NoContent(w, r)
     }
 {{end}}
