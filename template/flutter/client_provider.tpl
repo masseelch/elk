@@ -1,10 +1,9 @@
 {{ define "client/provider" }}
     {{ template "header" -}}
     import 'package:flutter/widgets.dart';
+    import 'package:intercepted_http/intercepted_http.dart' show Client;
     import 'package:provider/provider.dart';
     import 'package:provider/single_child_widget.dart';
-
-    import '../api_client.dart';
 
     {{/* Import every node */}}
     {{ range $n := $.Nodes -}}
@@ -17,11 +16,11 @@
     class ClientProvider extends SingleChildStatelessWidget {
         ClientProvider({
             Key? key,
-            required this.apiClient,
+            required this.client,
             this.child,
         }) : super(key: key, child: child);
 
-        final ApiClient apiClient;
+        final Client client;
         final Widget? child;
 
         @override
@@ -31,7 +30,7 @@
                     {{ range $n := $.Nodes -}}
                         {{- if not $n.Annotations.HandlerGen.Skip }}
                             Provider<{{ $n.Name }}Client>(
-                                create: (_) => {{ $n.Name }}Client(apiClient: apiClient),
+                                create: (_) => {{ $n.Name }}Client(client: client),
                             ),
                         {{ end -}}
                     {{ end -}}

@@ -61,7 +61,6 @@ func Flutter(c *FlutterConfig) error {
 		"flutter/client.tpl",
 		"flutter/client_provider.tpl",
 		"flutter/date_utc_converter.tpl",
-		"flutter/api_client.tpl",
 	} {
 		d, err := internal.Asset(n)
 		if err != nil {
@@ -120,15 +119,6 @@ func Flutter(c *FlutterConfig) error {
 	assets.files = append(assets.files, file{
 		path:    filepath.Join(g.Config.Target, "date_utc_converter.dart"),
 		content: db.Bytes(),
-	})
-
-	cb := bytes.NewBuffer(nil)
-	if err := tpl.ExecuteTemplate(cb, "apiClient", g); err != nil {
-		return err
-	}
-	assets.files = append(assets.files, file{
-		path:    filepath.Join(g.Config.Target, "api_client.dart"),
-		content: cb.Bytes(),
 	})
 
 	if err := assets.write(); err != nil {

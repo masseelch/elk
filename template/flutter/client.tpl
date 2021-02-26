@@ -1,12 +1,11 @@
 {{ define "client" }}
     {{  template "header" -}}
-    import 'dart:convert';
     import 'package:flutter/widgets.dart';
+    import 'package:intercepted_http/intercepted_http.dart' show Client;
     import 'package:json_annotation/json_annotation.dart';
     import 'package:provider/provider.dart';
 
     import '../date_utc_converter.dart';
-    import '../api_client.dart';
 
     {{/* Import the custom dart types. */}}
     {{ range $.TypeMappings -}}
@@ -31,15 +30,15 @@
 
     {{/* The client for a model. Consumes the generated api. */}}
     class {{ $.Name }}Client {
-        {{ $.Name }}Client({required this.apiClient});
+        {{ $.Name }}Client({required this.client});
 
-        final ApiClient apiClient;
+        final Client client;
 
         {{/* Find a single node by id. */}}
         Future<{{ $.Name }}> find({{ $.ID.Type | dartType }} id) async {
-            final r = await apiClient.get(Uri(path: '/${{ $.Name | snake }}Url/$id'));
+            final r = await client.get(Uri(path: '/${{ $.Name | snake }}Url/$id'));
 
-            return {{ $.Name }}.fromJson(jsonDecode(r.body));
+            return {{ $.Name }}.fromJson(r.body);
         }
 
         {{/* List multiple nodes filtered by query params. */}}
@@ -72,7 +71,7 @@
                     {{ end }}
             {{ end }}
 
-            final r = await apiClient.get(Uri(
+            final r = await client.get(Uri(
                 path: '/${{ $.Name | snake }}Url',
                 queryParameters: params,
             ));
@@ -81,42 +80,42 @@
                 return [];
             }
 
-            return (jsonDecode(r.body) as List).map((i) => {{ $.Name }}.fromJson(i)).toList();
+            return (r.body as List).map((i) => {{ $.Name }}.fromJson(i)).toList();
         }
 
         {{/* Create a new node on the remote. */}}
         Future<{{ $.Name }}> create({{ $.Name }}CreateRequest req) async {
-            final r = await apiClient.post(
+            final r = await client.post(
                 Uri(path: '/${{ $.Name | snake }}Url'),
-                body: jsonEncode(req.toJson()),
+                body: req.toJson(),
             );
 
-            return ({{ $.Name }}.fromJson(jsonDecode(r.body)));
+            return ({{ $.Name }}.fromJson(r.body));
         }
 
         {{/* Update a node on the remote. */}}
         Future<{{ $.Name }}> update({{ $.Name }}UpdateRequest req) async {
-            final r = await apiClient.patch(
+            final r = await client.patch(
                 Uri(path: '/${{ $.Name | snake }}Url/${req.{{ $.ID.Name }}}'),
-                body: jsonEncode(req.toJson()),
+                body: req.toJson(),
             );
 
-            return ({{ $.Name }}.fromJson(jsonDecode(r.body)));
+            return ({{ $.Name }}.fromJson(r.body));
         }
 
         {{/* Delete a node on the remote. */}}
         Future delete({{ $.ID.Type | dartType }} id) =>
-            apiClient.delete(Uri(path: '/${{ $.Name | snake }}Url/$id'));
+            client.delete(Uri(path: '/${{ $.Name | snake }}Url/$id'));
 
         {{/* Fetch the nodes edges. */}}
         {{ range $e := $.Edges}}
             {{ if or (not $e.Type.Annotations.HandlerGen) (not $e.Type.Annotations.HandlerGen.Skip) }}
                 Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | camel }}({{ $.Name }} e) async {
-                    final r = await apiClient.get(Uri(path: '/${{ $.Name | snake }}Url/${e.{{ $.ID.Name }}}/${{ $e.Type.Name | snake }}Url'));
+                    final r = await client.get(Uri(path: '/${{ $.Name | snake }}Url/${e.{{ $.ID.Name }}}/${{ $e.Type.Name | snake }}Url'));
                     {{ if $e.Unique -}}
-                        return ({{ $e.Type.Name }}.fromJson(jsonDecode(r.body)));
+                        return ({{ $e.Type.Name }}.fromJson(r.body));
                     {{ else -}}
-                        return (jsonDecode(r.body) as List).map((i) => {{ $e.Type.Name }}.fromJson(i)).toList();
+                        return (r.body as List).map((i) => {{ $e.Type.Name }}.fromJson(i)).toList();
                     {{ end -}}
                 }
             {{ end }}

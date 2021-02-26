@@ -19,6 +19,6 @@
         }
 
         h.Logger.WithField("{{ $.Name | snake }}", id).Info("{{ $.Name | snake }} deleted")
-        render.NoContent(w, r)
+        render.NoContent(w)
     }
 {{end}}
