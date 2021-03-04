@@ -51,14 +51,8 @@
             }
         {{ end }}
 
-        {{- $es := eagerLoadedEdges $ "ListGroups" }}
-        {{ if $es }}
-            // Eager load edges.
-            q
-            {{- range $e := $es -}}
-                .With{{ pascal $e.Name }}()
-            {{- end }}
-        {{ end }}
+        {{- $elb := eagerLoadBuilder $ "ListGroups" "q" nil nil }}
+        {{- if $elb }}{{ $elb }}{{ end }}
 
         // Pagination
         page, itemsPerPage, err := h.paginationInfo(w, r)
@@ -82,7 +76,7 @@
             {{- if $groups }}
                 {{- range $g := $groups}}"{{$g}}",{{ end -}}
             {{ else -}}
-                "{{ $.Name | snake }}:list"
+                "{{ $.Name | snake }}"
             {{- end -}}
         }}, es)
         if err != nil {

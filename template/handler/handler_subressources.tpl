@@ -20,7 +20,7 @@
                     return
                 }
 
-                q := h.Client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id)).Query{{ $e.Name | pascal }}()
+                q := h.Client.{{ $.Name }}.Query().Where({{ $.Name | lower }}.ID(id)).Query{{ $e.Name | pascal }}()
 
                 {{ if $e.Unique }}
                     {{ template "read/qb" $e.Type }}
@@ -32,7 +32,7 @@
                         {{- if $groups }}
                             {{- range $g := $groups}}"{{$g}}",{{ end -}}
                         {{ else -}}
-                            "{{ $e.Type.Name | snake }}:read"
+                            "{{ $e.Type.Name | snake }}"
                         {{- end -}}
                     }}, e)
                     if err != nil {
@@ -62,24 +62,8 @@
                         }
                     {{ end }}
 
-                    {{- $es := eagerLoadedEdges $e.Type "ListGroups" }}
-                    {{ if $es }}
-                        // Eager load edges.
-                        q
-                        {{- range $e := $es -}}
-                            {{ if not (eq $e.Type $) }}.With{{ pascal $e.Name }}(
-                                {{- if $do := $e.Type.Annotations.HandlerGen.DefaultListOrder -}}
-                                    func(q *{{ $.Config.Package | base }}.{{ $e.Type.Name }}Query) {
-                                        q.Order(
-                                            {{- range $o := $do -}}
-                                                ent.{{ if eq ($o.Order | lower) "desc" }}Desc{{ else }}Asc{{ end }}("{{ $o.Field }}"),
-                                            {{- end -}}
-                                        )
-                                    }
-                                {{- end -}}
-                            ){{ end }}
-                        {{- end }}
-                    {{ end }}
+                    {{- $elb := eagerLoadBuilder $e.Type "ListGroups" "q" nil nil }}
+                    {{- if $elb }}{{ $elb }}{{ end }}
 
                     // Pagination
                     page, itemsPerPage, err := h.paginationInfo(w, r)
@@ -103,7 +87,7 @@
                         {{- if $groups }}
                             {{- range $g := $groups}}"{{$g}}",{{ end -}}
                         {{ else -}}
-                            "{{ $e.Type.Name | snake }}:list"
+                            "{{ $e.Type.Name | snake }}"
                         {{- end -}}
                     }}, es)
                     if err != nil {

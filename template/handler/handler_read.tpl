@@ -13,7 +13,12 @@
             return
         }
 
-        q := h.Client.{{ $.Name }}.Query().Where({{ $.Name | snake }}.ID(id))
+        {{/* cast to go-type if needed */}}
+        {{- if $.ID.HasGoType }}
+            _id := {{ $.ID.Type }}(id)
+        {{ end }}
+
+        q := h.Client.{{ $.Name }}.Query().Where({{ $.Name | lower }}.ID({{ if $.ID.HasGoType }}_id{{ else }}id{{ end }}))
         {{ template "read/qb" $ }}
         e, err := q.Only(r.Context())
         {{ template "read/error-handling" $ }}
@@ -23,7 +28,7 @@
             {{- if $groups }}
                 {{- range $g := $groups}}"{{$g}}",{{ end -}}
             {{ else -}}
-                "{{ $.Name | snake }}:read"
+                "{{ $.Name | snake }}"
             {{- end -}}
         }}, e)
         if err != nil {

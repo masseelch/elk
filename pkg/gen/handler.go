@@ -29,7 +29,10 @@ func Handler(c *Config) error {
 	// Create the template
 	tpl := template.New("handler").Funcs(gen.Funcs).Funcs(template.FuncMap{
 		"eagerLoadedEdges": eagerLoadedEdges,
-		"pkgImports": pkgImports,
+		"eagerLoadBuilder": eagerLoadQueryByGroupKeyRecursive,
+		"pkgImports":       pkgImports,
+		"lowerFirst":       lowerFirst,
+		"visited":          visited,
 	})
 
 	// Attach header template.

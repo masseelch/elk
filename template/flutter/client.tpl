@@ -122,12 +122,12 @@
         {{ end }}
 
         {{/* Make this node acceessible by the dart provider package. */}}
-        static {{ $.Name }}Client of(BuildContext context) => Provider.of<{{ $.Name }}Client>(context, listen: false);
+        static {{ $.Name }}Client of(BuildContext context) => context.read<{{ $.Name }}Client>();
     }
 
     {{/* The message used to create a new model on the remote. */}}
     {{ $dfc := dartRequestFields $.Type "SkipCreate" }}
-    @JsonSerializable(createFactory: false)
+    @JsonSerializable(createFactory: false, includeIfNull: false)
     @DateUtcConverter()
     class {{ $.Name }}CreateRequest {
         {{ $.Name }}CreateRequest({
@@ -162,7 +162,7 @@
 
     {{/* The message used to update a model on the remote. */}}
     {{ $dfu := dartRequestFields $.Type "SkipUpdate" }}
-    @JsonSerializable(createFactory: false)
+    @JsonSerializable(createFactory: false, includeIfNull: false)
     @DateUtcConverter()
     class {{ $.Name }}UpdateRequest {
         {{ $.Name }}UpdateRequest({

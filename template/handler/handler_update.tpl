@@ -2,7 +2,7 @@
 
 {{ define "handler/update" }}
     // struct to bind the post body to.
-    type {{ $.Name | camel }}UpdateRequest struct {
+    type {{ $.Name | lowerFirst }}UpdateRequest struct {
         {{/* Add all fields that are not excluded. */}}
         {{ range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
@@ -31,7 +31,7 @@
         }
 
         // Get the post data.
-        d := {{ $.Name | snake }}UpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.
+        d := {{ $.Name | lowerFirst }}UpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.
         if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
             h.Logger.WithError(err).Error("error decoding json")
             render.BadRequest(w, r, "invalid json string")
@@ -88,7 +88,7 @@
             {{- if $groups }}
                 {{- range $g := $groups}}"{{$g}}",{{ end -}}
             {{ else -}}
-                "{{ $.Name | snake }}:read"
+                "{{ $.Name | snake }}"
             {{- end -}}
         }}, e)
         if err != nil {

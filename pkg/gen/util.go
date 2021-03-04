@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"reflect"
 	"strings"
+	"unicode"
 )
 
 var (
@@ -255,10 +256,123 @@ func eagerLoadedEdges(n *gen.Type, groupKey string) []*gen.Edge {
 	return r
 }
 
+// What edges to eager-load.
+func eagerLoadQueryByGroupKeyRecursive(n *gen.Type, groupKey string, builderVar string, visitedTypes []*gen.Type, groups []string) *string {
+	// Use the given groups. If there are non given this is the first leaf in the serialization tree.
+	// In that case use the types annotation to fetch the groups.
+
+	annotationGroups := groups
+	if annotationGroups == nil || len(annotationGroups) == 0 {
+		annotationGroups = extractGroupsFromAnnotations(n, groupKey)
+	}
+
+	// Stop the recursion
+	if annotationGroups == nil || typeVisited(visitedTypes, n) {
+		return nil
+	}
+
+	// Mark this node as visited.
+	visitedTypes = append(visitedTypes, n)
+
+	// Start the query
+	b := new(strings.Builder)
+	b.WriteString(builderVar)
+
+	// Iterate over the edges of the given type.
+	// If the type has an edge we need to eager load do so.
+	// Recursively go down the current edges edges and eager load those too.
+	for _, e := range n.Edges {
+		// Do not include a type we already saw above this branch of the serialization tree.
+		if typeVisited(visitedTypes, e.Type) {
+			continue
+		}
+
+		// TODO: Take the DefaultOrder-Annotation into account.
+
+		// Get the groups of the edge out of its group-tag.
+		tagGroups := extractGroupsFromTag(e.StructTag)
+
+		// If the annotationGroups contain a group that is present on the edge eager load the edge.
+		if haveSameGroup(annotationGroups, tagGroups) {
+			b.WriteString(fmt.Sprintf(".With%s(", gen.Funcs["pascal"].(func(string) string)(e.Name)))
+
+			// Recursively collect the eager loads of this edges edges.
+			subQueryBuilderVar := "_" + builderVar
+			if q := eagerLoadQueryByGroupKeyRecursive(e.Type, groupKey, "_"+builderVar, visitedTypes, annotationGroups); q != nil {
+				b.WriteString(fmt.Sprintf("func(%s *ent.%s){\n%s\n}", subQueryBuilderVar, e.Type.QueryName(), *q))
+			}
+
+			// Finally close the
+			b.WriteString(")")
+		}
+	}
+
+	s := b.String()
+	if s == builderVar {
+		return nil
+	}
+
+	return &s
+}
+
+func extractGroupsFromAnnotations(n *gen.Type, groupKey string) []string {
+	if n.Annotations["HandlerGen"] != nil {
+		if annos, ok := n.Annotations["HandlerGen"].(map[string]interface{}); ok {
+			if groupsI, ok := annos[groupKey].([]interface{}); ok {
+				groups := make([]string, len(groupsI))
+				for i := range groupsI {
+					groups[i] = groupsI[i].(string)
+				}
+
+				return groups
+			}
+		}
+	}
+
+	return nil
+}
+
+func haveSameGroup(a []string, b []string) bool {
+	for _, ae := range a {
+		for _, be := range b {
+			if ae == be {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func extractGroupsFromTag(tag string) []string {
+	if t, ok := reflect.StructTag(tag).Lookup("groups"); ok {
+		return strings.Split(t, ",")
+	}
+
+	return nil
+}
+
+func typeVisited(visited []*gen.Type, t *gen.Type) bool {
+	for _, _t := range visited {
+		if _t == t {
+			return true
+		}
+	}
+
+	return false
+}
+
+func visited(v ...*gen.Type) []*gen.Type {
+	return v
+}
+
 func pkgImports(g *gen.Graph) []string {
 	i := make(map[string]struct{})
 
 	for _, n := range g.Nodes {
+		if n.ID.HasGoType() {
+			i[n.ID.Type.PkgPath] = struct{}{}
+		}
 		for _, f := range n.Fields {
 			if f.HasGoType() {
 				i[f.Type.PkgPath] = struct{}{}
@@ -276,4 +390,8 @@ func pkgImports(g *gen.Graph) []string {
 
 func dec(i int) int {
 	return i - 1
+}
+
+func lowerFirst(s string) string {
+	return string(unicode.ToLower(rune(s[0]))) + s[1:]
 }
