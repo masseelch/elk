@@ -50,6 +50,7 @@ func NewHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *Handl
         func New{{ $n.Name }}Handler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *{{ $n.Name }}Handler {
             h := &{{ $n.Name }}Handler{NewHandler(c, v, log)}
 
+            {{/* If a crud-operation shoul be skipped do not register is on the handler. */}}
             {{ if not $n.Annotations.HandlerGen.SkipCreate }}{{ template "handler/create/route" $n }}{{ end }}
             {{ if not $n.Annotations.HandlerGen.SkipRead }}{{ template "handler/read/route" $n }}{{ end }}
             {{ if not $n.Annotations.HandlerGen.SkipUpdate }}{{ template "handler/update/route" $n }}{{ end }}
@@ -62,11 +63,16 @@ func NewHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *Handl
             return h
         }
 
-        {{ if not $n.Annotations.HandlerGen.SkipCreate }}{{ template "handler/create" $n }}{{ end }}
-        {{ if not $n.Annotations.HandlerGen.SkipRead }}{{ template "handler/read" $n }}{{ end }}
-        {{ if not $n.Annotations.HandlerGen.SkipUpdate }}{{ template "handler/update" $n }}{{ end }}
-        {{ if not $n.Annotations.HandlerGen.SkipDelete }}{{ template "handler/delete" $n }}{{ end }}
-        {{ if not $n.Annotations.HandlerGen.SkipList }}{{ template "handler/list" $n }}{{ end }}
+        {{/*
+            Do not skip the generation of the method, just the registration on the default endpoint.
+            This way the user can still use the method but on another endpoint. Go Compiler will
+            remove the function if is is not used anyways.
+        */}}
+        {{ template "handler/create" $n }}
+        {{ template "handler/read" $n }}
+        {{ template "handler/update" $n }}
+        {{ template "handler/delete" $n }}
+        {{ template "handler/list" $n }}
 
         {{/* todo - skip resources */}}
         {{ template "handler/subresource/get" $n }}
@@ -74,7 +80,7 @@ func NewHandler(c *ent.Client, v *validator.Validate, log *logrus.Logger) *Handl
 {{ end }}
 
 {{/* Some helpers */}}
-func (h Handler) urlParamString(w http.ResponseWriter, r *http.Request, param string) (id string, err error) {
+func (h Handler) URLParamString(w http.ResponseWriter, r *http.Request, param string) (id string, err error) {
     id = chi.URLParam(r, param)
     if id == "" {
         err = errors.New("empty url param")
@@ -84,7 +90,7 @@ func (h Handler) urlParamString(w http.ResponseWriter, r *http.Request, param st
 
     return
 }
-func (h Handler) urlParamInt(w http.ResponseWriter, r *http.Request, param string) (id int, err error) {
+func (h Handler) URLParamInt(w http.ResponseWriter, r *http.Request, param string) (id int, err error) {
     p := chi.URLParam(r, param)
     if p == "" {
         err = errors.New("empty url param")
@@ -103,7 +109,7 @@ func (h Handler) urlParamInt(w http.ResponseWriter, r *http.Request, param strin
     return
 }
 
-func (h Handler) urlParamTime(w http.ResponseWriter, r *http.Request, param string) (date time.Time, err error) {
+func (h Handler) URLParamTime(w http.ResponseWriter, r *http.Request, param string) (date time.Time, err error) {
     p := chi.URLParam(r, param)
     if p == "" {
         h.Logger.WithField("param", param).Info("empty url param")

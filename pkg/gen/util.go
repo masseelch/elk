@@ -56,9 +56,10 @@ type (
 		files []file
 	}
 	Config struct {
-		Source  string
-		Target  string
-		Package string
+		Source    string
+		Target    string
+		Package   string
+		Templates []string
 	}
 )
 
@@ -72,6 +73,14 @@ func (d dartField) Name() string {
 	}
 
 	return d.Field.Name
+}
+
+func (d dartField) Immutable() bool {
+	if d.IsEdge() {
+		return false
+	}
+
+	return d.Field.Immutable
 }
 
 func (d dartField) StructField() string {

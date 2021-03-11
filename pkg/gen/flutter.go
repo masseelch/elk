@@ -2,9 +2,10 @@ package gen
 
 import (
 	"bytes"
-	"fmt"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
+	"fmt"
+	"github.com/go-openapi/inflect"
 	"github.com/masseelch/elk/internal"
 	"path/filepath"
 	"text/template"
@@ -54,6 +55,8 @@ func Flutter(c *FlutterConfig) error {
 			"dartType":          dt,
 			"dartRequestFields": dartRequestFields(c, dt),
 			"dec":               dec,
+			"lowerFirst":        lowerFirst,
+			"plural":            inflect.Pluralize,
 		})
 	for _, n := range []string{
 		"header/dart.tpl",

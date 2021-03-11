@@ -12,9 +12,9 @@
             {{/* Read/List operations on subressources */}}
             func(h {{ $.Name }}Handler) {{ $e.Name | pascal }}(w http.ResponseWriter, r *http.Request) {
                 {{- if $.ID.IsInt }}
-                    id, err := h.urlParamInt(w, r, "id")
+                    id, err := h.URLParamInt(w, r, "id")
                 {{ else }}
-                    id, err := h.urlParamString(w, r, "id")
+                    id, err := h.URLParamString(w, r, "id")
                 {{ end -}}
                 if err != nil {
                     return
@@ -34,7 +34,7 @@
                         {{ else -}}
                             "{{ $e.Type.Name | snake }}"
                         {{- end -}}
-                    }}, e)
+                    }, IncludeEmptyTag: true},  e)
                     if err != nil {
                         h.Logger.WithError(err).WithField("{{ $e.Type.Name }}.{{ $e.Type.ID.Name }}", id).Error("serialization error")
                         render.InternalServerError(w, r, nil)
@@ -89,7 +89,7 @@
                         {{ else -}}
                             "{{ $e.Type.Name | snake }}"
                         {{- end -}}
-                    }}, es)
+                    }, IncludeEmptyTag: true},  es)
                     if err != nil {
                         h.Logger.WithError(err).Error("serialization error")
                         render.InternalServerError(w, r, nil)
@@ -102,6 +102,6 @@
             }
         {{ end }}
 
-        {{/* Create operations on subressources */}}
+        {{/* TODO: Create operations on subressources */}}
     {{ end }}
 {{ end }}

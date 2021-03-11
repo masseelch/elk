@@ -78,7 +78,7 @@
             {{ else -}}
                 "{{ $.Name | snake }}"
             {{- end -}}
-        }}, es)
+        }, IncludeEmptyTag: true},  es)
         if err != nil {
             h.Logger.WithError(err).Error("serialization error")
             render.InternalServerError(w, r, nil)

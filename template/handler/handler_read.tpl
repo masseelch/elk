@@ -5,9 +5,9 @@
     // database and returns it to the client.
     func(h {{ $.Name }}Handler) Read(w http.ResponseWriter, r *http.Request) {
         {{- if $.ID.IsInt }}
-            id, err := h.urlParamInt(w, r, "id")
+            id, err := h.URLParamInt(w, r, "id")
         {{ else }}
-            id, err := h.urlParamString(w, r, "id")
+            id, err := h.URLParamString(w, r, "id")
         {{ end -}}
         if err != nil {
             return
@@ -30,7 +30,7 @@
             {{ else -}}
                 "{{ $.Name | snake }}"
             {{- end -}}
-        }}, e)
+        }, IncludeEmptyTag: true},  e)
         if err != nil {
             h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", id).Error("serialization error")
             render.InternalServerError(w, r, nil)

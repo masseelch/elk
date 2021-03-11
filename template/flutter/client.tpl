@@ -26,7 +26,7 @@
     part '{{ $.Name | snake }}.g.dart';
 
     {{/* Make the url of this node accessible to other dart files. */}}
-    const {{ $.Name | snake }}Url = '{{ (replace ($.Name | snake) "_" "-") | plural }}';
+    const {{ $.Name | lowerFirst }}Url = '{{ (replace ($.Name | plural | snake) "_" "-") }}';
 
     {{/* The client for a model. Consumes the generated api. */}}
     class {{ $.Name }}Client {
@@ -36,7 +36,7 @@
 
         {{/* Find a single node by id. */}}
         Future<{{ $.Name }}> find({{ $.ID.Type | dartType }} id) async {
-            final r = await client.get(Uri(path: '/${{ $.Name | snake }}Url/$id'));
+            final r = await client.get(Uri(path: '/${{ $.Name | lowerFirst }}Url/$id'));
 
             return {{ $.Name }}.fromJson(r.body);
         }
@@ -52,14 +52,14 @@
                     {{ end }}
             {{ end }}
         }) async {
-            final params = const <String, dynamic>{};
+            final params = <String, dynamic>{};
 
             if (page != null) {
-                params['page'] = page;
+                params['page'] = page.toString();
             }
 
             if (itemsPerPage != null) {
-                params['itemsPerPage'] = itemsPerPage;
+                params['itemsPerPage'] = itemsPerPage.toString();
             }
 
             {{ range $f := $.Fields }}
@@ -72,7 +72,7 @@
             {{ end }}
 
             final r = await client.get(Uri(
-                path: '/${{ $.Name | snake }}Url',
+                path: '/${{ $.Name | lowerFirst }}Url',
                 queryParameters: params,
             ));
 
@@ -86,7 +86,7 @@
         {{/* Create a new node on the remote. */}}
         Future<{{ $.Name }}> create({{ $.Name }}CreateRequest req) async {
             final r = await client.post(
-                Uri(path: '/${{ $.Name | snake }}Url'),
+                Uri(path: '/${{ $.Name | lowerFirst }}Url'),
                 body: req.toJson(),
             );
 
@@ -96,7 +96,7 @@
         {{/* Update a node on the remote. */}}
         Future<{{ $.Name }}> update({{ $.Name }}UpdateRequest req) async {
             final r = await client.patch(
-                Uri(path: '/${{ $.Name | snake }}Url/${req.{{ $.ID.Name }}}'),
+                Uri(path: '/${{ $.Name | lowerFirst }}Url/${req.{{ $.ID.Name }}}'),
                 body: req.toJson(),
             );
 
@@ -105,13 +105,13 @@
 
         {{/* Delete a node on the remote. */}}
         Future delete({{ $.ID.Type | dartType }} id) =>
-            client.delete(Uri(path: '/${{ $.Name | snake }}Url/$id'));
+            client.delete(Uri(path: '/${{ $.Name | lowerFirst }}Url/$id'));
 
         {{/* Fetch the nodes edges. */}}
         {{ range $e := $.Edges}}
             {{ if or (not $e.Type.Annotations.HandlerGen) (not $e.Type.Annotations.HandlerGen.Skip) }}
-                Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | camel }}({{ $.Name }} e) async {
-                    final r = await client.get(Uri(path: '/${{ $.Name | snake }}Url/${e.{{ $.ID.Name }}}/${{ $e.Type.Name | snake }}Url'));
+                Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | lowerFirst }}({{ $.Name }} e) async {
+                    final r = await client.get(Uri(path: '/${{ $.Name | lowerFirst }}Url/${e.{{ $.ID.Name }}}/{{ (replace ($e.Name | snake) "_" "-") }}'));
                     {{ if $e.Unique -}}
                         return ({{ $e.Type.Name }}.fromJson(r.body));
                     {{ else -}}
@@ -168,31 +168,37 @@
         {{ $.Name }}UpdateRequest({
             this.{{ $.ID.Name }},
             {{ range $dfu -}}
-                this.{{ .Name | camel }},
+                {{- if not .Immutable -}}
+                    this.{{ .Name | camel }},
+                {{- end -}}
             {{ end -}}
         });
 
         {{ $.Name }}UpdateRequest.from{{ $.Name }}({{ $.Name }} e) :
             {{ $.ID.Name }} = e.{{ $.ID.Name }}{{ if len $dfu }},{{ end }}
             {{ range $i, $f := $dfu -}}
-                {{ $f.Name | camel }} = e.
-                {{- if $f.IsEdge }}edges?.{{ end -}}
-                {{ $f.Name | camel }}
-                {{- if $f.IsEdge }}?.
-                    {{- if $f.Edge.Unique -}}
-                        {{ $f.Edge.Type.ID.Name }}
-                    {{- else -}}
-                        map((e) => e.{{ $f.Edge.Type.ID.Name }}).toList()
-                    {{- end -}}
-                {{ end -}}
-                {{- if not (eq $i (dec (len $dfu))) }},{{ end }}
+                {{- if not .Immutable -}}
+                    {{ $f.Name | camel }} = e.
+                    {{- if $f.IsEdge }}edges?.{{ end -}}
+                    {{ $f.Name | camel }}
+                    {{- if $f.IsEdge }}?.
+                        {{- if $f.Edge.Unique -}}
+                            {{ $f.Edge.Type.ID.Name }}
+                        {{- else -}}
+                            map((e) => e.{{ $f.Edge.Type.ID.Name }}).toList()
+                        {{- end -}}
+                    {{ end -}}
+                    {{- if not (eq $i (dec (len $dfu))) }},{{ end }}
+                {{- end -}}
             {{- end -}}
         ;
 
         {{ $.ID.Type | dartType }}? {{ $.ID.Name }};
         {{ range $dfu -}}
-            {{ if .Converter }}{{ .Converter }}{{ end -}}
-            {{ .Type }} {{ .Name | camel }};
+            {{- if not .Immutable -}}
+                {{ if .Converter }}{{ .Converter }}{{ end -}}
+                {{ .Type }} {{ .Name | camel }};
+            {{- end -}}
         {{ end }}
 
         Map<String, dynamic> toJson() => _${{ $.Name }}UpdateRequestToJson(this);

@@ -2,7 +2,7 @@
 
 {{ define "handler/create" }}
     // struct to bind the post body to.
-    type {{ $.Name | lowerFirst }}CreateRequest struct {
+    type {{ $.Name }}CreateRequest struct {
         {{/* Add all fields that are not excluded. */}}
         {{ range $f := $.Fields -}}
             {{- $a := $f.Annotations.FieldGen }}
@@ -22,7 +22,7 @@
     // This function creates a new {{ $.Name }} model and stores it in the database.
     func(h {{ $.Name }}Handler) Create(w http.ResponseWriter, r *http.Request) {
         // Get the post data.
-        d := {{ $.Name | lowerFirst }}CreateRequest{} // todo - allow form-url-encdoded/xml/protobuf data.
+        d := {{ $.Name }}CreateRequest{} // todo - allow form-url-encdoded/xml/protobuf data.
         if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
             h.Logger.WithError(err).Error("error decoding json")
             render.BadRequest(w, r, "invalid json string")
@@ -97,7 +97,7 @@
             {{ else -}}
                 "{{ $.Name | snake }}"
             {{- end -}}
-        }}, e1)
+        },IncludeEmptyTag: true}, e1)
         if err != nil {
             h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", e.ID).Error("serialization error")
             render.InternalServerError(w, r, nil)

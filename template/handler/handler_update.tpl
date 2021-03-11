@@ -2,13 +2,15 @@
 
 {{ define "handler/update" }}
     // struct to bind the post body to.
-    type {{ $.Name | lowerFirst }}UpdateRequest struct {
+    type {{ $.Name }}UpdateRequest struct {
         {{/* Add all fields that are not excluded. */}}
         {{ range $f := $.Fields -}}
-            {{- $a := $f.Annotations.FieldGen }}
-            {{- if not (and $a $a.SkipUpdate) }}
-                {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ if $a.UpdateValidationTag }} {{ $a.UpdateValidationTag }}{{ end }}`
-            {{- end }}
+            {{- if not $f.Immutable }}
+                {{- $a := $f.Annotations.FieldGen }}
+                {{- if not (and $a $a.SkipUpdate) }}
+                    {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ if $a.UpdateValidationTag }} {{ $a.UpdateValidationTag }}{{ end }}`
+                {{- end }}
+                {{- end }}
         {{- end -}}
         {{/* Add all edges that are not excluded. */}}
         {{- range $e := $.Edges -}}
@@ -22,16 +24,21 @@
     // This function updates a given {{ $.Name }} model and saves the changes in the database.
     func(h {{ $.Name }}Handler) Update(w http.ResponseWriter, r *http.Request) {
         {{- if $.ID.IsInt }}
-            id, err := h.urlParamInt(w, r, "id")
+            id, err := h.URLParamInt(w, r, "id")
         {{ else }}
-            id, err := h.urlParamString(w, r, "id")
+            id, err := h.URLParamString(w, r, "id")
         {{ end -}}
         if err != nil {
             return
         }
 
+        {{/* cast to go-type if needed */}}
+        {{- if $.ID.HasGoType }}
+            _id := {{ $.ID.Type }}(id)
+        {{ end }}
+
         // Get the post data.
-        d := {{ $.Name | lowerFirst }}UpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.
+        d := {{ $.Name }}UpdateRequest{} // todo - allow form-url-encoded/xml/protobuf data.
         if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
             h.Logger.WithError(err).Error("error decoding json")
             render.BadRequest(w, r, "invalid json string")
@@ -52,14 +59,16 @@
         }
 
         // Save the data.
-        b := h.Client.{{ $.Name }}.UpdateOneID(id)
+        b := h.Client.{{ $.Name }}.UpdateOneID({{ if $.ID.HasGoType }}_id{{ else }}id{{ end }})
         {{- range $f := $.Fields -}}
-            {{- $a := $f.Annotations.FieldGen }}
-            {{- if not (and $a $a.SkipUpdate) }}
-                if d.{{ $f.StructField }} != nil {
-                    b.Set{{ $f.StructField }}(*d.{{ $f.StructField }}) {{/* todo - what about slice fields that have custom marshallers? */}}
-                }
-            {{- end -}}
+            {{- if not $f.Immutable }}
+                {{- $a := $f.Annotations.FieldGen }}
+                {{- if not (and $a $a.SkipUpdate) }}
+                    if d.{{ $f.StructField }} != nil {
+                        b.Set{{ $f.StructField }}(*d.{{ $f.StructField }}) {{/* todo - what about slice fields that have custom marshallers? */}}
+                    }
+                {{- end -}}
+            {{- end }}
         {{ end }}
         {{- range $e := $.Edges -}}
             {{- $a := $e.Annotations.FieldGen }}
@@ -90,7 +99,7 @@
             {{ else -}}
                 "{{ $.Name | snake }}"
             {{- end -}}
-        }}, e)
+        }, IncludeEmptyTag: true},  e)
         if err != nil {
             h.Logger.WithError(err).WithField("{{ $.Name }}.{{ $.ID.Name }}", e.ID).Error("serialization error")
             render.InternalServerError(w, r, nil)
