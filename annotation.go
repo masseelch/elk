@@ -27,6 +27,22 @@ const (
 )
 
 type (
+	// Used on (list) edges to specify a default order.
+	EdgeAnnotation struct {
+		DefaultOrder []Order
+	}
+	// Used on fields pass options to the handler generator.
+	FieldAnnotation struct {
+		SkipCreate          bool
+		CreateValidationTag string
+		SkipUpdate          bool
+		UpdateValidationTag string
+		MapGoType           bool
+	}
+	// Used on a schema to pass options to the flutter generator.
+	FlutterAnnotation struct {
+		Skip bool
+	}
 	// Used on a schema to pass options to the handler generator.
 	HandlerAnnotation struct {
 		Skip             bool
@@ -41,32 +57,24 @@ type (
 		ListGroups       []string
 		DefaultListOrder []Order
 	}
-	// Used on fields pass options to the handler generator.
-	FieldAnnotation struct {
-		SkipCreate          bool
-		CreateValidationTag string
-		SkipUpdate          bool
-		UpdateValidationTag string
-		MapGoType           bool
-	}
-	// Used on (list) edges to specify a default order.
-	EdgeAnnotation struct {
-		DefaultOrder []Order
-	}
 	Order struct {
 		Order string
 		Field string
 	}
 )
 
-func (HandlerAnnotation) Name() string {
-	return "HandlerGen"
+func (EdgeAnnotation) Name() string {
+	return "EdgeGen"
 }
 
 func (FieldAnnotation) Name() string {
 	return "FieldGen"
 }
 
-func (EdgeAnnotation) Name() string {
-	return "EdgeGen"
+func (FlutterAnnotation) Name() string {
+	return "FlutterGen"
+}
+
+func (HandlerAnnotation) Name() string {
+	return "HandlerGen"
 }

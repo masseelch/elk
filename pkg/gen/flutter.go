@@ -83,6 +83,12 @@ func Flutter(c *FlutterConfig) error {
 	}
 
 	for _, n := range g.Nodes {
+		// SKip this model if it has the FlutterAnnotation Skip property set to true.
+		// Only generate the client if the generation should not be skipped.
+		if n.Annotations["FlutterGen"] != nil && n.Annotations["FlutterGen"].(map[string]interface{})["Skip"].(bool) {
+			continue
+		}
+
 		en := &ExtendedType{Type: n, TypeMappings: c.TypeMappings}
 		b := bytes.NewBuffer(nil)
 		if err := tpl.ExecuteTemplate(b, "model", en); err != nil {
