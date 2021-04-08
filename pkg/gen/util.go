@@ -161,7 +161,7 @@ func (a assets) formatGo() error {
 
 // formatDart runs "dartfmt" on all assets.
 func (a assets) formatDart(dirs []string) error {
-	args := []string{"-w"}
+	args := []string{"-w", "--line-length=120"}
 	for _, dir := range dirs {
 		args = append(args, dir)
 	}

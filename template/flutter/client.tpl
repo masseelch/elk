@@ -110,8 +110,8 @@
         {{/* Fetch the nodes edges. */}}
         {{ range $e := $.Edges}}
             {{ if or (not $e.Type.Annotations.HandlerGen) (not $e.Type.Annotations.HandlerGen.Skip) }}
-                Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | lowerFirst }}({{ $.Name }} e) async {
-                    final r = await client.get(Uri(path: '/${{ $.Name | lowerFirst }}Url/${e.{{ $.ID.Name }}}/{{ (replace ($e.Name | snake) "_" "-") }}'));
+                Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | lowerFirst }}({{ $.ID.Type | dartType }} id) async {
+                    final r = await client.get(Uri(path: '/${{ $.Name | lowerFirst }}Url/$id/{{ (replace ($e.Name | snake) "_" "-") }}'));
                     {{ if $e.Unique -}}
                         return ({{ $e.Type.Name }}.fromJson(r.body));
                     {{ else -}}
@@ -166,7 +166,7 @@
     @DateUtcConverter()
     class {{ $.Name }}UpdateRequest {
         {{ $.Name }}UpdateRequest({
-            this.{{ $.ID.Name }},
+            required this.{{ $.ID.Name }},
             {{ range $dfu -}}
                 {{- if not .Immutable -}}
                     this.{{ .Name | camel }},
@@ -175,9 +175,9 @@
         });
 
         {{ $.Name }}UpdateRequest.from{{ $.Name }}({{ $.Name }} e) :
-            {{ $.ID.Name }} = e.{{ $.ID.Name }}{{ if len $dfu }},{{ end }}
+            {{ $.ID.Name }} = e.{{ $.ID.Name }}!{{ if len $dfu }}{{ end }}
             {{ range $i, $f := $dfu -}}
-                {{- if not .Immutable -}}
+                {{- if not .Immutable -}},
                     {{ $f.Name | camel }} = e.
                     {{- if $f.IsEdge }}edges?.{{ end -}}
                     {{ $f.Name | camel }}
@@ -188,12 +188,11 @@
                             map((e) => e.{{ $f.Edge.Type.ID.Name }}).toList()
                         {{- end -}}
                     {{ end -}}
-                    {{- if not (eq $i (dec (len $dfu))) }},{{ end }}
                 {{- end -}}
             {{- end -}}
         ;
 
-        {{ $.ID.Type | dartType }}? {{ $.ID.Name }};
+        {{ $.ID.Type | dartType }} {{ $.ID.Name }};
         {{ range $dfu -}}
             {{- if not .Immutable -}}
                 {{ if .Converter }}{{ .Converter }}{{ end -}}

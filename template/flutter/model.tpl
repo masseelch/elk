@@ -27,12 +27,22 @@
     class {{ $.Name }} {
         {{ $.Name }}();
 
-        {{/* The fields of the model. */}}
+        {{/* ID of the model */}}
+        {{- $jsonName := index (split (tagLookup $.ID.StructTag "json") ",") 0 }}
+        {{- if and (not (eq "-" $jsonName)) (not (eq $jsonName (snake $.ID.Name))) }}
+            @JsonKey(name: '{{ $jsonName }}')
+        {{ end -}}
         {{ $.ID.Type | dartType }}? {{ $.ID.Name }};
+
+        {{/* The fields of the model. */}}
         {{- range $f := $.Fields -}}
             {{- $c := $df.ConverterFor $f }}
             {{- if and $f.Annotations.FieldGen.MapGoType $f.HasGoType -}}
                 {{- if $c }}{{ $c }}{{ end -}}
+            {{ end -}}
+            {{- $jsonName := index (split (tagLookup $f.StructTag "json") ",") 0 }}
+            {{- if and (not (eq "-" $jsonName)) (not (eq $jsonName (snake $f.Name))) }}
+                @JsonKey(name: '{{ $jsonName }}')
             {{ end -}}
             {{ $f.Type | dartType }}? {{ $f.Name | camel }};
         {{ end }}

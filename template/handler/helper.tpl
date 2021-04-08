@@ -1,13 +1,13 @@
 {{ define "read/qb" }}
     {{/* If one of the given handler groups is set on the edge eager join it.*/}}
     {{/* todo - nested eager loading? */}}
-    {{- range $e := $.Edges }}
-        {{- range $g := $.Annotations.HandlerGen.ReadGroups }}
-            {{- range $eg := split (tagLookup $e.StructTag "groups") "," }}
-                {{- if eq $g $eg }}q.With{{ pascal $e.Name }}(){{ end -}}
-            {{- end }}
-        {{- end }}
-    {{- end }}
+    {{ range $e := $.Edges -}}
+        {{ range $g := $.Annotations.HandlerGen.ReadGroups -}}
+            {{ range $eg := split (tagLookup $e.StructTag "groups") "," -}}
+                {{ if eq $g $eg }}q.With{{ pascal $e.Name }}(){{ end }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
 {{ end }}
 
 {{ define "read/error-handling" }}
