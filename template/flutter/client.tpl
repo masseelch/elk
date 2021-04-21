@@ -110,7 +110,7 @@
         {{/* Fetch the nodes edges. */}}
         {{ range $e := $.Edges}}
             {{ if or (not $e.Type.Annotations.HandlerGen) (not $e.Type.Annotations.HandlerGen.Skip) }}
-                Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | lowerFirst }}({{ $.ID.Type | dartType }} id) async {
+                Future<{{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}> {{ $e.Name | camel }}({{ $.ID.Type | dartType }} id) async {
                     final r = await client.get(Uri(path: '/${{ $.Name | lowerFirst }}Url/$id/{{ (replace ($e.Name | snake) "_" "-") }}'));
                     {{ if $e.Unique -}}
                         return ({{ $e.Type.Name }}.fromJson(r.body));
