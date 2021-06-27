@@ -1,11 +1,12 @@
 module github.com/masseelch/elk
 
-go 1.15
+go 1.16
 
 require (
-	entgo.io/ent v0.6.1-0.20210308140753-e48f2724f5e1
-	github.com/go-openapi/inflect v0.19.0
-	github.com/spf13/cobra v1.1.3
-	github.com/spf13/viper v1.7.0
-	golang.org/x/tools v0.1.0
+	entgo.io/ent v0.8.0
+	github.com/go-chi/chi v1.5.4 // indirect
+	github.com/go-chi/chi/v5 v5.0.3 // indirect
+	github.com/stretchr/testify v1.7.0 // indirect
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
+	golang.org/x/tools v0.1.4 // indirect
 )
