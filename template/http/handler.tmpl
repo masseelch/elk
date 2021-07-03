@@ -1,0 +1,16 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "http/handler" }}
+    {{- with extend $ "Package" "http" -}}
+        {{ template "header" . }}
+    {{ end }}
+
+    func URLParamInt(r *http.Request, p string) (int, error) {
+        id, err = strconv.Atoi(chi.URLParam(r, p))
+        if err != nil {
+            return 0, err
+        }
+
+        return id, nil
+    }
+{{ end }}

@@ -1,0 +1,44 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "http/read" }}
+    {{- with extend $ "Package" "http" -}}
+        {{ template "header" . }}
+    {{ end }}
+
+    {{ range $n := $.Nodes }}
+        // {{ $n.Name }}Handler handles http crud operations on the {{ $n.Name }} model.
+        type {{ $n.Name }}Handler struct {
+            client *ent.Client
+            log    *zap.Logger
+        }
+
+        func New{{ $n.Name }}Handler(c *ent.Client, l *zap.Logger) *{{ $n.Name }}Handler {
+            return &{{ $n.Name }}Handler{
+                client: c,
+                log: l,
+            }
+        }
+
+        // {{ $n.Name }}ReadHandler fetches the {{ $n.Name }} model identified by a given url-parameter from the
+        // database and returns it to the client.
+        func (h *{{ $n.Name }}Handler) Read(w http.ResponseWriter, r *http.Request) {
+            // ID is URL parameter.
+            {{- if $n.ID.IsInt }}
+                id, err := strconv.Atoi(chi.URLParam(r, "id"))
+                if err != nil {
+                    // TODO: Handle
+                }
+            {{ else }}
+                id := chi.URLParam(r, "id")
+            {{ end }}
+
+            // Create the query to fetch the {{ $n.Name }}
+            q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }}))
+
+            // Eager load edges that are required on read operation.
+            {{ with edgesToLoad $n "read" }}{{ .Code "q" }}{{ end }}
+
+            e, err := q.Only(r.Context())
+        }
+    {{ end }}
+{{ end }}
