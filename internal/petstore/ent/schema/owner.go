@@ -34,5 +34,11 @@ func (Owner) Fields() []ent.Field {
 func (Owner) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("pets", Pet.Type),
+		edge.To("friends", Owner.Type).
+			Annotations(
+				elk.Annotation{
+					Groups: []string{"owner"},
+				},
+			),
 	}
 }

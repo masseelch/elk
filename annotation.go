@@ -22,6 +22,8 @@ type (
 		Skip bool `json:"Skip,omitempty"`
 		// Groups holds the serialization groups to use on this field / edge.
 		Groups Groups `json:"Groups,omitempty"`
+		// MaxDepth tells the generator the maximum depth of this field when there is a cycle possible.
+		MaxDepth uint
 	}
 )
 
@@ -53,4 +55,19 @@ func (a *SchemaAnnotation) Decode(o interface{}) error {
 	}
 
 	return json.Unmarshal(buf, a)
+}
+
+// EnsureDefaults ensures defaults are set.
+func (a *Annotation) EnsureDefaults() {
+	if a.MaxDepth == 0 {
+		a.MaxDepth = 1
+	}
+}
+
+// EnsureDefaults ensures defaults are set.
+func (a *SchemaAnnotation) EnsureDefaults() {
+	if a.ReadGroups == nil || len(a.ReadGroups) == 0 {
+		a.ReadGroups = []string{"read"}
+	}
+	// TODO: Other group defaults
 }
