@@ -3,6 +3,7 @@ package elk
 import (
 	"entgo.io/ent/entc/gen"
 	"github.com/masseelch/elk/internal"
+	"github.com/stoewer/go-strcase"
 	"text/template"
 )
 
@@ -22,10 +23,10 @@ var (
 		parse("template/http/create.tmpl"),
 		parse("template/http/read.tmpl"),
 	}
-
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{
 		"edgesToLoad": edgesToLoad,
+		"kebab":       strcase.KebabCase,
 	}
 )
 

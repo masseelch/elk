@@ -40,3 +40,9 @@ func (gs Groups) Match(other Groups) bool {
 func (gs Groups) StructTag() string {
 	return `groups:"` + strings.Join(gs, ",") + `"`
 }
+
+// Code returns the code representation of the groups.
+// [group_one, group_two] => "group_one","group_two"
+func (gs Groups) Code() string {
+	return `"` + strings.Join(gs, `","`) + `"`
+}

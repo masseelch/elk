@@ -3,6 +3,7 @@ package elk
 import (
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
@@ -71,6 +72,9 @@ func TestEdgesToLoad(t *testing.T) {
 	es, err := edgesToLoad(p, actionRead)
 	require.NoError(t, err)
 
+	spew.Dump(es.Code())
+
+	// Max-Depth of 3
 	require.Equal(t, &eagerLoadEdges{
 		queryName: "PetQuery",
 		edges: []eagerLoadEdge{{
@@ -79,6 +83,18 @@ func TestEdgesToLoad(t *testing.T) {
 				queryName: "OwnerQuery",
 				edges: []eagerLoadEdge{{
 					method: "WithFriends",
+					eagerLoadEdges: &eagerLoadEdges{
+						queryName: "OwnerQuery",
+						edges: []eagerLoadEdge{{
+							method: "WithFriends",
+							eagerLoadEdges: &eagerLoadEdges{
+								queryName: "OwnerQuery",
+								edges: []eagerLoadEdge{{
+									method: "WithFriends",
+								}},
+							},
+						}},
+					},
 				}},
 			},
 		}},

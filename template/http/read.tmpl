@@ -19,26 +19,79 @@
             }
         }
 
-        // {{ $n.Name }}ReadHandler fetches the {{ $n.Name }} model identified by a given url-parameter from the
+        // Read fetches the {{ $n.Name }} model identified by a given url-parameter from the
         // database and returns it to the client.
         func (h *{{ $n.Name }}Handler) Read(w http.ResponseWriter, r *http.Request) {
             // ID is URL parameter.
             {{- if $n.ID.IsInt }}
                 id, err := strconv.Atoi(chi.URLParam(r, "id"))
                 if err != nil {
-                    // TODO: Handle
+                    h.log.Error("error getting id from url parameter",
+                        zap.String("method", "read"),
+                        zap.String("id", chi.URLParam(r, "id")),
+                        zap.Error(err),
+                    )
+                    render.BadRequest(w, r, "id must be a positive integer greater zero")
+                    return
                 }
             {{ else }}
                 id := chi.URLParam(r, "id")
-            {{ end }}
+            {{ end -}}
 
             // Create the query to fetch the {{ $n.Name }}
             q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }}))
 
-            // Eager load edges that are required on read operation.
-            {{ with edgesToLoad $n "read" }}{{ .Code "q" }}{{ end }}
-
+            {{- with edgesToLoad $n "read" }}
+                // Eager load edges that are required on read operation.
+                {{ .Code "q" }}
+            {{- end }}
             e, err := q.Only(r.Context())
+            if err != nil {
+                switch err.(type) {
+                    case *ent.NotFoundError:
+                        h.log.Debug("{{ $n.Name | kebab }} not found",
+                            zap.String("method", "read"),
+                            zap.Int("{{ $n.ID.Name }}", id),
+                            zap.Error(err),
+                        )
+                        render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
+                        return
+                    case *ent.NotSingularError:
+                        h.log.Debug("duplicate entry for {{ $n.Name | kebab }}",
+                            zap.String("method", "read"),
+                            zap.Int("{{ $n.ID.Name }}", id),
+                            zap.Error(err),
+                        )
+                        render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(id))
+                        return
+                    default:
+                        h.log.Error("error fetching {{ $n.Name | kebab }} from db",
+                            zap.String("method", "read"),
+                            zap.Int("{{ $n.ID.Name }}", id),
+                            zap.Error(err),
+                        )
+                        render.InternalServerError(w, r, nil)
+                        return
+                }
+            }
+            d, err := sheriff.Marshal(&sheriff.Options{
+                IncludeEmptyTag: true,
+                Groups: []string{ {{- with $.Annotations.ElkSchema.ReadGroups }}.Code{{ else }}"{{ $n.Name | kebab }}"{{ end -}} },
+            }, e)
+            if err != nil {
+                h.log.Error("serialization error",
+                    zap.String("method", "read"),
+                    zap.Int("{{ $n.ID.Name }}", id),
+                    zap.Error(err),
+                )
+                render.InternalServerError(w, r, nil)
+                return
+            }
+            h.log.Info("{{ $n.Name | kebab }} rendered",
+                zap.String("method", "read"),
+                zap.Int("{{ $n.ID.Name }}", id),
+            )
+            render.OK(w, r, d)
         }
     {{ end }}
 {{ end }}

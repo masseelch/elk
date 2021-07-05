@@ -63,11 +63,3 @@ func (a *Annotation) EnsureDefaults() {
 		a.MaxDepth = 1
 	}
 }
-
-// EnsureDefaults ensures defaults are set.
-func (a *SchemaAnnotation) EnsureDefaults() {
-	if a.ReadGroups == nil || len(a.ReadGroups) == 0 {
-		a.ReadGroups = []string{"read"}
-	}
-	// TODO: Other group defaults
-}
