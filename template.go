@@ -22,6 +22,7 @@ var (
 		parse("template/http/handler.tmpl"),
 		parse("template/http/create.tmpl"),
 		parse("template/http/read.tmpl"),
+		parse("template/http/list.tmpl"),
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{

@@ -16,31 +16,18 @@ import (
 	"go.uber.org/zap"
 )
 
-// CategoryHandler handles http crud operations on the Category model.
-type CategoryHandler struct {
-	client *ent.Client
-	log    *zap.Logger
-}
-
-func NewCategoryHandler(c *ent.Client, l *zap.Logger) *CategoryHandler {
-	return &CategoryHandler{
-		client: c,
-		log:    l,
-	}
-}
-
 // Read fetches the Category model identified by a given url-parameter from the
 // database and returns it to the client.
 func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		h.log.Error("error getting id from url parameter",
-			zap.String("method", "read"),
+		l.Error("error getting id from url parameter",
 			zap.String("id", chi.URLParam(r, "id")),
 			zap.Error(err),
 		)
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
+		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
 	// Create the query to fetch the Category
@@ -49,24 +36,21 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			h.log.Debug("category not found",
-				zap.String("method", "read"),
+			l.Debug("category not found",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
 			render.NotFound(w, r, "category not found")
 			return
 		case *ent.NotSingularError:
-			h.log.Debug("duplicate entry for category",
-				zap.String("method", "read"),
+			l.Debug("duplicate entry for category",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
 			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(id))
 			return
 		default:
-			h.log.Error("error fetching category from db",
-				zap.String("method", "read"),
+			l.Error("error fetching category from db",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
@@ -79,46 +63,29 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 		Groups:          []string{"category"},
 	}, e)
 	if err != nil {
-		h.log.Error("serialization error",
-			zap.String("method", "read"),
+		l.Error("serialization error",
 			zap.Int("id", id),
 			zap.Error(err),
 		)
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	h.log.Info("category rendered",
-		zap.String("method", "read"),
-		zap.Int("id", id),
-	)
+	l.Info("category rendered", zap.Int("id", id))
 	render.OK(w, r, d)
-}
-
-// OwnerHandler handles http crud operations on the Owner model.
-type OwnerHandler struct {
-	client *ent.Client
-	log    *zap.Logger
-}
-
-func NewOwnerHandler(c *ent.Client, l *zap.Logger) *OwnerHandler {
-	return &OwnerHandler{
-		client: c,
-		log:    l,
-	}
 }
 
 // Read fetches the Owner model identified by a given url-parameter from the
 // database and returns it to the client.
 func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		h.log.Error("error getting id from url parameter",
-			zap.String("method", "read"),
+		l.Error("error getting id from url parameter",
 			zap.String("id", chi.URLParam(r, "id")),
 			zap.Error(err),
 		)
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
+		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
 	// Create the query to fetch the Owner
@@ -127,24 +94,21 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			h.log.Debug("owner not found",
-				zap.String("method", "read"),
+			l.Debug("owner not found",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
 			render.NotFound(w, r, "owner not found")
 			return
 		case *ent.NotSingularError:
-			h.log.Debug("duplicate entry for owner",
-				zap.String("method", "read"),
+			l.Debug("duplicate entry for owner",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
 			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(id))
 			return
 		default:
-			h.log.Error("error fetching owner from db",
-				zap.String("method", "read"),
+			l.Error("error fetching owner from db",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
@@ -157,46 +121,29 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 		Groups:          []string{"owner"},
 	}, e)
 	if err != nil {
-		h.log.Error("serialization error",
-			zap.String("method", "read"),
+		l.Error("serialization error",
 			zap.Int("id", id),
 			zap.Error(err),
 		)
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	h.log.Info("owner rendered",
-		zap.String("method", "read"),
-		zap.Int("id", id),
-	)
+	l.Info("owner rendered", zap.Int("id", id))
 	render.OK(w, r, d)
-}
-
-// PetHandler handles http crud operations on the Pet model.
-type PetHandler struct {
-	client *ent.Client
-	log    *zap.Logger
-}
-
-func NewPetHandler(c *ent.Client, l *zap.Logger) *PetHandler {
-	return &PetHandler{
-		client: c,
-		log:    l,
-	}
 }
 
 // Read fetches the Pet model identified by a given url-parameter from the
 // database and returns it to the client.
 func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		h.log.Error("error getting id from url parameter",
-			zap.String("method", "read"),
+		l.Error("error getting id from url parameter",
 			zap.String("id", chi.URLParam(r, "id")),
 			zap.Error(err),
 		)
-		render.BadRequest(w, r, "id must be a positive integer greater zero")
+		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
 	// Create the query to fetch the Pet
@@ -213,24 +160,21 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			h.log.Debug("pet not found",
-				zap.String("method", "read"),
+			l.Debug("pet not found",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
 			render.NotFound(w, r, "pet not found")
 			return
 		case *ent.NotSingularError:
-			h.log.Debug("duplicate entry for pet",
-				zap.String("method", "read"),
+			l.Debug("duplicate entry for pet",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
 			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(id))
 			return
 		default:
-			h.log.Error("error fetching pet from db",
-				zap.String("method", "read"),
+			l.Error("error fetching pet from db",
 				zap.Int("id", id),
 				zap.Error(err),
 			)
@@ -243,17 +187,13 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		Groups:          []string{"pet"},
 	}, e)
 	if err != nil {
-		h.log.Error("serialization error",
-			zap.String("method", "read"),
+		l.Error("serialization error",
 			zap.Int("id", id),
 			zap.Error(err),
 		)
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	h.log.Info("pet rendered",
-		zap.String("method", "read"),
-		zap.Int("id", id),
-	)
+	l.Info("pet rendered", zap.Int("id", id))
 	render.OK(w, r, d)
 }

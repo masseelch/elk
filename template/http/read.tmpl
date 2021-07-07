@@ -6,32 +6,19 @@
     {{ end }}
 
     {{ range $n := $.Nodes }}
-        // {{ $n.Name }}Handler handles http crud operations on the {{ $n.Name }} model.
-        type {{ $n.Name }}Handler struct {
-            client *ent.Client
-            log    *zap.Logger
-        }
-
-        func New{{ $n.Name }}Handler(c *ent.Client, l *zap.Logger) *{{ $n.Name }}Handler {
-            return &{{ $n.Name }}Handler{
-                client: c,
-                log: l,
-            }
-        }
-
         // Read fetches the {{ $n.Name }} model identified by a given url-parameter from the
         // database and returns it to the client.
         func (h *{{ $n.Name }}Handler) Read(w http.ResponseWriter, r *http.Request) {
+            l := h.log.With(zap.String("method", "Read"))
             // ID is URL parameter.
             {{- if $n.ID.IsInt }}
                 id, err := strconv.Atoi(chi.URLParam(r, "id"))
                 if err != nil {
-                    h.log.Error("error getting id from url parameter",
-                        zap.String("method", "read"),
+                    l.Error("error getting id from url parameter",
                         zap.String("id", chi.URLParam(r, "id")),
                         zap.Error(err),
                     )
-                    render.BadRequest(w, r, "id must be a positive integer greater zero")
+                    render.BadRequest(w, r, "id must be an integer greater zero")
                     return
                 }
             {{ else }}
@@ -49,24 +36,21 @@
             if err != nil {
                 switch err.(type) {
                     case *ent.NotFoundError:
-                        h.log.Debug("{{ $n.Name | kebab }} not found",
-                            zap.String("method", "read"),
+                        l.Debug("{{ $n.Name | kebab }} not found",
                             zap.Int("{{ $n.ID.Name }}", id),
                             zap.Error(err),
                         )
                         render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
                         return
                     case *ent.NotSingularError:
-                        h.log.Debug("duplicate entry for {{ $n.Name | kebab }}",
-                            zap.String("method", "read"),
+                        l.Debug("duplicate entry for {{ $n.Name | kebab }}",
                             zap.Int("{{ $n.ID.Name }}", id),
                             zap.Error(err),
                         )
                         render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(id))
                         return
                     default:
-                        h.log.Error("error fetching {{ $n.Name | kebab }} from db",
-                            zap.String("method", "read"),
+                        l.Error("error fetching {{ $n.Name | kebab }} from db",
                             zap.Int("{{ $n.ID.Name }}", id),
                             zap.Error(err),
                         )
@@ -79,18 +63,14 @@
                 Groups: []string{ {{- with $.Annotations.ElkSchema.ReadGroups }}.Code{{ else }}"{{ $n.Name | kebab }}"{{ end -}} },
             }, e)
             if err != nil {
-                h.log.Error("serialization error",
-                    zap.String("method", "read"),
+                l.Error("serialization error",
                     zap.Int("{{ $n.ID.Name }}", id),
                     zap.Error(err),
                 )
                 render.InternalServerError(w, r, nil)
                 return
             }
-            h.log.Info("{{ $n.Name | kebab }} rendered",
-                zap.String("method", "read"),
-                zap.Int("{{ $n.ID.Name }}", id),
-            )
+            l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", id))
             render.OK(w, r, d)
         }
     {{ end }}

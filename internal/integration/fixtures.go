@@ -41,8 +41,13 @@ func (r refs) category() *ent.Category {
 	return m[rand.Intn(len(m))]
 }
 func (r refs) categories(c int) []*ent.Category {
-	m := r[categoryKey].([]*ent.Category)
-	return []*ent.Category{m[rand.Intn(len(m))], m[rand.Intn(len(m))]}
+	ret := make([]*ent.Category, c)
+
+	for i := range ret {
+		ret[i] = r.category()
+	}
+
+	return ret
 }
 
 func categories(ctx context.Context, refs refs, c *ent.Client) error {
@@ -68,7 +73,7 @@ func pets(ctx context.Context, refs refs, c *ent.Client) error {
 	b := make([]*ent.PetCreate, petCount)
 
 	for i := 0; i < len(b); i++ {
-		b[i] = c.Pet.Create().SetName(randomdata.Noun()).SetAge(randomdata.Number(1)).SetOwner(refs.owner()).AddCategory(refs.category())
+		b[i] = c.Pet.Create().SetName(randomdata.Noun()).SetAge(randomdata.Number(1)).SetOwner(refs.owner()).AddCategory(refs.categories(randomdata.Number(1, 3))...)
 	}
 
 	refs[petKey], err = c.Pet.CreateBulk(b...).Save(ctx)
