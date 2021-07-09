@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/liip/sheriff"
 	"github.com/masseelch/elk/internal/integration/petstore/ent"
 	"github.com/masseelch/elk/internal/integration/petstore/ent/category"
@@ -23,10 +23,7 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		l.Error("error getting id from url parameter",
-			zap.String("id", chi.URLParam(r, "id")),
-			zap.Error(err),
-		)
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
 		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
@@ -36,24 +33,15 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Debug("category not found",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Info("category not found", zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "category not found")
 			return
 		case *ent.NotSingularError:
-			l.Debug("duplicate entry for category",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Error("duplicate entry for category", zap.Int("id", id), zap.Error(err))
 			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(id))
 			return
 		default:
-			l.Error("error fetching category from db",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Error("error fetching category from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
 			return
 		}
@@ -63,10 +51,7 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 		Groups:          []string{"category"},
 	}, e)
 	if err != nil {
-		l.Error("serialization error",
-			zap.Int("id", id),
-			zap.Error(err),
-		)
+		l.Error("serialization error", zap.Int("id", id), zap.Error(err))
 		render.InternalServerError(w, r, nil)
 		return
 	}
@@ -81,10 +66,7 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		l.Error("error getting id from url parameter",
-			zap.String("id", chi.URLParam(r, "id")),
-			zap.Error(err),
-		)
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
 		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
@@ -94,24 +76,15 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Debug("owner not found",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Info("owner not found", zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "owner not found")
 			return
 		case *ent.NotSingularError:
-			l.Debug("duplicate entry for owner",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Error("duplicate entry for owner", zap.Int("id", id), zap.Error(err))
 			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(id))
 			return
 		default:
-			l.Error("error fetching owner from db",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Error("error fetching owner from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
 			return
 		}
@@ -121,10 +94,7 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 		Groups:          []string{"owner"},
 	}, e)
 	if err != nil {
-		l.Error("serialization error",
-			zap.Int("id", id),
-			zap.Error(err),
-		)
+		l.Error("serialization error", zap.Int("id", id), zap.Error(err))
 		render.InternalServerError(w, r, nil)
 		return
 	}
@@ -139,10 +109,7 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		l.Error("error getting id from url parameter",
-			zap.String("id", chi.URLParam(r, "id")),
-			zap.Error(err),
-		)
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
 		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
@@ -160,24 +127,15 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Debug("pet not found",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Info("pet not found", zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "pet not found")
 			return
 		case *ent.NotSingularError:
-			l.Debug("duplicate entry for pet",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Error("duplicate entry for pet", zap.Int("id", id), zap.Error(err))
 			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(id))
 			return
 		default:
-			l.Error("error fetching pet from db",
-				zap.Int("id", id),
-				zap.Error(err),
-			)
+			l.Error("error fetching pet from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
 			return
 		}
@@ -187,10 +145,7 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		Groups:          []string{"pet"},
 	}, e)
 	if err != nil {
-		l.Error("serialization error",
-			zap.Int("id", id),
-			zap.Error(err),
-		)
+		l.Error("serialization error", zap.Int("id", id), zap.Error(err))
 		render.InternalServerError(w, r, nil)
 		return
 	}

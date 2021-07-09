@@ -4,6 +4,99 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
+    import "github.com/go-playground/validator/v10" {{/* This is needed for stupid SIV rule */}}
 
+    {{ range $n := $.Nodes }}
+        // Payload of a {{ $n.Name }} create request.
+        type {{ $n.Name }}CreateRequest struct {
+            {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
+            {{ range $f := $n.Fields -}}
+                {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ with $f.Annotations.Elk.CreateValidation }} validate:"{{ . }}"{{ end }}`
+            {{ end -}}
+            {{ range $e := $n.Edges -}}
+                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"{{ with $e.Annotations.Elk.CreateValidation }} validate:"{{ . }}"{{ end }}`
+            {{ end }}
+        }
 
+        // Create creates a new {{ $n.Name }} and stores it in the database.
+        func (h {{ $n.Name }}Handler) Create(w http.ResponseWriter, r *http.Request) {
+            l := h.log.With(zap.String("method", "Create"))
+            // Get the post data.
+            var d {{ $n.Name }}CreateRequest
+            if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+                l.Error("error decoding json", zap.Error(err))
+                render.BadRequest(w, r, "invalid json string")
+                return
+            }
+            // Validate the data.
+            if err := h.validator.Struct(d); err != nil {
+                if err, ok := err.(*validator.InvalidValidationError); ok {
+                    l.Error("error validating request data", zap.Error(err))
+                    render.InternalServerError(w, r, nil)
+                    return
+                }
+                l.Info("validation failed", zap.Error(err))
+                render.BadRequest(w, r, err)
+                return
+            }
+            // Save the data.
+            b := h.client.{{ $n.Name }}.Create()
+            // TODO: what about slice fields that have custom marshallers?
+            {{ range $f := $n.Fields -}}
+                if d.{{ $f.StructField }} != nil {
+                    b.Set{{ $f.StructField }}(*d.{{ $f.StructField }})
+                }
+            {{ end -}}
+            {{ range $e := $n.Edges -}}
+                if d.{{ $e.StructField }} != nil {
+                    {{ if $e.Unique -}}
+                        b.{{ $e.MutationSet }}(*d.{{ $e.StructField }})
+                    {{ else -}}
+                        b.{{ $e.MutationAdd }}(d.{{ $e.StructField }}...)
+                    {{- end }}
+                }
+            {{ end -}}
+            // Store in database.
+            e, err := b.Save(r.Context())
+            if err != nil {
+                l.Error("error saving {{ $n.Name | kebab }}", zap.Error(err))
+                render.InternalServerError(w, r, nil)
+                return
+            }
+            // Reload entry.
+            q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(e.{{ $n.ID.StructField }}))
+            {{- with edgesToLoad $n "create" }}
+                // Eager load edges that are required on create operation.
+                {{ .Code "q" }}
+            {{- end }}
+            e, err = q.Only(r.Context())
+            if err != nil {
+                switch err.(type) {
+                    case *ent.NotFoundError:
+                        l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
+                        render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
+                        return
+                    case *ent.NotSingularError:
+                        l.Error("duplicate entry for {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
+                        render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(e.{{ $n.ID.StructField }}))
+                        return
+                    default:
+                        l.Error("error fetching {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
+                        render.InternalServerError(w, r, nil)
+                        return
+                }
+            }
+            j, err := sheriff.Marshal(&sheriff.Options{
+                IncludeEmptyTag: true,
+                Groups: []string{ {{- with $.Annotations.ElkSchema.CreateGroups }}.Code{{ else }}"{{ $n.Name | kebab }}"{{ end -}} },
+            }, e)
+            if err != nil {
+                l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
+                render.InternalServerError(w, r, nil)
+                return
+            }
+            l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
+            render.OK(w, r, j)
+        }
+    {{ end }}
 {{ end }}

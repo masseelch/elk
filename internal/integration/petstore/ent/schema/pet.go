@@ -19,10 +19,16 @@ func (Pet) Fields() []ent.Field {
 		field.String("name").
 			Annotations(
 				elk.Annotation{
-					Groups: []string{"pet"},
+					Groups:           []string{"pet"},
+					CreateValidation: "required",
 				},
 			),
-		field.Int("age"),
+		field.Int("age").
+			Annotations(
+				elk.Annotation{
+					CreateValidation: "required,gt=0",
+				},
+			),
 	}
 }
 

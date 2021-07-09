@@ -24,6 +24,9 @@ type (
 		Groups Groups `json:"Groups,omitempty"`
 		// MaxDepth tells the generator the maximum depth of this field when there is a cycle possible.
 		MaxDepth uint
+		// CreateValidation holds the struct tags to use for github.com/go-playground/validator/v10 (which is used in
+		// generated code.
+		CreateValidation string
 	}
 )
 

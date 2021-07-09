@@ -5,10 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"entgo.io/ent/dialect"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 	"github.com/masseelch/elk/internal/integration/petstore/ent"
 	"github.com/masseelch/elk/internal/integration/petstore/ent/enttest"
 	elkhttp "github.com/masseelch/elk/internal/integration/petstore/ent/http"
+	"github.com/masseelch/elk/internal/integration/petstore/ent/pet"
 	"github.com/masseelch/render"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
@@ -17,6 +19,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -30,7 +34,7 @@ type test struct {
 	// expected body
 	body []byte
 	// expected outputs to logging
-	logs []string
+	logs []map[string]interface{}
 	// additional test logic on response body
 	fn func(t *testing.T, tt *test, b []byte)
 }
@@ -60,11 +64,23 @@ func TestHttp(t *testing.T) {
 	))
 	defer l.Sync()
 
-	r := chi.NewRouter() // Needed to test url param fetching
+	// Validator
+	v := validator.New()
+	v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	// Needed to test url param fetching
+	r := chi.NewRouter()
 
 	// Register pet endpoints.
-	ph := elkhttp.NewPetHandler(c, l) // TODO: Provide a default set of routes in generated PetHandler.
+	ph := elkhttp.NewPetHandler(c, l, v) // TODO: Provide a default set of routes in generated PetHandler.
 	r.Get("/pets", ph.List)
+	r.Post("/pets", ph.Create)
 	r.Get("/pets/{id}", ph.Read)
 
 	// Create the tests.
@@ -74,8 +90,14 @@ func TestHttp(t *testing.T) {
 			req:    httptest.NewRequest(http.MethodGet, "/pets/invalid", nil),
 			status: http.StatusBadRequest,
 			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "id must be an integer greater zero")),
-			logs: []string{
-				"{\"level\":\"error\",\"msg\":\"error getting id from url parameter\",\"handler\":\"PetHandler\",\"method\":\"Read\",\"id\":\"invalid\",\"error\":\"strconv.Atoi: parsing \\\"invalid\\\": invalid syntax\"}",
+			logs: []map[string]interface{}{
+				{
+					"level":   "error",
+					"msg":     "error getting id from url parameter",
+					"handler": "PetHandler",
+					"method":  "Read",
+					"id":      "invalid",
+				},
 			},
 		},
 		{
@@ -83,23 +105,59 @@ func TestHttp(t *testing.T) {
 			req:    httptest.NewRequest(http.MethodGet, "/pets/10000", nil),
 			status: http.StatusNotFound,
 			body:   mustEncode(t, render.NewResponse(http.StatusNotFound, "pet not found")),
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pet not found",
+					"handler": "PetHandler",
+					"method":  "Read",
+					"id":      10000,
+				},
+			},
 		},
 		{
 			name:   "read _ ok",
 			req:    httptest.NewRequest(http.MethodGet, "/pets/1", nil),
 			status: http.StatusOK,
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pet rendered",
+					"handler": "PetHandler",
+					"method":  "Read",
+					"id":      1,
+				},
+			},
 		},
 		{
 			name:   "list _ malformed page",
 			req:    httptest.NewRequest(http.MethodGet, "/pets?page=invalid", nil),
 			status: http.StatusBadRequest,
 			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "page must be an integer greater zero")),
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "error parsing query parameter 'page'",
+					"handler": "PetHandler",
+					"method":  "List",
+					"page":    "invalid",
+				},
+			},
 		},
 		{
 			name:   "list _ malformed itemsPerPage",
 			req:    httptest.NewRequest(http.MethodGet, "/pets?itemsPerPage=invalid", nil),
 			status: http.StatusBadRequest,
 			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "itemsPerPage must be an integer greater zero")),
+			logs: []map[string]interface{}{
+				{
+					"level":        "info",
+					"msg":          "error parsing query parameter 'itemsPerPage'",
+					"handler":      "PetHandler",
+					"method":       "List",
+					"itemsPerPage": "invalid",
+				},
+			},
 		},
 		{
 			name:   "list _ ok",
@@ -109,6 +167,15 @@ func TestHttp(t *testing.T) {
 				var j []ent.Pet
 				require.NoError(t, json.Unmarshal(b, &j))
 				require.Len(t, j, 30)
+			},
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pets rendered",
+					"handler": "PetHandler",
+					"method":  "List",
+					"amount":  30,
+				},
 			},
 		},
 		{
@@ -120,6 +187,72 @@ func TestHttp(t *testing.T) {
 				require.NoError(t, json.Unmarshal(b, &j))
 				require.Len(t, j, 2)
 				require.Equal(t, 3, j[0].ID) // default order is ascending id
+			},
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pets rendered",
+					"handler": "PetHandler",
+					"method":  "List",
+					"amount":  2,
+				},
+			},
+		},
+		{
+			name:   "create _ invalid json",
+			req:    httptest.NewRequest(http.MethodPost, "/pets", strings.NewReader("invalid")),
+			status: http.StatusBadRequest,
+			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "invalid json string")),
+			logs: []map[string]interface{}{
+				{
+					"level":   "error",
+					"msg":     "error decoding json",
+					"handler": "PetHandler",
+					"method":  "Create",
+				},
+			},
+		},
+		{
+			name:   "create _ failed validation",
+			req:    httptest.NewRequest(http.MethodPost, "/pets", bytes.NewReader(mustEncode(t, map[string]interface{}{"age": 0}))),
+			status: http.StatusBadRequest,
+			body: mustEncode(t, render.NewResponse(http.StatusBadRequest, map[string]interface{}{
+				"age":  "This value failed validation on 'gt:0'.",
+				"name": "This value is required.",
+			})),
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "validation failed",
+					"handler": "PetHandler",
+					"method":  "Create",
+				},
+			},
+		},
+		{
+			name: "create _ ok",
+			req: httptest.NewRequest(http.MethodPost, "/pets", bytes.NewReader(mustEncode(t, map[string]interface{}{
+				"name": "my new pet",
+				"age":  1,
+			}))),
+			status: http.StatusOK,
+			fn: func(t *testing.T, tt *test, b []byte) {
+				p, err := c.Pet.Query().Order(ent.Desc(pet.FieldID)).First(context.Background())
+				require.NoError(t, err)
+				var j map[string]interface{}
+				require.NoError(t, json.Unmarshal(b, &j))
+				require.EqualValues(t, p.ID, j["id"])
+				require.Equal(t, p.Age, 1)
+				require.Equal(t, p.Name, "my new pet")
+			},
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pet rendered",
+					"handler": "PetHandler",
+					"method":  "Create",
+					"id":      51,
+				},
 			},
 		},
 	}
@@ -144,8 +277,16 @@ func TestHttp(t *testing.T) {
 			}
 			// If logs are given check that they indeed are present in the correct order
 			if tt.logs != nil {
-				var l []map[string]string
-				require.NoError(t, json.Unmarshal(logs.Bytes(), &l))
+				// Read logs line by line.
+				for i, s := range bytes.Split(bytes.TrimSpace(logs.Bytes()), []byte("\n")) {
+					var j map[string]interface{}
+					require.NoError(t, json.Unmarshal(s, &j))
+					for k, e := range tt.logs[i] {
+						v, ok := j[k]
+						require.True(t, ok)
+						require.EqualValues(t, e, v)
+					}
+				}
 			}
 		})
 	}

@@ -1,3 +1,0 @@
-package internal
-
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -pkg=internal -o templates.go -prefix ../template ../template/...

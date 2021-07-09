@@ -4,6 +4,7 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
+    import "github.com/go-chi/chi/v5" {{/* This is needed for stupid SIV rule */}}
 
     {{ range $n := $.Nodes }}
         // Read fetches the {{ $n.Name }} model identified by a given url-parameter from the
@@ -14,10 +15,7 @@
             {{- if $n.ID.IsInt }}
                 id, err := strconv.Atoi(chi.URLParam(r, "id"))
                 if err != nil {
-                    l.Error("error getting id from url parameter",
-                        zap.String("id", chi.URLParam(r, "id")),
-                        zap.Error(err),
-                    )
+                    l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
                     render.BadRequest(w, r, "id must be an integer greater zero")
                     return
                 }
@@ -36,24 +34,15 @@
             if err != nil {
                 switch err.(type) {
                     case *ent.NotFoundError:
-                        l.Debug("{{ $n.Name | kebab }} not found",
-                            zap.Int("{{ $n.ID.Name }}", id),
-                            zap.Error(err),
-                        )
+                        l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
                         render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
                         return
                     case *ent.NotSingularError:
-                        l.Debug("duplicate entry for {{ $n.Name | kebab }}",
-                            zap.Int("{{ $n.ID.Name }}", id),
-                            zap.Error(err),
-                        )
+                        l.Error("duplicate entry for {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
                         render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(id))
                         return
                     default:
-                        l.Error("error fetching {{ $n.Name | kebab }} from db",
-                            zap.Int("{{ $n.ID.Name }}", id),
-                            zap.Error(err),
-                        )
+                        l.Error("error fetching {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
                         render.InternalServerError(w, r, nil)
                         return
                 }
@@ -63,10 +52,7 @@
                 Groups: []string{ {{- with $.Annotations.ElkSchema.ReadGroups }}.Code{{ else }}"{{ $n.Name | kebab }}"{{ end -}} },
             }, e)
             if err != nil {
-                l.Error("serialization error",
-                    zap.Int("{{ $n.ID.Name }}", id),
-                    zap.Error(err),
-                )
+                l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
                 render.InternalServerError(w, r, nil)
                 return
             }
