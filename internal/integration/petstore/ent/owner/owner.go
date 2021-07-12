@@ -13,8 +13,6 @@ const (
 	FieldAge = "age"
 	// EdgePets holds the string denoting the pets edge name in mutations.
 	EdgePets = "pets"
-	// EdgeFriends holds the string denoting the friends edge name in mutations.
-	EdgeFriends = "friends"
 	// Table holds the table name of the owner in the database.
 	Table = "owners"
 	// PetsTable is the table the holds the pets relation/edge.
@@ -24,8 +22,6 @@ const (
 	PetsInverseTable = "pets"
 	// PetsColumn is the table column denoting the pets relation/edge.
 	PetsColumn = "owner_pets"
-	// FriendsTable is the table the holds the friends relation/edge. The primary key declared below.
-	FriendsTable = "owner_friends"
 )
 
 // Columns holds all SQL columns for owner fields.
@@ -34,12 +30,6 @@ var Columns = []string{
 	FieldName,
 	FieldAge,
 }
-
-var (
-	// FriendsPrimaryKey and FriendsColumn2 are the table columns denoting the
-	// primary key for the friends relation (M2M).
-	FriendsPrimaryKey = []string{"owner_id", "friend_id"}
-)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {

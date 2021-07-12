@@ -1,0 +1,25 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "http/handler" }}
+    {{- with extend $ "Package" "http" -}}
+        {{ template "header" . }}
+    {{ end }}
+    import "github.com/go-playground/validator/v10" {{/* This is needed for stupid SIV rule */}}
+
+    {{ range $n := $.Nodes }}
+        // {{ $n.Name }}Handler handles http crud operations on the {{ $n.Name }} model.
+        type {{ $n.Name }}Handler struct {
+            client    *ent.Client
+            log       *zap.Logger
+            validator *validator.Validate
+        }
+
+        func New{{ $n.Name }}Handler(c *ent.Client, l *zap.Logger, v *validator.Validate) *{{ $n.Name }}Handler {
+            return &{{ $n.Name }}Handler{
+                client:    c,
+                log:       l.With(zap.String("handler", "{{ $n.Name }}Handler")),
+                validator: v,
+            }
+        }
+    {{ end }}
+{{ end }}

@@ -33,6 +33,21 @@ func (pc *PetCreate) SetAge(i int) *PetCreate {
 	return pc
 }
 
+// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
+func (pc *PetCreate) AddCategoryIDs(ids ...int) *PetCreate {
+	pc.mutation.AddCategoryIDs(ids...)
+	return pc
+}
+
+// AddCategory adds the "category" edges to the Category entity.
+func (pc *PetCreate) AddCategory(c ...*Category) *PetCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pc.AddCategoryIDs(ids...)
+}
+
 // SetOwnerID sets the "owner" edge to the Owner entity by ID.
 func (pc *PetCreate) SetOwnerID(id int) *PetCreate {
 	pc.mutation.SetOwnerID(id)
@@ -52,19 +67,19 @@ func (pc *PetCreate) SetOwner(o *Owner) *PetCreate {
 	return pc.SetOwnerID(o.ID)
 }
 
-// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
-func (pc *PetCreate) AddCategoryIDs(ids ...int) *PetCreate {
-	pc.mutation.AddCategoryIDs(ids...)
+// AddFriendIDs adds the "friends" edge to the Pet entity by IDs.
+func (pc *PetCreate) AddFriendIDs(ids ...int) *PetCreate {
+	pc.mutation.AddFriendIDs(ids...)
 	return pc
 }
 
-// AddCategory adds the "category" edges to the Category entity.
-func (pc *PetCreate) AddCategory(c ...*Category) *PetCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddFriends adds the "friends" edges to the Pet entity.
+func (pc *PetCreate) AddFriends(p ...*Pet) *PetCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
-	return pc.AddCategoryIDs(ids...)
+	return pc.AddFriendIDs(ids...)
 }
 
 // Mutation returns the PetMutation object of the builder.
@@ -167,6 +182,25 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 		})
 		_node.Age = value
 	}
+	if nodes := pc.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   pet.CategoryTable,
+			Columns: pet.CategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: category.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := pc.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -187,17 +221,17 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 		_node.owner_pets = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.CategoryIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.FriendsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
-			Bidi:    false,
+			Inverse: false,
+			Table:   pet.FriendsTable,
+			Columns: pet.FriendsPrimaryKey,
+			Bidi:    true,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: category.FieldID,
+					Column: pet.FieldID,
 				},
 			},
 		}

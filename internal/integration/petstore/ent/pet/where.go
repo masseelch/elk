@@ -292,6 +292,34 @@ func AgeLTE(v int) predicate.Pet {
 	})
 }
 
+// HasCategory applies the HasEdge predicate on the "category" edge.
+func HasCategory() predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CategoryTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, CategoryTable, CategoryPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCategoryWith applies the HasEdge predicate on the "category" edge with a given conditions (other predicates).
+func HasCategoryWith(preds ...predicate.Category) predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CategoryInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, CategoryTable, CategoryPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasOwner applies the HasEdge predicate on the "owner" edge.
 func HasOwner() predicate.Pet {
 	return predicate.Pet(func(s *sql.Selector) {
@@ -320,25 +348,25 @@ func HasOwnerWith(preds ...predicate.Owner) predicate.Pet {
 	})
 }
 
-// HasCategory applies the HasEdge predicate on the "category" edge.
-func HasCategory() predicate.Pet {
+// HasFriends applies the HasEdge predicate on the "friends" edge.
+func HasFriends() predicate.Pet {
 	return predicate.Pet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CategoryTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, CategoryTable, CategoryPrimaryKey...),
+			sqlgraph.To(FriendsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, FriendsTable, FriendsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCategoryWith applies the HasEdge predicate on the "category" edge with a given conditions (other predicates).
-func HasCategoryWith(preds ...predicate.Category) predicate.Pet {
+// HasFriendsWith applies the HasEdge predicate on the "friends" edge with a given conditions (other predicates).
+func HasFriendsWith(preds ...predicate.Pet) predicate.Pet {
 	return predicate.Pet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CategoryInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, CategoryTable, CategoryPrimaryKey...),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, FriendsTable, FriendsPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

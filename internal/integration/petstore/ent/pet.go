@@ -22,25 +22,36 @@ type Pet struct {
 	Age int `json:"age,omitempty" groups:""`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PetQuery when eager-loading is set.
-	Edges      PetEdges `json:"edges"  groups:"pet:owner"`
+	Edges      PetEdges `json:"edges"  groups:"pet:owner,pet"`
 	owner_pets *int
 }
 
 // PetEdges holds the relations/edges for other nodes in the graph.
 type PetEdges struct {
-	// Owner holds the value of the owner edge.
-	Owner *Owner `json:"owner,omitempty" groups:"pet:owner"`
 	// Category holds the value of the category edge.
 	Category []*Category `json:"category,omitempty"`
+	// Owner holds the value of the owner edge.
+	Owner *Owner `json:"owner,omitempty" groups:"pet:owner"`
+	// Friends holds the value of the friends edge.
+	Friends []*Pet `json:"friends,omitempty" groups:"pet"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
+}
+
+// CategoryOrErr returns the Category value or an error if the edge
+// was not loaded in eager-loading.
+func (e PetEdges) CategoryOrErr() ([]*Category, error) {
+	if e.loadedTypes[0] {
+		return e.Category, nil
+	}
+	return nil, &NotLoadedError{edge: "category"}
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PetEdges) OwnerOrErr() (*Owner, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Owner == nil {
 			// The edge owner was loaded in eager-loading,
 			// but was not found.
@@ -51,13 +62,13 @@ func (e PetEdges) OwnerOrErr() (*Owner, error) {
 	return nil, &NotLoadedError{edge: "owner"}
 }
 
-// CategoryOrErr returns the Category value or an error if the edge
+// FriendsOrErr returns the Friends value or an error if the edge
 // was not loaded in eager-loading.
-func (e PetEdges) CategoryOrErr() ([]*Category, error) {
-	if e.loadedTypes[1] {
-		return e.Category, nil
+func (e PetEdges) FriendsOrErr() ([]*Pet, error) {
+	if e.loadedTypes[2] {
+		return e.Friends, nil
 	}
-	return nil, &NotLoadedError{edge: "category"}
+	return nil, &NotLoadedError{edge: "friends"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -116,14 +127,19 @@ func (pe *Pet) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
+// QueryCategory queries the "category" edge of the Pet entity.
+func (pe *Pet) QueryCategory() *CategoryQuery {
+	return (&PetClient{config: pe.config}).QueryCategory(pe)
+}
+
 // QueryOwner queries the "owner" edge of the Pet entity.
 func (pe *Pet) QueryOwner() *OwnerQuery {
 	return (&PetClient{config: pe.config}).QueryOwner(pe)
 }
 
-// QueryCategory queries the "category" edge of the Pet entity.
-func (pe *Pet) QueryCategory() *CategoryQuery {
-	return (&PetClient{config: pe.config}).QueryCategory(pe)
+// QueryFriends queries the "friends" edge of the Pet entity.
+func (pe *Pet) QueryFriends() *PetQuery {
+	return (&PetClient{config: pe.config}).QueryFriends(pe)
 }
 
 // Update returns a builder for updating this Pet.

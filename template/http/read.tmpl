@@ -36,16 +36,14 @@
                     case *ent.NotFoundError:
                         l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
                         render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
-                        return
                     case *ent.NotSingularError:
                         l.Error("duplicate entry for {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
                         render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(id))
-                        return
                     default:
                         l.Error("error fetching {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
                         render.InternalServerError(w, r, nil)
-                        return
                 }
+                return
             }
             d, err := sheriff.Marshal(&sheriff.Options{
                 IncludeEmptyTag: true,

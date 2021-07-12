@@ -79,27 +79,27 @@ var (
 			},
 		},
 	}
-	// OwnerFriendsColumns holds the columns for the "owner_friends" table.
-	OwnerFriendsColumns = []*schema.Column{
-		{Name: "owner_id", Type: field.TypeInt},
+	// PetFriendsColumns holds the columns for the "pet_friends" table.
+	PetFriendsColumns = []*schema.Column{
+		{Name: "pet_id", Type: field.TypeInt},
 		{Name: "friend_id", Type: field.TypeInt},
 	}
-	// OwnerFriendsTable holds the schema information for the "owner_friends" table.
-	OwnerFriendsTable = &schema.Table{
-		Name:       "owner_friends",
-		Columns:    OwnerFriendsColumns,
-		PrimaryKey: []*schema.Column{OwnerFriendsColumns[0], OwnerFriendsColumns[1]},
+	// PetFriendsTable holds the schema information for the "pet_friends" table.
+	PetFriendsTable = &schema.Table{
+		Name:       "pet_friends",
+		Columns:    PetFriendsColumns,
+		PrimaryKey: []*schema.Column{PetFriendsColumns[0], PetFriendsColumns[1]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "owner_friends_owner_id",
-				Columns:    []*schema.Column{OwnerFriendsColumns[0]},
-				RefColumns: []*schema.Column{OwnersColumns[0]},
+				Symbol:     "pet_friends_pet_id",
+				Columns:    []*schema.Column{PetFriendsColumns[0]},
+				RefColumns: []*schema.Column{PetsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "owner_friends_friend_id",
-				Columns:    []*schema.Column{OwnerFriendsColumns[1]},
-				RefColumns: []*schema.Column{OwnersColumns[0]},
+				Symbol:     "pet_friends_friend_id",
+				Columns:    []*schema.Column{PetFriendsColumns[1]},
+				RefColumns: []*schema.Column{PetsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -110,7 +110,7 @@ var (
 		OwnersTable,
 		PetsTable,
 		CategoryPetsTable,
-		OwnerFriendsTable,
+		PetFriendsTable,
 	}
 )
 
@@ -118,6 +118,6 @@ func init() {
 	PetsTable.ForeignKeys[0].RefTable = OwnersTable
 	CategoryPetsTable.ForeignKeys[0].RefTable = CategoriesTable
 	CategoryPetsTable.ForeignKeys[1].RefTable = PetsTable
-	OwnerFriendsTable.ForeignKeys[0].RefTable = OwnersTable
-	OwnerFriendsTable.ForeignKeys[1].RefTable = OwnersTable
+	PetFriendsTable.ForeignKeys[0].RefTable = PetsTable
+	PetFriendsTable.ForeignKeys[1].RefTable = PetsTable
 }

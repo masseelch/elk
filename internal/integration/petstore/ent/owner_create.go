@@ -47,21 +47,6 @@ func (oc *OwnerCreate) AddPets(p ...*Pet) *OwnerCreate {
 	return oc.AddPetIDs(ids...)
 }
 
-// AddFriendIDs adds the "friends" edge to the Owner entity by IDs.
-func (oc *OwnerCreate) AddFriendIDs(ids ...int) *OwnerCreate {
-	oc.mutation.AddFriendIDs(ids...)
-	return oc
-}
-
-// AddFriends adds the "friends" edges to the Owner entity.
-func (oc *OwnerCreate) AddFriends(o ...*Owner) *OwnerCreate {
-	ids := make([]int, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return oc.AddFriendIDs(ids...)
-}
-
 // Mutation returns the OwnerMutation object of the builder.
 func (oc *OwnerCreate) Mutation() *OwnerMutation {
 	return oc.mutation
@@ -173,25 +158,6 @@ func (oc *OwnerCreate) createSpec() (*Owner, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: pet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := oc.mutation.FriendsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   owner.FriendsTable,
-			Columns: owner.FriendsPrimaryKey,
-			Bidi:    true,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: owner.FieldID,
 				},
 			},
 		}

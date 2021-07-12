@@ -61,21 +61,6 @@ func (ou *OwnerUpdate) AddPets(p ...*Pet) *OwnerUpdate {
 	return ou.AddPetIDs(ids...)
 }
 
-// AddFriendIDs adds the "friends" edge to the Owner entity by IDs.
-func (ou *OwnerUpdate) AddFriendIDs(ids ...int) *OwnerUpdate {
-	ou.mutation.AddFriendIDs(ids...)
-	return ou
-}
-
-// AddFriends adds the "friends" edges to the Owner entity.
-func (ou *OwnerUpdate) AddFriends(o ...*Owner) *OwnerUpdate {
-	ids := make([]int, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return ou.AddFriendIDs(ids...)
-}
-
 // Mutation returns the OwnerMutation object of the builder.
 func (ou *OwnerUpdate) Mutation() *OwnerMutation {
 	return ou.mutation
@@ -100,27 +85,6 @@ func (ou *OwnerUpdate) RemovePets(p ...*Pet) *OwnerUpdate {
 		ids[i] = p[i].ID
 	}
 	return ou.RemovePetIDs(ids...)
-}
-
-// ClearFriends clears all "friends" edges to the Owner entity.
-func (ou *OwnerUpdate) ClearFriends() *OwnerUpdate {
-	ou.mutation.ClearFriends()
-	return ou
-}
-
-// RemoveFriendIDs removes the "friends" edge to Owner entities by IDs.
-func (ou *OwnerUpdate) RemoveFriendIDs(ids ...int) *OwnerUpdate {
-	ou.mutation.RemoveFriendIDs(ids...)
-	return ou
-}
-
-// RemoveFriends removes "friends" edges to Owner entities.
-func (ou *OwnerUpdate) RemoveFriends(o ...*Owner) *OwnerUpdate {
-	ids := make([]int, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return ou.RemoveFriendIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -267,60 +231,6 @@ func (ou *OwnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ou.mutation.FriendsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   owner.FriendsTable,
-			Columns: owner.FriendsPrimaryKey,
-			Bidi:    true,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: owner.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ou.mutation.RemovedFriendsIDs(); len(nodes) > 0 && !ou.mutation.FriendsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   owner.FriendsTable,
-			Columns: owner.FriendsPrimaryKey,
-			Bidi:    true,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: owner.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ou.mutation.FriendsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   owner.FriendsTable,
-			Columns: owner.FriendsPrimaryKey,
-			Bidi:    true,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: owner.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ou.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{owner.Label}
@@ -374,21 +284,6 @@ func (ouo *OwnerUpdateOne) AddPets(p ...*Pet) *OwnerUpdateOne {
 	return ouo.AddPetIDs(ids...)
 }
 
-// AddFriendIDs adds the "friends" edge to the Owner entity by IDs.
-func (ouo *OwnerUpdateOne) AddFriendIDs(ids ...int) *OwnerUpdateOne {
-	ouo.mutation.AddFriendIDs(ids...)
-	return ouo
-}
-
-// AddFriends adds the "friends" edges to the Owner entity.
-func (ouo *OwnerUpdateOne) AddFriends(o ...*Owner) *OwnerUpdateOne {
-	ids := make([]int, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return ouo.AddFriendIDs(ids...)
-}
-
 // Mutation returns the OwnerMutation object of the builder.
 func (ouo *OwnerUpdateOne) Mutation() *OwnerMutation {
 	return ouo.mutation
@@ -413,27 +308,6 @@ func (ouo *OwnerUpdateOne) RemovePets(p ...*Pet) *OwnerUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return ouo.RemovePetIDs(ids...)
-}
-
-// ClearFriends clears all "friends" edges to the Owner entity.
-func (ouo *OwnerUpdateOne) ClearFriends() *OwnerUpdateOne {
-	ouo.mutation.ClearFriends()
-	return ouo
-}
-
-// RemoveFriendIDs removes the "friends" edge to Owner entities by IDs.
-func (ouo *OwnerUpdateOne) RemoveFriendIDs(ids ...int) *OwnerUpdateOne {
-	ouo.mutation.RemoveFriendIDs(ids...)
-	return ouo
-}
-
-// RemoveFriends removes "friends" edges to Owner entities.
-func (ouo *OwnerUpdateOne) RemoveFriends(o ...*Owner) *OwnerUpdateOne {
-	ids := make([]int, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return ouo.RemoveFriendIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -596,60 +470,6 @@ func (ouo *OwnerUpdateOne) sqlSave(ctx context.Context) (_node *Owner, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: pet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ouo.mutation.FriendsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   owner.FriendsTable,
-			Columns: owner.FriendsPrimaryKey,
-			Bidi:    true,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: owner.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ouo.mutation.RemovedFriendsIDs(); len(nodes) > 0 && !ouo.mutation.FriendsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   owner.FriendsTable,
-			Columns: owner.FriendsPrimaryKey,
-			Bidi:    true,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: owner.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ouo.mutation.FriendsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   owner.FriendsTable,
-			Columns: owner.FriendsPrimaryKey,
-			Bidi:    true,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: owner.FieldID,
 				},
 			},
 		}

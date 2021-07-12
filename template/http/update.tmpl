@@ -1,28 +1,45 @@
 {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
 
-{{ define "http/create" }}
+{{ define "http/update" }}
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
-    import "github.com/go-playground/validator/v10" {{/* This is needed for stupid SIV rule */}}
+    import ( {{/* This is needed for stupid SIV rule */}}
+        "github.com/go-chi/chi/v5"
+        "github.com/go-playground/validator/v10"
+    )
 
     {{ range $n := $.Nodes }}
-        // Payload of a {{ $n.Name }} create request.
-        type {{ $n.Name }}CreateRequest struct {
+        // Payload of a {{ $n.Name }} update request.
+        type {{ $n.Name }}UpdateRequest struct {
             {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
             {{ range $f := $n.Fields -}}
-                {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ with $f.Annotations.Elk | elkAnnotation }} validate:"{{ .ValidationTags "create" }}"{{ end }}`
+                {{ if not $f.Immutable -}}
+                    {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ with $f.Annotations.Elk | elkAnnotation }} validate:"{{ .ValidationTags "update" }}"{{ end }}`
+                {{- end }}
             {{ end -}}
             {{ range $e := $n.Edges -}}
-                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"{{ with $e.Annotations.Elk | elkAnnotation }} validate:"{{ .ValidationTags "create" }}"{{ end }}`
+                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"{{ with $e.Annotations.Elk | elkAnnotation }} validate:"{{ .ValidationTags "update" }}"{{ end }}`
             {{ end }}
         }
 
-        // Create creates a new {{ $n.Name }} and stores it in the database.
-        func (h {{ $n.Name }}Handler) Create(w http.ResponseWriter, r *http.Request) {
-            l := h.log.With(zap.String("method", "Create"))
+        // Update updates a given {{ $n.Name }} and saved the changes to the database.
+        func (h {{ $n.Name }}Handler) Update(w http.ResponseWriter, r *http.Request) {
+            l := h.log.With(zap.String("method", "Update"))
+             // ID is URL parameter.
+            {{- if $n.ID.IsInt }}
+                id, err := strconv.Atoi(chi.URLParam(r, "id"))
+                if err != nil {
+                    l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+                    render.BadRequest(w, r, "id must be an integer greater zero")
+                    return
+                }
+            {{ else }}
+                id := chi.URLParam(r, "id")
+            {{ end -}}
+
             // Get the post data.
-            var d {{ $n.Name }}CreateRequest
+            var d {{ $n.Name }}UpdateRequest
             if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
                 l.Error("error decoding json", zap.Error(err))
                 render.BadRequest(w, r, "invalid json string")
@@ -40,27 +57,38 @@
                 return
             }
             // Save the data.
-            b := h.client.{{ $n.Name }}.Create()
+            b := h.client.{{ $n.Name }}.UpdateOneID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }})
             // TODO: what about slice fields that have custom marshallers?
             {{ range $f := $n.Fields -}}
-                if d.{{ $f.StructField }} != nil {
-                    b.Set{{ $f.StructField }}(*d.{{ $f.StructField }})
-                }
+                {{ if not $f.Immutable -}}
+                    if d.{{ $f.StructField }} != nil {
+                        b.Set{{ $f.StructField }}(*d.{{ $f.StructField }}) {{/* todo - what about slice fields that have custom marshallers? */}}
+                    }
+                {{ end -}}
             {{ end -}}
             {{ range $e := $n.Edges -}}
                 if d.{{ $e.StructField }} != nil {
                     {{ if $e.Unique -}}
                         b.{{ $e.MutationSet }}(*d.{{ $e.StructField }})
                     {{ else -}}
-                        b.{{ $e.MutationAdd }}(d.{{ $e.StructField }}...)
+                        b.{{ $e.MutationClear }}().{{ $e.MutationAdd }}(d.{{ $e.StructField }}...)
                     {{- end }}
                 }
             {{ end -}}
             // Store in database.
             e, err := b.Save(r.Context())
             if err != nil {
-                l.Error("error saving {{ $n.Name | kebab }}", zap.Error(err))
-                render.InternalServerError(w, r, nil)
+                switch err.(type) {
+                    case *ent.NotFoundError:
+                        l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                        render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
+                    case *ent.NotSingularError:
+                        l.Error("duplicate entry for {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                        render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(e.{{ $n.ID.StructField }}))
+                    default:
+                        l.Error("error saving {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                        render.InternalServerError(w, r, nil)
+                }
                 return
             }
             // Reload entry.
@@ -75,16 +103,14 @@
                     case *ent.NotFoundError:
                         l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
                         render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
-                        return
                     case *ent.NotSingularError:
                         l.Error("duplicate entry for {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
                         render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(e.{{ $n.ID.StructField }}))
-                        return
                     default:
                         l.Error("error fetching {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
                         render.InternalServerError(w, r, nil)
-                        return
                 }
+                return
             }
             j, err := sheriff.Marshal(&sheriff.Options{
                 IncludeEmptyTag: true,

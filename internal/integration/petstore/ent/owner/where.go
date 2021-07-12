@@ -320,34 +320,6 @@ func HasPetsWith(preds ...predicate.Pet) predicate.Owner {
 	})
 }
 
-// HasFriends applies the HasEdge predicate on the "friends" edge.
-func HasFriends() predicate.Owner {
-	return predicate.Owner(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FriendsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, FriendsTable, FriendsPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasFriendsWith applies the HasEdge predicate on the "friends" edge with a given conditions (other predicates).
-func HasFriendsWith(preds ...predicate.Owner) predicate.Owner {
-	return predicate.Owner(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, FriendsTable, FriendsPrimaryKey...),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Owner) predicate.Owner {
 	return predicate.Owner(func(s *sql.Selector) {

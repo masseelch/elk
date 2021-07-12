@@ -82,6 +82,7 @@ func TestHttp(t *testing.T) {
 	r.Get("/pets", ph.List)
 	r.Post("/pets", ph.Create)
 	r.Get("/pets/{id}", ph.Read)
+	r.Patch("/pets/{id}", ph.Update)
 
 	// Create the tests.
 	tests := []test{
@@ -255,6 +256,78 @@ func TestHttp(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:   "update _ invalid json",
+			req:    httptest.NewRequest(http.MethodPatch, "/pets/1", strings.NewReader("invalid")),
+			status: http.StatusBadRequest,
+			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "invalid json string")),
+			logs: []map[string]interface{}{
+				{
+					"level":   "error",
+					"msg":     "error decoding json",
+					"handler": "PetHandler",
+					"method":  "Update",
+				},
+			},
+		},
+		{
+			name:   "update _ failed validation",
+			req:    httptest.NewRequest(http.MethodPatch, "/pets/1000", bytes.NewReader(mustEncode(t, map[string]interface{}{"age": 0}))),
+			status: http.StatusBadRequest,
+			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, map[string]interface{}{"age": "This value failed validation on 'gt:0'."})),
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "validation failed",
+					"handler": "PetHandler",
+					"method":  "Update",
+				},
+			},
+		},
+		{
+			name: "update _ not found",
+			req: httptest.NewRequest(http.MethodPatch, "/pets/1000", bytes.NewReader(mustEncode(t, map[string]interface{}{
+				"age":  1,
+				"name": "this is my new name",
+			}))),
+			status: http.StatusNotFound,
+			body:   mustEncode(t, render.NewResponse(http.StatusNotFound, "pet not found")),
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pet not found",
+					"handler": "PetHandler",
+					"method":  "Update",
+					"id":      1000,
+				},
+			},
+		},
+		{
+			name: "update _ ok",
+			req: httptest.NewRequest(http.MethodPatch, "/pets/1", bytes.NewReader(mustEncode(t, map[string]interface{}{
+				"age":  1000,
+				"name": "this is my new name",
+			}))),
+			status: http.StatusOK,
+			fn: func(t *testing.T, tt *test, b []byte) {
+				p, err := c.Pet.Get(context.Background(), 1)
+				require.NoError(t, err)
+				var j map[string]interface{}
+				require.NoError(t, json.Unmarshal(b, &j))
+				require.EqualValues(t, p.ID, j["id"])
+				require.Equal(t, p.Age, 1000)
+				require.Equal(t, p.Name, "this is my new name")
+			},
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pet rendered",
+					"handler": "PetHandler",
+					"method":  "Update",
+					"id":      1,
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -264,12 +337,12 @@ func TestHttp(t *testing.T) {
 			r.ServeHTTP(rec, tt.req)
 			rsp := rec.Result()
 			// expected status code
-			require.Equal(t, tt.status, rsp.StatusCode)
+			require.Equal(t, tt.status, rsp.StatusCode, logs)
 			b, err := io.ReadAll(rsp.Body)
+			require.NoError(t, err)
 			// expected body
 			if tt.body != nil {
-				require.NoError(t, err)
-				require.Equalf(t, tt.body, b, "expected: %s\nactual  : %s", tt.body, b)
+				require.Equalf(t, tt.body, b, "expected: %s\nactual  : %s\nlogs    :%s", tt.body, b, logs)
 			}
 			// if a func to run on response is given run it.
 			if tt.fn != nil {

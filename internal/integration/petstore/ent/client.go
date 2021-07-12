@@ -343,22 +343,6 @@ func (c *OwnerClient) QueryPets(o *Owner) *PetQuery {
 	return query
 }
 
-// QueryFriends queries the friends edge of a Owner.
-func (c *OwnerClient) QueryFriends(o *Owner) *OwnerQuery {
-	query := &OwnerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := o.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(owner.Table, owner.FieldID, id),
-			sqlgraph.To(owner.Table, owner.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, owner.FriendsTable, owner.FriendsPrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *OwnerClient) Hooks() []Hook {
 	return c.hooks.Owner
@@ -449,6 +433,22 @@ func (c *PetClient) GetX(ctx context.Context, id int) *Pet {
 	return obj
 }
 
+// QueryCategory queries the category edge of a Pet.
+func (c *PetClient) QueryCategory(pe *Pet) *CategoryQuery {
+	query := &CategoryQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryOwner queries the owner edge of a Pet.
 func (c *PetClient) QueryOwner(pe *Pet) *OwnerQuery {
 	query := &OwnerQuery{config: c.config}
@@ -465,15 +465,15 @@ func (c *PetClient) QueryOwner(pe *Pet) *OwnerQuery {
 	return query
 }
 
-// QueryCategory queries the category edge of a Pet.
-func (c *PetClient) QueryCategory(pe *Pet) *CategoryQuery {
-	query := &CategoryQuery{config: c.config}
+// QueryFriends queries the friends edge of a Pet.
+func (c *PetClient) QueryFriends(pe *Pet) *PetQuery {
+	query := &PetQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pe.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, id),
-			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, pet.FriendsTable, pet.FriendsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
 		return fromV, nil

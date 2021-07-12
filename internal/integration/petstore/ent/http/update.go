@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 	"github.com/liip/sheriff"
 	"github.com/masseelch/elk/internal/integration/petstore/ent"
@@ -17,17 +18,24 @@ import (
 	"go.uber.org/zap"
 )
 
-// Payload of a Category create request.
-type CategoryCreateRequest struct {
+// Payload of a Category update request.
+type CategoryUpdateRequest struct {
 	Name *string `json:"name"`
 	Pets []int   `json:"pets"`
 }
 
-// Create creates a new Category and stores it in the database.
-func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Create"))
+// Update updates a given Category and saved the changes to the database.
+func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Update"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
 	// Get the post data.
-	var d CategoryCreateRequest
+	var d CategoryUpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
@@ -45,19 +53,28 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Save the data.
-	b := h.client.Category.Create()
+	b := h.client.Category.UpdateOneID(id)
 	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
 	if d.Pets != nil {
-		b.AddPetIDs(d.Pets...)
+		b.ClearPets().AddPetIDs(d.Pets...)
 	}
 	// Store in database.
 	e, err := b.Save(r.Context())
 	if err != nil {
-		l.Error("error saving category", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		switch err.(type) {
+		case *ent.NotFoundError:
+			l.Info("category not found", zap.Int("id", id), zap.Error(err))
+			render.NotFound(w, r, "category not found")
+		case *ent.NotSingularError:
+			l.Error("duplicate entry for category", zap.Int("id", id), zap.Error(err))
+			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(e.ID))
+		default:
+			l.Error("error saving category", zap.Int("id", id), zap.Error(err))
+			render.InternalServerError(w, r, nil)
+		}
 		return
 	}
 	// Reload entry.
@@ -68,16 +85,14 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		case *ent.NotFoundError:
 			l.Info("category not found", zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, "category not found")
-			return
 		case *ent.NotSingularError:
 			l.Error("duplicate entry for category", zap.Int("id", e.ID), zap.Error(err))
 			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(e.ID))
-			return
 		default:
 			l.Error("error fetching category from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	j, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
@@ -92,18 +107,25 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Payload of a Owner create request.
-type OwnerCreateRequest struct {
+// Payload of a Owner update request.
+type OwnerUpdateRequest struct {
 	Name *string `json:"name" validate:""`
 	Age  *int    `json:"age" validate:""`
 	Pets []int   `json:"pets"`
 }
 
-// Create creates a new Owner and stores it in the database.
-func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Create"))
+// Update updates a given Owner and saved the changes to the database.
+func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Update"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
 	// Get the post data.
-	var d OwnerCreateRequest
+	var d OwnerUpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
@@ -121,7 +143,7 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Save the data.
-	b := h.client.Owner.Create()
+	b := h.client.Owner.UpdateOneID(id)
 	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
@@ -130,13 +152,22 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		b.SetAge(*d.Age)
 	}
 	if d.Pets != nil {
-		b.AddPetIDs(d.Pets...)
+		b.ClearPets().AddPetIDs(d.Pets...)
 	}
 	// Store in database.
 	e, err := b.Save(r.Context())
 	if err != nil {
-		l.Error("error saving owner", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		switch err.(type) {
+		case *ent.NotFoundError:
+			l.Info("owner not found", zap.Int("id", id), zap.Error(err))
+			render.NotFound(w, r, "owner not found")
+		case *ent.NotSingularError:
+			l.Error("duplicate entry for owner", zap.Int("id", id), zap.Error(err))
+			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(e.ID))
+		default:
+			l.Error("error saving owner", zap.Int("id", id), zap.Error(err))
+			render.InternalServerError(w, r, nil)
+		}
 		return
 	}
 	// Reload entry.
@@ -147,16 +178,14 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		case *ent.NotFoundError:
 			l.Info("owner not found", zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, "owner not found")
-			return
 		case *ent.NotSingularError:
 			l.Error("duplicate entry for owner", zap.Int("id", e.ID), zap.Error(err))
 			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(e.ID))
-			return
 		default:
 			l.Error("error fetching owner from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	j, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
@@ -171,20 +200,27 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Payload of a Pet create request.
-type PetCreateRequest struct {
-	Name     *string `json:"name" validate:"required"`
-	Age      *int    `json:"age" validate:"required,gt=0"`
+// Payload of a Pet update request.
+type PetUpdateRequest struct {
+	Name     *string `json:"name" validate:""`
+	Age      *int    `json:"age" validate:"gt=0"`
 	Category []int   `json:"category"`
 	Owner    *int    `json:"owner" validate:""`
 	Friends  []int   `json:"friends" validate:""`
 }
 
-// Create creates a new Pet and stores it in the database.
-func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Create"))
+// Update updates a given Pet and saved the changes to the database.
+func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Update"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
 	// Get the post data.
-	var d PetCreateRequest
+	var d PetUpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
@@ -202,7 +238,7 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Save the data.
-	b := h.client.Pet.Create()
+	b := h.client.Pet.UpdateOneID(id)
 	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
@@ -211,20 +247,29 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		b.SetAge(*d.Age)
 	}
 	if d.Category != nil {
-		b.AddCategoryIDs(d.Category...)
+		b.ClearCategory().AddCategoryIDs(d.Category...)
 	}
 	if d.Owner != nil {
 		b.SetOwnerID(*d.Owner)
 
 	}
 	if d.Friends != nil {
-		b.AddFriendIDs(d.Friends...)
+		b.ClearFriends().AddFriendIDs(d.Friends...)
 	}
 	// Store in database.
 	e, err := b.Save(r.Context())
 	if err != nil {
-		l.Error("error saving pet", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		switch err.(type) {
+		case *ent.NotFoundError:
+			l.Info("pet not found", zap.Int("id", id), zap.Error(err))
+			render.NotFound(w, r, "pet not found")
+		case *ent.NotSingularError:
+			l.Error("duplicate entry for pet", zap.Int("id", id), zap.Error(err))
+			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(e.ID))
+		default:
+			l.Error("error saving pet", zap.Int("id", id), zap.Error(err))
+			render.InternalServerError(w, r, nil)
+		}
 		return
 	}
 	// Reload entry.
@@ -235,16 +280,14 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		case *ent.NotFoundError:
 			l.Info("pet not found", zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, "pet not found")
-			return
 		case *ent.NotSingularError:
 			l.Error("duplicate entry for pet", zap.Int("id", e.ID), zap.Error(err))
 			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(e.ID))
-			return
 		default:
 			l.Error("error fetching pet from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	j, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,

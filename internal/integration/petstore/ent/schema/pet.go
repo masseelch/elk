@@ -27,6 +27,7 @@ func (Pet) Fields() []ent.Field {
 			Annotations(
 				elk.Annotation{
 					CreateValidation: "required,gt=0",
+					UpdateValidation: "gt=0",
 				},
 			),
 	}
@@ -35,6 +36,8 @@ func (Pet) Fields() []ent.Field {
 // Edges of the Pet.
 func (Pet) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From("category", Category.Type).
+			Ref("pets"),
 		edge.From("owner", Owner.Type).
 			Ref("pets").
 			Unique().
@@ -43,8 +46,13 @@ func (Pet) Edges() []ent.Edge {
 					Groups: []string{"pet:owner"},
 				},
 			),
-		edge.From("category", Category.Type).
-			Ref("pets"),
+		edge.To("friends", Pet.Type).
+			Annotations(
+				elk.Annotation{
+					Groups:   []string{"pet"},
+					MaxDepth: 3,
+				},
+			),
 	}
 }
 

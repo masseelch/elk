@@ -77,7 +77,25 @@ func pets(ctx context.Context, refs refs, c *ent.Client) error {
 	}
 
 	refs[petKey], err = c.Pet.CreateBulk(b...).Save(ctx)
-	return err
+	if err != nil {
+		return err
+	}
+
+	ps := refs[petKey].([]*ent.Pet)
+	for i, p := range ps {
+		if i < 4 {
+			continue
+		}
+		q := c.Pet.UpdateOne(p).AddFriends(ps[i-1], ps[i-2])
+		if randomdata.Boolean() {
+			q.AddFriends(ps[i-3], ps[i-4])
+		}
+		if err := q.Exec(ctx); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // owner fixtures
@@ -95,23 +113,5 @@ func owners(ctx context.Context, refs refs, c *ent.Client) error {
 	}
 
 	refs[ownerKey], err = c.Owner.CreateBulk(b...).Save(ctx)
-	if err != nil {
-		return err
-	}
-
-	os := refs[ownerKey].([]*ent.Owner)
-	for i, o := range os {
-		if i < 4 {
-			continue
-		}
-		q := c.Owner.UpdateOne(o).AddFriends(os[i-1], os[i-2])
-		if randomdata.Boolean() {
-			q.AddFriends(os[i-3], os[i-4])
-		}
-		if err := q.Exec(ctx); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return err
 }

@@ -11,12 +11,19 @@ const (
 	FieldName = "name"
 	// FieldAge holds the string denoting the age field in the database.
 	FieldAge = "age"
-	// EdgeOwner holds the string denoting the owner edge name in mutations.
-	EdgeOwner = "owner"
 	// EdgeCategory holds the string denoting the category edge name in mutations.
 	EdgeCategory = "category"
+	// EdgeOwner holds the string denoting the owner edge name in mutations.
+	EdgeOwner = "owner"
+	// EdgeFriends holds the string denoting the friends edge name in mutations.
+	EdgeFriends = "friends"
 	// Table holds the table name of the pet in the database.
 	Table = "pets"
+	// CategoryTable is the table the holds the category relation/edge. The primary key declared below.
+	CategoryTable = "category_pets"
+	// CategoryInverseTable is the table name for the Category entity.
+	// It exists in this package in order to avoid circular dependency with the "category" package.
+	CategoryInverseTable = "categories"
 	// OwnerTable is the table the holds the owner relation/edge.
 	OwnerTable = "pets"
 	// OwnerInverseTable is the table name for the Owner entity.
@@ -24,11 +31,8 @@ const (
 	OwnerInverseTable = "owners"
 	// OwnerColumn is the table column denoting the owner relation/edge.
 	OwnerColumn = "owner_pets"
-	// CategoryTable is the table the holds the category relation/edge. The primary key declared below.
-	CategoryTable = "category_pets"
-	// CategoryInverseTable is the table name for the Category entity.
-	// It exists in this package in order to avoid circular dependency with the "category" package.
-	CategoryInverseTable = "categories"
+	// FriendsTable is the table the holds the friends relation/edge. The primary key declared below.
+	FriendsTable = "pet_friends"
 )
 
 // Columns holds all SQL columns for pet fields.
@@ -48,6 +52,9 @@ var (
 	// CategoryPrimaryKey and CategoryColumn2 are the table columns denoting the
 	// primary key for the category relation (M2M).
 	CategoryPrimaryKey = []string{"category_id", "pet_id"}
+	// FriendsPrimaryKey and FriendsColumn2 are the table columns denoting the
+	// primary key for the friends relation (M2M).
+	FriendsPrimaryKey = []string{"pet_id", "friend_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).

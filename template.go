@@ -22,12 +22,14 @@ var (
 		parse("template/http/handler.tmpl"),
 		parse("template/http/create.tmpl"),
 		parse("template/http/read.tmpl"),
+		parse("template/http/update.tmpl"),
 		parse("template/http/list.tmpl"),
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{
-		"edgesToLoad": edgesToLoad,
-		"kebab":       strcase.KebabCase,
+		"edgesToLoad":   edgesToLoad,
+		"kebab":         strcase.KebabCase,
+		"elkAnnotation": elkAnnotation,
 	}
 )
 
@@ -36,4 +38,12 @@ func parse(path string) *gen.Template {
 		Funcs(gen.Funcs).
 		Funcs(TemplateFuncs).
 		Parse(string(internal.MustAsset(path))))
+}
+
+func elkAnnotation(m map[string]interface{}) (*Annotation, error) {
+	if m == nil {
+		return nil, nil
+	}
+	a := new(Annotation)
+	return a, a.Decode(m)
 }

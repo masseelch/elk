@@ -35,16 +35,14 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 		case *ent.NotFoundError:
 			l.Info("category not found", zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "category not found")
-			return
 		case *ent.NotSingularError:
 			l.Error("duplicate entry for category", zap.Int("id", id), zap.Error(err))
 			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(id))
-			return
 		default:
 			l.Error("error fetching category from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
@@ -78,16 +76,14 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 		case *ent.NotFoundError:
 			l.Info("owner not found", zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "owner not found")
-			return
 		case *ent.NotSingularError:
 			l.Error("duplicate entry for owner", zap.Int("id", id), zap.Error(err))
 			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(id))
-			return
 		default:
 			l.Error("error fetching owner from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
@@ -116,11 +112,9 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	// Create the query to fetch the Pet
 	q := h.client.Pet.Query().Where(pet.ID(id))
 	// Eager load edges that are required on read operation.
-	q.WithOwner(func(q_ *ent.OwnerQuery) {
-		q_.WithFriends(func(q__ *ent.OwnerQuery) {
-			q__.WithFriends(func(q___ *ent.OwnerQuery) {
-				q___.WithFriends()
-			})
+	q.WithOwner().WithFriends(func(q_ *ent.PetQuery) {
+		q_.WithFriends(func(q__ *ent.PetQuery) {
+			q__.WithFriends()
 		})
 	})
 	e, err := q.Only(r.Context())
@@ -129,16 +123,14 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		case *ent.NotFoundError:
 			l.Info("pet not found", zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "pet not found")
-			return
 		case *ent.NotSingularError:
 			l.Error("duplicate entry for pet", zap.Int("id", id), zap.Error(err))
 			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(id))
-			return
 		default:
 			l.Error("error fetching pet from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,

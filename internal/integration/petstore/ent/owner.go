@@ -21,18 +21,16 @@ type Owner struct {
 	Age int `json:"age,omitempty" groups:"owner"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OwnerQuery when eager-loading is set.
-	Edges OwnerEdges `json:"edges"  groups:"owner"`
+	Edges OwnerEdges `json:"edges"  groups:""`
 }
 
 // OwnerEdges holds the relations/edges for other nodes in the graph.
 type OwnerEdges struct {
 	// Pets holds the value of the pets edge.
 	Pets []*Pet `json:"pets,omitempty"`
-	// Friends holds the value of the friends edge.
-	Friends []*Owner `json:"friends,omitempty" groups:"owner"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [1]bool
 }
 
 // PetsOrErr returns the Pets value or an error if the edge
@@ -42,15 +40,6 @@ func (e OwnerEdges) PetsOrErr() ([]*Pet, error) {
 		return e.Pets, nil
 	}
 	return nil, &NotLoadedError{edge: "pets"}
-}
-
-// FriendsOrErr returns the Friends value or an error if the edge
-// was not loaded in eager-loading.
-func (e OwnerEdges) FriendsOrErr() ([]*Owner, error) {
-	if e.loadedTypes[1] {
-		return e.Friends, nil
-	}
-	return nil, &NotLoadedError{edge: "friends"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -103,11 +92,6 @@ func (o *Owner) assignValues(columns []string, values []interface{}) error {
 // QueryPets queries the "pets" edge of the Owner entity.
 func (o *Owner) QueryPets() *PetQuery {
 	return (&OwnerClient{config: o.config}).QueryPets(o)
-}
-
-// QueryFriends queries the "friends" edge of the Owner entity.
-func (o *Owner) QueryFriends() *OwnerQuery {
-	return (&OwnerClient{config: o.config}).QueryFriends(o)
 }
 
 // Update returns a builder for updating this Owner.

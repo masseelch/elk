@@ -28,8 +28,9 @@ type PetQuery struct {
 	fields     []string
 	predicates []predicate.Pet
 	// eager-loading edges.
-	withOwner    *OwnerQuery
 	withCategory *CategoryQuery
+	withOwner    *OwnerQuery
+	withFriends  *PetQuery
 	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -67,6 +68,28 @@ func (pq *PetQuery) Order(o ...OrderFunc) *PetQuery {
 	return pq
 }
 
+// QueryCategory chains the current query on the "category" edge.
+func (pq *PetQuery) QueryCategory() *CategoryQuery {
+	query := &CategoryQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryOwner chains the current query on the "owner" edge.
 func (pq *PetQuery) QueryOwner() *OwnerQuery {
 	query := &OwnerQuery{config: pq.config}
@@ -89,9 +112,9 @@ func (pq *PetQuery) QueryOwner() *OwnerQuery {
 	return query
 }
 
-// QueryCategory chains the current query on the "category" edge.
-func (pq *PetQuery) QueryCategory() *CategoryQuery {
-	query := &CategoryQuery{config: pq.config}
+// QueryFriends chains the current query on the "friends" edge.
+func (pq *PetQuery) QueryFriends() *PetQuery {
+	query := &PetQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -102,8 +125,8 @@ func (pq *PetQuery) QueryCategory() *CategoryQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, selector),
-			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, pet.FriendsTable, pet.FriendsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -292,12 +315,24 @@ func (pq *PetQuery) Clone() *PetQuery {
 		offset:       pq.offset,
 		order:        append([]OrderFunc{}, pq.order...),
 		predicates:   append([]predicate.Pet{}, pq.predicates...),
-		withOwner:    pq.withOwner.Clone(),
 		withCategory: pq.withCategory.Clone(),
+		withOwner:    pq.withOwner.Clone(),
+		withFriends:  pq.withFriends.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
 	}
+}
+
+// WithCategory tells the query-builder to eager-load the nodes that are connected to
+// the "category" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithCategory(opts ...func(*CategoryQuery)) *PetQuery {
+	query := &CategoryQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withCategory = query
+	return pq
 }
 
 // WithOwner tells the query-builder to eager-load the nodes that are connected to
@@ -311,14 +346,14 @@ func (pq *PetQuery) WithOwner(opts ...func(*OwnerQuery)) *PetQuery {
 	return pq
 }
 
-// WithCategory tells the query-builder to eager-load the nodes that are connected to
-// the "category" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PetQuery) WithCategory(opts ...func(*CategoryQuery)) *PetQuery {
-	query := &CategoryQuery{config: pq.config}
+// WithFriends tells the query-builder to eager-load the nodes that are connected to
+// the "friends" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithFriends(opts ...func(*PetQuery)) *PetQuery {
+	query := &PetQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withCategory = query
+	pq.withFriends = query
 	return pq
 }
 
@@ -388,9 +423,10 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		nodes       = []*Pet{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [2]bool{
-			pq.withOwner != nil,
+		loadedTypes = [3]bool{
 			pq.withCategory != nil,
+			pq.withOwner != nil,
+			pq.withFriends != nil,
 		}
 	)
 	if pq.withOwner != nil {
@@ -417,35 +453,6 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
-	}
-
-	if query := pq.withOwner; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Pet)
-		for i := range nodes {
-			if nodes[i].owner_pets == nil {
-				continue
-			}
-			fk := *nodes[i].owner_pets
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(owner.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "owner_pets" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Owner = n
-			}
-		}
 	}
 
 	if query := pq.withCategory; query != nil {
@@ -509,6 +516,100 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 			}
 			for i := range nodes {
 				nodes[i].Edges.Category = append(nodes[i].Edges.Category, n)
+			}
+		}
+	}
+
+	if query := pq.withOwner; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Pet)
+		for i := range nodes {
+			if nodes[i].owner_pets == nil {
+				continue
+			}
+			fk := *nodes[i].owner_pets
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(owner.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "owner_pets" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Owner = n
+			}
+		}
+	}
+
+	if query := pq.withFriends; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		ids := make(map[int]*Pet, len(nodes))
+		for _, node := range nodes {
+			ids[node.ID] = node
+			fks = append(fks, node.ID)
+			node.Edges.Friends = []*Pet{}
+		}
+		var (
+			edgeids []int
+			edges   = make(map[int][]*Pet)
+		)
+		_spec := &sqlgraph.EdgeQuerySpec{
+			Edge: &sqlgraph.EdgeSpec{
+				Inverse: false,
+				Table:   pet.FriendsTable,
+				Columns: pet.FriendsPrimaryKey,
+			},
+			Predicate: func(s *sql.Selector) {
+				s.Where(sql.InValues(pet.FriendsPrimaryKey[0], fks...))
+			},
+			ScanValues: func() [2]interface{} {
+				return [2]interface{}{&sql.NullInt64{}, &sql.NullInt64{}}
+			},
+			Assign: func(out, in interface{}) error {
+				eout, ok := out.(*sql.NullInt64)
+				if !ok || eout == nil {
+					return fmt.Errorf("unexpected id value for edge-out")
+				}
+				ein, ok := in.(*sql.NullInt64)
+				if !ok || ein == nil {
+					return fmt.Errorf("unexpected id value for edge-in")
+				}
+				outValue := int(eout.Int64)
+				inValue := int(ein.Int64)
+				node, ok := ids[outValue]
+				if !ok {
+					return fmt.Errorf("unexpected node id in edges: %v", outValue)
+				}
+				if _, ok := edges[inValue]; !ok {
+					edgeids = append(edgeids, inValue)
+				}
+				edges[inValue] = append(edges[inValue], node)
+				return nil
+			},
+		}
+		if err := sqlgraph.QueryEdges(ctx, pq.driver, _spec); err != nil {
+			return nil, fmt.Errorf(`query edges "friends": %w`, err)
+		}
+		query.Where(pet.IDIn(edgeids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := edges[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected "friends" node returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Friends = append(nodes[i].Edges.Friends, n)
 			}
 		}
 	}
