@@ -83,6 +83,7 @@ func TestHttp(t *testing.T) {
 	r.Post("/pets", ph.Create)
 	r.Get("/pets/{id}", ph.Read)
 	r.Patch("/pets/{id}", ph.Update)
+	r.Delete("/pets/{id}", ph.Delete)
 
 	// Create the tests.
 	tests := []test{
@@ -257,6 +258,21 @@ func TestHttp(t *testing.T) {
 			},
 		},
 		{
+			name:   "update _ malformed id",
+			req:    httptest.NewRequest(http.MethodPatch, "/pets/invalid", nil),
+			status: http.StatusBadRequest,
+			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "id must be an integer greater zero")),
+			logs: []map[string]interface{}{
+				{
+					"level":   "error",
+					"msg":     "error getting id from url parameter",
+					"handler": "PetHandler",
+					"method":  "Update",
+					"id":      "invalid",
+				},
+			},
+		},
+		{
 			name:   "update _ invalid json",
 			req:    httptest.NewRequest(http.MethodPatch, "/pets/1", strings.NewReader("invalid")),
 			status: http.StatusBadRequest,
@@ -324,6 +340,54 @@ func TestHttp(t *testing.T) {
 					"msg":     "pet rendered",
 					"handler": "PetHandler",
 					"method":  "Update",
+					"id":      1,
+				},
+			},
+		},
+		{
+			name:   "delete _ malformed id",
+			req:    httptest.NewRequest(http.MethodDelete, "/pets/invalid", nil),
+			status: http.StatusBadRequest,
+			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "id must be an integer greater zero")),
+			logs: []map[string]interface{}{
+				{
+					"level":   "error",
+					"msg":     "error getting id from url parameter",
+					"handler": "PetHandler",
+					"method":  "Delete",
+					"id":      "invalid",
+				},
+			},
+		},
+		{
+			name:   "delete _ not found",
+			req:    httptest.NewRequest(http.MethodDelete, "/pets/1000", nil),
+			status: http.StatusNotFound,
+			body:   mustEncode(t, render.NewResponse(http.StatusNotFound, "pet not found")),
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pet not found",
+					"handler": "PetHandler",
+					"method":  "Delete",
+					"id":      1000,
+				},
+			},
+		},
+		{
+			name:   "delete _ ok",
+			req:    httptest.NewRequest(http.MethodDelete, "/pets/1", nil),
+			status: http.StatusNoContent,
+			fn: func(t *testing.T, tt *test, b []byte) {
+				_, err := c.Pet.Get(context.Background(), 1)
+				require.EqualError(t, err, "ent: pet not found")
+			},
+			logs: []map[string]interface{}{
+				{
+					"level":   "info",
+					"msg":     "pet deleted",
+					"handler": "PetHandler",
+					"method":  "Delete",
 					"id":      1,
 				},
 			},

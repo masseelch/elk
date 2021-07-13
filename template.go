@@ -23,6 +23,7 @@ var (
 		parse("template/http/create.tmpl"),
 		parse("template/http/read.tmpl"),
 		parse("template/http/update.tmpl"),
+		parse("template/http/delete.tmpl"),
 		parse("template/http/list.tmpl"),
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
