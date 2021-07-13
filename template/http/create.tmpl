@@ -11,10 +11,12 @@
         type {{ $n.Name }}CreateRequest struct {
             {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
             {{ range $f := $n.Fields -}}
-                {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ with $f.Annotations.Elk | elkAnnotation }} validate:"{{ .ValidationTags "create" }}"{{ end }}`
+                {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"
+                {{- with validationTags $f.Annotations.Elk "create" }} validate:"{{ . }}"{{ end }}`
             {{ end -}}
             {{ range $e := $n.Edges -}}
-                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"{{ with $e.Annotations.Elk | elkAnnotation }} validate:"{{ .ValidationTags "create" }}"{{ end }}`
+                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"
+                {{- with validationTags $e.Annotations.Elk "update" }} validate:"{{ . }}"{{ end }}`
             {{ end }}
         }
 

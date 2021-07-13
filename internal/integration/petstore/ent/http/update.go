@@ -109,8 +109,8 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 // Payload of a Owner update request.
 type OwnerUpdateRequest struct {
-	Name *string `json:"name" validate:""`
-	Age  *int    `json:"age" validate:""`
+	Name *string `json:"name"`
+	Age  *int    `json:"age"`
 	Pets []int   `json:"pets"`
 }
 
@@ -202,11 +202,11 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 // Payload of a Pet update request.
 type PetUpdateRequest struct {
-	Name     *string `json:"name" validate:""`
+	Name     *string `json:"name"`
 	Age      *int    `json:"age" validate:"gt=0"`
 	Category []int   `json:"category"`
-	Owner    *int    `json:"owner" validate:""`
-	Friends  []int   `json:"friends" validate:""`
+	Owner    *int    `json:"owner"`
+	Friends  []int   `json:"friends"`
 }
 
 // Update updates a given Pet and saved the changes to the database.

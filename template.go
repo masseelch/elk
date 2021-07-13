@@ -27,9 +27,9 @@ var (
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{
-		"edgesToLoad":   edgesToLoad,
-		"kebab":         strcase.KebabCase,
-		"elkAnnotation": elkAnnotation,
+		"edgesToLoad":    edgesToLoad,
+		"kebab":          strcase.KebabCase,
+		"validationTags": validationTags,
 	}
 )
 
@@ -40,10 +40,19 @@ func parse(path string) *gen.Template {
 		Parse(string(internal.MustAsset(path))))
 }
 
-func elkAnnotation(m map[string]interface{}) (*Annotation, error) {
-	if m == nil {
-		return nil, nil
+func validationTags(a gen.Annotations, m string) string {
+	if a == nil {
+		return ""
 	}
-	a := new(Annotation)
-	return a, a.Decode(m)
+	an := Annotation{}
+	if err := an.Decode(a); err != nil {
+		return ""
+	}
+	if m == "create" && an.CreateValidation != "" {
+		return an.CreateValidation
+	}
+	if m == "update" && an.UpdateValidation != "" {
+		return an.UpdateValidation
+	}
+	return an.Validation
 }

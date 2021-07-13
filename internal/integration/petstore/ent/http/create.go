@@ -94,8 +94,8 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 // Payload of a Owner create request.
 type OwnerCreateRequest struct {
-	Name *string `json:"name" validate:""`
-	Age  *int    `json:"age" validate:""`
+	Name *string `json:"name"`
+	Age  *int    `json:"age"`
 	Pets []int   `json:"pets"`
 }
 
@@ -176,8 +176,8 @@ type PetCreateRequest struct {
 	Name     *string `json:"name" validate:"required"`
 	Age      *int    `json:"age" validate:"required,gt=0"`
 	Category []int   `json:"category"`
-	Owner    *int    `json:"owner" validate:""`
-	Friends  []int   `json:"friends" validate:""`
+	Owner    *int    `json:"owner"`
+	Friends  []int   `json:"friends"`
 }
 
 // Create creates a new Pet and stores it in the database.

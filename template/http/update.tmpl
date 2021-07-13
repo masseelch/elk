@@ -15,11 +15,13 @@
             {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
             {{ range $f := $n.Fields -}}
                 {{ if not $f.Immutable -}}
-                    {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"{{ with $f.Annotations.Elk | elkAnnotation }} validate:"{{ .ValidationTags "update" }}"{{ end }}`
+                    {{ $f.StructField }} *{{ $f.Type.String }}`json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"
+                    {{- with validationTags $f.Annotations.Elk "update" }} validate:"{{ . }}"{{ end }}`
                 {{- end }}
             {{ end -}}
             {{ range $e := $n.Edges -}}
-                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"{{ with $e.Annotations.Elk | elkAnnotation }} validate:"{{ .ValidationTags "update" }}"{{ end }}`
+                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"
+                {{- with validationTags $e.Annotations.Elk "update" }} validate:"{{ . }}"{{ end }}`
             {{ end }}
         }
 
