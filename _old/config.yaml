@@ -1,0 +1,14 @@
+ent:
+  source: ./_example/schema
+
+handler:
+  source: ./_example/schema
+
+flutter:
+  source: ./_example/schema
+  target: ./_example/flutter
+  type_mappings:
+    - go: schema.Color
+      dart: Color
+      import: ../color.dart
+
