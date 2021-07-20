@@ -2,9 +2,13 @@
 
 {{ define "flutter/model" }}
     {{ template "flutter/header" }}
+    import 'dart:convert';
+
     import 'package:json_annotation/json_annotation.dart';
 
-{{/*    TODO: Import what is necessary */}}
+    {{ range $e := $.Edges -}}
+        {{ if not $e.Bidi }}import './{{ $e.Type.Name | snake }}.dart';{{ end }}
+    {{ end }}
 
     {{/* json_serializable package puts the generated code in this file */}}
     part '{{ $.Name | snake }}.g.dart';
@@ -14,10 +18,42 @@
     class {{ $.Name }} {
         {{ $.Name }}();
 
-        {{/* ID of the model */}}
-        {{ $json := or (index (split (tagLookup $.ID.StructTag "json") ",") 0) (snake $.ID.Name) }}
-        @JsonKey(name: '{{ $json }}')
-        {{ $.ID.Type | dartType }}? {{ $.ID.Name }};
+        {{ template "flutter/model/field" $.ID }}
+        {{ range $f := $.Fields }}{{ template "flutter/model/field" $f }}{{ end }}
+        {{ $.Name }}Edges? edges;
+
+        @override
+        int get hashCode => {{ $.ID.Name }}.hashCode;
+
+        @override
+        bool operator ==(Object other) => other is {{ $.Name }} && {{ $.ID.Name }} == other.{{ $.ID.Name }};
+
+        factory {{ $.Name }}.fromJson(Map<String, dynamic> json) => _${{ $.Name }}FromJson(json);
+
+        Map<String, dynamic> toJson() => _${{ $.Name }}ToJson(this);
+
+        String toString() => jsonEncode(toJson());
+    }
+
+    @JsonSerializable()
+    class {{ $.Name }}Edges {
+        {{ $.Name }}Edges();
+
+        {{ range $e := $.Edges -}}
+            {{ if $e.Unique }}{{ $e.Type.Name }}{{ else }}List<{{ $e.Type.Name }}>{{ end }}? {{ $e.Name | camel }};
+        {{ end }}
+
+        factory {{ $.Name }}Edges.fromJson(Map<String, dynamic> json) => _${{ $.Name }}EdgesFromJson(json);
+
+        Map<String, dynamic> toJson() => _${{ $.Name }}EdgesToJson(this);
     }
 {{ end }}
 
+{{ define "flutter/model/field" }}
+    {{/* gotype: entgo.io/ent/entc/gen.Field */}}
+    {{ $json := or (index (split (tagLookup .StructTag "json") ",") 0) (snake .Name) }}
+    @JsonKey(name: '{{ $json }}')
+    {{ .Type | dartType }}? {{ .Name }};
+
+    // {{ .}}
+{{ end }}
