@@ -9,8 +9,9 @@
         "github.com/go-playground/validator/v10"
     )
 
+    {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
-        // Payload of a {{ $n.Name }} update request.
+        // Payload of a {{ $pkg }}.{{ $n.Name }} update request.
         type {{ $n.Name }}UpdateRequest struct {
             {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
             {{ range $f := $n.Fields -}}
@@ -25,39 +26,15 @@
             {{ end }}
         }
 
-        // Update updates a given {{ $n.Name }} and saved the changes to the database.
+        // Update updates a given {{ $pkg }}.{{ $n.Name }} and saves the changes to the database.
         func (h {{ $n.Name }}Handler) Update(w http.ResponseWriter, r *http.Request) {
             l := h.log.With(zap.String("method", "Update"))
-             // ID is URL parameter.
-            {{- if $n.ID.IsInt }}
-                id, err := strconv.Atoi(chi.URLParam(r, "id"))
-                if err != nil {
-                    l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-                    render.BadRequest(w, r, "id must be an integer greater zero")
-                    return
-                }
-            {{ else }}
-                id := chi.URLParam(r, "id")
-            {{ end -}}
+            {{- template "helper/http/id-from-url" $n -}}
 
             // Get the post data.
             var d {{ $n.Name }}UpdateRequest
-            if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-                l.Error("error decoding json", zap.Error(err))
-                render.BadRequest(w, r, "invalid json string")
-                return
-            }
-            // Validate the data.
-            if err := h.validator.Struct(d); err != nil {
-                if err, ok := err.(*validator.InvalidValidationError); ok {
-                    l.Error("error validating request data", zap.Error(err))
-                    render.InternalServerError(w, r, nil)
-                    return
-                }
-                l.Info("validation failed", zap.Error(err))
-                render.BadRequest(w, r, err)
-                return
-            }
+            {{- template "helper/http/decode-and-validate-request-body" -}}
+
             // Save the data.
             b := h.client.{{ $n.Name }}.UpdateOneID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }})
             // TODO: what about slice fields that have custom marshallers?
@@ -95,28 +72,24 @@
             }
             // Reload entry.
             q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(e.{{ $n.ID.StructField }}))
+
             {{- with edgesToLoad $n "create" }}
-                // Eager load edges that are required on create operation.
-                {{ .Code "q" }}
+                // Eager load edges that are required on update operation.
+                {{ . }}
             {{- end }}
             e, err = q.Only(r.Context())
-            if err != nil {
-                switch err.(type) {
-                    case *ent.NotFoundError:
-                        l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
-                        render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
-                    case *ent.NotSingularError:
-                        l.Error("duplicate entry for {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
-                        render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(e.{{ $n.ID.StructField }}))
-                    default:
-                        l.Error("error fetching {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
-                        render.InternalServerError(w, r, nil)
-                }
-                return
-            }
+
+            {{- template "helper/http/reload/error-handling" . -}}
+
             j, err := sheriff.Marshal(&sheriff.Options{
                 IncludeEmptyTag: true,
-                Groups: []string{ {{- with $.Annotations.ElkSchema.CreateGroups }}.Code{{ else }}"{{ $n.Name | kebab }}"{{ end -}} },
+                Groups: []string{
+                    {{- with $n.Annotations.ElkSchema.UpdateGroups -}}
+                        "{{ join (stringSlice .) `","` }}"
+                    {{- else -}}
+                        "{{ $n.Name | kebab }}"
+                    {{- end -}}
+                },
             }, e)
             if err != nil {
                 l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))

@@ -23,12 +23,11 @@ type (
 	}
 )
 
-func (el eagerLoadEdges) Code(name ...string) string {
-	n := "q"
-	if len(name) > 0 {
-		n = name[0]
-	}
+func (el eagerLoadEdges) String() string {
+	return el.stringHelper("q")
+}
 
+func (el eagerLoadEdges) stringHelper(n string) string {
 	b := new(strings.Builder)
 	b.WriteString(n)
 
@@ -37,7 +36,7 @@ func (el eagerLoadEdges) Code(name ...string) string {
 
 		if e.eagerLoadEdges != nil {
 			n += "_"
-			b.WriteString(fmt.Sprintf("func (%s *ent.%s) {\n%s\n}", n, e.eagerLoadEdges.queryName, e.eagerLoadEdges.Code(n)))
+			b.WriteString(fmt.Sprintf("func (%s *ent.%s) {\n%s\n}", n, e.eagerLoadEdges.queryName, e.eagerLoadEdges.stringHelper(n)))
 		}
 
 		b.WriteString(")")
@@ -70,6 +69,8 @@ func edgesToLoad(n *gen.Type, action string) (*eagerLoadEdges, error) {
 		g = a.UpdateGroups
 	case actionDelete:
 		g = a.DeleteGroups
+	case actionList:
+		g = a.ListGroups
 	}
 
 	return edgesToLoadHelper(n, make(map[string]uint), g)

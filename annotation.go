@@ -10,14 +10,16 @@ type (
 	SchemaAnnotation struct {
 		// Skip tells the generator to skip this model.
 		Skip bool `json:"Skip,omitempty"`
-		// CreateGroups holds the serializations groups to use on the create handler.
+		// CreateGroups holds the serializations Groups to use on the create handler.
 		CreateGroups Groups `json:"CreateGroups,omitempty"`
-		// ReadGroups holds the serializations groups to use on the read handler.
+		// ReadGroups holds the serializations Groups to use on the read handler.
 		ReadGroups Groups `json:"ReadGroups,omitempty"`
-		// UpdateGroups holds the serializations groups to use on the update handler.
+		// UpdateGroups holds the serializations Groups to use on the update handler.
 		UpdateGroups Groups `json:"UpdateGroups,omitempty"`
-		// DeleteGroups holds the serializations groups to use on the delete handler.
+		// DeleteGroups holds the serializations Groups to use on the delete handler.
 		DeleteGroups Groups `json:"DeleteGroups,omitempty"`
+		// ListGroups holds the serializations Groups to use on the list handler.
+		ListGroups Groups `json:"ListGroups,omitempty"`
 	}
 	// Annotation annotates fields and edges with metadata for templates.
 	Annotation struct {

@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Delete removes a Category from the database.
+// Delete removes a ent.Category from the database.
 func (h CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Delete"))
 	// ID is URL parameter.
@@ -25,7 +25,8 @@ func (h CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err := h.client.Category.DeleteOneID(id).Exec(r.Context()); err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("category not found", zap.Int("id", id), zap.Error(err))
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "category not found")
 		default:
 			l.Error("error deleting category from db", zap.Int("id", id), zap.Error(err))
@@ -37,7 +38,7 @@ func (h CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	render.NoContent(w)
 }
 
-// Delete removes a Owner from the database.
+// Delete removes a ent.Owner from the database.
 func (h OwnerHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Delete"))
 	// ID is URL parameter.
@@ -50,7 +51,8 @@ func (h OwnerHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err := h.client.Owner.DeleteOneID(id).Exec(r.Context()); err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("owner not found", zap.Int("id", id), zap.Error(err))
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "owner not found")
 		default:
 			l.Error("error deleting owner from db", zap.Int("id", id), zap.Error(err))
@@ -62,7 +64,7 @@ func (h OwnerHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	render.NoContent(w)
 }
 
-// Delete removes a Pet from the database.
+// Delete removes a ent.Pet from the database.
 func (h PetHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Delete"))
 	// ID is URL parameter.
@@ -75,7 +77,8 @@ func (h PetHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err := h.client.Pet.DeleteOneID(id).Exec(r.Context()); err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("pet not found", zap.Int("id", id), zap.Error(err))
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "pet not found")
 		default:
 			l.Error("error deleting pet from db", zap.Int("id", id), zap.Error(err))

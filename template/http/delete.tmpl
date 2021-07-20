@@ -6,29 +6,21 @@
     {{ end }}
     import "github.com/go-chi/chi/v5" {{/* This is needed for stupid SIV rule */}}
 
+    {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
-        // Delete removes a {{ $n.Name }} from the database.
+        // Delete removes a {{ $pkg }}.{{ $n.Name }} from the database.
         func (h {{ $n.Name }}Handler) Delete(w http.ResponseWriter, r *http.Request) {
             l := h.log.With(zap.String("method", "Delete"))
-            // ID is URL parameter.
-            {{- if $n.ID.IsInt }}
-                id, err := strconv.Atoi(chi.URLParam(r, "id"))
-                if err != nil {
-                    l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-                    render.BadRequest(w, r, "id must be an integer greater zero")
-                    return
-                }
-            {{ else }}
-                id := chi.URLParam(r, "id")
-            {{ end -}}
+            {{- template "helper/http/id-from-url" $n -}}
             if err := h.client.{{ $n.Name }}.DeleteOneID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }}).Exec(r.Context()); err != nil {
                 switch err.(type) {
-                    case *ent.NotFoundError:
-                        l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                        render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
-                    default:
-                        l.Error("error deleting {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                        render.InternalServerError(w, r, nil)
+                case *ent.NotFoundError:
+                    msg := h.stripEntError(err)
+                    l.Info(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                    render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
+                default:
+                    l.Error("error deleting {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                    render.InternalServerError(w, r, nil)
                 }
                 return
             }

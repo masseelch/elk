@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Read fetches the Category model identified by a given url-parameter from the
+// Read fetches the ent.Category identified by a given url-parameter from the
 // database and returns it to the client.
 func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "List"))
@@ -54,7 +54,7 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, d)
 }
 
-// Read fetches the Owner model identified by a given url-parameter from the
+// Read fetches the ent.Owner identified by a given url-parameter from the
 // database and returns it to the client.
 func (h *OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "List"))
@@ -97,7 +97,7 @@ func (h *OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, d)
 }
 
-// Read fetches the Pet model identified by a given url-parameter from the
+// Read fetches the ent.Pet identified by a given url-parameter from the
 // database and returns it to the client.
 func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "List"))

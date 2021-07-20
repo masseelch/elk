@@ -13,6 +13,8 @@ cloud.google.com/go/storage v1.0.0/go.mod h1:IhtSnM/ZTZV8YYJWCY8RULGVqBDmpoyjwiy
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 entgo.io/ent v0.8.1-0.20210719182726-dd4d2521a757 h1:zzhbc/Ho6eXQ9sQvd/XYhd/JJJH4+En/H9Z2pmQ/uo8=
 entgo.io/ent v0.8.1-0.20210719182726-dd4d2521a757/go.mod h1:NrrK0mJ5OnTaX2QpLb5edGN3ugDPrz9CgFLL+nE2AVg=
+entgo.io/ent v0.8.1-0.20210720072308-756517e559eb h1:305eSHmXQvcsPuatbFjIFHgLFNjnckDtVowIKgszqVk=
+entgo.io/ent v0.8.1-0.20210720072308-756517e559eb/go.mod h1:NrrK0mJ5OnTaX2QpLb5edGN3ugDPrz9CgFLL+nE2AVg=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=

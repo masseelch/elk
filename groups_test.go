@@ -23,5 +23,5 @@ func TestGroups(t *testing.T) {
 	require.False(t, gs.Match(Groups{"none", "nobody"}))
 	require.True(t, gs.Match(Groups{"group", "nobody"}))
 
-	require.Equal(t, `groups:"group_one,GROUP_two,group:3"`, Groups{"group_one", "GROUP_two", "group:3"}.StructTag())
+	require.Equal(t, `Groups:"group_one,GROUP_two,group:3"`, Groups{"group_one", "GROUP_two", "group:3"}.StructTag())
 }

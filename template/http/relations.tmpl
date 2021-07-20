@@ -1,0 +1,87 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "http/relations" }}
+    {{- with extend $ "Package" "http" -}}
+        {{ template "header" . }}
+    {{ end }}
+
+    {{ $pkg := base $.Config.Package }}
+    {{ range $n := $.Nodes }}
+        {{ range $e := $n.Edges }}
+            // {{ $e.Name | pascal }} fetches the {{ $pkg }}.{{ $e.Name }} attached to the {{ $pkg }}.{{ $n.Name }}
+            // identified by a given url-parameter from the database and renders it to the client.
+            func (h {{ $n.Name }}Handler) {{ $e.Name | pascal }}(w http.ResponseWriter, r *http.Request) {
+                l := h.log.With(zap.String("method", "{{ $e.Name | pascal }}"))
+                {{- template "helper/http/id-from-url" $n -}}
+
+                // Create the query to fetch the {{ $e.Name | kebab }} attached to this {{ $n.Name | kebab }}
+                q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(id)).Query{{ $e.Name | pascal }}()
+                {{- if $e.Unique }}
+                    {{- with edgesToLoad $e.Type "read" }}
+                        // Eager load edges that are required on read operation.
+                        {{ . }}
+                    {{- end }}
+                    e, err := q.Only(r.Context())
+                    if err != nil {
+                        switch err.(type) {
+                        case *ent.NotFoundError:
+                            msg := h.stripEntError(err)
+                            l.Info(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                            render.NotFound(w, r, strings.TrimPrefix(err.Error(), "ent: "))
+                        case *ent.NotSingularError:
+                            msg := h.stripEntError(err)
+                            l.Error(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                            render.BadRequest(w, r, strings.TrimPrefix(err.Error(), "ent: "))
+                        default:
+                            l.Error("error fetching {{ $e.Type.Name | kebab }} from db", zap.Int("{{ $n.Name | kebab }}.{{ $n.ID.Name }}", id), zap.Error(err))
+                            render.InternalServerError(w, r, nil)
+                        }
+                        return
+                    }
+                    d, err := sheriff.Marshal(&sheriff.Options{
+                        IncludeEmptyTag: true,
+                        Groups: []string{
+                            {{- with $e.Type.Annotations.ElkSchema.ReadGroups -}}
+                                "{{ join (stringSlice .) `","` }}"
+                            {{- else -}}
+                                "{{ $e.Type.Name | kebab }}"
+                            {{- end -}}
+                        },
+                    }, e)
+                    if err != nil {
+                        l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", e.{{ $e.Type.ID.StructField }}), zap.Error(err))
+                        render.InternalServerError(w, r, nil)
+                        return
+                    }
+                    l.Info("{{ $e.Type.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $e.Type.ID.StructField }}))
+                    render.OK(w, r, d)
+                {{- else }}
+                    {{- with edgesToLoad $e.Type "list" }}
+                        // Eager load edges that are required on list operation.
+                        {{ . }}
+                    {{- end }}
+
+                    {{- template "helper/http/pagination" $e.Type -}}
+
+                    d, err := sheriff.Marshal(&sheriff.Options{
+                        IncludeEmptyTag: true,
+                        Groups: []string{
+                            {{- with $n.Annotations.ElkSchema.ListGroups -}}
+                                "{{ join (stringSlice .) `","` }}"
+                            {{- else -}}
+                                "{{ $n.Name | kebab }}"
+                            {{- end -}}
+                        },
+                    }, es)
+                    if err != nil {
+                        l.Error("serialization error", zap.Error(err))
+                        render.InternalServerError(w, r, nil)
+                        return
+                    }
+                    l.Info("{{ $e.Type.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
+                    render.OK(w, r, d)
+                {{- end }}
+            }
+        {{ end }}
+    {{ end }}
+{{ end }}

@@ -18,13 +18,13 @@ import (
 	"go.uber.org/zap"
 )
 
-// Payload of a Category update request.
+// Payload of a ent.Category update request.
 type CategoryUpdateRequest struct {
 	Name *string `json:"name"`
 	Pets []int   `json:"pets"`
 }
 
-// Update updates a given Category and saved the changes to the database.
+// Update updates a given ent.Category and saves the changes to the database.
 func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
@@ -83,11 +83,9 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("category not found", zap.Int("id", e.ID), zap.Error(err))
-			render.NotFound(w, r, "category not found")
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for category", zap.Int("id", e.ID), zap.Error(err))
-			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(e.ID))
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			render.NotFound(w, r, msg)
 		default:
 			l.Error("error fetching category from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)
@@ -107,14 +105,14 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Payload of a Owner update request.
+// Payload of a ent.Owner update request.
 type OwnerUpdateRequest struct {
 	Name *string `json:"name"`
 	Age  *int    `json:"age"`
 	Pets []int   `json:"pets"`
 }
 
-// Update updates a given Owner and saved the changes to the database.
+// Update updates a given ent.Owner and saves the changes to the database.
 func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
@@ -176,11 +174,9 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("owner not found", zap.Int("id", e.ID), zap.Error(err))
-			render.NotFound(w, r, "owner not found")
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for owner", zap.Int("id", e.ID), zap.Error(err))
-			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(e.ID))
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			render.NotFound(w, r, msg)
 		default:
 			l.Error("error fetching owner from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)
@@ -200,7 +196,7 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Payload of a Pet update request.
+// Payload of a ent.Pet update request.
 type PetUpdateRequest struct {
 	Name     *string `json:"name"`
 	Age      *int    `json:"age" validate:"gt=0"`
@@ -209,7 +205,7 @@ type PetUpdateRequest struct {
 	Friends  []int   `json:"friends"`
 }
 
-// Update updates a given Pet and saved the changes to the database.
+// Update updates a given ent.Pet and saves the changes to the database.
 func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
@@ -278,11 +274,9 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("pet not found", zap.Int("id", e.ID), zap.Error(err))
-			render.NotFound(w, r, "pet not found")
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for pet", zap.Int("id", e.ID), zap.Error(err))
-			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(e.ID))
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			render.NotFound(w, r, msg)
 		default:
 			l.Error("error fetching pet from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)

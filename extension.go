@@ -9,7 +9,7 @@ type (
 	// Extension implements entc.Extension interface for providing http handler code generation.
 	Extension struct {
 		entc.DefaultExtension
-		cfg       Config
+		// cfg       Config
 		hooks     []gen.Hook
 		templates []*gen.Template
 	}

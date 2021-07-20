@@ -16,8 +16,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// Read fetches the Category model identified by a given url-parameter from the
-// database and returns it to the client.
+// Read fetches the ent.Category identified by a given url-parameter from the
+// database and renders it to the client.
 func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
@@ -33,11 +33,13 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("category not found", zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "category not found")
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", id), zap.Error(err))
+			render.NotFound(w, r, msg)
 		case *ent.NotSingularError:
-			l.Error("duplicate entry for category", zap.Int("id", id), zap.Error(err))
-			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(id))
+			msg := h.stripEntError(err)
+			l.Error(msg, zap.Int("id", id), zap.Error(err))
+			render.BadRequest(w, r, msg)
 		default:
 			l.Error("error fetching category from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
@@ -57,8 +59,8 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, d)
 }
 
-// Read fetches the Owner model identified by a given url-parameter from the
-// database and returns it to the client.
+// Read fetches the ent.Owner identified by a given url-parameter from the
+// database and renders it to the client.
 func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
@@ -74,11 +76,13 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("owner not found", zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "owner not found")
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", id), zap.Error(err))
+			render.NotFound(w, r, msg)
 		case *ent.NotSingularError:
-			l.Error("duplicate entry for owner", zap.Int("id", id), zap.Error(err))
-			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(id))
+			msg := h.stripEntError(err)
+			l.Error(msg, zap.Int("id", id), zap.Error(err))
+			render.BadRequest(w, r, msg)
 		default:
 			l.Error("error fetching owner from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
@@ -98,8 +102,8 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, d)
 }
 
-// Read fetches the Pet model identified by a given url-parameter from the
-// database and returns it to the client.
+// Read fetches the ent.Pet identified by a given url-parameter from the
+// database and renders it to the client.
 func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
@@ -121,11 +125,13 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("pet not found", zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "pet not found")
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", id), zap.Error(err))
+			render.NotFound(w, r, msg)
 		case *ent.NotSingularError:
-			l.Error("duplicate entry for pet", zap.Int("id", id), zap.Error(err))
-			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(id))
+			msg := h.stripEntError(err)
+			l.Error(msg, zap.Int("id", id), zap.Error(err))
+			render.BadRequest(w, r, msg)
 		default:
 			l.Error("error fetching pet from db", zap.Int("id", id), zap.Error(err))
 			render.InternalServerError(w, r, nil)
@@ -134,7 +140,7 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
-		Groups:          []string{"pet"},
+		Groups:          []string{"owner", "pet", "pet:owner"},
 	}, e)
 	if err != nil {
 		l.Error("serialization error", zap.Int("id", id), zap.Error(err))

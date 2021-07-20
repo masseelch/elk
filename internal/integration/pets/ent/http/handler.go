@@ -3,13 +3,20 @@
 package http
 
 import (
+	"strings"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"go.uber.org/zap"
 )
 
-// CategoryHandler handles http crud operations on the Category model.
+// handler has some convenience methods used on node-handlers.
+type handler struct{}
+
+// CategoryHandler handles http crud operations on ent.Category.
 type CategoryHandler struct {
+	handler
+
 	client    *ent.Client
 	log       *zap.Logger
 	validator *validator.Validate
@@ -23,8 +30,10 @@ func NewCategoryHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *Ca
 	}
 }
 
-// OwnerHandler handles http crud operations on the Owner model.
+// OwnerHandler handles http crud operations on ent.Owner.
 type OwnerHandler struct {
+	handler
+
 	client    *ent.Client
 	log       *zap.Logger
 	validator *validator.Validate
@@ -38,8 +47,10 @@ func NewOwnerHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *Owner
 	}
 }
 
-// PetHandler handles http crud operations on the Pet model.
+// PetHandler handles http crud operations on ent.Pet.
 type PetHandler struct {
+	handler
+
 	client    *ent.Client
 	log       *zap.Logger
 	validator *validator.Validate
@@ -51,4 +62,8 @@ func NewPetHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *PetHand
 		log:       l.With(zap.String("handler", "PetHandler")),
 		validator: v,
 	}
+}
+
+func (h handler) stripEntError(err error) string {
+	return strings.TrimPrefix(err.Error(), "ent: ")
 }

@@ -12,10 +12,10 @@ import (
 func main() {
 	ex, err := elk.NewExtension()
 	if err != nil {
-		log.Fatalf("creating elk extension: %w", err)
+		log.Fatalf("creating elk extension: %v", err)
 	}
 	err = entc.Generate("./schema", &gen.Config{}, entc.Extensions(ex))
 	if err != nil {
-		log.Fatalf("running ent codegen: %w", err)
+		log.Fatalf("running ent codegen: %v", err)
 	}
 }

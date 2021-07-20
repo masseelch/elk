@@ -3,16 +3,15 @@ package elk
 import (
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
-func TestEagerLoadEdges_Code(t *testing.T) {
+func TestEagerLoadEdges_String(t *testing.T) {
 	es := eagerLoadEdges{}
-	require.Equal(t, "q", es.Code())
+	require.Equal(t, "q", es.String())
 
 	es = eagerLoadEdges{
 		edges: []eagerLoadEdge{
@@ -20,7 +19,7 @@ func TestEagerLoadEdges_Code(t *testing.T) {
 			{method: "WithEdgeTwo"},
 		},
 	}
-	require.Equal(t, "a.WithEdgeOne().WithEdgeTwo()", es.Code("a"))
+	require.Equal(t, "q.WithEdgeOne().WithEdgeTwo()", es.String())
 
 	es = eagerLoadEdges{
 		edges: []eagerLoadEdge{
@@ -46,14 +45,14 @@ func TestEagerLoadEdges_Code(t *testing.T) {
 			},
 		},
 	}
-	require.Equal(t, "q.WithEdgeOne(func (q_ *ent.EdgeOneQuery) {\nq_.WithEdgeOneEdgeOne().WithEdgeOneEdgeTwo().WithEdgeOneEdgeThree(func (q__ *ent.EdgeOneEdgeThreeQuery) {\nq__.WithEdgeOneEdgeThreeEdgeOne()\n})\n}).WithEdgeTwo()", es.Code())
+	require.Equal(t, "q.WithEdgeOne(func (q_ *ent.EdgeOneQuery) {\nq_.WithEdgeOneEdgeOne().WithEdgeOneEdgeTwo().WithEdgeOneEdgeThree(func (q__ *ent.EdgeOneEdgeThreeQuery) {\nq__.WithEdgeOneEdgeThreeEdgeOne()\n})\n}).WithEdgeTwo()", es.String())
 }
 
 func TestEdgesToLoad(t *testing.T) {
 	// Load a graph.
 	wd, err := os.Getwd()
 	require.NoError(t, err)
-	g, err := entc.LoadGraph(filepath.Join(wd, "internal", "petstore", "ent", "schema"), &gen.Config{
+	g, err := entc.LoadGraph(filepath.Join(wd, "internal", "integration", "pets", "ent", "schema"), &gen.Config{
 		Templates: HTTPTemplates,
 		Hooks: []gen.Hook{
 			AddGroupsTag,
@@ -72,31 +71,28 @@ func TestEdgesToLoad(t *testing.T) {
 	es, err := edgesToLoad(p, actionRead)
 	require.NoError(t, err)
 
-	spew.Dump(es.Code())
-
 	// Max-Depth of 3
 	require.Equal(t, &eagerLoadEdges{
 		queryName: "PetQuery",
-		edges: []eagerLoadEdge{{
-			method: "WithOwner",
-			eagerLoadEdges: &eagerLoadEdges{
-				queryName: "OwnerQuery",
-				edges: []eagerLoadEdge{{
-					method: "WithFriends",
-					eagerLoadEdges: &eagerLoadEdges{
-						queryName: "OwnerQuery",
-						edges: []eagerLoadEdge{{
-							method: "WithFriends",
-							eagerLoadEdges: &eagerLoadEdges{
-								queryName: "OwnerQuery",
-								edges: []eagerLoadEdge{{
-									method: "WithFriends",
-								}},
-							},
-						}},
-					},
-				}},
+		edges: []eagerLoadEdge{
+			{
+				method: "WithOwner",
 			},
-		}},
+			{
+				method: "WithFriends",
+				eagerLoadEdges: &eagerLoadEdges{
+					queryName: "PetQuery",
+					edges: []eagerLoadEdge{{
+						method: "WithFriends",
+						eagerLoadEdges: &eagerLoadEdges{
+							queryName: "PetQuery",
+							edges: []eagerLoadEdge{{
+								method: "WithFriends",
+							}},
+						},
+					}},
+				},
+			},
+		},
 	}, es)
 }

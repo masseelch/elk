@@ -1,0 +1,76 @@
+{{/* gotype: entgo.io/ent/entc/gen.Type */}}
+
+{{ define "helper/http/decode-and-validate-request-body" }}
+    if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+        l.Error("error decoding json", zap.Error(err))
+        render.BadRequest(w, r, "invalid json string")
+        return
+    }
+    // Validate the data.
+    if err := h.validator.Struct(d); err != nil {
+        if err, ok := err.(*validator.InvalidValidationError); ok {
+            l.Error("error validating request data", zap.Error(err))
+            render.InternalServerError(w, r, nil)
+            return
+        }
+        l.Info("validation failed", zap.Error(err))
+        render.BadRequest(w, r, err)
+        return
+    }
+{{ end }}
+
+{{ define "helper/http/id-from-url" }}
+    // ID is URL parameter.
+    {{- if $.ID.IsInt }}
+        id, err := strconv.Atoi(chi.URLParam(r, "id"))
+        if err != nil {
+            l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+            render.BadRequest(w, r, "id must be an integer greater zero")
+            return
+        }
+    {{ else }}
+        id := chi.URLParam(r, "id")
+    {{ end -}}
+{{ end }}
+
+{{ define "helper/http/reload/error-handling" }}
+    if err != nil {
+        switch err.(type) {
+        case *ent.NotFoundError:
+            msg := h.stripEntError(err)
+            l.Info(msg, zap.Int("{{ $.ID.Name }}", e.{{ $.ID.StructField}}), zap.Error(err))
+            render.NotFound(w, r, msg)
+        default:
+            l.Error("error fetching {{ $.Name | kebab }} from db", zap.Int("{{ $.ID.Name }}", e.{{ $.ID.StructField}}), zap.Error(err))
+            render.InternalServerError(w, r, nil)
+        }
+        return
+    }
+{{ end }}
+
+{{ define "helper/http/pagination" }}
+    page := 1
+    if d := r.URL.Query().Get("page"); d != "" {
+        page, err = strconv.Atoi(d)
+        if err != nil {
+            l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
+            render.BadRequest(w, r, "page must be an integer greater zero")
+            return
+        }
+    }
+    itemsPerPage := 30
+    if d := r.URL.Query().Get("itemsPerPage"); d != "" {
+        itemsPerPage, err = strconv.Atoi(d)
+        if err != nil {
+            l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
+            render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
+            return
+        }
+    }
+    es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
+    if err != nil {
+        l.Error("error fetching {{ $.Name | kebab | plural}} from db", zap.Error(err))
+        render.InternalServerError(w, r, nil)
+        return
+    }
+{{ end }}

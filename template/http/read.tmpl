@@ -6,48 +6,47 @@
     {{ end }}
     import "github.com/go-chi/chi/v5" {{/* This is needed for stupid SIV rule */}}
 
+    {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
-        // Read fetches the {{ $n.Name }} model identified by a given url-parameter from the
-        // database and returns it to the client.
+        // Read fetches the {{ $pkg }}.{{ $n.Name }} identified by a given url-parameter from the
+        // database and renders it to the client.
         func (h *{{ $n.Name }}Handler) Read(w http.ResponseWriter, r *http.Request) {
             l := h.log.With(zap.String("method", "Read"))
-            // ID is URL parameter.
-            {{- if $n.ID.IsInt }}
-                id, err := strconv.Atoi(chi.URLParam(r, "id"))
-                if err != nil {
-                    l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-                    render.BadRequest(w, r, "id must be an integer greater zero")
-                    return
-                }
-            {{ else }}
-                id := chi.URLParam(r, "id")
-            {{ end -}}
+            {{- template "helper/http/id-from-url" $n -}}
 
             // Create the query to fetch the {{ $n.Name }}
             q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }}))
 
             {{- with edgesToLoad $n "read" }}
                 // Eager load edges that are required on read operation.
-                {{ .Code "q" }}
+                {{ . }}
             {{- end }}
             e, err := q.Only(r.Context())
             if err != nil {
                 switch err.(type) {
-                    case *ent.NotFoundError:
-                        l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                        render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
-                    case *ent.NotSingularError:
-                        l.Error("duplicate entry for {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                        render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(id))
-                    default:
-                        l.Error("error fetching {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                        render.InternalServerError(w, r, nil)
+                case *ent.NotFoundError:
+                    msg := h.stripEntError(err)
+                    l.Info(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                    render.NotFound(w, r, msg)
+                case *ent.NotSingularError:
+                    msg := h.stripEntError(err)
+                    l.Error(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                    render.BadRequest(w, r, msg)
+                default:
+                    l.Error("error fetching {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
+                    render.InternalServerError(w, r, nil)
                 }
                 return
             }
             d, err := sheriff.Marshal(&sheriff.Options{
                 IncludeEmptyTag: true,
-                Groups: []string{ {{- with $.Annotations.ElkSchema.ReadGroups }}.Code{{ else }}"{{ $n.Name | kebab }}"{{ end -}} },
+                Groups: []string{
+                    {{- with $n.Annotations.ElkSchema.ReadGroups -}}
+                        "{{ join (stringSlice .) `","` }}"
+                    {{- else -}}
+                        "{{ $n.Name | kebab }}"
+                    {{- end -}}
+                },
             }, e)
             if err != nil {
                 l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))

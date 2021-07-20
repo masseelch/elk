@@ -5,7 +5,6 @@ package http
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/liip/sheriff"
@@ -17,13 +16,13 @@ import (
 	"go.uber.org/zap"
 )
 
-// Payload of a Category create request.
+// Payload of a ent.Category create request.
 type CategoryCreateRequest struct {
 	Name *string `json:"name"`
 	Pets []int   `json:"pets"`
 }
 
-// Create creates a new Category and stores it in the database.
+// Create creates a new ent.Category and stores it in the database.
 func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Create"))
 	// Get the post data.
@@ -66,18 +65,14 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("category not found", zap.Int("id", e.ID), zap.Error(err))
-			render.NotFound(w, r, "category not found")
-			return
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for category", zap.Int("id", e.ID), zap.Error(err))
-			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(e.ID))
-			return
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			render.NotFound(w, r, msg)
 		default:
 			l.Error("error fetching category from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	j, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
@@ -92,14 +87,14 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Payload of a Owner create request.
+// Payload of a ent.Owner create request.
 type OwnerCreateRequest struct {
 	Name *string `json:"name"`
 	Age  *int    `json:"age"`
 	Pets []int   `json:"pets"`
 }
 
-// Create creates a new Owner and stores it in the database.
+// Create creates a new ent.Owner and stores it in the database.
 func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Create"))
 	// Get the post data.
@@ -145,18 +140,14 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("owner not found", zap.Int("id", e.ID), zap.Error(err))
-			render.NotFound(w, r, "owner not found")
-			return
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for owner", zap.Int("id", e.ID), zap.Error(err))
-			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(e.ID))
-			return
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			render.NotFound(w, r, msg)
 		default:
 			l.Error("error fetching owner from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	j, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
@@ -171,7 +162,7 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	render.OK(w, r, j)
 }
 
-// Payload of a Pet create request.
+// Payload of a ent.Pet create request.
 type PetCreateRequest struct {
 	Name     *string `json:"name" validate:"required"`
 	Age      *int    `json:"age" validate:"required,gt=0"`
@@ -180,7 +171,7 @@ type PetCreateRequest struct {
 	Friends  []int   `json:"friends"`
 }
 
-// Create creates a new Pet and stores it in the database.
+// Create creates a new ent.Pet and stores it in the database.
 func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Create"))
 	// Get the post data.
@@ -233,18 +224,14 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			l.Info("pet not found", zap.Int("id", e.ID), zap.Error(err))
-			render.NotFound(w, r, "pet not found")
-			return
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for pet", zap.Int("id", e.ID), zap.Error(err))
-			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(e.ID))
-			return
+			msg := h.stripEntError(err)
+			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			render.NotFound(w, r, msg)
 		default:
 			l.Error("error fetching pet from db", zap.Int("id", e.ID), zap.Error(err))
 			render.InternalServerError(w, r, nil)
-			return
 		}
+		return
 	}
 	j, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
