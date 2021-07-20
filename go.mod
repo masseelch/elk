@@ -3,7 +3,7 @@ module github.com/masseelch/elk
 go 1.16
 
 require (
-	entgo.io/ent v0.8.0
+	entgo.io/ent v0.8.1-0.20210719182726-dd4d2521a757
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-chi/chi/v5 v5.0.3
@@ -11,7 +11,7 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/liip/sheriff v0.10.0
 	github.com/masseelch/render v1.0.4
-	github.com/mattn/go-sqlite3 v1.14.7
+	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/atomic v1.8.0 // indirect
@@ -20,5 +20,4 @@ require (
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/text v0.3.6 // indirect
-	golang.org/x/tools v0.1.4
 )

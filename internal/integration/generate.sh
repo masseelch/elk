@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
 
+# Update templates
 go generate ../../template.go
-go generate petstore/ent/generate.go
+
+# Generate go and dart code
+go generate pets/ent/generate.go

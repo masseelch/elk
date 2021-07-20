@@ -3,7 +3,7 @@ package integration
 import (
 	"context"
 	"github.com/Pallinder/go-randomdata"
-	"github.com/masseelch/elk/internal/integration/petstore/ent"
+	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"math/rand"
 	"time"
 )
