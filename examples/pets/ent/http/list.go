@@ -59,6 +59,8 @@ func (h *GroupHandler) List(w http.ResponseWriter, r *http.Request) {
 func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "List"))
 	q := h.client.Pet.Query()
+	// Eager load edges that are required on list operation.
+	q.WithOwner()
 	var err error
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
@@ -86,7 +88,7 @@ func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
-		Groups:          []string{"pet"},
+		Groups:          []string{"pet:list"},
 	}, es)
 	if err != nil {
 		l.Error("serialization error", zap.Error(err))

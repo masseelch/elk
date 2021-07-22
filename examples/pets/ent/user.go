@@ -12,28 +12,28 @@ import (
 
 // User is the model entity for the User schema.
 type User struct {
-	config `json:"-"`
+	config `groups:"-" json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// Age holds the value of the "age" field.
-	Age int `json:"age,omitempty"`
+	Age int `json:"age,omitempty" groups:"user:read"`
 	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" groups:""`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges UserEdges `json:"edges"  groups:""`
+	Edges UserEdges `json:"edges"  groups:"user:read"`
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
 	// Pets holds the value of the pets edge.
-	Pets []*Pet `json:"pets,omitempty"`
+	Pets []*Pet `json:"pets,omitempty" groups:"user:read"`
 	// Friends holds the value of the friends edge.
-	Friends []*User `json:"friends,omitempty"`
+	Friends []*User `json:"friends,omitempty" groups:"user:read"`
 	// Groups holds the value of the groups edge.
-	Groups []*Group `json:"groups,omitempty"`
+	Groups []*Group `json:"groups,omitempty" groups:"user:read"`
 	// Manage holds the value of the manage edge.
-	Manage []*Group `json:"manage,omitempty"`
+	Manage []*Group `json:"manage,omitempty" groups:"user:read"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool

@@ -4,7 +4,10 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
-    import "github.com/go-playground/validator/v10" {{/* This is needed for stupid SIV rule */}}
+    import ( {{/* This is needed for stupid SIV rule */}}
+        "github.com/go-chi/chi/v5"
+        "github.com/go-playground/validator/v10"
+    )
 
     // handler has some convenience methods used on node-handlers.
     type handler struct {}
@@ -26,6 +29,19 @@
                 log:       l.With(zap.String("handler", "{{ $n.Name }}Handler")),
                 validator: v,
             }
+        }
+
+        // RegisterHandlers registers the generated handlers on the given chi router.
+        func (h *{{ $n.Name }}Handler) RegisterHandlers(r chi.Router) {
+            // Do no use r.Route() to avoid wildcard matching.
+            r.Get("/", h.List)
+            r.Post("/", h.Create)
+            r.Get("/{id}", h.Read)
+            r.Patch("/{id}", h.Update)
+            r.Delete("/{id}", h.Delete)
+            {{ range $e := $n.Edges -}}
+                r.Get("/{id}/{{ $e.Name }}", h.{{ $e.Name | pascal }})
+            {{ end -}}
         }
     {{ end }}
 

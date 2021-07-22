@@ -115,6 +115,12 @@ func (h *UserHandler) Read(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the query to fetch the User
 	q := h.client.User.Query().Where(user.ID(id))
+	// Eager load edges that are required on read operation.
+	q.WithPets().WithFriends(func(q_ *ent.UserQuery) {
+		q_.WithFriends(func(q__ *ent.UserQuery) {
+			q__.WithGroups().WithManage()
+		})
+	})
 	e, err := q.Only(r.Context())
 	if err != nil {
 		switch err.(type) {
@@ -134,7 +140,7 @@ func (h *UserHandler) Read(w http.ResponseWriter, r *http.Request) {
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
-		Groups:          []string{"user"},
+		Groups:          []string{"user:read"},
 	}, e)
 	if err != nil {
 		l.Error("serialization error", zap.Int("id", id), zap.Error(err))

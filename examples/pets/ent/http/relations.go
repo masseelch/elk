@@ -80,6 +80,12 @@ func (h GroupHandler) Admin(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the query to fetch the admin attached to this group
 	q := h.client.Group.Query().Where(group.ID(id)).QueryAdmin()
+	// Eager load edges that are required on read operation.
+	q.WithPets().WithFriends(func(q_ *ent.UserQuery) {
+		q_.WithFriends(func(q__ *ent.UserQuery) {
+			q__.WithGroups().WithManage()
+		})
+	})
 	e, err := q.Only(r.Context())
 	if err != nil {
 		switch err.(type) {
@@ -99,7 +105,7 @@ func (h GroupHandler) Admin(w http.ResponseWriter, r *http.Request) {
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
-		Groups:          []string{"user"},
+		Groups:          []string{"user:read"},
 	}, e)
 	if err != nil {
 		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
@@ -123,6 +129,8 @@ func (h PetHandler) Friends(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the query to fetch the friends attached to this pet
 	q := h.client.Pet.Query().Where(pet.ID(id)).QueryFriends()
+	// Eager load edges that are required on list operation.
+	q.WithOwner()
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
 		page, err = strconv.Atoi(d)
@@ -149,7 +157,7 @@ func (h PetHandler) Friends(w http.ResponseWriter, r *http.Request) {
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
-		Groups:          []string{"pet"},
+		Groups:          []string{"pet:list"},
 	}, es)
 	if err != nil {
 		l.Error("serialization error", zap.Error(err))
@@ -173,6 +181,12 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the query to fetch the owner attached to this pet
 	q := h.client.Pet.Query().Where(pet.ID(id)).QueryOwner()
+	// Eager load edges that are required on read operation.
+	q.WithPets().WithFriends(func(q_ *ent.UserQuery) {
+		q_.WithFriends(func(q__ *ent.UserQuery) {
+			q__.WithGroups().WithManage()
+		})
+	})
 	e, err := q.Only(r.Context())
 	if err != nil {
 		switch err.(type) {
@@ -192,7 +206,7 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 	}
 	d, err := sheriff.Marshal(&sheriff.Options{
 		IncludeEmptyTag: true,
-		Groups:          []string{"user"},
+		Groups:          []string{"user:read"},
 	}, e)
 	if err != nil {
 		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
@@ -216,6 +230,8 @@ func (h UserHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the query to fetch the pets attached to this user
 	q := h.client.User.Query().Where(user.ID(id)).QueryPets()
+	// Eager load edges that are required on list operation.
+	q.WithOwner()
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
 		page, err = strconv.Atoi(d)

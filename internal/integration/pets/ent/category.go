@@ -19,7 +19,7 @@ type Category struct {
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CategoryQuery when eager-loading is set.
-	Edges CategoryEdges `json:"edges"  groups:""`
+	Edges CategoryEdges `json:"edges"`
 }
 
 // CategoryEdges holds the relations/edges for other nodes in the graph.

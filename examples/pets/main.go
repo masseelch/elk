@@ -12,6 +12,8 @@ import (
 	"go.uber.org/zap/zapcore"
 	"log"
 	"net/http"
+	"reflect"
+	"strings"
 )
 
 func main() {
@@ -38,6 +40,13 @@ func main() {
 	}
 	// Validator used by elks handlers.
 	v := validator.New()
+	v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
 	// Create a router.
 	r := chi.NewRouter()
 	// Hook up our generated handlers.

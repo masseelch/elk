@@ -397,7 +397,7 @@ func (uq *UserQuery) WithManage(opts ...func(*GroupQuery)) *UserQuery {
 // Example:
 //
 //	var v []struct {
-//		Age int `json:"age,omitempty"`
+//		Age int `json:"age,omitempty" groups:"user:read"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -424,7 +424,7 @@ func (uq *UserQuery) GroupBy(field string, fields ...string) *UserGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Age int `json:"age,omitempty"`
+//		Age int `json:"age,omitempty" groups:"user:read"`
 //	}
 //
 //	client.User.Query().

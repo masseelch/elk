@@ -20,7 +20,7 @@ type Group struct {
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GroupQuery when eager-loading is set.
-	Edges       GroupEdges `json:"edges"  groups:""`
+	Edges       GroupEdges `json:"edges"`
 	group_admin *int
 }
 

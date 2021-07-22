@@ -5,6 +5,7 @@ package http
 import (
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"go.uber.org/zap"
@@ -30,6 +31,17 @@ func NewCategoryHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *Ca
 	}
 }
 
+// RegisterHandlers registers the generated handlers on the given chi router.
+func (h *CategoryHandler) RegisterHandlers(r chi.Router) {
+	// Do no use r.Route() to avoid wildcard matching.
+	r.Get("/", h.List)
+	r.Post("/", h.Create)
+	r.Get("/{id}", h.Read)
+	r.Patch("/{id}", h.Update)
+	r.Delete("/{id}", h.Delete)
+	r.Get("/{id}/pets", h.Pets)
+}
+
 // OwnerHandler handles http crud operations on ent.Owner.
 type OwnerHandler struct {
 	handler
@@ -47,6 +59,17 @@ func NewOwnerHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *Owner
 	}
 }
 
+// RegisterHandlers registers the generated handlers on the given chi router.
+func (h *OwnerHandler) RegisterHandlers(r chi.Router) {
+	// Do no use r.Route() to avoid wildcard matching.
+	r.Get("/", h.List)
+	r.Post("/", h.Create)
+	r.Get("/{id}", h.Read)
+	r.Patch("/{id}", h.Update)
+	r.Delete("/{id}", h.Delete)
+	r.Get("/{id}/pets", h.Pets)
+}
+
 // PetHandler handles http crud operations on ent.Pet.
 type PetHandler struct {
 	handler
@@ -62,6 +85,19 @@ func NewPetHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *PetHand
 		log:       l.With(zap.String("handler", "PetHandler")),
 		validator: v,
 	}
+}
+
+// RegisterHandlers registers the generated handlers on the given chi router.
+func (h *PetHandler) RegisterHandlers(r chi.Router) {
+	// Do no use r.Route() to avoid wildcard matching.
+	r.Get("/", h.List)
+	r.Post("/", h.Create)
+	r.Get("/{id}", h.Read)
+	r.Patch("/{id}", h.Update)
+	r.Delete("/{id}", h.Delete)
+	r.Get("/{id}/category", h.Category)
+	r.Get("/{id}/owner", h.Owner)
+	r.Get("/{id}/friends", h.Friends)
 }
 
 func (h handler) stripEntError(err error) string {

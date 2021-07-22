@@ -13,14 +13,14 @@ import (
 
 // Pet is the model entity for the Pet schema.
 type Pet struct {
-	config `json:"-"`
+	config `groups:"-" json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" groups:"pet:list"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PetQuery when eager-loading is set.
-	Edges     PetEdges `json:"edges"  groups:""`
+	Edges     PetEdges `json:"edges"  groups:"pet:list"`
 	user_pets *int
 }
 
@@ -29,7 +29,7 @@ type PetEdges struct {
 	// Friends holds the value of the friends edge.
 	Friends []*Pet `json:"friends,omitempty"`
 	// Owner holds the value of the owner edge.
-	Owner *User `json:"owner,omitempty"`
+	Owner *User `json:"owner,omitempty" groups:"pet:list"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool

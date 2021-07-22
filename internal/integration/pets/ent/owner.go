@@ -21,7 +21,7 @@ type Owner struct {
 	Age int `json:"age,omitempty" groups:"owner"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OwnerQuery when eager-loading is set.
-	Edges OwnerEdges `json:"edges"  groups:""`
+	Edges OwnerEdges `json:"edges"`
 }
 
 // OwnerEdges holds the relations/edges for other nodes in the graph.

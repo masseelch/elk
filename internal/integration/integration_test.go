@@ -78,14 +78,9 @@ func TestHttp(t *testing.T) {
 	r := chi.NewRouter()
 
 	// Register pet endpoints.
-	ph := elkhttp.NewPetHandler(c, l, v) // TODO: Provide a default set of routes in generated PetHandler.
-	r.Get("/pets", ph.List)
-	r.Post("/pets", ph.Create)
-	r.Get("/pets/{id}", ph.Read)
-	r.Patch("/pets/{id}", ph.Update)
-	r.Delete("/pets/{id}", ph.Delete)
-	r.Get("/pets/{id}/owner", ph.Owner)
-	r.Get("/pets/{id}/friends", ph.Friends)
+	r.Route("/pets", func(r chi.Router) {
+		elkhttp.NewPetHandler(c, l, v).RegisterHandlers(r)
+	})
 
 	// Create the tests.
 	tests := []test{

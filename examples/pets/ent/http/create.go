@@ -171,7 +171,7 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 // Payload of a ent.User create request.
 type UserCreateRequest struct {
 	Age     *int    `json:"age"`
-	Name    *string `json:"name"`
+	Name    *string `json:"name" validate:"alpha,min=3"`
 	Pets    []int   `json:"pets"`
 	Friends []int   `json:"friends"`
 	Groups  []int   `json:"groups"`

@@ -205,7 +205,7 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 // Payload of a ent.User update request.
 type UserUpdateRequest struct {
 	Age     *int    `json:"age"`
-	Name    *string `json:"name"`
+	Name    *string `json:"name" validate:"alpha,min=3"`
 	Pets    []int   `json:"pets"`
 	Friends []int   `json:"friends"`
 	Groups  []int   `json:"groups"`

@@ -55,7 +55,9 @@ func AddGroupsTag(next gen.Generator) gen.Generator {
 			if n.Annotations[a.Name()] != nil {
 				a = n.Annotations[a.Name()].(edge.Annotation)
 			}
-			a.StructTag = fmt.Sprintf(`%s groups:"%s"`, a.StructTag, strings.Join(gs, ","))
+			if len(gs) > 0 {
+				a.StructTag = fmt.Sprintf(`%s groups:"%s"`, a.StructTag, strings.Join(gs, ","))
+			}
 			if n.Annotations == nil {
 				n.Annotations = make(gen.Annotations)
 			}
