@@ -12,8 +12,25 @@
     // handler has some convenience methods used on node-handlers.
     type handler struct {}
 
+    // Bitmask to configure which routes to register.
+    type Routes uint8
+
+    func (rs Routes) has(r Routes) bool { return rs&r != 0 }
+
     {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
+        const (
+            {{ $n.Name }}Create Routes = 1 << iota
+            {{ $n.Name }}Read
+            {{ $n.Name }}Update
+            {{ $n.Name }}Delete
+            {{ $n.Name }}List
+            {{ range $e := $n.Edges -}}
+                {{ $n.Name }}{{ $e.Name | pascal }}
+            {{ end -}}
+            {{ $n.Name }}Routes = 1<<iota - 1
+        )
+
         // {{ $n.Name }}Handler handles http crud operations on {{ $pkg }}.{{ $n.Name }}.
         type {{ $n.Name }}Handler struct {
             handler
@@ -32,15 +49,26 @@
         }
 
         // RegisterHandlers registers the generated handlers on the given chi router.
-        func (h *{{ $n.Name }}Handler) RegisterHandlers(r chi.Router) {
-            // Do no use r.Route() to avoid wildcard matching.
-            r.Get("/", h.List)
-            r.Post("/", h.Create)
-            r.Get("/{id}", h.Read)
-            r.Patch("/{id}", h.Update)
-            r.Delete("/{id}", h.Delete)
+        func (h *{{ $n.Name }}Handler) Mount(r chi.Router, rs Routes) {
+            if rs.has({{ $n.Name }}Create) {
+                r.Post("/", h.Create)
+            }
+            if rs.has({{ $n.Name }}Read) {
+                r.Get("/{id}", h.Read)
+            }
+            if rs.has({{ $n.Name }}Update) {
+                r.Patch("/{id}", h.Update)
+            }
+            if rs.has({{ $n.Name }}Delete) {
+                r.Delete("/{id}", h.Delete)
+            }
+            if rs.has({{ $n.Name }}List) {
+                r.Get("/", h.List)
+            }
             {{ range $e := $n.Edges -}}
-                r.Get("/{id}/{{ $e.Name }}", h.{{ $e.Name | pascal }})
+                if rs.has({{ $n.Name }}{{ $e.Name | pascal }}) {
+                    r.Get("/{id}/{{ $e.Name }}", h.{{ $e.Name | pascal }})
+                }
             {{ end -}}
         }
     {{ end }}

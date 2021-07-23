@@ -79,7 +79,7 @@ func TestHttp(t *testing.T) {
 
 	// Register pet endpoints.
 	r.Route("/pets", func(r chi.Router) {
-		elkhttp.NewPetHandler(c, l, v).RegisterHandlers(r)
+		elkhttp.NewPetHandler(c, l, v).Mount(r, elkhttp.PetRoutes)
 	})
 
 	// Create the tests.
