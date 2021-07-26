@@ -14,6 +14,22 @@ import (
 // handler has some convenience methods used on node-handlers.
 type handler struct{}
 
+// Bitmask to configure which routes to register.
+type Routes uint8
+
+func (rs Routes) has(r Routes) bool { return rs&r != 0 }
+
+const (
+	GroupCreate Routes = 1 << iota
+	GroupRead
+	GroupUpdate
+	GroupDelete
+	GroupList
+	GroupUsers
+	GroupAdmin
+	GroupRoutes = 1<<iota - 1
+)
+
 // GroupHandler handles http crud operations on ent.Group.
 type GroupHandler struct {
 	handler
@@ -32,16 +48,40 @@ func NewGroupHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *Group
 }
 
 // RegisterHandlers registers the generated handlers on the given chi router.
-func (h *GroupHandler) RegisterHandlers(r chi.Router) {
-	// Do no use r.Route() to avoid wildcard matching.
-	r.Get("/", h.List)
-	r.Post("/", h.Create)
-	r.Get("/{id}", h.Read)
-	r.Patch("/{id}", h.Update)
-	r.Delete("/{id}", h.Delete)
-	r.Get("/{id}/users", h.Users)
-	r.Get("/{id}/admin", h.Admin)
+func (h *GroupHandler) Mount(r chi.Router, rs Routes) {
+	if rs.has(GroupCreate) {
+		r.Post("/", h.Create)
+	}
+	if rs.has(GroupRead) {
+		r.Get("/{id}", h.Read)
+	}
+	if rs.has(GroupUpdate) {
+		r.Patch("/{id}", h.Update)
+	}
+	if rs.has(GroupDelete) {
+		r.Delete("/{id}", h.Delete)
+	}
+	if rs.has(GroupList) {
+		r.Get("/", h.List)
+	}
+	if rs.has(GroupUsers) {
+		r.Get("/{id}/users", h.Users)
+	}
+	if rs.has(GroupAdmin) {
+		r.Get("/{id}/admin", h.Admin)
+	}
 }
+
+const (
+	PetCreate Routes = 1 << iota
+	PetRead
+	PetUpdate
+	PetDelete
+	PetList
+	PetFriends
+	PetOwner
+	PetRoutes = 1<<iota - 1
+)
 
 // PetHandler handles http crud operations on ent.Pet.
 type PetHandler struct {
@@ -61,16 +101,42 @@ func NewPetHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *PetHand
 }
 
 // RegisterHandlers registers the generated handlers on the given chi router.
-func (h *PetHandler) RegisterHandlers(r chi.Router) {
-	// Do no use r.Route() to avoid wildcard matching.
-	r.Get("/", h.List)
-	r.Post("/", h.Create)
-	r.Get("/{id}", h.Read)
-	r.Patch("/{id}", h.Update)
-	r.Delete("/{id}", h.Delete)
-	r.Get("/{id}/friends", h.Friends)
-	r.Get("/{id}/owner", h.Owner)
+func (h *PetHandler) Mount(r chi.Router, rs Routes) {
+	if rs.has(PetCreate) {
+		r.Post("/", h.Create)
+	}
+	if rs.has(PetRead) {
+		r.Get("/{id}", h.Read)
+	}
+	if rs.has(PetUpdate) {
+		r.Patch("/{id}", h.Update)
+	}
+	if rs.has(PetDelete) {
+		r.Delete("/{id}", h.Delete)
+	}
+	if rs.has(PetList) {
+		r.Get("/", h.List)
+	}
+	if rs.has(PetFriends) {
+		r.Get("/{id}/friends", h.Friends)
+	}
+	if rs.has(PetOwner) {
+		r.Get("/{id}/owner", h.Owner)
+	}
 }
+
+const (
+	UserCreate Routes = 1 << iota
+	UserRead
+	UserUpdate
+	UserDelete
+	UserList
+	UserPets
+	UserFriends
+	UserGroups
+	UserManage
+	UserRoutes = 1<<iota - 1
+)
 
 // UserHandler handles http crud operations on ent.User.
 type UserHandler struct {
@@ -90,17 +156,34 @@ func NewUserHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *UserHa
 }
 
 // RegisterHandlers registers the generated handlers on the given chi router.
-func (h *UserHandler) RegisterHandlers(r chi.Router) {
-	// Do no use r.Route() to avoid wildcard matching.
-	r.Get("/", h.List)
-	r.Post("/", h.Create)
-	r.Get("/{id}", h.Read)
-	r.Patch("/{id}", h.Update)
-	r.Delete("/{id}", h.Delete)
-	r.Get("/{id}/pets", h.Pets)
-	r.Get("/{id}/friends", h.Friends)
-	r.Get("/{id}/groups", h.Groups)
-	r.Get("/{id}/manage", h.Manage)
+func (h *UserHandler) Mount(r chi.Router, rs Routes) {
+	if rs.has(UserCreate) {
+		r.Post("/", h.Create)
+	}
+	if rs.has(UserRead) {
+		r.Get("/{id}", h.Read)
+	}
+	if rs.has(UserUpdate) {
+		r.Patch("/{id}", h.Update)
+	}
+	if rs.has(UserDelete) {
+		r.Delete("/{id}", h.Delete)
+	}
+	if rs.has(UserList) {
+		r.Get("/", h.List)
+	}
+	if rs.has(UserPets) {
+		r.Get("/{id}/pets", h.Pets)
+	}
+	if rs.has(UserFriends) {
+		r.Get("/{id}/friends", h.Friends)
+	}
+	if rs.has(UserGroups) {
+		r.Get("/{id}/groups", h.Groups)
+	}
+	if rs.has(UserManage) {
+		r.Get("/{id}/manage", h.Manage)
+	}
 }
 
 func (h handler) stripEntError(err error) string {

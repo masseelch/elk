@@ -51,13 +51,15 @@ func main() {
 	r := chi.NewRouter()
 	// Hook up our generated handlers.
 	r.Route("/pets", func(r chi.Router) {
-		elk.NewPetHandler(c, l, v).RegisterHandlers(r)
+		elk.NewPetHandler(c, l, v).Mount(r, elk.PetRoutes)
 	})
 	r.Route("/users", func(r chi.Router) {
-		elk.NewUserHandler(c, l, v).RegisterHandlers(r)
+		// We dont allow user deletion.
+		elk.NewUserHandler(c, l, v).Mount(r, elk.PetRoutes&^elk.UserDelete)
 	})
 	r.Route("/groups", func(r chi.Router) {
-		elk.NewGroupHandler(c, l, v).RegisterHandlers(r)
+		// Dont include sub-resource routes.
+		elk.NewGroupHandler(c, l, v).Mount(r, elk.GroupCreate|elk.GroupRead|elk.GroupUpdate|elk.GroupDelete|elk.GroupList)
 	})
 	// Start listen to incoming requests.
 	if err := http.ListenAndServe(":8080", r); err != nil {
