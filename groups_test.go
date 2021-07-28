@@ -6,7 +6,7 @@ import (
 )
 
 func TestGroups(t *testing.T) {
-	gs := Groups{}
+	gs := groups{}
 
 	gs.Add("group")
 	require.Len(t, gs, 1)
@@ -20,8 +20,8 @@ func TestGroups(t *testing.T) {
 	require.True(t, gs.HasGroup("group_2"))
 	require.False(t, gs.HasGroup("none"))
 
-	require.False(t, gs.Match(Groups{"none", "nobody"}))
-	require.True(t, gs.Match(Groups{"group", "nobody"}))
+	require.False(t, gs.Match(groups{"none", "nobody"}))
+	require.True(t, gs.Match(groups{"group", "nobody"}))
 
-	require.Equal(t, `Groups:"group_one,GROUP_two,group:3"`, Groups{"group_one", "GROUP_two", "group:3"}.StructTag())
+	require.Equal(t, `groups:"group_one,GROUP_two,group:3"`, groups{"group_one", "GROUP_two", "group:3"}.StructTag())
 }

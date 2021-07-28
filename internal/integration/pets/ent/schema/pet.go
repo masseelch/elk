@@ -18,17 +18,13 @@ func (Pet) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
 			Annotations(
-				elk.Annotation{
-					Groups:           []string{"pet"},
-					CreateValidation: "required",
-				},
+				elk.Groups("pet"),
+				elk.CreateValidation("required"),
 			),
 		field.Int("age").
 			Annotations(
-				elk.Annotation{
-					CreateValidation: "required,gt=0",
-					UpdateValidation: "gt=0",
-				},
+				elk.CreateValidation("required,gt=0"),
+				elk.UpdateValidation("gt=0"),
 			),
 	}
 }
@@ -42,16 +38,12 @@ func (Pet) Edges() []ent.Edge {
 			Ref("pets").
 			Unique().
 			Annotations(
-				elk.Annotation{
-					Groups: []string{"pet:owner"},
-				},
+				elk.Groups("pet:owner"),
 			),
 		edge.To("friends", Pet.Type).
 			Annotations(
-				elk.Annotation{
-					Groups:   []string{"pet"},
-					MaxDepth: 3,
-				},
+				elk.Groups("pet"),
+				elk.MaxDepth(3),
 			),
 	}
 }
@@ -59,8 +51,6 @@ func (Pet) Edges() []ent.Edge {
 // Annotations of the Pet.
 func (Pet) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		elk.SchemaAnnotation{
-			ReadGroups: []string{"pet", "pet:owner", "owner"},
-		},
+		elk.ReadGroups("pet", "pet:owner", "owner"),
 	}
 }

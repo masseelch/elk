@@ -31,7 +31,7 @@ func AddGroupsTag(next gen.Generator) gen.Generator {
 			}
 
 			// Groups for edges.
-			gs := Groups{}
+			gs := groups{}
 			for _, e := range n.Edges {
 				tag := reflect.StructTag(e.StructTag)
 

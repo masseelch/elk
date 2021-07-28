@@ -8,25 +8,21 @@ import (
 type (
 	// SchemaAnnotation annotates an entity with metadata for templates.
 	SchemaAnnotation struct {
-		// Skip tells the generator to skip this model.
-		Skip bool `json:"Skip,omitempty"`
-		// CreateGroups holds the serializations Groups to use on the create handler.
-		CreateGroups Groups `json:"CreateGroups,omitempty"`
-		// ReadGroups holds the serializations Groups to use on the read handler.
-		ReadGroups Groups `json:"ReadGroups,omitempty"`
-		// UpdateGroups holds the serializations Groups to use on the update handler.
-		UpdateGroups Groups `json:"UpdateGroups,omitempty"`
-		// DeleteGroups holds the serializations Groups to use on the delete handler.
-		DeleteGroups Groups `json:"DeleteGroups,omitempty"`
-		// ListGroups holds the serializations Groups to use on the list handler.
-		ListGroups Groups `json:"ListGroups,omitempty"`
+		// CreateGroups holds the serializations groups to use on the create handler.
+		CreateGroups groups `json:"CreateGroups,omitempty"`
+		// ReadGroups holds the serializations groups to use on the read handler.
+		ReadGroups groups `json:"ReadGroups,omitempty"`
+		// UpdateGroups holds the serializations groups to use on the update handler.
+		UpdateGroups groups `json:"UpdateGroups,omitempty"`
+		// DeleteGroups holds the serializations groups to use on the delete handler.
+		DeleteGroups groups `json:"DeleteGroups,omitempty"`
+		// ListGroups holds the serializations groups to use on the list handler.
+		ListGroups groups `json:"ListGroups,omitempty"`
 	}
 	// Annotation annotates fields and edges with metadata for templates.
 	Annotation struct {
-		// Skip tells the generator to skip this field / edge.
-		Skip bool `json:"Skip,omitempty"`
 		// Groups holds the serialization groups to use on this field / edge.
-		Groups Groups `json:"Groups,omitempty"`
+		Groups groups `json:"Groups,omitempty"`
 		// MaxDepth tells the generator the maximum depth of this field when there is a cycle possible.
 		MaxDepth uint
 		// Validation holds the struct tags to use for github.com/go-playground/validator/v10. Used when no specific
@@ -41,18 +37,84 @@ type (
 	}
 )
 
+func CreateGroups(gs ...string) SchemaAnnotation {
+	return SchemaAnnotation{CreateGroups: gs}
+}
+
+func ReadGroups(gs ...string) SchemaAnnotation {
+	return SchemaAnnotation{ReadGroups: gs}
+}
+
+func UpdateGroups(gs ...string) SchemaAnnotation {
+	return SchemaAnnotation{UpdateGroups: gs}
+}
+
+func DeleteGroups(gs ...string) SchemaAnnotation {
+	return SchemaAnnotation{DeleteGroups: gs}
+}
+
+func ListGroups(gs ...string) SchemaAnnotation {
+	return SchemaAnnotation{ListGroups: gs}
+}
+
+func Groups(gs ...string) Annotation {
+	return Annotation{Groups: gs}
+}
+
+func MaxDepth(d uint) Annotation {
+	return Annotation{MaxDepth: d}
+}
+
+func Validation(v string) Annotation {
+	return Annotation{Validation: v}
+}
+
+func CreateValidation(v string) Annotation {
+	return Annotation{CreateValidation: v}
+}
+
+func UpdateValidation(v string) Annotation {
+	return Annotation{UpdateValidation: v}
+}
+
 // Name implements ent.Annotation interface.
 func (SchemaAnnotation) Name() string {
 	return "ElkSchema"
 }
 
-// Name implements ent.Annotation interface.
-func (Annotation) Name() string {
-	return "Elk"
+// Merge implements ent.Merger interface.
+func (a SchemaAnnotation) Merge(o schema.Annotation) schema.Annotation {
+	var ant SchemaAnnotation
+	switch o := o.(type) {
+	case SchemaAnnotation:
+		ant = o
+	case *SchemaAnnotation:
+		if o != nil {
+			ant = *o
+		}
+	default:
+		return a
+	}
+	if len(ant.CreateGroups) > 0 {
+		a.CreateGroups = ant.CreateGroups
+	}
+	if len(ant.ReadGroups) > 0 {
+		a.ReadGroups = ant.ReadGroups
+	}
+	if len(ant.UpdateGroups) > 0 {
+		a.UpdateGroups = ant.UpdateGroups
+	}
+	if len(ant.DeleteGroups) > 0 {
+		a.DeleteGroups = ant.DeleteGroups
+	}
+	if len(ant.ListGroups) > 0 {
+		a.ListGroups = ant.ListGroups
+	}
+	return a
 }
 
 // Decode from ent.
-func (a *Annotation) Decode(o interface{}) error {
+func (a *SchemaAnnotation) Decode(o interface{}) error {
 	buf, err := json.Marshal(o)
 	if err != nil {
 		return err
@@ -61,8 +123,44 @@ func (a *Annotation) Decode(o interface{}) error {
 	return json.Unmarshal(buf, a)
 }
 
+// Name implements ent.Annotation interface.
+func (Annotation) Name() string {
+	return "Elk"
+}
+
+// Merge implements ent.Merger interface.
+func (a Annotation) Merge(o schema.Annotation) schema.Annotation {
+	var ant Annotation
+	switch o := o.(type) {
+	case Annotation:
+		ant = o
+	case *Annotation:
+		if o != nil {
+			ant = *o
+		}
+	default:
+		return a
+	}
+	if len(ant.Groups) > 0 {
+		a.Groups = ant.Groups
+	}
+	if ant.MaxDepth != 1 {
+		a.MaxDepth = ant.MaxDepth
+	}
+	if ant.Validation != "" {
+		a.Validation = ant.Validation
+	}
+	if ant.CreateValidation != "" {
+		a.CreateValidation = ant.CreateValidation
+	}
+	if ant.UpdateValidation != "" {
+		a.UpdateValidation = ant.UpdateValidation
+	}
+	return a
+}
+
 // Decode from ent.
-func (a *SchemaAnnotation) Decode(o interface{}) error {
+func (a *Annotation) Decode(o interface{}) error {
 	buf, err := json.Marshal(o)
 	if err != nil {
 		return err
@@ -89,5 +187,7 @@ func (a Annotation) ValidationTags(action string) string {
 	return a.Validation
 }
 
-var _ schema.Annotation = (*Annotation)(nil)
-var _ schema.Annotation = (*SchemaAnnotation)(nil)
+var (
+	_ schema.Annotation = (*Annotation)(nil)
+	_ schema.Annotation = (*SchemaAnnotation)(nil)
+)
