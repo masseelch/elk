@@ -73,7 +73,7 @@ func pets(ctx context.Context, refs refs, c *ent.Client) error {
 	b := make([]*ent.PetCreate, petCount)
 
 	for i := 0; i < len(b); i++ {
-		b[i] = c.Pet.Create().SetName(randomdata.Noun()).SetAge(randomdata.Number(1)).SetOwner(refs.owner()).AddCategory(refs.categories(randomdata.Number(1, 3))...)
+		b[i] = c.Pet.Create().SetName(randomdata.Noun()).SetAge(randomdata.Number(1, 100)).SetOwner(refs.owner()).AddCategory(refs.categories(randomdata.Number(1, 3))...)
 	}
 
 	refs[petKey], err = c.Pet.CreateBulk(b...).Save(ctx)

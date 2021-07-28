@@ -18,7 +18,9 @@
 
             {{- template "helper/http/decode-request-body" -}}
 
-            {{- if needsValidation $n "update" }}{{ template "helper/http/validate-request-body" }}{{ end -}}
+            {{- if needsValidation $n "update" }}
+                {{- template "helper/http/validate-request-body" $n }}
+            {{- end -}}
 
             // Save the data.
             b := h.client.{{ $n.Name }}.UpdateOneID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }})

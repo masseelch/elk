@@ -16,7 +16,9 @@
 
             {{- template "helper/http/decode-request-body" -}}
 
-            {{- if needsValidation $n "create" }}{{ template "helper/http/validate-request-body" }}{{ end -}}
+            {{- if needsValidation $n "create" }}
+                {{- template "helper/http/validate-request-body" $n }}
+            {{- end -}}
 
             // Save the data.
             b := h.client.{{ $n.Name }}.Create()

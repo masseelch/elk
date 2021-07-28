@@ -34,13 +34,13 @@ var (
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{
-		"edgesToLoad":        edgesToLoad,
-		"kebab":              strcase.KebabCase,
-		"needsSerialization": needsSerialization,
-		"needsValidation":    needsValidation,
-		"stringSlice":        stringSlice,
-		"validationTags":     validationTags,
-		"xextend":            xextend,
+		"edgesToLoad":             edgesToLoad,
+		"fieldValidationRequired": fieldValidationRequired,
+		"kebab":                   strcase.KebabCase,
+		"needsSerialization":      needsSerialization,
+		"stringSlice":             stringSlice,
+		"validationTags":          validationTags,
+		"xextend":                 xextend,
 	}
 )
 
@@ -68,19 +68,14 @@ func validationTags(a interface{}, m string) string {
 	return an.Validation
 }
 
-// needsValidation returns if a type needs validation for a given request type.
-func needsValidation(n *gen.Type, m string) bool {
-	an := Annotation{}.Name()
+// fieldValidationRequired returns if a type needs validation because there is some defined on one of its fields.
+func fieldValidationRequired(n *gen.Type) bool {
 	for _, f := range n.Fields {
-		if validationTags(f.Annotations[an], m) != "" {
+		if f.Validators > 0 {
 			return true
 		}
 	}
-	for _, e := range n.Edges {
-		if validationTags(e.Annotations[an], m) != "" {
-			return true
-		}
-	}
+
 	return false
 }
 
