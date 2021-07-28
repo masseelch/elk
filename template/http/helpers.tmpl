@@ -35,9 +35,9 @@
 
 {{ define "helper/http/reload/error-handling" }}
     if err != nil {
-        switch err.(type) {
-        case *ent.NotFoundError:
-            msg := h.stripEntError(err)
+        switch {
+        case ent.IsNotFound(err):
+            msg := stripEntError(err)
             l.Info(msg, zap.Int("{{ $.ID.Name }}", e.{{ $.ID.StructField}}), zap.Error(err))
             render.NotFound(w, r, msg)
         default:

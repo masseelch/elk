@@ -81,9 +81,9 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	q := h.client.Category.Query().Where(category.ID(e.ID))
 	e, err = q.Only(r.Context())
 	if err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, msg)
 		default:
@@ -172,9 +172,9 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	q := h.client.Owner.Query().Where(owner.ID(e.ID))
 	e, err = q.Only(r.Context())
 	if err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, msg)
 		default:
@@ -272,9 +272,9 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	q := h.client.Pet.Query().Where(pet.ID(e.ID))
 	e, err = q.Only(r.Context())
 	if err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, msg)
 		default:

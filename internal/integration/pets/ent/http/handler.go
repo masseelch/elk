@@ -174,6 +174,6 @@ func (h *PetHandler) Mount(r chi.Router, rs Routes) {
 	}
 }
 
-func (h handler) stripEntError(err error) string {
+func stripEntError(err error) string {
 	return strings.TrimPrefix(err.Error(), "ent: ")
 }
