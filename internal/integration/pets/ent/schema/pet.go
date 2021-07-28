@@ -17,19 +17,14 @@ type Pet struct {
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
+			MinLen(3).
 			Annotations(
 				elk.Annotation{
-					Groups:           []string{"pet"},
-					CreateValidation: "required",
+					Groups: []string{"pet"},
 				},
 			),
 		field.Int("age").
-			Annotations(
-				elk.Annotation{
-					CreateValidation: "required,gt=0",
-					UpdateValidation: "gt=0",
-				},
-			),
+			Positive(),
 	}
 }
 

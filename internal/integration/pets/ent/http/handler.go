@@ -6,13 +6,9 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-playground/validator/v10"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"go.uber.org/zap"
 )
-
-// handler has some convenience methods used on node-handlers.
-type handler struct{}
 
 // Bitmask to configure which routes to register.
 type Routes uint8
@@ -31,18 +27,14 @@ const (
 
 // CategoryHandler handles http crud operations on ent.Category.
 type CategoryHandler struct {
-	handler
-
-	client    *ent.Client
-	log       *zap.Logger
-	validator *validator.Validate
+	client *ent.Client
+	log    *zap.Logger
 }
 
-func NewCategoryHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *CategoryHandler {
+func NewCategoryHandler(c *ent.Client, l *zap.Logger) *CategoryHandler {
 	return &CategoryHandler{
-		client:    c,
-		log:       l.With(zap.String("handler", "CategoryHandler")),
-		validator: v,
+		client: c,
+		log:    l.With(zap.String("handler", "CategoryHandler")),
 	}
 }
 
@@ -80,18 +72,14 @@ const (
 
 // OwnerHandler handles http crud operations on ent.Owner.
 type OwnerHandler struct {
-	handler
-
-	client    *ent.Client
-	log       *zap.Logger
-	validator *validator.Validate
+	client *ent.Client
+	log    *zap.Logger
 }
 
-func NewOwnerHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *OwnerHandler {
+func NewOwnerHandler(c *ent.Client, l *zap.Logger) *OwnerHandler {
 	return &OwnerHandler{
-		client:    c,
-		log:       l.With(zap.String("handler", "OwnerHandler")),
-		validator: v,
+		client: c,
+		log:    l.With(zap.String("handler", "OwnerHandler")),
 	}
 }
 
@@ -131,18 +119,14 @@ const (
 
 // PetHandler handles http crud operations on ent.Pet.
 type PetHandler struct {
-	handler
-
-	client    *ent.Client
-	log       *zap.Logger
-	validator *validator.Validate
+	client *ent.Client
+	log    *zap.Logger
 }
 
-func NewPetHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *PetHandler {
+func NewPetHandler(c *ent.Client, l *zap.Logger) *PetHandler {
 	return &PetHandler{
-		client:    c,
-		log:       l.With(zap.String("handler", "PetHandler")),
-		validator: v,
+		client: c,
+		log:    l.With(zap.String("handler", "PetHandler")),
 	}
 }
 
@@ -174,6 +158,17 @@ func (h *PetHandler) Mount(r chi.Router, rs Routes) {
 	}
 }
 
-func (h handler) stripEntError(err error) string {
+func stripEntError(err error) string {
 	return strings.TrimPrefix(err.Error(), "ent: ")
+}
+
+func zapFields(errs map[string]string) []zap.Field {
+	if errs == nil || len(errs) == 0 {
+		return nil
+	}
+	r := make([]zap.Field, 0)
+	for k, v := range errs {
+		r = append(r, zap.String(k, v))
+	}
+	return r
 }

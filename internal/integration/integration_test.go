@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"entgo.io/ent/dialect"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-playground/validator/v10"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/enttest"
 	elkhttp "github.com/masseelch/elk/internal/integration/pets/ent/http"
@@ -19,7 +18,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"testing"
 )
@@ -65,21 +63,21 @@ func TestHttp(t *testing.T) {
 	defer l.Sync()
 
 	// Validator
-	v := validator.New()
-	v.RegisterTagNameFunc(func(fld reflect.StructField) string {
-		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
-		if name == "-" {
-			return ""
-		}
-		return name
-	})
+	// v := validator.New()
+	// v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+	// 	name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+	// 	if name == "-" {
+	// 		return ""
+	// 	}
+	// 	return name
+	// })
 
 	// Needed to test url param fetching
 	r := chi.NewRouter()
 
 	// Register pet endpoints.
 	r.Route("/pets", func(r chi.Router) {
-		elkhttp.NewPetHandler(c, l, v).Mount(r, elkhttp.PetRoutes)
+		elkhttp.NewPetHandler(c, l).Mount(r, elkhttp.PetRoutes)
 	})
 
 	// Create the tests.

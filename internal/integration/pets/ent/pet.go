@@ -19,7 +19,7 @@ type Pet struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty" groups:"pet"`
 	// Age holds the value of the "age" field.
-	Age int `json:"age,omitempty" groups:""`
+	Age int `json:"age,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PetQuery when eager-loading is set.
 	Edges      PetEdges `json:"edges"  groups:"pet:owner,pet"`

@@ -142,8 +142,18 @@ func (pc *PetCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
+	if v, ok := pc.mutation.Name(); ok {
+		if err := pet.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+		}
+	}
 	if _, ok := pc.mutation.Age(); !ok {
 		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "age"`)}
+	}
+	if v, ok := pc.mutation.Age(); ok {
+		if err := pet.AgeValidator(v); err != nil {
+			return &ValidationError{Name: "age", err: fmt.Errorf(`ent: validator failed for field "age": %w`, err)}
+		}
 	}
 	return nil
 }

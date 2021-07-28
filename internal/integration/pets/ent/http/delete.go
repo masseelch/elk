@@ -25,7 +25,7 @@ func (h CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err := h.client.Category.DeleteOneID(id).Exec(r.Context()); err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "category not found")
 		default:
@@ -51,7 +51,7 @@ func (h OwnerHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err := h.client.Owner.DeleteOneID(id).Exec(r.Context()); err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "owner not found")
 		default:
@@ -77,7 +77,7 @@ func (h PetHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err := h.client.Pet.DeleteOneID(id).Exec(r.Context()); err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, "pet not found")
 		default:

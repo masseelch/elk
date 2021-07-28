@@ -2,8 +2,23 @@
 
 package ent
 
+import (
+	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/schema"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	petFields := schema.Pet{}.Fields()
+	_ = petFields
+	// petDescName is the schema descriptor for name field.
+	petDescName := petFields[0].Descriptor()
+	// pet.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	pet.NameValidator = petDescName.Validators[0].(func(string) error)
+	// petDescAge is the schema descriptor for age field.
+	petDescAge := petFields[1].Descriptor()
+	// pet.AgeValidator is a validator for the "age" field. It is called by the builders before save.
+	pet.AgeValidator = petDescAge.Validators[0].(func(int) error)
 }

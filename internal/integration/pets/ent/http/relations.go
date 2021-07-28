@@ -184,11 +184,11 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", id), zap.Error(err))
 			render.NotFound(w, r, strings.TrimPrefix(err.Error(), "ent: "))
 		case *ent.NotSingularError:
-			msg := h.stripEntError(err)
+			msg := stripEntError(err)
 			l.Error(msg, zap.Int("id", id), zap.Error(err))
 			render.BadRequest(w, r, strings.TrimPrefix(err.Error(), "ent: "))
 		default:

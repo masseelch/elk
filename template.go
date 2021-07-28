@@ -31,10 +31,11 @@ var (
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{
-		"edgesToLoad":    edgesToLoad,
-		"kebab":          strcase.KebabCase,
-		"stringSlice":    stringSlice,
-		"validationTags": validationTags,
+		"edgesToLoad":             edgesToLoad,
+		"kebab":                   strcase.KebabCase,
+		"stringSlice":             stringSlice,
+		"validationTags":          validationTags,
+		"fieldValidationRequired": fieldValidationRequired,
 	}
 )
 
@@ -60,6 +61,16 @@ func validationTags(a gen.Annotations, m string) string {
 		return an.UpdateValidation
 	}
 	return an.Validation
+}
+
+func fieldValidationRequired(n *gen.Type) bool {
+	for _, f := range n.Fields {
+		if f.Validators > 0 {
+			return true
+		}
+	}
+
+	return false
 }
 
 // stringSlice casts a given []interface{} to []string.

@@ -6,11 +6,7 @@
     {{ end }}
     import ( {{/* This is needed for stupid SIV rule */}}
         "github.com/go-chi/chi/v5"
-        "github.com/go-playground/validator/v10"
     )
-
-    // handler has some convenience methods used on node-handlers.
-    type handler struct {}
 
     // Bitmask to configure which routes to register.
     type Routes uint8
@@ -33,18 +29,14 @@
 
         // {{ $n.Name }}Handler handles http crud operations on {{ $pkg }}.{{ $n.Name }}.
         type {{ $n.Name }}Handler struct {
-            handler
-
             client    *ent.Client
             log       *zap.Logger
-            validator *validator.Validate
         }
 
-        func New{{ $n.Name }}Handler(c *ent.Client, l *zap.Logger, v *validator.Validate) *{{ $n.Name }}Handler {
+        func New{{ $n.Name }}Handler(c *ent.Client, l *zap.Logger) *{{ $n.Name }}Handler {
             return &{{ $n.Name }}Handler{
-                client:    c,
-                log:       l.With(zap.String("handler", "{{ $n.Name }}Handler")),
-                validator: v,
+                client: c,
+                log:    l.With(zap.String("handler", "{{ $n.Name }}Handler")),
             }
         }
 
@@ -73,7 +65,18 @@
         }
     {{ end }}
 
-    func (h handler) stripEntError(err error) string {
+    func stripEntError(err error) string {
         return strings.TrimPrefix(err.Error(), "ent: ")
+    }
+
+    func zapFields(errs map[string]string) []zap.Field {
+        if errs == nil || len(errs) == 0 {
+            return nil
+        }
+        r := make([]zap.Field, 0)
+        for k, v := range errs {
+            r = append(r, zap.String(k, v))
+        }
+        return r
     }
 {{ end }}

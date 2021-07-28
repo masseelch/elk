@@ -6,17 +6,25 @@
         render.BadRequest(w, r, "invalid json string")
         return
     }
-    // Validate the data.
-    if err := h.validator.Struct(d); err != nil {
-        if err, ok := err.(*validator.InvalidValidationError); ok {
-            l.Error("error validating request data", zap.Error(err))
-            render.InternalServerError(w, r, nil)
+    {{ if fieldValidationRequired $ -}}
+        // Validate the data.
+        // TODO: what about slice fields that have custom marshallers?
+        errs := make(map[string]string)
+        {{ range $f := $.Fields -}}
+            {{ if $f.Validators -}}
+                if d.{{ $f.StructField }} != nil {
+                    if err := {{ $.Package }}.{{ $f.Validator }}(*d.{{ $f.StructField }}); err != nil {
+                        errs["{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"] = err.Error()
+                    }
+                }
+            {{ end -}}
+        {{ end -}}
+        if len(errs) > 0 {
+            l.Info("validation failed", zapFields(errs)...)
+            render.BadRequest(w, r, errs)
             return
         }
-        l.Info("validation failed", zap.Error(err))
-        render.BadRequest(w, r, err)
-        return
-    }
+    {{ end -}}
 {{ end }}
 
 {{ define "helper/http/id-from-url" }}
@@ -37,7 +45,7 @@
     if err != nil {
         switch err.(type) {
         case *ent.NotFoundError:
-            msg := h.stripEntError(err)
+            msg := stripEntError(err)
             l.Info(msg, zap.Int("{{ $.ID.Name }}", e.{{ $.ID.StructField}}), zap.Error(err))
             render.NotFound(w, r, msg)
         default:

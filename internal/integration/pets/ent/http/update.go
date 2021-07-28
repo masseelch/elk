@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-playground/validator/v10"
 	"github.com/liip/sheriff"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
@@ -39,17 +38,6 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
-		return
-	}
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
-		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
 		return
 	}
 	// Save the data.
@@ -83,7 +71,7 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, msg)
 		default:
@@ -129,17 +117,6 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 		render.BadRequest(w, r, "invalid json string")
 		return
 	}
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
-		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
-		return
-	}
 	// Save the data.
 	b := h.client.Owner.UpdateOneID(id)
 	// TODO: what about slice fields that have custom marshallers?
@@ -174,7 +151,7 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, msg)
 		default:
@@ -199,7 +176,7 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 // Payload of a ent.Pet update request.
 type PetUpdateRequest struct {
 	Name     *string `json:"name"`
-	Age      *int    `json:"age" validate:"gt=0"`
+	Age      *int    `json:"age"`
 	Category []int   `json:"category"`
 	Owner    *int    `json:"owner"`
 	Friends  []int   `json:"friends"`
@@ -223,14 +200,21 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
+	// TODO: what about slice fields that have custom marshallers?
+	errs := make(map[string]string)
+	if d.Name != nil {
+		if err := pet.NameValidator(*d.Name); err != nil {
+			errs["name"] = err.Error()
 		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
+	}
+	if d.Age != nil {
+		if err := pet.AgeValidator(*d.Age); err != nil {
+			errs["age"] = err.Error()
+		}
+	}
+	if len(errs) > 0 {
+		l.Info("validation failed", zapFields(errs)...)
+		render.BadRequest(w, r, errs)
 		return
 	}
 	// Save the data.
@@ -274,7 +258,7 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case *ent.NotFoundError:
-			msg := h.stripEntError(err)
+			msg := stripEntError(err)
 			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
 			render.NotFound(w, r, msg)
 		default:
