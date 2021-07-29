@@ -37,7 +37,6 @@
 
             // Save the data.
             b := h.client.{{ $n.Name }}.UpdateOneID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }})
-            // TODO: what about slice fields that have custom marshallers?
             {{ range $f := $n.Fields -}}
                 {{ if not $f.Immutable -}}
                     if d.{{ $f.StructField }} != nil {

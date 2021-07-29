@@ -29,7 +29,6 @@
             {{- template "helper/http/decode-and-validate-request-body" -}}
             // Save the data.
             b := h.client.{{ $n.Name }}.Create()
-            // TODO: what about slice fields that have custom marshallers?
             {{ range $f := $n.Fields -}}
                 if d.{{ $f.StructField }} != nil {
                     b.Set{{ $f.StructField }}(*d.{{ $f.StructField }})
@@ -44,7 +43,6 @@
                     {{- end }}
                 }
             {{ end -}}
-            // Store in database.
             e, err := b.Save(r.Context())
             if err != nil {
                 l.Error("error saving {{ $n.Name | kebab }}", zap.Error(err))

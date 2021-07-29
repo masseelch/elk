@@ -54,7 +54,6 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Save the data.
 	b := h.client.Category.UpdateOneID(id)
-	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
@@ -142,7 +141,6 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Save the data.
 	b := h.client.Owner.UpdateOneID(id)
-	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
@@ -235,7 +233,6 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Save the data.
 	b := h.client.Pet.UpdateOneID(id)
-	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}

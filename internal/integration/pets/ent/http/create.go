@@ -45,14 +45,12 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	// Save the data.
 	b := h.client.Category.Create()
-	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
 	if d.Pets != nil {
 		b.AddPetIDs(d.Pets...)
 	}
-	// Store in database.
 	e, err := b.Save(r.Context())
 	if err != nil {
 		l.Error("error saving category", zap.Error(err))
@@ -117,7 +115,6 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	// Save the data.
 	b := h.client.Owner.Create()
-	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
@@ -127,7 +124,6 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if d.Pets != nil {
 		b.AddPetIDs(d.Pets...)
 	}
-	// Store in database.
 	e, err := b.Save(r.Context())
 	if err != nil {
 		l.Error("error saving owner", zap.Error(err))
@@ -194,7 +190,6 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	// Save the data.
 	b := h.client.Pet.Create()
-	// TODO: what about slice fields that have custom marshallers?
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
@@ -211,7 +206,6 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if d.Friends != nil {
 		b.AddFriendIDs(d.Friends...)
 	}
-	// Store in database.
 	e, err := b.Save(r.Context())
 	if err != nil {
 		l.Error("error saving pet", zap.Error(err))
