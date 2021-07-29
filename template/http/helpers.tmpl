@@ -1,11 +1,14 @@
 {{/* gotype: entgo.io/ent/entc/gen.Type */}}
 
-{{ define "helper/http/decode-and-validate-request-body" }}
+{{ define "helper/http/decode-request-body" }}
     if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
         l.Error("error decoding json", zap.Error(err))
         render.BadRequest(w, r, "invalid json string")
         return
     }
+{{ end }}
+
+{{ define "helper/http/validate-request-body" -}}
     // Validate the data.
     if err := h.validator.Struct(d); err != nil {
         if err, ok := err.(*validator.InvalidValidationError); ok {

@@ -31,10 +31,11 @@ var (
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{
-		"edgesToLoad":    edgesToLoad,
-		"kebab":          strcase.KebabCase,
-		"stringSlice":    stringSlice,
-		"validationTags": validationTags,
+		"edgesToLoad":     edgesToLoad,
+		"kebab":           strcase.KebabCase,
+		"needsValidation": needsValidation,
+		"stringSlice":     stringSlice,
+		"validationTags":  validationTags,
 	}
 )
 
@@ -45,7 +46,8 @@ func parse(path string) *gen.Template {
 		Parse(string(internal.MustAsset(path))))
 }
 
-func validationTags(a gen.Annotations, m string) string {
+// validationTags extracts the validation tags to use for the given action / method.
+func validationTags(a interface{}, m string) string {
 	if a == nil {
 		return ""
 	}
@@ -60,6 +62,22 @@ func validationTags(a gen.Annotations, m string) string {
 		return an.UpdateValidation
 	}
 	return an.Validation
+}
+
+// needsValidation returns if a type needs validation for a given request type.
+func needsValidation(n *gen.Type, m string) bool {
+	an := Annotation{}.Name()
+	for _, f := range n.Fields {
+		if validationTags(f.Annotations[an], m) != "" {
+			return true
+		}
+	}
+	for _, e := range n.Edges {
+		if validationTags(e.Annotations[an], m) != "" {
+			return true
+		}
+	}
+	return false
 }
 
 // stringSlice casts a given []interface{} to []string.

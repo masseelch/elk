@@ -32,17 +32,6 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		render.BadRequest(w, r, "invalid json string")
 		return
 	}
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
-		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
-		return
-	}
 	// Save the data.
 	b := h.client.Category.Create()
 	if d.Name != nil {
@@ -102,17 +91,6 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		render.BadRequest(w, r, "invalid json string")
 		return
 	}
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
-		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
-		return
-	}
 	// Save the data.
 	b := h.client.Owner.Create()
 	if d.Name != nil {
@@ -163,7 +141,7 @@ type PetCreateRequest struct {
 	Name     *string `json:"name" validate:"required"`
 	Age      *int    `json:"age" validate:"required,gt=0"`
 	Category []int   `json:"category"`
-	Owner    *int    `json:"owner"`
+	Owner    *int    `json:"owner" validate:"required"`
 	Friends  []int   `json:"friends"`
 }
 

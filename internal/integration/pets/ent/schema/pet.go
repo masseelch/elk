@@ -39,6 +39,7 @@ func (Pet) Edges() []ent.Edge {
 			Unique().
 			Annotations(
 				elk.Groups("pet:owner"),
+				elk.CreateValidation("required"),
 			),
 		edge.To("friends", Pet.Type).
 			Annotations(

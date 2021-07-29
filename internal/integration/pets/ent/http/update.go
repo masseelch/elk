@@ -41,17 +41,6 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		render.BadRequest(w, r, "invalid json string")
 		return
 	}
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
-		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
-		return
-	}
 	// Save the data.
 	b := h.client.Category.UpdateOneID(id)
 	if d.Name != nil {
@@ -126,17 +115,6 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
-		return
-	}
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
-		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
 		return
 	}
 	// Save the data.
