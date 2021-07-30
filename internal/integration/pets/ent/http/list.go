@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/liip/sheriff"
+	easyjson "github.com/mailru/easyjson"
+	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )
@@ -41,17 +42,8 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"category"},
-	}, es)
-	if err != nil {
-		l.Error("serialization error", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("categories rendered", zap.Int("amount", len(es)))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryListResponse(es), w)
 }
 
 // Read fetches the ent.Owner identified by a given url-parameter from the
@@ -84,17 +76,8 @@ func (h *OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"owner"},
-	}, es)
-	if err != nil {
-		l.Error("serialization error", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("owners rendered", zap.Int("amount", len(es)))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerListResponse(es), w)
 }
 
 // Read fetches the ent.Pet identified by a given url-parameter from the
@@ -102,6 +85,12 @@ func (h *OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
 func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "List"))
 	q := h.client.Pet.Query()
+	// Eager load edges that are required on list operation.
+	q.WithFriends(func(q *ent.PetQuery) {
+		q.WithFriends(func(q *ent.PetQuery) {
+			q.WithFriends()
+		})
+	})
 	var err error
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
@@ -127,15 +116,6 @@ func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"pet"},
-	}, es)
-	if err != nil {
-		l.Error("serialization error", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewPetListResponse(es), w)
 }

@@ -9,8 +9,9 @@ import (
 type (
 	// EdgeToLoad specifies and edge to load for a type.
 	EdgeToLoad struct {
-		edge        *gen.Edge
-		edgesToLoad []EdgeToLoad
+		Edge        *gen.Edge
+		EdgesToLoad []EdgeToLoad
+		Groups      []string // TODO: Check if this isn't redundant ...
 	}
 	// EdgesToLoad is a list of several EdgeToLoad.
 	EdgesToLoad []EdgeToLoad
@@ -29,9 +30,9 @@ func (es EdgesToLoad) EntQuery() string {
 func (etl EdgeToLoad) EntQuery() string {
 	b := new(strings.Builder)
 
-	b.WriteString(fmt.Sprintf(".%s(", strings.Title(etl.edge.EagerLoadField())))
-	for _, e := range etl.edgesToLoad {
-		b.WriteString(fmt.Sprintf("func (q *ent.%s) {\nq%s\n}", e.edge.Owner.QueryName(), e.EntQuery()))
+	b.WriteString(fmt.Sprintf(".%s(", strings.Title(etl.Edge.EagerLoadField())))
+	for _, e := range etl.EdgesToLoad {
+		b.WriteString(fmt.Sprintf("func (q *ent.%s) {\nq%s\n}", e.Edge.Owner.QueryName(), e.EntQuery()))
 	}
 	b.WriteString(")")
 
@@ -58,8 +59,6 @@ func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 		g = a.ReadGroups
 	case actionUpdate:
 		g = a.UpdateGroups
-	case actionDelete:
-		g = a.DeleteGroups
 	case actionList:
 		g = a.ListGroups
 	}
@@ -104,8 +103,9 @@ func edgesToLoadHelper(n *gen.Type, visited map[string]uint, groupsToLoad []stri
 			}
 
 			edges = append(edges, EdgeToLoad{
-				edge:        e,
-				edgesToLoad: etl,
+				Edge:        e,
+				EdgesToLoad: etl,
+				Groups:      groupsToLoad,
 			})
 		}
 	}

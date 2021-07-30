@@ -64,23 +64,8 @@
 
             {{- template "helper/http/reload/error-handling" . -}}
 
-            j, err := sheriff.Marshal(&sheriff.Options{
-                IncludeEmptyTag: true,
-                Groups: []string{
-                    {{- with $n.Annotations.ElkSchema.CreateGroups -}}
-                        "{{ join (stringSlice .) `","` }}"
-                    {{- else -}}
-                        "{{ $n.Name | kebab }}"
-                    {{- end -}}
-                },
-            }, e)
-            if err != nil {
-                l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
-                render.InternalServerError(w, r, nil)
-                return
-            }
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
-            render.OK(w, r, j)
+            easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}CreateResponse(e), w)
         }
     {{ end }}
 {{ end }}

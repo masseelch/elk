@@ -38,48 +38,18 @@
                         }
                         return
                     }
-                    d, err := sheriff.Marshal(&sheriff.Options{
-                        IncludeEmptyTag: true,
-                        Groups: []string{
-                            {{- with $e.Type.Annotations.ElkSchema.ReadGroups -}}
-                                "{{ join (stringSlice .) `","` }}"
-                            {{- else -}}
-                                "{{ $e.Type.Name | kebab }}"
-                            {{- end -}}
-                        },
-                    }, e)
-                    if err != nil {
-                        l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", e.{{ $e.Type.ID.StructField }}), zap.Error(err))
-                        render.InternalServerError(w, r, nil)
-                        return
-                    }
                     l.Info("{{ $e.Type.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $e.Type.ID.StructField }}))
-                    render.OK(w, r, d)
+                    easyjson.MarshalToHTTPResponseWriter(New{{ $e.Type.Name }}ReadResponse(e), w)
                 {{- else }}
                     {{- with edgesToLoad $e.Type "list" }}
                         // Eager load edges that are required on list operation.
-                        {{ . }}
+                        q{{ .EntQuery }}
                     {{- end }}
 
                     {{- template "helper/http/pagination" $e.Type -}}
 
-                    d, err := sheriff.Marshal(&sheriff.Options{
-                        IncludeEmptyTag: true,
-                        Groups: []string{
-                            {{- with $n.Annotations.ElkSchema.ListGroups -}}
-                                "{{ join (stringSlice .) `","` }}"
-                            {{- else -}}
-                                "{{ $n.Name | kebab }}"
-                            {{- end -}}
-                        },
-                    }, es)
-                    if err != nil {
-                        l.Error("serialization error", zap.Error(err))
-                        render.InternalServerError(w, r, nil)
-                        return
-                    }
                     l.Info("{{ $e.Type.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
-                    render.OK(w, r, d)
+                    easyjson.MarshalToHTTPResponseWriter(New{{ $e.Type.Name }}ListResponse(es), w)
                 {{- end }}
             }
         {{ end }}

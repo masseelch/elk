@@ -38,23 +38,8 @@
                 }
                 return
             }
-            d, err := sheriff.Marshal(&sheriff.Options{
-                IncludeEmptyTag: true,
-                Groups: []string{
-                    {{- with $n.Annotations.ElkSchema.ReadGroups -}}
-                        "{{ join (stringSlice .) `","` }}"
-                    {{- else -}}
-                        "{{ $n.Name | kebab }}"
-                    {{- end -}}
-                },
-            }, e)
-            if err != nil {
-                l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                render.InternalServerError(w, r, nil)
-                return
-            }
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", id))
-            render.OK(w, r, d)
+            easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}ReadResponse(e), w)
         }
     {{ end }}
 {{ end }}

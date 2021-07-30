@@ -12,13 +12,13 @@ import (
 
 // Owner is the model entity for the Owner schema.
 type Owner struct {
-	config `groups:"-" json:"-"`
+	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty" groups:"owner"`
+	Name string `json:"name,omitempty"`
 	// Age holds the value of the "age" field.
-	Age int `json:"age,omitempty" groups:"owner"`
+	Age int `json:"age,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OwnerQuery when eager-loading is set.
 	Edges OwnerEdges `json:"edges"`

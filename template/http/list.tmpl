@@ -19,23 +19,8 @@
             var err error
             {{- template "helper/http/pagination" $n -}}
 
-            d, err := sheriff.Marshal(&sheriff.Options{
-                IncludeEmptyTag: true,
-                Groups: []string{
-                    {{- with $n.Annotations.ElkSchema.ListGroups -}}
-                        "{{ join (stringSlice .) `","` }}"
-                    {{- else -}}
-                        "{{ $n.Name | kebab }}"
-                    {{- end -}}
-                },
-            }, es)
-            if err != nil {
-                l.Error("serialization error", zap.Error(err))
-                render.InternalServerError(w, r, nil)
-                return
-            }
             l.Info("{{ $n.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
-            render.OK(w, r, d)
+            easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}ListResponse(es), w)
         }
     {{ end }}
 {{ end }}
