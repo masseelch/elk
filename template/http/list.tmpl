@@ -14,7 +14,7 @@
             q := h.client.{{ $n.Name }}.Query()
             {{- with edgesToLoad $n "list" }}
                 // Eager load edges that are required on list operation.
-                {{ . }}
+                q{{ .EntQuery }}
             {{- end }}
             var err error
             {{- template "helper/http/pagination" $n -}}

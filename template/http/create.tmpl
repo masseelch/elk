@@ -12,11 +12,11 @@
         type {{ $n.Name }}CreateRequest struct {
             {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
             {{ range $f := $n.Fields -}}
-                {{ $f.StructField }} *{{ $f.Type.String }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"
+                {{ $f.StructField }} *{{ $f.Type }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"
                 {{- with validationTags $f.Annotations.Elk "create" }} validate:"{{ . }}"{{ end }}`
             {{ end -}}
             {{ range $e := $n.Edges -}}
-                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"
+                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"
                 {{- with validationTags $e.Annotations.Elk "create" }} validate:"{{ . }}"{{ end }}`
             {{ end }}
         }
@@ -40,9 +40,9 @@
             {{ end -}}
             {{ range $e := $n.Edges -}}
                 if d.{{ $e.StructField }} != nil {
-                    {{ if $e.Unique -}}
+                    {{- if $e.Unique }}
                         b.{{ $e.MutationSet }}(*d.{{ $e.StructField }})
-                    {{ else -}}
+                    {{- else }}
                         b.{{ $e.MutationAdd }}(d.{{ $e.StructField }}...)
                     {{- end }}
                 }
@@ -58,7 +58,7 @@
 
             {{- with edgesToLoad $n "create" }}
                 // Eager load edges that are required on create operation.
-                {{ . }}
+                q{{ .EntQuery }}
             {{- end }}
             e, err = q.Only(r.Context())
 

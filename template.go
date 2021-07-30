@@ -20,28 +20,29 @@ const (
 var (
 	// HTTPTemplates holds all templates for generating http handlers.
 	HTTPTemplates = []*gen.Template{
+		parse("template/http/create.tmpl"),
+		parse("template/http/delete.tmpl"),
 		parse("template/http/handler.tmpl"),
 		parse("template/http/helpers.tmpl"),
-		parse("template/http/create.tmpl"),
-		parse("template/http/read.tmpl"),
-		parse("template/http/update.tmpl"),
-		parse("template/http/delete.tmpl"),
 		parse("template/http/list.tmpl"),
+		parse("template/http/read.tmpl"),
 		parse("template/http/relations.tmpl"),
+		parse("template/http/response.tmpl"),
+		parse("template/http/update.tmpl"),
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{
-		"edgesToLoad":     edgesToLoad,
-		"kebab":           strcase.KebabCase,
-		"needsValidation": needsValidation,
-		"stringSlice":     stringSlice,
-		"validationTags":  validationTags,
+		"edgesToLoad":        edgesToLoad,
+		"kebab":              strcase.KebabCase,
+		"needsSerialization": needsSerialization,
+		"needsValidation":    needsValidation,
+		"stringSlice":        stringSlice,
+		"validationTags":     validationTags,
 	}
 )
 
 func parse(path string) *gen.Template {
 	return gen.MustParse(gen.NewTemplate(path).
-		Funcs(gen.Funcs).
 		Funcs(TemplateFuncs).
 		Parse(string(internal.MustAsset(path))))
 }
@@ -88,3 +89,24 @@ func stringSlice(is []interface{}) []string {
 	}
 	return ss
 }
+
+// needsSerialization checks if a given field or edge is to be serialized according to its annotations and the requested
+// groups.
+func needsSerialization(a interface{}, g groups) (bool, error) {
+	// If no groups are given on the field default is to include it in the output.
+	if a == nil {
+		return false, nil
+	}
+
+	// If there are groups given check if the groups match the requested ones.
+	an := Annotation{}
+	if err := an.Decode(a); err != nil {
+		return false, err
+	}
+	return g.Match(an.Groups), nil
+}
+
+// func groupPermutations(n *gen.Type) map[*gen.Type][]groups {
+// 	gs := make([]groups, 0)
+//
+// }

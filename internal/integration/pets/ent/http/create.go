@@ -179,7 +179,6 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if d.Owner != nil {
 		b.SetOwnerID(*d.Owner)
-
 	}
 	if d.Friends != nil {
 		b.AddFriendIDs(d.Friends...)

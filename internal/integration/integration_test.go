@@ -103,8 +103,9 @@ func TestHttp(t *testing.T) {
 			req:    httptest.NewRequest(http.MethodPost, "/pets", bytes.NewReader(mustEncode(t, map[string]interface{}{"age": 0}))),
 			status: http.StatusBadRequest,
 			body: mustEncode(t, render.NewResponse(http.StatusBadRequest, map[string]interface{}{
-				"age":  "This value failed validation on 'gt:0'.",
-				"name": "This value is required.",
+				"age":   "This value failed validation on 'gt:0'.",
+				"name":  "This value is required.",
+				"owner": "This value is required.",
 			})),
 			logs: []map[string]interface{}{
 				{
@@ -118,8 +119,9 @@ func TestHttp(t *testing.T) {
 		{
 			name: "create _ ok",
 			req: httptest.NewRequest(http.MethodPost, "/pets", bytes.NewReader(mustEncode(t, map[string]interface{}{
-				"name": "my new pet",
-				"age":  1,
+				"name":  "my new pet",
+				"age":   1,
+				"owner": 1,
 			}))),
 			status: http.StatusOK,
 			fn: func(t *testing.T, tt *test, b []byte) {

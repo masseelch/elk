@@ -19,7 +19,7 @@
 
             {{- with edgesToLoad $n "read" }}
                 // Eager load edges that are required on read operation.
-                {{ . }}
+                q{{ .EntQuery }}
             {{- end }}
             e, err := q.Only(r.Context())
             if err != nil {

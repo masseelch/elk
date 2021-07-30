@@ -116,9 +116,9 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	// Create the query to fetch the Pet
 	q := h.client.Pet.Query().Where(pet.ID(id))
 	// Eager load edges that are required on read operation.
-	q.WithOwner().WithFriends(func(q_ *ent.PetQuery) {
-		q_.WithFriends(func(q__ *ent.PetQuery) {
-			q__.WithFriends()
+	q.WithOwner().WithFriends(func(q *ent.PetQuery) {
+		q.WithFriends(func(q *ent.PetQuery) {
+			q.WithFriends()
 		})
 	})
 	e, err := q.Only(r.Context())
