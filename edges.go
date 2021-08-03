@@ -69,7 +69,7 @@ func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 // edgesToLoadHelper recursively collects the edges to load on this type for requested groups on the given action.
 func edgesToLoadHelper(n *gen.Type, visited map[string]uint, groupsToLoad []string) (EdgesToLoad, error) {
 	// What edges to load on this type.
-	edges := make(EdgesToLoad, 0)
+	var edges []EdgeToLoad
 
 	// Iterate over the edges of the given type.
 	// If the type has an edge we need to eager load, do so.

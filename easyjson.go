@@ -14,7 +14,7 @@ func GenerateEasyJSON(next gen.Generator) gen.Generator {
 		}
 
 		// We want to render every response struct created with easyjson.
-		ns := make([]string, 0)
+		var ns []string
 		for _, n := range g.Nodes {
 			// Add all four operation with response data for every node.
 			ns = append(ns,
