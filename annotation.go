@@ -14,8 +14,6 @@ type (
 		ReadGroups groups `json:"ReadGroups,omitempty"`
 		// UpdateGroups holds the serializations groups to use on the update handler.
 		UpdateGroups groups `json:"UpdateGroups,omitempty"`
-		// DeleteGroups holds the serializations groups to use on the delete handler.
-		DeleteGroups groups `json:"DeleteGroups,omitempty"`
 		// ListGroups holds the serializations groups to use on the list handler.
 		ListGroups groups `json:"ListGroups,omitempty"`
 	}
@@ -47,10 +45,6 @@ func ReadGroups(gs ...string) SchemaAnnotation {
 
 func UpdateGroups(gs ...string) SchemaAnnotation {
 	return SchemaAnnotation{UpdateGroups: gs}
-}
-
-func DeleteGroups(gs ...string) SchemaAnnotation {
-	return SchemaAnnotation{DeleteGroups: gs}
 }
 
 func ListGroups(gs ...string) SchemaAnnotation {
@@ -103,9 +97,6 @@ func (a SchemaAnnotation) Merge(o schema.Annotation) schema.Annotation {
 	}
 	if len(ant.UpdateGroups) > 0 {
 		a.UpdateGroups = ant.UpdateGroups
-	}
-	if len(ant.DeleteGroups) > 0 {
-		a.DeleteGroups = ant.DeleteGroups
 	}
 	if len(ant.ListGroups) > 0 {
 		a.ListGroups = ant.ListGroups

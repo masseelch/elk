@@ -10,6 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.7.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/liip/sheriff v0.10.0
+	github.com/mailru/easyjson v0.7.7
 	github.com/masseelch/render v1.0.4
 	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/stoewer/go-strcase v1.2.0

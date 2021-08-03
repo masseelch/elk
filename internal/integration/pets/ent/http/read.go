@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/liip/sheriff"
+	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
@@ -46,17 +46,8 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"category"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", id), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("category rendered", zap.Int("id", id))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryReadResponse(e), w)
 }
 
 // Read fetches the ent.Owner identified by a given url-parameter from the
@@ -89,17 +80,8 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"owner"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", id), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("owner rendered", zap.Int("id", id))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerReadResponse(e), w)
 }
 
 // Read fetches the ent.Pet identified by a given url-parameter from the
@@ -116,9 +98,9 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	// Create the query to fetch the Pet
 	q := h.client.Pet.Query().Where(pet.ID(id))
 	// Eager load edges that are required on read operation.
-	q.WithOwner().WithFriends(func(q_ *ent.PetQuery) {
-		q_.WithFriends(func(q__ *ent.PetQuery) {
-			q__.WithFriends()
+	q.WithOwner().WithFriends(func(q *ent.PetQuery) {
+		q.WithFriends(func(q *ent.PetQuery) {
+			q.WithFriends()
 		})
 	})
 	e, err := q.Only(r.Context())
@@ -138,15 +120,6 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"owner", "pet", "pet:owner"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", id), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("pet rendered", zap.Int("id", id))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewPetReadResponse(e), w)
 }

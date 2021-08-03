@@ -20,7 +20,7 @@ type (
 func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 	ex := &Extension{
 		templates: HTTPTemplates,
-		hooks:     []gen.Hook{AddGroupsTag},
+		hooks:     []gen.Hook{GenerateEasyJSON},
 	}
 	for _, opt := range opts {
 		if err := opt(ex); err != nil {

@@ -53,5 +53,6 @@ func (Pet) Edges() []ent.Edge {
 func (Pet) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		elk.ReadGroups("pet", "pet:owner", "owner"),
+		elk.ListGroups("pet", "owner"),
 	}
 }

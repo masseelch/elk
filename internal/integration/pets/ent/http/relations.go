@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/liip/sheriff"
+	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
@@ -30,6 +30,12 @@ func (h CategoryHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the query to fetch the pets attached to this category
 	q := h.client.Category.Query().Where(category.ID(id)).QueryPets()
+	// Eager load edges that are required on list operation.
+	q.WithFriends(func(q *ent.PetQuery) {
+		q.WithFriends(func(q *ent.PetQuery) {
+			q.WithFriends()
+		})
+	})
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
 		page, err = strconv.Atoi(d)
@@ -54,17 +60,8 @@ func (h CategoryHandler) Pets(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"category"},
-	}, es)
-	if err != nil {
-		l.Error("serialization error", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewPetListResponse(es), w)
 }
 
 // Pets fetches the ent.pets attached to the ent.Owner
@@ -80,6 +77,12 @@ func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the query to fetch the pets attached to this owner
 	q := h.client.Owner.Query().Where(owner.ID(id)).QueryPets()
+	// Eager load edges that are required on list operation.
+	q.WithFriends(func(q *ent.PetQuery) {
+		q.WithFriends(func(q *ent.PetQuery) {
+			q.WithFriends()
+		})
+	})
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
 		page, err = strconv.Atoi(d)
@@ -104,17 +107,8 @@ func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"owner"},
-	}, es)
-	if err != nil {
-		l.Error("serialization error", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewPetListResponse(es), w)
 }
 
 // Category fetches the ent.category attached to the ent.Pet
@@ -154,17 +148,8 @@ func (h PetHandler) Category(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"pet"},
-	}, es)
-	if err != nil {
-		l.Error("serialization error", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("categories rendered", zap.Int("amount", len(es)))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryListResponse(es), w)
 }
 
 // Owner fetches the ent.owner attached to the ent.Pet
@@ -197,17 +182,8 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"owner"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("owner rendered", zap.Int("id", e.ID))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerReadResponse(e), w)
 }
 
 // Friends fetches the ent.friends attached to the ent.Pet
@@ -223,6 +199,12 @@ func (h PetHandler) Friends(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create the query to fetch the friends attached to this pet
 	q := h.client.Pet.Query().Where(pet.ID(id)).QueryFriends()
+	// Eager load edges that are required on list operation.
+	q.WithFriends(func(q *ent.PetQuery) {
+		q.WithFriends(func(q *ent.PetQuery) {
+			q.WithFriends()
+		})
+	})
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
 		page, err = strconv.Atoi(d)
@@ -247,15 +229,6 @@ func (h PetHandler) Friends(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	d, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"pet"},
-	}, es)
-	if err != nil {
-		l.Error("serialization error", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	render.OK(w, r, d)
+	easyjson.MarshalToHTTPResponseWriter(NewPetListResponse(es), w)
 }

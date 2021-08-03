@@ -16,12 +16,12 @@
             {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
             {{ range $f := $n.Fields -}}
                 {{ if not $f.Immutable -}}
-                    {{ $f.StructField }} *{{ $f.Type.String }}`json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"
+                    {{ $f.StructField }} *{{ $f.Type }}`json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"
                     {{- with validationTags $f.Annotations.Elk "update" }} validate:"{{ . }}"{{ end }}`
                 {{- end }}
             {{ end -}}
             {{ range $e := $n.Edges -}}
-                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type.String }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"
+                {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"
                 {{- with validationTags $e.Annotations.Elk "update" }} validate:"{{ . }}"{{ end }}`
             {{ end }}
         }
@@ -77,29 +77,14 @@
 
             {{- with edgesToLoad $n "create" }}
                 // Eager load edges that are required on update operation.
-                {{ . }}
+                q{{ .EntQuery }}
             {{- end }}
             e, err = q.Only(r.Context())
 
             {{- template "helper/http/reload/error-handling" . -}}
 
-            j, err := sheriff.Marshal(&sheriff.Options{
-                IncludeEmptyTag: true,
-                Groups: []string{
-                    {{- with $n.Annotations.ElkSchema.UpdateGroups -}}
-                        "{{ join (stringSlice .) `","` }}"
-                    {{- else -}}
-                        "{{ $n.Name | kebab }}"
-                    {{- end -}}
-                },
-            }, e)
-            if err != nil {
-                l.Error("serialization error", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}), zap.Error(err))
-                render.InternalServerError(w, r, nil)
-                return
-            }
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
-            render.OK(w, r, j)
+            easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}UpdateResponse(e), w)
         }
     {{ end }}
 {{ end }}

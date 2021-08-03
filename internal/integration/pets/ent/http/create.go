@@ -3,11 +3,11 @@
 package http
 
 import (
-	"encoding/json"
+	json "encoding/json"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/liip/sheriff"
+	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
@@ -61,17 +61,8 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"category"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("category rendered", zap.Int("id", e.ID))
-	render.OK(w, r, j)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryCreateResponse(e), w)
 }
 
 // Payload of a ent.Owner create request.
@@ -123,17 +114,8 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"owner"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("owner rendered", zap.Int("id", e.ID))
-	render.OK(w, r, j)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerCreateResponse(e), w)
 }
 
 // Payload of a ent.Pet create request.
@@ -179,7 +161,6 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if d.Owner != nil {
 		b.SetOwnerID(*d.Owner)
-
 	}
 	if d.Friends != nil {
 		b.AddFriendIDs(d.Friends...)
@@ -205,15 +186,6 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"pet"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	render.OK(w, r, j)
+	easyjson.MarshalToHTTPResponseWriter(NewPetCreateResponse(e), w)
 }

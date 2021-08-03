@@ -1,0 +1,158 @@
+{{ define "http/response" -}}
+    {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+        {{- with extend $ "Package" "http" -}}
+            {{ template "header" . }}
+        {{ end }}
+
+        {{ range $n := $.Nodes }}
+            {{ template "helper/http/response" extend $n "Action" "create" "Groups" $.Annotations.ElkSchema.CreateGroups }}
+            {{ template "helper/http/response" extend $n "Action" "read" "Groups" $.Annotations.ElkSchema.ReadGroups }}
+            {{ template "helper/http/response" extend $n "Action" "update" "Groups" $.Annotations.ElkSchema.UpdateGroups }}
+            {{ template "helper/http/response" extend $n "Action" "list" "Groups" $.Annotations.ElkSchema.ListGroups }}
+        {{- end }}
+{{ end }}
+
+{{ define "helper/http/response" -}}
+    {{/* gotype: entgo.io/ent/entc/gen.typeScope */}}
+    // Response of a {{ base $.Config.Package }}.{{ $.Name }} {{ $.Scope.Action }} request.
+    type {{ $.Name }}{{ $.Scope.Action | pascal }}Response {{ if eq $.Scope.Action "list" }}[]{{ end }}struct {
+        {{- template "helper/http/response/fields" $ }}
+        {{- range edgesToLoad $.Type $.Scope.Action }}
+            {{- template "helper/http/response/edges" . }}
+        {{- end }}
+    }
+
+    {{- $list := eq $.Scope.Action "list" }}
+    func New{{ $.Name }}{{ $.Scope.Action | pascal }}Response({{ $.Receiver }} {{ if $list }}[]{{ end }}*{{ base $.Config.Package }}.{{ $.Name }}) {{ if not $list }}*{{ end }}{{ $.Name }}{{ $.Scope.Action | pascal }}Response {
+        {{- $etl := edgesToLoad $.Type $.Scope.Action }}
+        {{- if $list }}
+            r := make({{ $.Name }}{{ $.Scope.Action | pascal }}Response, len({{ $.Receiver }}))
+            for i := range {{ $.Receiver }} {
+                {{- range $etl }}
+                    {{- template "helper/http/response/edges/setter" xextend . "Accessor" (printf "%s[i].Edges" $.Receiver) "Level" 1 }}
+                {{- end }}
+                r[i] = struct{
+                    {{- template "helper/http/response/fields" $ }}
+                    {{- range edgesToLoad $.Type $.Scope.Action }}
+                        {{- template "helper/http/response/edges" . }}
+                    {{- end }}
+                }{
+                    {{-
+                        template "helper/http/response/fields/setter"
+                        extend $
+                        "Groups" $.Scope.Groups
+                        "Accessor" (printf "%s[i]" $.Receiver)
+                    }}
+                    {{- range $etl }}
+                        {{ .Edge.StructField }}: {{ .Edge.StructField | lower }}1,
+                    {{- end }}
+                }
+            }
+            return r
+        {{- else }}
+            {{- range $etl }}
+                {{- template "helper/http/response/edges/setter" xextend . "Accessor" (print $.Receiver ".Edges") "Level" 1 }}
+            {{- end }}
+            return &{{ $.Name }}{{ $.Scope.Action | pascal }}Response{
+                {{-
+                    template "helper/http/response/fields/setter"
+                    extend $
+                    "Groups" $.Scope.Groups
+                    "Accessor" $.Receiver
+                }}
+                {{- range $etl }}
+                    {{ .Edge.StructField }}: {{ .Edge.StructField | lower }}1,
+                {{- end }}
+            }
+        {{- end }}
+    }
+{{ end }}
+
+{{ define "helper/http/response/read" -}}
+    {{/* gotype: entgo.io/ent/entc/gen.Type */}}
+    {{ template "helper/http/response" extend $ "Action" "read" "Groups" $.Annotations.ElkSchema.ReadGroups }}
+{{ end }}
+
+{{ define "helper/http/response/fields" -}}
+    {{/* gotype: entgo.io/ent/entc/gen.Type */}}
+    {{- $tag := $.ID.StructTag }}{{ with $tags := $.Annotations.Fields.StructTag }}{{ with index $tags $.ID.Name }}{{ $tag = . }}{{ end }}{{ end }}
+    {{ if needsSerialization $.ID.Annotations.Elk ($.Scope.Groups | stringSlice) }}{{ $.ID.StructField }} {{ if $.ID.NillableValue }}*{{ end }}{{ $.ID.Type }} {{ if not $.ID.Sensitive }}`{{ $tag }}`{{ end }}{{ end }}
+    {{- range $f := $.Fields }}
+        {{- $tag := $f.StructTag }}{{ with $tags := $.Annotations.Fields.StructTag }}{{ with index $tags $f.Name }}{{ $tag = . }}{{ end }}{{ end }}
+        {{ if needsSerialization $f.Annotations.Elk ($.Scope.Groups | stringSlice) }}{{ $f.StructField }} {{ if $f.NillableValue }}*{{ end }}{{ $f.Type }} {{ if not $f.Sensitive }}`{{ $tag }}`{{ end }}{{ end }}
+    {{- end }}
+{{ end }}
+
+{{ define "helper/http/response/edges" -}}
+    {{/* gotype: github.com/masseelch/elk.EdgeToLoad */}}
+    {{- $.Edge.StructField }} {{ if not $.Edge.Unique }}[]{{ end }}struct {
+        {{- template "helper/http/response/fields" extend $.Edge.Type "Groups" .Groups }}
+        {{- range $.EdgesToLoad }}
+            {{- template "helper/http/response/edges" . }}
+        {{- end }}
+    } {{ with $.Edge.StructTag }}`{{ . }}`{{ end }}
+{{ end }}
+
+{{ define "helper/http/response/fields/setter" -}}
+    {{/* gotype: entgo.io/ent/entc/gen.Type */}}
+    {{- if needsSerialization $.ID.Annotations.Elk ($.Scope.Groups | stringSlice) }}
+        {{ $.ID.StructField }}: {{ $.Scope.Accessor }}.{{ $.ID.StructField }},
+    {{- end }}
+    {{- range $f := $.Fields }}
+        {{- if needsSerialization $f.Annotations.Elk ($.Scope.Groups | stringSlice) }}
+            {{ $f.StructField }}: {{ $.Scope.Accessor }}.{{ $f.StructField }},
+        {{- end }}
+    {{- end -}}
+{{ end }}
+
+{{ define "helper/http/response/edges/setter" -}}
+    {{/* gotype: github.com/masseelch/elk.edgeToLoadScope */}}
+    {{- if $.Edge.Unique }}
+        {{ $.Edge.StructField | lower }}{{ $.Scope.Level }} := struct {
+            {{- template "helper/http/response/fields" extend $.Edge.Type "Groups" .Groups }}
+            {{- range $.EdgesToLoad }}
+                {{- template "helper/http/response/edges" . }}
+            {{- end }}
+        }{
+            {{-
+                template "helper/http/response/fields/setter"
+                extend $.Edge.Type
+                "Groups" .Groups
+                "Accessor" (printf "%s.%s" $.Scope.Accessor $.Edge.StructField)
+            }}
+        }
+    {{- else }}
+        {{ $.Edge.StructField | lower }}{{ $.Scope.Level }} := make([]struct {
+            {{- template "helper/http/response/fields" extend $.Edge.Type "Groups" .Groups }}
+            {{- range $.EdgesToLoad }}
+                {{- template "helper/http/response/edges" . }}
+            {{- end }}
+        }, len({{ $.Scope.Accessor }}.{{ $.Edge.StructField }}))
+        for i{{ $.Scope.Level }} := range {{ $.Scope.Accessor }}.{{ $.Edge.StructField }} {
+            {{- range $.EdgesToLoad }}
+                {{-
+                    template "helper/http/response/edges/setter"
+                    xextend .
+                    "Accessor" (printf "%s.%s[i%d].Edges" $.Scope.Accessor $.Edge.StructField $.Scope.Level)
+                    "Level" (add $.Scope.Level 1)
+                }}
+            {{- end }}
+            {{ $.Edge.StructField | lower }}{{ $.Scope.Level }}[i{{ $.Scope.Level }}] = struct {
+                {{- template "helper/http/response/fields" extend $.Edge.Type "Groups" .Groups }}
+                {{- range $.EdgesToLoad }}
+                    {{- template "helper/http/response/edges" . }}
+                {{- end }}
+            }{
+                {{-
+                    template "helper/http/response/fields/setter"
+                    extend $.Edge.Type
+                    "Groups" .Groups
+                    "Accessor" (printf "%s.%s[i%d]" $.Scope.Accessor $.Edge.StructField $.Scope.Level)
+                }}
+                {{- range $.EdgesToLoad }}
+                    {{ .Edge.StructField }}: {{ $.Edge.StructField | lower }}{{ add $.Scope.Level 1 }},
+                {{- end }}
+            }
+        }
+    {{- end -}}
+{{ end }}

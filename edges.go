@@ -7,58 +7,50 @@ import (
 )
 
 type (
-	// eagerLoadEdges holds information about the edges to eager load on in ent query
-	eagerLoadEdges struct {
-		// what edges to eager load on the current query.
-		edges []eagerLoadEdge
-		// queryName is the type of the query of this edge.
-		queryName string
+	// EdgeToLoad specifies and edge to load for a type.
+	EdgeToLoad struct {
+		Edge        *gen.Edge
+		EdgesToLoad []EdgeToLoad
+		Groups      []string // TODO: Check if this isn't redundant ...
 	}
-	// eagerLoadEdge holds information about a edge to eager load in an ent query.
-	eagerLoadEdge struct {
-		// method is the name of the method on the query builder to load this edge.
-		method string
-		// eagerLoadEdges enables recursive eager loading.
-		eagerLoadEdges *eagerLoadEdges
-	}
+	// EdgesToLoad is a list of several EdgeToLoad.
+	EdgesToLoad []EdgeToLoad
 )
 
-func (el eagerLoadEdges) String() string {
-	return el.stringHelper("q")
+// EntQuery simply runs EntQuery on every item in the list.
+func (es EdgesToLoad) EntQuery() string {
+	b := new(strings.Builder)
+	for _, e := range es {
+		b.WriteString(e.EntQuery())
+	}
+	return b.String()
 }
 
-func (el eagerLoadEdges) stringHelper(n string) string {
+// EntQuery constructs the code to eager load all the defined edges for the given edge.
+func (etl EdgeToLoad) EntQuery() string {
 	b := new(strings.Builder)
-	b.WriteString(n)
 
-	for _, e := range el.edges {
-		b.WriteString(fmt.Sprintf(".%s(", e.method))
-
-		if e.eagerLoadEdges != nil {
-			n += "_"
-			b.WriteString(fmt.Sprintf("func (%s *ent.%s) {\n%s\n}", n, e.eagerLoadEdges.queryName, e.eagerLoadEdges.stringHelper(n)))
-		}
-
-		b.WriteString(")")
+	b.WriteString(fmt.Sprintf(".%s(", strings.Title(etl.Edge.EagerLoadField())))
+	for _, e := range etl.EdgesToLoad {
+		b.WriteString(fmt.Sprintf("func (q *ent.%s) {\nq%s\n}", e.Edge.Owner.QueryName(), e.EntQuery()))
 	}
+	b.WriteString(")")
 
 	return b.String()
 }
 
-// edgesToLoad generates the code to eager load as defined by the elk annotation.
-func edgesToLoad(n *gen.Type, action string) (*eagerLoadEdges, error) {
+func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 	// If there are no annotations given do not load any edges.
 	a := &SchemaAnnotation{}
 	if n.Annotations == nil || n.Annotations[a.Name()] == nil {
 		return nil, nil
 	}
 
-	// Load the annotation.
+	// Decode the types annotation and extract the groups requested for the given action.
 	if err := a.Decode(n.Annotations[a.Name()]); err != nil {
 		return nil, err
 	}
 
-	// Extract the groups requested.
 	var g []string
 	switch action {
 	case actionCreate:
@@ -67,8 +59,6 @@ func edgesToLoad(n *gen.Type, action string) (*eagerLoadEdges, error) {
 		g = a.ReadGroups
 	case actionUpdate:
 		g = a.UpdateGroups
-	case actionDelete:
-		g = a.DeleteGroups
 	case actionList:
 		g = a.ListGroups
 	}
@@ -76,11 +66,10 @@ func edgesToLoad(n *gen.Type, action string) (*eagerLoadEdges, error) {
 	return edgesToLoadHelper(n, make(map[string]uint), g)
 }
 
-// edgesToLoadHelper returns the query to use to eager load all edges as required by the annotations defined
-// on the given node.
-func edgesToLoadHelper(n *gen.Type, visited map[string]uint, groupsToLoad []string) (*eagerLoadEdges, error) {
+// edgesToLoadHelper recursively collects the edges to load on this type for requested groups on the given action.
+func edgesToLoadHelper(n *gen.Type, visited map[string]uint, groupsToLoad []string) (EdgesToLoad, error) {
 	// What edges to load on this type.
-	edges := make([]eagerLoadEdge, 0)
+	var edges []EdgeToLoad
 
 	// Iterate over the edges of the given type.
 	// If the type has an edge we need to eager load, do so.
@@ -108,27 +97,20 @@ func edgesToLoadHelper(n *gen.Type, visited map[string]uint, groupsToLoad []stri
 		// If the edge has at least one of the groups requested load the edge.
 		if a.Groups.Match(groupsToLoad) {
 			// Recursively collect the eager loads of this edges edges.
-			eagerLoadEdges, err := edgesToLoadHelper(e.Type, visited, groupsToLoad)
+			etl, err := edgesToLoadHelper(e.Type, visited, groupsToLoad)
 			if err != nil {
 				return nil, err
 			}
 
-			edges = append(edges, eagerLoadEdge{
-				eagerLoadEdges: eagerLoadEdges,
-				method:         strings.Title(e.EagerLoadField()),
+			edges = append(edges, EdgeToLoad{
+				Edge:        e,
+				EdgesToLoad: etl,
+				Groups:      groupsToLoad,
 			})
 		}
 	}
 
-	// If there are no edges to load on this type return nil.
-	if len(edges) == 0 {
-		return nil, nil
-	}
-
-	return &eagerLoadEdges{
-		edges:     edges,
-		queryName: n.QueryName(),
-	}, nil
+	return edges, nil
 }
 
 func encodeTypeAndEdge(n *gen.Type, e *gen.Edge) string {

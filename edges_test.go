@@ -9,55 +9,14 @@ import (
 	"testing"
 )
 
-func TestEagerLoadEdges_String(t *testing.T) {
-	es := eagerLoadEdges{}
-	require.Equal(t, "q", es.String())
-
-	es = eagerLoadEdges{
-		edges: []eagerLoadEdge{
-			{method: "WithEdgeOne"},
-			{method: "WithEdgeTwo"},
-		},
-	}
-	require.Equal(t, "q.WithEdgeOne().WithEdgeTwo()", es.String())
-
-	es = eagerLoadEdges{
-		edges: []eagerLoadEdge{
-			{
-				method: "WithEdgeOne",
-				eagerLoadEdges: &eagerLoadEdges{
-					queryName: "EdgeOneQuery",
-					edges: []eagerLoadEdge{
-						{method: "WithEdgeOneEdgeOne"},
-						{method: "WithEdgeOneEdgeTwo"},
-						{
-							method: "WithEdgeOneEdgeThree",
-							eagerLoadEdges: &eagerLoadEdges{
-								queryName: "EdgeOneEdgeThreeQuery",
-								edges:     []eagerLoadEdge{{method: "WithEdgeOneEdgeThreeEdgeOne"}},
-							},
-						},
-					},
-				},
-			},
-			{
-				method: "WithEdgeTwo",
-			},
-		},
-	}
-	require.Equal(t, "q.WithEdgeOne(func (q_ *ent.EdgeOneQuery) {\nq_.WithEdgeOneEdgeOne().WithEdgeOneEdgeTwo().WithEdgeOneEdgeThree(func (q__ *ent.EdgeOneEdgeThreeQuery) {\nq__.WithEdgeOneEdgeThreeEdgeOne()\n})\n}).WithEdgeTwo()", es.String())
-}
-
 func TestEdgesToLoad(t *testing.T) {
 	// Load a graph.
 	wd, err := os.Getwd()
 	require.NoError(t, err)
-	g, err := entc.LoadGraph(filepath.Join(wd, "internal", "integration", "pets", "ent", "schema"), &gen.Config{
-		Templates: HTTPTemplates,
-		Hooks: []gen.Hook{
-			AddGroupsTag,
-		},
-	})
+	g, err := entc.LoadGraph(
+		filepath.Join(wd, "internal", "integration", "pets", "ent", "schema"),
+		&gen.Config{Templates: HTTPTemplates},
+	)
 	require.NoError(t, err)
 
 	// Generate the query to eager load edges for a read operation on a pet.
@@ -68,31 +27,12 @@ func TestEdgesToLoad(t *testing.T) {
 			break
 		}
 	}
-	es, err := edgesToLoad(p, actionRead)
+	etls, err := edgesToLoad(p, actionRead)
 	require.NoError(t, err)
 
-	// Max-Depth of 3
-	require.Equal(t, &eagerLoadEdges{
-		queryName: "PetQuery",
-		edges: []eagerLoadEdge{
-			{
-				method: "WithOwner",
-			},
-			{
-				method: "WithFriends",
-				eagerLoadEdges: &eagerLoadEdges{
-					queryName: "PetQuery",
-					edges: []eagerLoadEdge{{
-						method: "WithFriends",
-						eagerLoadEdges: &eagerLoadEdges{
-							queryName: "PetQuery",
-							edges: []eagerLoadEdge{{
-								method: "WithFriends",
-							}},
-						},
-					}},
-				},
-			},
-		},
-	}, es)
+	require.Equal(
+		t,
+		".WithOwner().WithFriends(func (q *ent.PetQuery) {\nq.WithFriends(func (q *ent.PetQuery) {\nq.WithFriends()\n})\n})",
+		etls.EntQuery(),
+	)
 }

@@ -363,7 +363,7 @@ func (pq *PetQuery) WithFriends(opts ...func(*PetQuery)) *PetQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty" groups:"pet"`
+//		Name string `json:"name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -390,7 +390,7 @@ func (pq *PetQuery) GroupBy(field string, fields ...string) *PetGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty" groups:"pet"`
+//		Name string `json:"name,omitempty"`
 //	}
 //
 //	client.Pet.Query().

@@ -3,13 +3,13 @@
 package http
 
 import (
-	"encoding/json"
+	json "encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
-	"github.com/liip/sheriff"
+	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
@@ -80,17 +80,8 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"category"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("category rendered", zap.Int("id", e.ID))
-	render.OK(w, r, j)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryUpdateResponse(e), w)
 }
 
 // Payload of a ent.Owner update request.
@@ -159,17 +150,8 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"owner"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("owner rendered", zap.Int("id", e.ID))
-	render.OK(w, r, j)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerUpdateResponse(e), w)
 }
 
 // Payload of a ent.Pet update request.
@@ -258,15 +240,6 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := sheriff.Marshal(&sheriff.Options{
-		IncludeEmptyTag: true,
-		Groups:          []string{"pet"},
-	}, e)
-	if err != nil {
-		l.Error("serialization error", zap.Int("id", e.ID), zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	render.OK(w, r, j)
+	easyjson.MarshalToHTTPResponseWriter(NewPetUpdateResponse(e), w)
 }
