@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"github.com/masseelch/elk/internal"
 	"github.com/stoewer/go-strcase"
-	"regexp"
-	"strings"
 	"text/template"
 )
 
@@ -39,15 +37,10 @@ var (
 		"kebab":              strcase.KebabCase,
 		"needsSerialization": needsSerialization,
 		"needsValidation":    needsValidation,
-		"renderTypes":        renderTypes,
 		"stringSlice":        stringSlice,
 		"validationTags":     validationTags,
-		"viewName":           viewName,
-		"xappend":            xappend,
 		"xextend":            xextend,
 	}
-	// SpecialCharsRegex to match all special chars.
-	SpecialCharsRegex = regexp.MustCompile("[^0-9a-zA-Z_]+")
 )
 
 func parse(path string) *gen.Template {
@@ -123,43 +116,6 @@ func needsSerialization(a interface{}, g groups) (bool, error) {
 		return true, nil
 	}
 	return g.Match(an.Groups), nil
-}
-
-type renderType struct {
-	*gen.Type
-	Groups groups
-}
-
-// renderTypes creates a map of
-func renderTypes(g *gen.Graph) (map[string]renderType, error) {
-	m := make(map[string]renderType, 0)
-	for _, n := range g.Nodes {
-		a := SchemaAnnotation{}
-		if err := a.Decode(n.Annotations[a.Name()]); err != nil {
-			return nil, err
-		}
-		for _, gs := range [][]string{a.CreateGroups, a.ReadGroups, a.UpdateGroups, a.ListGroups} {
-			m[viewName(n, gs)] = renderType{
-				Type:   n,
-				Groups: gs,
-			}
-		}
-	}
-
-	return m, nil
-}
-
-// viewName composes a name for the struct to use if the given groups a requested on the given schema.
-func viewName(n *gen.Type, gs groups) string {
-	if len(gs) == 0 {
-		return n.Name + "Response"
-	} else {
-		return n.Name + "_" + SpecialCharsRegex.ReplaceAllString(strings.Join(gs, "_"), "") + "_Response"
-	}
-}
-
-func xappend(xs []interface{}, ys ...interface{}) []interface{} {
-	return append(xs, ys...)
 }
 
 // graphScope wraps the Graph object with extended scope.

@@ -9,7 +9,6 @@ type (
 	// Extension implements entc.Extension interface for providing http handler code generation.
 	Extension struct {
 		entc.DefaultExtension
-		// cfg       Config
 		hooks     []gen.Hook
 		templates []*gen.Template
 	}
@@ -17,6 +16,7 @@ type (
 	ExtensionOption func(*Extension) error
 )
 
+// NewExtension returns a new elk extension with default values.
 func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 	ex := &Extension{
 		templates: HTTPTemplates,

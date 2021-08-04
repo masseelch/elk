@@ -78,8 +78,10 @@ func TestEdgesToLoad(t *testing.T) {
 		t,
 		".WithOwner()"+
 			".WithFriends(func (q *ent.PetQuery) {\n"+
-			"q.WithFriends(func (q *ent.PetQuery) {\n"+
-			"q.WithFriends()\n"+
+			"q.WithOwner().WithFriends(func (q *ent.PetQuery) {\n"+
+			"q.WithOwner().WithFriends(func (q *ent.PetQuery) {\n"+
+			"q.WithOwner()\n"+
+			"})\n"+
 			"})\n"+
 			"})",
 		etls.EntQuery(),

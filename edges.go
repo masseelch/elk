@@ -76,6 +76,7 @@ func (w *walk) pop() {
 	}
 }
 
+// edgesToLoad returns the EdgesToLoad for the given node and action.
 func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 	// If there are no annotations given do not load any edges.
 	a := &SchemaAnnotation{}
@@ -120,8 +121,6 @@ func edgesToLoadHelper(n *gen.Type, w walk, groupsToLoad []string) (EdgesToLoad,
 			}
 		}
 		a.EnsureDefaults()
-
-		// TODO: Take the DefaultOrder-Annotation into account.
 
 		// If the edge has at least one of the groups requested load the edge.
 		if a.Groups.Match(groupsToLoad) {

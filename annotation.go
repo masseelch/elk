@@ -35,38 +35,47 @@ type (
 	}
 )
 
+// CreateGroups returns a create groups schema-annotation.
 func CreateGroups(gs ...string) SchemaAnnotation {
 	return SchemaAnnotation{CreateGroups: gs}
 }
 
+// ReadGroups returns a read groups schema-annotation.
 func ReadGroups(gs ...string) SchemaAnnotation {
 	return SchemaAnnotation{ReadGroups: gs}
 }
 
+// UpdateGroups returns a update groups schema-annotation.
 func UpdateGroups(gs ...string) SchemaAnnotation {
 	return SchemaAnnotation{UpdateGroups: gs}
 }
 
+// ListGroups returns a list groups schema-annotation.
 func ListGroups(gs ...string) SchemaAnnotation {
 	return SchemaAnnotation{ListGroups: gs}
 }
 
+// Groups returns a groups annotation.
 func Groups(gs ...string) Annotation {
 	return Annotation{Groups: gs}
 }
 
+// MaxDepth returns a max depth annotation.
 func MaxDepth(d uint) Annotation {
 	return Annotation{MaxDepth: d}
 }
 
+// Validation returns a validation annotation.
 func Validation(v string) Annotation {
 	return Annotation{Validation: v}
 }
 
+// CreateValidation returns a create validation annotation.
 func CreateValidation(v string) Annotation {
 	return Annotation{CreateValidation: v}
 }
 
+// UpdateValidation returns an update validation annotation.
 func UpdateValidation(v string) Annotation {
 	return Annotation{UpdateValidation: v}
 }
@@ -165,17 +174,6 @@ func (a *Annotation) EnsureDefaults() {
 	if a.MaxDepth == 0 {
 		a.MaxDepth = 1
 	}
-}
-
-// ValidationTags returns the tags to use for the given action.
-func (a Annotation) ValidationTags(action string) string {
-	if action == "create" && a.CreateValidation != "" {
-		return a.CreateValidation
-	}
-	if action == "update" && a.UpdateValidation != "" {
-		return a.UpdateValidation
-	}
-	return a.Validation
 }
 
 var (
