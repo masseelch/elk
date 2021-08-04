@@ -1,15 +1,15 @@
 {{ define "http/response" -}}
     {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
-        {{- with extend $ "Package" "http" -}}
-            {{ template "header" . }}
-        {{ end }}
+    {{- with extend $ "Package" "http" -}}
+        {{ template "header" . }}
+    {{ end }}
 
-        {{ range $n := $.Nodes }}
-            {{ template "helper/http/response" extend $n "Action" "create" }}
-            {{ template "helper/http/response" extend $n "Action" "read" }}
-            {{ template "helper/http/response" extend $n "Action" "update" }}
-            {{ template "helper/http/response" extend $n "Action" "list" }}
-        {{- end }}
+    {{ range $n := $.Nodes }}
+        {{ template "helper/http/response" extend $n "Action" "create" }}
+        {{ template "helper/http/response" extend $n "Action" "read" }}
+        {{ template "helper/http/response" extend $n "Action" "update" }}
+        {{ template "helper/http/response" extend $n "Action" "list" }}
+    {{- end }}
 {{ end }}
 
 {{ define "helper/http/response" -}}

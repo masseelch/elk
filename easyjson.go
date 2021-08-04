@@ -16,12 +16,15 @@ func GenerateEasyJSON(next gen.Generator) gen.Generator {
 		// We want to render every response struct created with easyjson.
 		var ns []string
 		for _, n := range g.Nodes {
-			// Add all four operation with response data for every node.
 			ns = append(ns,
+				// Add all four operation with response data for every node.
 				n.Name+"CreateResponse",
 				n.Name+"ReadResponse",
 				n.Name+"UpdateResponse",
 				n.Name+"ListResponse",
+				// Add the request structs used to deserialize request bodies.
+				n.Name+"CreateRequest",
+				n.Name+"UpdateRequest",
 			)
 		}
 

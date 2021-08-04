@@ -1,0 +1,29 @@
+{{ define "http/request" -}}
+    {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+    {{- with extend $ "Package" "http" -}}
+        {{ template "header" . }}
+    {{ end }}
+
+    {{ range $n := $.Nodes }}
+        {{ template "helper/http/request" extend $n "Action" "create" }}
+        {{ template "helper/http/request" extend $n "Action" "update" }}
+    {{- end }}
+{{ end }}
+
+{{ define "helper/http/request" }}
+    {{/* gotype: entgo.io/ent/entc/gen.Type */}}
+    // Payload of a {{ base $.Config.Package }}.{{ $.Name }} {{ $.Scope.Action }} request.
+    type {{ $.Name }}{{ $.Scope.Action | pascal }}Request struct {
+        {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
+        {{- range $f := $.Fields }}
+            {{- if or (ne $.Scope.Action "update") (not $f.Immutable) }}
+                {{ $f.StructField }} *{{ $f.Type }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"
+                {{- with validationTags $f.Annotations.Elk $.Scope.Action }} validate:"{{ . }}"{{ end }}`
+            {{- end }}
+        {{- end -}}
+        {{- range $e := $.Edges }}
+            {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"
+            {{- with validationTags $e.Annotations.Elk $.Scope.Action }} validate:"{{ . }}"{{ end }}`
+        {{- end }}
+    }
+{{ end }}

@@ -28,6 +28,7 @@ var (
 		parse("template/http/helpers.tmpl"),
 		parse("template/http/list.tmpl"),
 		parse("template/http/read.tmpl"),
+		parse("template/http/request.tmpl"),
 		parse("template/http/relations.tmpl"),
 		parse("template/http/response.tmpl"),
 		parse("template/http/update.tmpl"),

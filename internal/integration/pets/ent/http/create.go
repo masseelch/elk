@@ -3,11 +3,10 @@
 package http
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/mailru/easyjson"
+	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
@@ -16,18 +15,13 @@ import (
 	"go.uber.org/zap"
 )
 
-// Payload of a ent.Category create request.
-type CategoryCreateRequest struct {
-	Name *string `json:"name"`
-	Pets []int   `json:"pets"`
-}
-
 // Create creates a new ent.Category and stores it in the database.
 func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Create"))
 	// Get the post data.
 	var d CategoryCreateRequest
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
@@ -65,19 +59,13 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	easyjson.MarshalToHTTPResponseWriter(NewCategoryCreateResponse(e), w)
 }
 
-// Payload of a ent.Owner create request.
-type OwnerCreateRequest struct {
-	Name *string `json:"name"`
-	Age  *int    `json:"age"`
-	Pets []int   `json:"pets"`
-}
-
 // Create creates a new ent.Owner and stores it in the database.
 func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Create"))
 	// Get the post data.
 	var d OwnerCreateRequest
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
@@ -118,21 +106,13 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	easyjson.MarshalToHTTPResponseWriter(NewOwnerCreateResponse(e), w)
 }
 
-// Payload of a ent.Pet create request.
-type PetCreateRequest struct {
-	Name     *string `json:"name" validate:"required"`
-	Age      *int    `json:"age" validate:"required,gt=0"`
-	Category []int   `json:"category"`
-	Owner    *int    `json:"owner" validate:"required"`
-	Friends  []int   `json:"friends"`
-}
-
 // Create creates a new ent.Pet and stores it in the database.
 func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Create"))
 	// Get the post data.
 	var d PetCreateRequest
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return

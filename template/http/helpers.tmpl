@@ -1,7 +1,12 @@
 {{/* gotype: entgo.io/ent/entc/gen.Type */}}
 
 {{ define "helper/http/decode-request-body" }}
-    if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+{{/*    if err := json.NewDecoder(r.Body).Decode(&d); err != nil {*/}}
+{{/*        l.Error("error decoding json", zap.Error(err))*/}}
+{{/*        render.BadRequest(w, r, "invalid json string")*/}}
+{{/*        return*/}}
+{{/*    }*/}}
+    if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
         l.Error("error decoding json", zap.Error(err))
         render.BadRequest(w, r, "invalid json string")
         return

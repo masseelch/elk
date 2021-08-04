@@ -4,7 +4,6 @@ This package aims to extend the [awesome entgo.io](https://github.com/ent/ent) c
 fully-functional HTTP API on a defined set of entities.
 
 > :warning: **This is work in progress**: The API may change without further notice!
->
 
 ## Getting Started
 
@@ -57,11 +56,15 @@ package ent
 
 ```
 
-3. `elk` uses a not yet released version of Ent. To have the dependencies up to date run the following:
+3. Run codegen for your ent project:
 
 ```shell
-go mod tidy
+go generate ./...
 ```
+
+## Features
+
+
 
 ## Examples
 

@@ -3,13 +3,12 @@
 package http
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
-	"github.com/mailru/easyjson"
+	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
@@ -17,12 +16,6 @@ import (
 	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )
-
-// Payload of a ent.Category update request.
-type CategoryUpdateRequest struct {
-	Name *string `json:"name"`
-	Pets []int   `json:"pets"`
-}
 
 // Update updates a given ent.Category and saves the changes to the database.
 func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +29,8 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Get the post data.
 	var d CategoryUpdateRequest
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
@@ -84,13 +78,6 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	easyjson.MarshalToHTTPResponseWriter(NewCategoryUpdateResponse(e), w)
 }
 
-// Payload of a ent.Owner update request.
-type OwnerUpdateRequest struct {
-	Name *string `json:"name"`
-	Age  *int    `json:"age"`
-	Pets []int   `json:"pets"`
-}
-
 // Update updates a given ent.Owner and saves the changes to the database.
 func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
@@ -103,7 +90,8 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Get the post data.
 	var d OwnerUpdateRequest
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
@@ -154,15 +142,6 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	easyjson.MarshalToHTTPResponseWriter(NewOwnerUpdateResponse(e), w)
 }
 
-// Payload of a ent.Pet update request.
-type PetUpdateRequest struct {
-	Name     *string `json:"name"`
-	Age      *int    `json:"age" validate:"gt=0"`
-	Category []int   `json:"category"`
-	Owner    *int    `json:"owner"`
-	Friends  []int   `json:"friends"`
-}
-
 // Update updates a given ent.Pet and saves the changes to the database.
 func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
@@ -175,7 +154,8 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Get the post data.
 	var d PetUpdateRequest
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
