@@ -134,33 +134,63 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(
 				if out.Friends == nil {
 					if !in.IsDelim(']') {
 						out.Friends = make([]struct {
-							ID      int    `json:"id,omitempty"`
-							Name    string `json:"name,omitempty"`
-							Age     int    `json:"age,omitempty"`
+							ID    int    `json:"id,omitempty"`
+							Name  string `json:"name,omitempty"`
+							Age   int    `json:"age,omitempty"`
+							Owner struct {
+								ID   int    `json:"id,omitempty"`
+								Name string `json:"name,omitempty"`
+								Age  int    `json:"age,omitempty"`
+							} `json:"owner,omitempty"`
 							Friends []struct {
-								ID      int    `json:"id,omitempty"`
-								Name    string `json:"name,omitempty"`
-								Age     int    `json:"age,omitempty"`
-								Friends []struct {
+								ID    int    `json:"id,omitempty"`
+								Name  string `json:"name,omitempty"`
+								Age   int    `json:"age,omitempty"`
+								Owner struct {
 									ID   int    `json:"id,omitempty"`
 									Name string `json:"name,omitempty"`
 									Age  int    `json:"age,omitempty"`
+								} `json:"owner,omitempty"`
+								Friends []struct {
+									ID    int    `json:"id,omitempty"`
+									Name  string `json:"name,omitempty"`
+									Age   int    `json:"age,omitempty"`
+									Owner struct {
+										ID   int    `json:"id,omitempty"`
+										Name string `json:"name,omitempty"`
+										Age  int    `json:"age,omitempty"`
+									} `json:"owner,omitempty"`
 								} `json:"friends,omitempty"`
 							} `json:"friends,omitempty"`
-						}, 0, 1)
+						}, 0, 0)
 					} else {
 						out.Friends = []struct {
-							ID      int    `json:"id,omitempty"`
-							Name    string `json:"name,omitempty"`
-							Age     int    `json:"age,omitempty"`
+							ID    int    `json:"id,omitempty"`
+							Name  string `json:"name,omitempty"`
+							Age   int    `json:"age,omitempty"`
+							Owner struct {
+								ID   int    `json:"id,omitempty"`
+								Name string `json:"name,omitempty"`
+								Age  int    `json:"age,omitempty"`
+							} `json:"owner,omitempty"`
 							Friends []struct {
-								ID      int    `json:"id,omitempty"`
-								Name    string `json:"name,omitempty"`
-								Age     int    `json:"age,omitempty"`
-								Friends []struct {
+								ID    int    `json:"id,omitempty"`
+								Name  string `json:"name,omitempty"`
+								Age   int    `json:"age,omitempty"`
+								Owner struct {
 									ID   int    `json:"id,omitempty"`
 									Name string `json:"name,omitempty"`
 									Age  int    `json:"age,omitempty"`
+								} `json:"owner,omitempty"`
+								Friends []struct {
+									ID    int    `json:"id,omitempty"`
+									Name  string `json:"name,omitempty"`
+									Age   int    `json:"age,omitempty"`
+									Owner struct {
+										ID   int    `json:"id,omitempty"`
+										Name string `json:"name,omitempty"`
+										Age  int    `json:"age,omitempty"`
+									} `json:"owner,omitempty"`
 								} `json:"friends,omitempty"`
 							} `json:"friends,omitempty"`
 						}{}
@@ -170,17 +200,32 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(
 				}
 				for !in.IsDelim(']') {
 					var v1 struct {
-						ID      int    `json:"id,omitempty"`
-						Name    string `json:"name,omitempty"`
-						Age     int    `json:"age,omitempty"`
+						ID    int    `json:"id,omitempty"`
+						Name  string `json:"name,omitempty"`
+						Age   int    `json:"age,omitempty"`
+						Owner struct {
+							ID   int    `json:"id,omitempty"`
+							Name string `json:"name,omitempty"`
+							Age  int    `json:"age,omitempty"`
+						} `json:"owner,omitempty"`
 						Friends []struct {
-							ID      int    `json:"id,omitempty"`
-							Name    string `json:"name,omitempty"`
-							Age     int    `json:"age,omitempty"`
-							Friends []struct {
+							ID    int    `json:"id,omitempty"`
+							Name  string `json:"name,omitempty"`
+							Age   int    `json:"age,omitempty"`
+							Owner struct {
 								ID   int    `json:"id,omitempty"`
 								Name string `json:"name,omitempty"`
 								Age  int    `json:"age,omitempty"`
+							} `json:"owner,omitempty"`
+							Friends []struct {
+								ID    int    `json:"id,omitempty"`
+								Name  string `json:"name,omitempty"`
+								Age   int    `json:"age,omitempty"`
+								Owner struct {
+									ID   int    `json:"id,omitempty"`
+									Name string `json:"name,omitempty"`
+									Age  int    `json:"age,omitempty"`
+								} `json:"owner,omitempty"`
 							} `json:"friends,omitempty"`
 						} `json:"friends,omitempty"`
 					}
@@ -276,17 +321,32 @@ func (v *PetReadResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(l, v)
 }
 func easyjsonC5a4559bDecode1(in *jlexer.Lexer, out *struct {
-	ID      int    `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Age     int    `json:"age,omitempty"`
+	ID    int    `json:"id,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Age   int    `json:"age,omitempty"`
+	Owner struct {
+		ID   int    `json:"id,omitempty"`
+		Name string `json:"name,omitempty"`
+		Age  int    `json:"age,omitempty"`
+	} `json:"owner,omitempty"`
 	Friends []struct {
-		ID      int    `json:"id,omitempty"`
-		Name    string `json:"name,omitempty"`
-		Age     int    `json:"age,omitempty"`
-		Friends []struct {
+		ID    int    `json:"id,omitempty"`
+		Name  string `json:"name,omitempty"`
+		Age   int    `json:"age,omitempty"`
+		Owner struct {
 			ID   int    `json:"id,omitempty"`
 			Name string `json:"name,omitempty"`
 			Age  int    `json:"age,omitempty"`
+		} `json:"owner,omitempty"`
+		Friends []struct {
+			ID    int    `json:"id,omitempty"`
+			Name  string `json:"name,omitempty"`
+			Age   int    `json:"age,omitempty"`
+			Owner struct {
+				ID   int    `json:"id,omitempty"`
+				Name string `json:"name,omitempty"`
+				Age  int    `json:"age,omitempty"`
+			} `json:"owner,omitempty"`
 		} `json:"friends,omitempty"`
 	} `json:"friends,omitempty"`
 }) {
@@ -314,6 +374,8 @@ func easyjsonC5a4559bDecode1(in *jlexer.Lexer, out *struct {
 			out.Name = string(in.String())
 		case "age":
 			out.Age = int(in.Int())
+		case "owner":
+			easyjsonC5a4559bDecode(in, &out.Owner)
 		case "friends":
 			if in.IsNull() {
 				in.Skip()
@@ -323,24 +385,44 @@ func easyjsonC5a4559bDecode1(in *jlexer.Lexer, out *struct {
 				if out.Friends == nil {
 					if !in.IsDelim(']') {
 						out.Friends = make([]struct {
-							ID      int    `json:"id,omitempty"`
-							Name    string `json:"name,omitempty"`
-							Age     int    `json:"age,omitempty"`
-							Friends []struct {
+							ID    int    `json:"id,omitempty"`
+							Name  string `json:"name,omitempty"`
+							Age   int    `json:"age,omitempty"`
+							Owner struct {
 								ID   int    `json:"id,omitempty"`
 								Name string `json:"name,omitempty"`
 								Age  int    `json:"age,omitempty"`
+							} `json:"owner,omitempty"`
+							Friends []struct {
+								ID    int    `json:"id,omitempty"`
+								Name  string `json:"name,omitempty"`
+								Age   int    `json:"age,omitempty"`
+								Owner struct {
+									ID   int    `json:"id,omitempty"`
+									Name string `json:"name,omitempty"`
+									Age  int    `json:"age,omitempty"`
+								} `json:"owner,omitempty"`
 							} `json:"friends,omitempty"`
-						}, 0, 1)
+						}, 0, 0)
 					} else {
 						out.Friends = []struct {
-							ID      int    `json:"id,omitempty"`
-							Name    string `json:"name,omitempty"`
-							Age     int    `json:"age,omitempty"`
-							Friends []struct {
+							ID    int    `json:"id,omitempty"`
+							Name  string `json:"name,omitempty"`
+							Age   int    `json:"age,omitempty"`
+							Owner struct {
 								ID   int    `json:"id,omitempty"`
 								Name string `json:"name,omitempty"`
 								Age  int    `json:"age,omitempty"`
+							} `json:"owner,omitempty"`
+							Friends []struct {
+								ID    int    `json:"id,omitempty"`
+								Name  string `json:"name,omitempty"`
+								Age   int    `json:"age,omitempty"`
+								Owner struct {
+									ID   int    `json:"id,omitempty"`
+									Name string `json:"name,omitempty"`
+									Age  int    `json:"age,omitempty"`
+								} `json:"owner,omitempty"`
 							} `json:"friends,omitempty"`
 						}{}
 					}
@@ -349,13 +431,23 @@ func easyjsonC5a4559bDecode1(in *jlexer.Lexer, out *struct {
 				}
 				for !in.IsDelim(']') {
 					var v4 struct {
-						ID      int    `json:"id,omitempty"`
-						Name    string `json:"name,omitempty"`
-						Age     int    `json:"age,omitempty"`
-						Friends []struct {
+						ID    int    `json:"id,omitempty"`
+						Name  string `json:"name,omitempty"`
+						Age   int    `json:"age,omitempty"`
+						Owner struct {
 							ID   int    `json:"id,omitempty"`
 							Name string `json:"name,omitempty"`
 							Age  int    `json:"age,omitempty"`
+						} `json:"owner,omitempty"`
+						Friends []struct {
+							ID    int    `json:"id,omitempty"`
+							Name  string `json:"name,omitempty"`
+							Age   int    `json:"age,omitempty"`
+							Owner struct {
+								ID   int    `json:"id,omitempty"`
+								Name string `json:"name,omitempty"`
+								Age  int    `json:"age,omitempty"`
+							} `json:"owner,omitempty"`
 						} `json:"friends,omitempty"`
 					}
 					easyjsonC5a4559bDecode2(in, &v4)
@@ -379,17 +471,32 @@ func easyjsonC5a4559bDecode1(in *jlexer.Lexer, out *struct {
 	}
 }
 func easyjsonC5a4559bEncode1(out *jwriter.Writer, in struct {
-	ID      int    `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Age     int    `json:"age,omitempty"`
+	ID    int    `json:"id,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Age   int    `json:"age,omitempty"`
+	Owner struct {
+		ID   int    `json:"id,omitempty"`
+		Name string `json:"name,omitempty"`
+		Age  int    `json:"age,omitempty"`
+	} `json:"owner,omitempty"`
 	Friends []struct {
-		ID      int    `json:"id,omitempty"`
-		Name    string `json:"name,omitempty"`
-		Age     int    `json:"age,omitempty"`
-		Friends []struct {
+		ID    int    `json:"id,omitempty"`
+		Name  string `json:"name,omitempty"`
+		Age   int    `json:"age,omitempty"`
+		Owner struct {
 			ID   int    `json:"id,omitempty"`
 			Name string `json:"name,omitempty"`
 			Age  int    `json:"age,omitempty"`
+		} `json:"owner,omitempty"`
+		Friends []struct {
+			ID    int    `json:"id,omitempty"`
+			Name  string `json:"name,omitempty"`
+			Age   int    `json:"age,omitempty"`
+			Owner struct {
+				ID   int    `json:"id,omitempty"`
+				Name string `json:"name,omitempty"`
+				Age  int    `json:"age,omitempty"`
+			} `json:"owner,omitempty"`
 		} `json:"friends,omitempty"`
 	} `json:"friends,omitempty"`
 }) {
@@ -422,6 +529,16 @@ func easyjsonC5a4559bEncode1(out *jwriter.Writer, in struct {
 		}
 		out.Int(int(in.Age))
 	}
+	if true {
+		const prefix string = ",\"owner\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		easyjsonC5a4559bEncode(out, in.Owner)
+	}
 	if len(in.Friends) != 0 {
 		const prefix string = ",\"friends\":"
 		if first {
@@ -444,13 +561,23 @@ func easyjsonC5a4559bEncode1(out *jwriter.Writer, in struct {
 	out.RawByte('}')
 }
 func easyjsonC5a4559bDecode2(in *jlexer.Lexer, out *struct {
-	ID      int    `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Age     int    `json:"age,omitempty"`
-	Friends []struct {
+	ID    int    `json:"id,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Age   int    `json:"age,omitempty"`
+	Owner struct {
 		ID   int    `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 		Age  int    `json:"age,omitempty"`
+	} `json:"owner,omitempty"`
+	Friends []struct {
+		ID    int    `json:"id,omitempty"`
+		Name  string `json:"name,omitempty"`
+		Age   int    `json:"age,omitempty"`
+		Owner struct {
+			ID   int    `json:"id,omitempty"`
+			Name string `json:"name,omitempty"`
+			Age  int    `json:"age,omitempty"`
+		} `json:"owner,omitempty"`
 	} `json:"friends,omitempty"`
 }) {
 	isTopLevel := in.IsStart()
@@ -477,6 +604,8 @@ func easyjsonC5a4559bDecode2(in *jlexer.Lexer, out *struct {
 			out.Name = string(in.String())
 		case "age":
 			out.Age = int(in.Int())
+		case "owner":
+			easyjsonC5a4559bDecode(in, &out.Owner)
 		case "friends":
 			if in.IsNull() {
 				in.Skip()
@@ -486,15 +615,25 @@ func easyjsonC5a4559bDecode2(in *jlexer.Lexer, out *struct {
 				if out.Friends == nil {
 					if !in.IsDelim(']') {
 						out.Friends = make([]struct {
-							ID   int    `json:"id,omitempty"`
-							Name string `json:"name,omitempty"`
-							Age  int    `json:"age,omitempty"`
-						}, 0, 2)
+							ID    int    `json:"id,omitempty"`
+							Name  string `json:"name,omitempty"`
+							Age   int    `json:"age,omitempty"`
+							Owner struct {
+								ID   int    `json:"id,omitempty"`
+								Name string `json:"name,omitempty"`
+								Age  int    `json:"age,omitempty"`
+							} `json:"owner,omitempty"`
+						}, 0, 1)
 					} else {
 						out.Friends = []struct {
-							ID   int    `json:"id,omitempty"`
-							Name string `json:"name,omitempty"`
-							Age  int    `json:"age,omitempty"`
+							ID    int    `json:"id,omitempty"`
+							Name  string `json:"name,omitempty"`
+							Age   int    `json:"age,omitempty"`
+							Owner struct {
+								ID   int    `json:"id,omitempty"`
+								Name string `json:"name,omitempty"`
+								Age  int    `json:"age,omitempty"`
+							} `json:"owner,omitempty"`
 						}{}
 					}
 				} else {
@@ -502,11 +641,16 @@ func easyjsonC5a4559bDecode2(in *jlexer.Lexer, out *struct {
 				}
 				for !in.IsDelim(']') {
 					var v7 struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
+						ID    int    `json:"id,omitempty"`
+						Name  string `json:"name,omitempty"`
+						Age   int    `json:"age,omitempty"`
+						Owner struct {
+							ID   int    `json:"id,omitempty"`
+							Name string `json:"name,omitempty"`
+							Age  int    `json:"age,omitempty"`
+						} `json:"owner,omitempty"`
 					}
-					easyjsonC5a4559bDecode(in, &v7)
+					easyjsonC5a4559bDecode3(in, &v7)
 					out.Friends = append(out.Friends, v7)
 					in.WantComma()
 				}
@@ -527,13 +671,23 @@ func easyjsonC5a4559bDecode2(in *jlexer.Lexer, out *struct {
 	}
 }
 func easyjsonC5a4559bEncode2(out *jwriter.Writer, in struct {
-	ID      int    `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Age     int    `json:"age,omitempty"`
-	Friends []struct {
+	ID    int    `json:"id,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Age   int    `json:"age,omitempty"`
+	Owner struct {
 		ID   int    `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 		Age  int    `json:"age,omitempty"`
+	} `json:"owner,omitempty"`
+	Friends []struct {
+		ID    int    `json:"id,omitempty"`
+		Name  string `json:"name,omitempty"`
+		Age   int    `json:"age,omitempty"`
+		Owner struct {
+			ID   int    `json:"id,omitempty"`
+			Name string `json:"name,omitempty"`
+			Age  int    `json:"age,omitempty"`
+		} `json:"owner,omitempty"`
 	} `json:"friends,omitempty"`
 }) {
 	out.RawByte('{')
@@ -565,6 +719,16 @@ func easyjsonC5a4559bEncode2(out *jwriter.Writer, in struct {
 		}
 		out.Int(int(in.Age))
 	}
+	if true {
+		const prefix string = ",\"owner\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		easyjsonC5a4559bEncode(out, in.Owner)
+	}
 	if len(in.Friends) != 0 {
 		const prefix string = ",\"friends\":"
 		if first {
@@ -579,10 +743,111 @@ func easyjsonC5a4559bEncode2(out *jwriter.Writer, in struct {
 				if v8 > 0 {
 					out.RawByte(',')
 				}
-				easyjsonC5a4559bEncode(out, v9)
+				easyjsonC5a4559bEncode3(out, v9)
 			}
 			out.RawByte(']')
 		}
+	}
+	out.RawByte('}')
+}
+func easyjsonC5a4559bDecode3(in *jlexer.Lexer, out *struct {
+	ID    int    `json:"id,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Age   int    `json:"age,omitempty"`
+	Owner struct {
+		ID   int    `json:"id,omitempty"`
+		Name string `json:"name,omitempty"`
+		Age  int    `json:"age,omitempty"`
+	} `json:"owner,omitempty"`
+}) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "name":
+			out.Name = string(in.String())
+		case "age":
+			out.Age = int(in.Int())
+		case "owner":
+			easyjsonC5a4559bDecode(in, &out.Owner)
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncode3(out *jwriter.Writer, in struct {
+	ID    int    `json:"id,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Age   int    `json:"age,omitempty"`
+	Owner struct {
+		ID   int    `json:"id,omitempty"`
+		Name string `json:"name,omitempty"`
+		Age  int    `json:"age,omitempty"`
+	} `json:"owner,omitempty"`
+}) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if in.Age != 0 {
+		const prefix string = ",\"age\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int(int(in.Age))
+	}
+	if true {
+		const prefix string = ",\"owner\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		easyjsonC5a4559bEncode(out, in.Owner)
 	}
 	out.RawByte('}')
 }
@@ -702,7 +967,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(
 					} `json:"friends,omitempty"`
 				} `json:"friends,omitempty"`
 			}
-			easyjsonC5a4559bDecode3(in, &v10)
+			easyjsonC5a4559bDecode4(in, &v10)
 			*out = append(*out, v10)
 			in.WantComma()
 		}
@@ -721,7 +986,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(
 			if v11 > 0 {
 				out.RawByte(',')
 			}
-			easyjsonC5a4559bEncode3(out, v12)
+			easyjsonC5a4559bEncode4(out, v12)
 		}
 		out.RawByte(']')
 	}
@@ -736,7 +1001,7 @@ func (v PetListResponse) MarshalEasyJSON(w *jwriter.Writer) {
 func (v *PetListResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(l, v)
 }
-func easyjsonC5a4559bDecode3(in *jlexer.Lexer, out *struct {
+func easyjsonC5a4559bDecode4(in *jlexer.Lexer, out *struct {
 	ID      int    `json:"id,omitempty"`
 	Name    string `json:"name,omitempty"`
 	Age     int    `json:"age,omitempty"`
@@ -839,7 +1104,7 @@ func easyjsonC5a4559bDecode3(in *jlexer.Lexer, out *struct {
 							} `json:"friends,omitempty"`
 						} `json:"friends,omitempty"`
 					}
-					easyjsonC5a4559bDecode1(in, &v13)
+					easyjsonC5a4559bDecode5(in, &v13)
 					out.Friends = append(out.Friends, v13)
 					in.WantComma()
 				}
@@ -859,7 +1124,7 @@ func easyjsonC5a4559bDecode3(in *jlexer.Lexer, out *struct {
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncode3(out *jwriter.Writer, in struct {
+func easyjsonC5a4559bEncode4(out *jwriter.Writer, in struct {
 	ID      int    `json:"id,omitempty"`
 	Name    string `json:"name,omitempty"`
 	Age     int    `json:"age,omitempty"`
@@ -922,7 +1187,318 @@ func easyjsonC5a4559bEncode3(out *jwriter.Writer, in struct {
 				if v14 > 0 {
 					out.RawByte(',')
 				}
-				easyjsonC5a4559bEncode1(out, v15)
+				easyjsonC5a4559bEncode5(out, v15)
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+func easyjsonC5a4559bDecode5(in *jlexer.Lexer, out *struct {
+	ID      int    `json:"id,omitempty"`
+	Name    string `json:"name,omitempty"`
+	Age     int    `json:"age,omitempty"`
+	Friends []struct {
+		ID      int    `json:"id,omitempty"`
+		Name    string `json:"name,omitempty"`
+		Age     int    `json:"age,omitempty"`
+		Friends []struct {
+			ID   int    `json:"id,omitempty"`
+			Name string `json:"name,omitempty"`
+			Age  int    `json:"age,omitempty"`
+		} `json:"friends,omitempty"`
+	} `json:"friends,omitempty"`
+}) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "name":
+			out.Name = string(in.String())
+		case "age":
+			out.Age = int(in.Int())
+		case "friends":
+			if in.IsNull() {
+				in.Skip()
+				out.Friends = nil
+			} else {
+				in.Delim('[')
+				if out.Friends == nil {
+					if !in.IsDelim(']') {
+						out.Friends = make([]struct {
+							ID      int    `json:"id,omitempty"`
+							Name    string `json:"name,omitempty"`
+							Age     int    `json:"age,omitempty"`
+							Friends []struct {
+								ID   int    `json:"id,omitempty"`
+								Name string `json:"name,omitempty"`
+								Age  int    `json:"age,omitempty"`
+							} `json:"friends,omitempty"`
+						}, 0, 1)
+					} else {
+						out.Friends = []struct {
+							ID      int    `json:"id,omitempty"`
+							Name    string `json:"name,omitempty"`
+							Age     int    `json:"age,omitempty"`
+							Friends []struct {
+								ID   int    `json:"id,omitempty"`
+								Name string `json:"name,omitempty"`
+								Age  int    `json:"age,omitempty"`
+							} `json:"friends,omitempty"`
+						}{}
+					}
+				} else {
+					out.Friends = (out.Friends)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v16 struct {
+						ID      int    `json:"id,omitempty"`
+						Name    string `json:"name,omitempty"`
+						Age     int    `json:"age,omitempty"`
+						Friends []struct {
+							ID   int    `json:"id,omitempty"`
+							Name string `json:"name,omitempty"`
+							Age  int    `json:"age,omitempty"`
+						} `json:"friends,omitempty"`
+					}
+					easyjsonC5a4559bDecode6(in, &v16)
+					out.Friends = append(out.Friends, v16)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncode5(out *jwriter.Writer, in struct {
+	ID      int    `json:"id,omitempty"`
+	Name    string `json:"name,omitempty"`
+	Age     int    `json:"age,omitempty"`
+	Friends []struct {
+		ID      int    `json:"id,omitempty"`
+		Name    string `json:"name,omitempty"`
+		Age     int    `json:"age,omitempty"`
+		Friends []struct {
+			ID   int    `json:"id,omitempty"`
+			Name string `json:"name,omitempty"`
+			Age  int    `json:"age,omitempty"`
+		} `json:"friends,omitempty"`
+	} `json:"friends,omitempty"`
+}) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if in.Age != 0 {
+		const prefix string = ",\"age\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int(int(in.Age))
+	}
+	if len(in.Friends) != 0 {
+		const prefix string = ",\"friends\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		{
+			out.RawByte('[')
+			for v17, v18 := range in.Friends {
+				if v17 > 0 {
+					out.RawByte(',')
+				}
+				easyjsonC5a4559bEncode6(out, v18)
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+func easyjsonC5a4559bDecode6(in *jlexer.Lexer, out *struct {
+	ID      int    `json:"id,omitempty"`
+	Name    string `json:"name,omitempty"`
+	Age     int    `json:"age,omitempty"`
+	Friends []struct {
+		ID   int    `json:"id,omitempty"`
+		Name string `json:"name,omitempty"`
+		Age  int    `json:"age,omitempty"`
+	} `json:"friends,omitempty"`
+}) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "name":
+			out.Name = string(in.String())
+		case "age":
+			out.Age = int(in.Int())
+		case "friends":
+			if in.IsNull() {
+				in.Skip()
+				out.Friends = nil
+			} else {
+				in.Delim('[')
+				if out.Friends == nil {
+					if !in.IsDelim(']') {
+						out.Friends = make([]struct {
+							ID   int    `json:"id,omitempty"`
+							Name string `json:"name,omitempty"`
+							Age  int    `json:"age,omitempty"`
+						}, 0, 2)
+					} else {
+						out.Friends = []struct {
+							ID   int    `json:"id,omitempty"`
+							Name string `json:"name,omitempty"`
+							Age  int    `json:"age,omitempty"`
+						}{}
+					}
+				} else {
+					out.Friends = (out.Friends)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v19 struct {
+						ID   int    `json:"id,omitempty"`
+						Name string `json:"name,omitempty"`
+						Age  int    `json:"age,omitempty"`
+					}
+					easyjsonC5a4559bDecode(in, &v19)
+					out.Friends = append(out.Friends, v19)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncode6(out *jwriter.Writer, in struct {
+	ID      int    `json:"id,omitempty"`
+	Name    string `json:"name,omitempty"`
+	Age     int    `json:"age,omitempty"`
+	Friends []struct {
+		ID   int    `json:"id,omitempty"`
+		Name string `json:"name,omitempty"`
+		Age  int    `json:"age,omitempty"`
+	} `json:"friends,omitempty"`
+}) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if in.Age != 0 {
+		const prefix string = ",\"age\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int(int(in.Age))
+	}
+	if len(in.Friends) != 0 {
+		const prefix string = ",\"friends\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		{
+			out.RawByte('[')
+			for v20, v21 := range in.Friends {
+				if v20 > 0 {
+					out.RawByte(',')
+				}
+				easyjsonC5a4559bEncode(out, v21)
 			}
 			out.RawByte(']')
 		}
@@ -1189,13 +1765,13 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v16 struct {
+			var v22 struct {
 				ID   int    `json:"id,omitempty"`
 				Name string `json:"name,omitempty"`
 				Age  int    `json:"age,omitempty"`
 			}
-			easyjsonC5a4559bDecode(in, &v16)
-			*out = append(*out, v16)
+			easyjsonC5a4559bDecode(in, &v22)
+			*out = append(*out, v22)
 			in.WantComma()
 		}
 		in.Delim(']')
@@ -1209,11 +1785,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v17, v18 := range in {
-			if v17 > 0 {
+		for v23, v24 := range in {
+			if v23 > 0 {
 				out.RawByte(',')
 			}
-			easyjsonC5a4559bEncode(out, v18)
+			easyjsonC5a4559bEncode(out, v24)
 		}
 		out.RawByte(']')
 	}
@@ -1464,12 +2040,12 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v19 struct {
+			var v25 struct {
 				ID   int    `json:"id,omitempty"`
 				Name string `json:"name,omitempty"`
 			}
-			easyjsonC5a4559bDecode4(in, &v19)
-			*out = append(*out, v19)
+			easyjsonC5a4559bDecode7(in, &v25)
+			*out = append(*out, v25)
 			in.WantComma()
 		}
 		in.Delim(']')
@@ -1483,11 +2059,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v20, v21 := range in {
-			if v20 > 0 {
+		for v26, v27 := range in {
+			if v26 > 0 {
 				out.RawByte(',')
 			}
-			easyjsonC5a4559bEncode4(out, v21)
+			easyjsonC5a4559bEncode7(out, v27)
 		}
 		out.RawByte(']')
 	}
@@ -1502,7 +2078,7 @@ func (v CategoryListResponse) MarshalEasyJSON(w *jwriter.Writer) {
 func (v *CategoryListResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(l, v)
 }
-func easyjsonC5a4559bDecode4(in *jlexer.Lexer, out *struct {
+func easyjsonC5a4559bDecode7(in *jlexer.Lexer, out *struct {
 	ID   int    `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 }) {
@@ -1542,7 +2118,7 @@ func easyjsonC5a4559bDecode4(in *jlexer.Lexer, out *struct {
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncode4(out *jwriter.Writer, in struct {
+func easyjsonC5a4559bEncode7(out *jwriter.Writer, in struct {
 	ID   int    `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 }) {

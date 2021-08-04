@@ -10,11 +10,13 @@ type (
 	// EdgeToLoad specifies and edge to load for a type.
 	EdgeToLoad struct {
 		Edge        *gen.Edge
-		EdgesToLoad []EdgeToLoad
-		Groups      []string // TODO: Check if this isn't redundant ...
+		EdgesToLoad EdgesToLoad
+		Groups      []string
 	}
 	// EdgesToLoad is a list of several EdgeToLoad.
 	EdgesToLoad []EdgeToLoad
+	// walk is a node sequence in the schema graph. Used to keep track when computing EdgesToLoad.
+	walk []string
 )
 
 // EntQuery simply runs EntQuery on every item in the list.
@@ -31,12 +33,47 @@ func (etl EdgeToLoad) EntQuery() string {
 	b := new(strings.Builder)
 
 	b.WriteString(fmt.Sprintf(".%s(", strings.Title(etl.Edge.EagerLoadField())))
-	for _, e := range etl.EdgesToLoad {
-		b.WriteString(fmt.Sprintf("func (q *ent.%s) {\nq%s\n}", e.Edge.Owner.QueryName(), e.EntQuery()))
+
+	if len(etl.EdgesToLoad) > 0 {
+		b.WriteString(fmt.Sprintf("func (q *ent.%s) {\nq%s\n}", etl.Edge.Type.QueryName(), etl.EdgesToLoad.EntQuery()))
 	}
+
 	b.WriteString(")")
 
 	return b.String()
+}
+
+// cycleDepth determines the length of a cycle on the last visited node.
+//   <nil>: 0 -> no visits at all
+// a->b->c: 1 -> 1st visit on c
+// a->b->b: 2 -> 2nd visit on b
+// a->a->a: 3 -> 3rd visit on a
+func (w walk) cycleDepth() uint {
+	if len(w) == 0 {
+		return 0
+	}
+	n := w[len(w)-1]
+	c := uint(1)
+	for i := len(w) - 2; i >= 0; i-- {
+		if n == w[i] {
+			c++
+		} else {
+			return c
+		}
+	}
+	return c
+}
+
+// push adds a new step to the walk.
+func (w *walk) push(s string) {
+	*w = append(*w, s)
+}
+
+// pop removed the last step of the walk.
+func (w *walk) pop() {
+	if len(*w) > 0 {
+		*w = (*w)[:len(*w)-1]
+	}
 }
 
 func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
@@ -63,11 +100,11 @@ func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 		g = a.ListGroups
 	}
 
-	return edgesToLoadHelper(n, make(map[string]uint), g)
+	return edgesToLoadHelper(n, walk{}, g)
 }
 
 // edgesToLoadHelper recursively collects the edges to load on this type for requested groups on the given action.
-func edgesToLoadHelper(n *gen.Type, visited map[string]uint, groupsToLoad []string) (EdgesToLoad, error) {
+func edgesToLoadHelper(n *gen.Type, w walk, groupsToLoad []string) (EdgesToLoad, error) {
 	// What edges to load on this type.
 	var edges []EdgeToLoad
 
@@ -84,23 +121,27 @@ func edgesToLoadHelper(n *gen.Type, visited map[string]uint, groupsToLoad []stri
 		}
 		a.EnsureDefaults()
 
-		// If we have reached the max depth on this field for the given type stop the recursion.
-		if visited[encodeTypeAndEdge(n, e)] >= a.MaxDepth {
-			continue
-		}
-
-		// This edge on this type has been visited. Increase counter.
-		visited[encodeTypeAndEdge(n, e)]++
-
 		// TODO: Take the DefaultOrder-Annotation into account.
 
 		// If the edge has at least one of the groups requested load the edge.
 		if a.Groups.Match(groupsToLoad) {
+			// Add the current step to our walk, since we will add this edge.
+			w.push(encodeTypeAndEdge(n, e))
+
+			// If we have reached the max depth on this field for the given type stop the recursion. Backtrack!
+			if w.cycleDepth() > a.MaxDepth {
+				w.pop()
+				continue
+			}
+
 			// Recursively collect the eager loads of this edges edges.
-			etl, err := edgesToLoadHelper(e.Type, visited, groupsToLoad)
+			etl, err := edgesToLoadHelper(e.Type, w, groupsToLoad)
 			if err != nil {
 				return nil, err
 			}
+
+			// Done visiting this node. Remove this node from our walk.
+			w.pop()
 
 			edges = append(edges, EdgeToLoad{
 				Edge:        e,

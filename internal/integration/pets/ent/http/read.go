@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	easyjson "github.com/mailru/easyjson"
+	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
@@ -99,8 +99,10 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	q := h.client.Pet.Query().Where(pet.ID(id))
 	// Eager load edges that are required on read operation.
 	q.WithOwner().WithFriends(func(q *ent.PetQuery) {
-		q.WithFriends(func(q *ent.PetQuery) {
-			q.WithFriends()
+		q.WithOwner().WithFriends(func(q *ent.PetQuery) {
+			q.WithOwner().WithFriends(func(q *ent.PetQuery) {
+				q.WithOwner()
+			})
 		})
 	})
 	e, err := q.Only(r.Context())

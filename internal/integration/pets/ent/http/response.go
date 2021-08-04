@@ -157,17 +157,32 @@ type PetReadResponse struct {
 		Age  int    `json:"age,omitempty"`
 	} `json:"owner,omitempty"`
 	Friends []struct {
-		ID      int    `json:"id,omitempty"`
-		Name    string `json:"name,omitempty"`
-		Age     int    `json:"age,omitempty"`
+		ID    int    `json:"id,omitempty"`
+		Name  string `json:"name,omitempty"`
+		Age   int    `json:"age,omitempty"`
+		Owner struct {
+			ID   int    `json:"id,omitempty"`
+			Name string `json:"name,omitempty"`
+			Age  int    `json:"age,omitempty"`
+		} `json:"owner,omitempty"`
 		Friends []struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
+			ID    int    `json:"id,omitempty"`
+			Name  string `json:"name,omitempty"`
+			Age   int    `json:"age,omitempty"`
+			Owner struct {
 				ID   int    `json:"id,omitempty"`
 				Name string `json:"name,omitempty"`
 				Age  int    `json:"age,omitempty"`
+			} `json:"owner,omitempty"`
+			Friends []struct {
+				ID    int    `json:"id,omitempty"`
+				Name  string `json:"name,omitempty"`
+				Age   int    `json:"age,omitempty"`
+				Owner struct {
+					ID   int    `json:"id,omitempty"`
+					Name string `json:"name,omitempty"`
+					Age  int    `json:"age,omitempty"`
+				} `json:"owner,omitempty"`
 			} `json:"friends,omitempty"`
 		} `json:"friends,omitempty"`
 	} `json:"friends,omitempty"`
@@ -184,82 +199,172 @@ func NewPetReadResponse(pe *ent.Pet) *PetReadResponse {
 		Age:  pe.Edges.Owner.Age,
 	}
 	friends1 := make([]struct {
-		ID      int    `json:"id,omitempty"`
-		Name    string `json:"name,omitempty"`
-		Age     int    `json:"age,omitempty"`
+		ID    int    `json:"id,omitempty"`
+		Name  string `json:"name,omitempty"`
+		Age   int    `json:"age,omitempty"`
+		Owner struct {
+			ID   int    `json:"id,omitempty"`
+			Name string `json:"name,omitempty"`
+			Age  int    `json:"age,omitempty"`
+		} `json:"owner,omitempty"`
 		Friends []struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
+			ID    int    `json:"id,omitempty"`
+			Name  string `json:"name,omitempty"`
+			Age   int    `json:"age,omitempty"`
+			Owner struct {
 				ID   int    `json:"id,omitempty"`
 				Name string `json:"name,omitempty"`
 				Age  int    `json:"age,omitempty"`
+			} `json:"owner,omitempty"`
+			Friends []struct {
+				ID    int    `json:"id,omitempty"`
+				Name  string `json:"name,omitempty"`
+				Age   int    `json:"age,omitempty"`
+				Owner struct {
+					ID   int    `json:"id,omitempty"`
+					Name string `json:"name,omitempty"`
+					Age  int    `json:"age,omitempty"`
+				} `json:"owner,omitempty"`
 			} `json:"friends,omitempty"`
 		} `json:"friends,omitempty"`
 	}, len(pe.Edges.Friends))
 	for i1 := range pe.Edges.Friends {
+		owner2 := struct {
+			ID   int    `json:"id,omitempty"`
+			Name string `json:"name,omitempty"`
+			Age  int    `json:"age,omitempty"`
+		}{
+			ID:   pe.Edges.Friends[i1].Edges.Owner.ID,
+			Name: pe.Edges.Friends[i1].Edges.Owner.Name,
+			Age:  pe.Edges.Friends[i1].Edges.Owner.Age,
+		}
 		friends2 := make([]struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
+			ID    int    `json:"id,omitempty"`
+			Name  string `json:"name,omitempty"`
+			Age   int    `json:"age,omitempty"`
+			Owner struct {
 				ID   int    `json:"id,omitempty"`
 				Name string `json:"name,omitempty"`
 				Age  int    `json:"age,omitempty"`
+			} `json:"owner,omitempty"`
+			Friends []struct {
+				ID    int    `json:"id,omitempty"`
+				Name  string `json:"name,omitempty"`
+				Age   int    `json:"age,omitempty"`
+				Owner struct {
+					ID   int    `json:"id,omitempty"`
+					Name string `json:"name,omitempty"`
+					Age  int    `json:"age,omitempty"`
+				} `json:"owner,omitempty"`
 			} `json:"friends,omitempty"`
 		}, len(pe.Edges.Friends[i1].Edges.Friends))
 		for i2 := range pe.Edges.Friends[i1].Edges.Friends {
-			friends3 := make([]struct {
+			owner3 := struct {
 				ID   int    `json:"id,omitempty"`
 				Name string `json:"name,omitempty"`
 				Age  int    `json:"age,omitempty"`
+			}{
+				ID:   pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.ID,
+				Name: pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.Name,
+				Age:  pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.Age,
+			}
+			friends3 := make([]struct {
+				ID    int    `json:"id,omitempty"`
+				Name  string `json:"name,omitempty"`
+				Age   int    `json:"age,omitempty"`
+				Owner struct {
+					ID   int    `json:"id,omitempty"`
+					Name string `json:"name,omitempty"`
+					Age  int    `json:"age,omitempty"`
+				} `json:"owner,omitempty"`
 			}, len(pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends))
 			for i3 := range pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends {
-				friends3[i3] = struct {
+				owner4 := struct {
 					ID   int    `json:"id,omitempty"`
 					Name string `json:"name,omitempty"`
 					Age  int    `json:"age,omitempty"`
 				}{
-					ID:   pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].ID,
-					Name: pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Name,
-					Age:  pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Age,
+					ID:   pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.ID,
+					Name: pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.Name,
+					Age:  pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.Age,
+				}
+				friends3[i3] = struct {
+					ID    int    `json:"id,omitempty"`
+					Name  string `json:"name,omitempty"`
+					Age   int    `json:"age,omitempty"`
+					Owner struct {
+						ID   int    `json:"id,omitempty"`
+						Name string `json:"name,omitempty"`
+						Age  int    `json:"age,omitempty"`
+					} `json:"owner,omitempty"`
+				}{
+					ID:    pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].ID,
+					Name:  pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Name,
+					Age:   pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Age,
+					Owner: owner4,
 				}
 			}
 			friends2[i2] = struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
+				ID    int    `json:"id,omitempty"`
+				Name  string `json:"name,omitempty"`
+				Age   int    `json:"age,omitempty"`
+				Owner struct {
 					ID   int    `json:"id,omitempty"`
 					Name string `json:"name,omitempty"`
 					Age  int    `json:"age,omitempty"`
+				} `json:"owner,omitempty"`
+				Friends []struct {
+					ID    int    `json:"id,omitempty"`
+					Name  string `json:"name,omitempty"`
+					Age   int    `json:"age,omitempty"`
+					Owner struct {
+						ID   int    `json:"id,omitempty"`
+						Name string `json:"name,omitempty"`
+						Age  int    `json:"age,omitempty"`
+					} `json:"owner,omitempty"`
 				} `json:"friends,omitempty"`
 			}{
 				ID:      pe.Edges.Friends[i1].Edges.Friends[i2].ID,
 				Name:    pe.Edges.Friends[i1].Edges.Friends[i2].Name,
 				Age:     pe.Edges.Friends[i1].Edges.Friends[i2].Age,
+				Owner:   owner3,
 				Friends: friends3,
 			}
 		}
 		friends1[i1] = struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
+			ID    int    `json:"id,omitempty"`
+			Name  string `json:"name,omitempty"`
+			Age   int    `json:"age,omitempty"`
+			Owner struct {
+				ID   int    `json:"id,omitempty"`
+				Name string `json:"name,omitempty"`
+				Age  int    `json:"age,omitempty"`
+			} `json:"owner,omitempty"`
 			Friends []struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
+				ID    int    `json:"id,omitempty"`
+				Name  string `json:"name,omitempty"`
+				Age   int    `json:"age,omitempty"`
+				Owner struct {
 					ID   int    `json:"id,omitempty"`
 					Name string `json:"name,omitempty"`
 					Age  int    `json:"age,omitempty"`
+				} `json:"owner,omitempty"`
+				Friends []struct {
+					ID    int    `json:"id,omitempty"`
+					Name  string `json:"name,omitempty"`
+					Age   int    `json:"age,omitempty"`
+					Owner struct {
+						ID   int    `json:"id,omitempty"`
+						Name string `json:"name,omitempty"`
+						Age  int    `json:"age,omitempty"`
+					} `json:"owner,omitempty"`
 				} `json:"friends,omitempty"`
 			} `json:"friends,omitempty"`
 		}{
 			ID:      pe.Edges.Friends[i1].ID,
 			Name:    pe.Edges.Friends[i1].Name,
 			Age:     pe.Edges.Friends[i1].Age,
+			Owner:   owner2,
 			Friends: friends2,
 		}
 	}

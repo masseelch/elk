@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	easyjson "github.com/mailru/easyjson"
+	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"

@@ -5,10 +5,10 @@
         {{ end }}
 
         {{ range $n := $.Nodes }}
-            {{ template "helper/http/response" extend $n "Action" "create" "Groups" $.Annotations.ElkSchema.CreateGroups }}
-            {{ template "helper/http/response" extend $n "Action" "read" "Groups" $.Annotations.ElkSchema.ReadGroups }}
-            {{ template "helper/http/response" extend $n "Action" "update" "Groups" $.Annotations.ElkSchema.UpdateGroups }}
-            {{ template "helper/http/response" extend $n "Action" "list" "Groups" $.Annotations.ElkSchema.ListGroups }}
+            {{ template "helper/http/response" extend $n "Action" "create" }}
+            {{ template "helper/http/response" extend $n "Action" "read" }}
+            {{ template "helper/http/response" extend $n "Action" "update" }}
+            {{ template "helper/http/response" extend $n "Action" "list" }}
         {{- end }}
 {{ end }}
 
@@ -150,7 +150,7 @@
                     "Accessor" (printf "%s.%s[i%d]" $.Scope.Accessor $.Edge.StructField $.Scope.Level)
                 }}
                 {{- range $.EdgesToLoad }}
-                    {{ .Edge.StructField }}: {{ $.Edge.StructField | lower }}{{ add $.Scope.Level 1 }},
+                    {{ .Edge.StructField }}: {{ .Edge.StructField | lower }}{{ add $.Scope.Level 1 }},
                 {{- end }}
             }
         }

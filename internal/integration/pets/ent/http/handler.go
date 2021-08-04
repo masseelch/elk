@@ -15,7 +15,7 @@ import (
 type handler struct{}
 
 // Bitmask to configure which routes to register.
-type Routes uint8
+type Routes uint32
 
 func (rs Routes) has(r Routes) bool { return rs&r != 0 }
 

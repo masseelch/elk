@@ -3,11 +3,11 @@
 package http
 
 import (
-	json "encoding/json"
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	easyjson "github.com/mailru/easyjson"
+	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/category"
 	"github.com/masseelch/elk/internal/integration/pets/ent/owner"

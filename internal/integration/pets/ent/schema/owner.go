@@ -4,7 +4,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/masseelch/elk"
 )
 
 // Owner holds the schema definition for the Owner entity.
@@ -15,14 +14,8 @@ type Owner struct {
 // Fields of the Owner.
 func (Owner) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").
-			Annotations(
-				elk.Groups("owner"),
-			),
-		field.Int("age").
-			Annotations(
-				elk.Groups("owner"),
-			),
+		field.String("name"),
+		field.Int("age"),
 	}
 }
 

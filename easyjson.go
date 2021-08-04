@@ -30,7 +30,6 @@ func GenerateEasyJSON(next gen.Generator) gen.Generator {
 			PkgPath:               filepath.Join(g.Package, "http"),
 			PkgName:               "http",
 			Types:                 ns,
-			SnakeCase:             true,
 			NoStdMarshalers:       true,
 			DisallowUnknownFields: true,
 			OutName:               filepath.Join(g.Config.Target, "http", "easyjson.go"),

@@ -16,7 +16,7 @@ func AddGroupsTag(next gen.Generator) gen.Generator {
 			for _, f := range n.Fields {
 				tag := reflect.StructTag(f.StructTag)
 
-				// If the field does not yet have a groups tag and there are groups defined on the annotation add those
+				// If the field does not yet have a groups tag and there are groups defined on the annotation push those
 				// groups to the fields struct-tag.
 				if _, ok := tag.Lookup("groups"); !ok {
 					a := Annotation{}
@@ -35,7 +35,7 @@ func AddGroupsTag(next gen.Generator) gen.Generator {
 			for _, e := range n.Edges {
 				tag := reflect.StructTag(e.StructTag)
 
-				// If the edge does not yet have a groups tag and there are groups defined on the annotation add those
+				// If the edge does not yet have a groups tag and there are groups defined on the annotation push those
 				// groups to the edges struct-tag.
 				if _, ok := tag.Lookup("groups"); !ok {
 					a := Annotation{}
@@ -50,7 +50,7 @@ func AddGroupsTag(next gen.Generator) gen.Generator {
 				}
 			}
 
-			// Make sure to add all groups used on the edges to the Edges field of the generated node.
+			// Make sure to push all groups used on the edges to the Edges field of the generated node.
 			var a edge.Annotation
 			if n.Annotations[a.Name()] != nil {
 				a = n.Annotations[a.Name()].(edge.Annotation)
