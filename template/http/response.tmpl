@@ -3,6 +3,7 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
+    {{ template "helper/http/import" $ }}
 
     {{ range $n := $.Nodes }}
         {{ template "helper/http/response" extend $n "Action" "create" }}

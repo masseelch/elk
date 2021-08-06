@@ -4,10 +4,7 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
-    import ( {{/* This is needed for stupid SIV rule */}}
-        "github.com/go-chi/chi/v5"
-        "github.com/go-playground/validator/v10"
-    )
+    {{ template "helper/http/import" $ }}
 
     {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
@@ -43,20 +40,14 @@
             {{ end -}}
             // Store in database.
             e, err := b.Save(r.Context())
-            if err != nil {
-                switch err.(type) {
-                    case *ent.NotFoundError:
-                        l.Info("{{ $n.Name | kebab }} not found", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                        render.NotFound(w, r, "{{ $n.Name | kebab }} not found")
-                    case *ent.NotSingularError:
-                        l.Error("duplicate entry for {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                        render.BadRequest(w, r, "duplicate {{ $n.Name | kebab }} entry with id " + strconv.Itoa(e.{{ $n.ID.StructField }}))
-                    default:
-                        l.Error("error saving {{ $n.Name | kebab }}", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                        render.InternalServerError(w, r, nil)
-                }
-                return
-            }
+
+            {{-
+                template "helper/http/error-handling" dict
+                "Errors" (list "not-found" "not-singular")
+                "Logs" (list (printf "zap.Int(\"%s\", id)" $n.ID.Name))
+                "Default" (print "could not update " $n.Name | kebab)
+            -}}
+
             // Reload entry.
             q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(e.{{ $n.ID.StructField }}))
 
@@ -66,7 +57,12 @@
             {{- end }}
             e, err = q.Only(r.Context())
 
-            {{- template "helper/http/reload/error-handling" . -}}
+            {{-
+                template "helper/http/error-handling" dict
+                "Errors" (list "not-found" "not-singular")
+                "Logs" (list (printf "zap.Int(\"%s\", id)" $n.ID.Name))
+                "Default" (print "could not read " $n.Name | kebab) " after update"
+            -}}
 
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
             easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}UpdateResponse(e), w)

@@ -20,16 +20,17 @@ const (
 var (
 	// HTTPTemplates holds all templates for generating http handlers.
 	HTTPTemplates = []*gen.Template{
-		parse("template/http/create.tmpl"),
-		parse("template/http/delete.tmpl"),
 		parse("template/http/handler.tmpl"),
-		parse("template/http/helpers.tmpl"),
-		parse("template/http/list.tmpl"),
+		parse("template/http/create.tmpl"),
 		parse("template/http/read.tmpl"),
-		parse("template/http/request.tmpl"),
-		parse("template/http/relations.tmpl"),
-		parse("template/http/response.tmpl"),
 		parse("template/http/update.tmpl"),
+		parse("template/http/delete.tmpl"),
+		parse("template/http/list.tmpl"),
+		parse("template/http/relations.tmpl"),
+		parse("template/http/request.tmpl"),
+		parse("template/http/response.tmpl"),
+		parse("template/http/helpers.tmpl"),
+		parse("template/http/import.tmpl"),
 	}
 	// TemplateFuncs contains the extra template functions used by elk.
 	TemplateFuncs = template.FuncMap{
@@ -126,7 +127,7 @@ type edgeToLoadScope struct {
 
 // xextend extends the parent block with a KV pairs. Stolen from entgo.io/ent/entc/gen/func.go.
 //
-//	{{ with $scope := extend $ "key" "value" }}
+//	{{ with $scope := xextend $ "key" "value" }}
 //		{{ template "setters" $scope }}
 //	{{ end}}
 //

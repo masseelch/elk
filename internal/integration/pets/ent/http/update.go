@@ -7,18 +7,18 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-playground/validator/v10"
 	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
-	"github.com/masseelch/elk/internal/integration/pets/ent/category"
-	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
-	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
 	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )
 
-// Update updates a given ent.Category and saves the changes to the database.
-func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
+// Update updates a given ent.Badge and saves the changes to the database.
+func (h BadgeHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -28,118 +28,57 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Get the post data.
-	var d CategoryUpdateRequest
-
+	var d BadgeUpdateRequest
 	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
 	}
 	// Save the data.
-	b := h.client.Category.UpdateOneID(id)
-	if d.Name != nil {
-		b.SetName(*d.Name)
-	}
-	if d.Pets != nil {
-		b.ClearPets().AddPetIDs(d.Pets...)
+	b := h.client.Badge.UpdateOneID(id)
+	if d.Wearer != nil {
+		b.SetWearerID(*d.Wearer)
+
 	}
 	// Store in database.
 	e, err := b.Save(r.Context())
 	if err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
-			l.Info("category not found", zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "category not found")
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for category", zap.Int("id", id), zap.Error(err))
-			render.BadRequest(w, r, "duplicate category entry with id "+strconv.Itoa(e.ID))
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
 		default:
-			l.Error("error saving category", zap.Int("id", id), zap.Error(err))
+			l.Error("could-not-update-badge", zap.Error(err), zap.Int("id", id))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
 	// Reload entry.
-	q := h.client.Category.Query().Where(category.ID(e.ID))
+	q := h.client.Badge.Query().Where(badge.ID(e.ID))
 	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
 			render.NotFound(w, r, msg)
-		default:
-			l.Error("error fetching category from db", zap.Int("id", e.ID), zap.Error(err))
-			render.InternalServerError(w, r, nil)
-		}
-		return
-	}
-	l.Info("category rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewCategoryUpdateResponse(e), w)
-}
-
-// Update updates a given ent.Owner and saves the changes to the database.
-func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Update"))
-	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
-		return
-	}
-	// Get the post data.
-	var d OwnerUpdateRequest
-
-	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
-		l.Error("error decoding json", zap.Error(err))
-		render.BadRequest(w, r, "invalid json string")
-		return
-	}
-	// Save the data.
-	b := h.client.Owner.UpdateOneID(id)
-	if d.Name != nil {
-		b.SetName(*d.Name)
-	}
-	if d.Age != nil {
-		b.SetAge(*d.Age)
-	}
-	if d.Pets != nil {
-		b.ClearPets().AddPetIDs(d.Pets...)
-	}
-	// Store in database.
-	e, err := b.Save(r.Context())
-	if err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
-			l.Info("owner not found", zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "owner not found")
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for owner", zap.Int("id", id), zap.Error(err))
-			render.BadRequest(w, r, "duplicate owner entry with id "+strconv.Itoa(e.ID))
-		default:
-			l.Error("error saving owner", zap.Int("id", id), zap.Error(err))
-			render.InternalServerError(w, r, nil)
-		}
-		return
-	}
-	// Reload entry.
-	q := h.client.Owner.Query().Where(owner.ID(e.ID))
-	e, err = q.Only(r.Context())
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
+		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
-			render.NotFound(w, r, msg)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
 		default:
-			l.Error("error fetching owner from db", zap.Int("id", e.ID), zap.Error(err))
+			l.Error("could-not-read-badge", zap.Error(err), zap.Int("id", id))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
-	l.Info("owner rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewOwnerUpdateResponse(e), w)
+	l.Info("badge rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeUpdateResponse(e), w)
 }
 
 // Update updates a given ent.Pet and saves the changes to the database.
@@ -154,37 +93,65 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Get the post data.
 	var d PetUpdateRequest
-
 	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
 	}
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
-		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
-		return
-	}
 	// Save the data.
 	b := h.client.Pet.UpdateOneID(id)
+	if d.Height != nil {
+		b.SetHeight(*d.Height)
+	}
+	if d.Weight != nil {
+		b.SetWeight(*d.Weight)
+	}
+	if d.Castrated != nil {
+		b.SetCastrated(*d.Castrated)
+	}
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
-	if d.Age != nil {
-		b.SetAge(*d.Age)
+	if d.Birthday != nil {
+		b.SetBirthday(*d.Birthday)
 	}
-	if d.Category != nil {
-		b.ClearCategory().AddCategoryIDs(d.Category...)
+	if d.Nicknames != nil {
+		b.SetNicknames(*d.Nicknames)
 	}
-	if d.Owner != nil {
-		b.SetOwnerID(*d.Owner)
+	if d.Sex != nil {
+		b.SetSex(*d.Sex)
+	}
+	if d.Chip != nil {
+		b.SetChip(*d.Chip)
+	}
+	if d.Badge != nil {
+		b.SetBadgeID(*d.Badge)
 
+	}
+	if d.Protege != nil {
+		b.SetProtegeID(*d.Protege)
+
+	}
+	if d.Mentor != nil {
+		b.SetMentorID(*d.Mentor)
+
+	}
+	if d.Spouse != nil {
+		b.SetSpouseID(*d.Spouse)
+
+	}
+	if d.Toys != nil {
+		b.ClearToys().AddToyIDs(d.Toys...)
+	}
+	if d.Parent != nil {
+		b.SetParentID(*d.Parent)
+
+	}
+	if d.Children != nil {
+		b.ClearChildren().AddChildIDs(d.Children...)
+	}
+	if d.PlayGroups != nil {
+		b.ClearPlayGroups().AddPlayGroupIDs(d.PlayGroups...)
 	}
 	if d.Friends != nil {
 		b.ClearFriends().AddFriendIDs(d.Friends...)
@@ -192,15 +159,17 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	// Store in database.
 	e, err := b.Save(r.Context())
 	if err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
-			l.Info("pet not found", zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "pet not found")
-		case *ent.NotSingularError:
-			l.Error("duplicate entry for pet", zap.Int("id", id), zap.Error(err))
-			render.BadRequest(w, r, "duplicate pet entry with id "+strconv.Itoa(e.ID))
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
 		default:
-			l.Error("error saving pet", zap.Int("id", id), zap.Error(err))
+			l.Error("could-not-update-pet", zap.Error(err), zap.Int("id", id))
 			render.InternalServerError(w, r, nil)
 		}
 		return
@@ -212,14 +181,157 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
 			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
 		default:
-			l.Error("error fetching pet from db", zap.Int("id", e.ID), zap.Error(err))
+			l.Error("could-not-read-pet", zap.Error(err), zap.Int("id", id))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
 	easyjson.MarshalToHTTPResponseWriter(NewPetUpdateResponse(e), w)
+}
+
+// Update updates a given ent.PlayGroup and saves the changes to the database.
+func (h PlayGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Update"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
+	// Get the post data.
+	var d PlayGroupUpdateRequest
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
+		l.Error("error decoding json", zap.Error(err))
+		render.BadRequest(w, r, "invalid json string")
+		return
+	}
+	// Save the data.
+	b := h.client.PlayGroup.UpdateOneID(id)
+	if d.Title != nil {
+		b.SetTitle(*d.Title)
+	}
+	if d.Description != nil {
+		b.SetDescription(*d.Description)
+	}
+	if d.Weekday != nil {
+		b.SetWeekday(*d.Weekday)
+	}
+	if d.Participants != nil {
+		b.ClearParticipants().AddParticipantIDs(d.Participants...)
+	}
+	// Store in database.
+	e, err := b.Save(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
+		default:
+			l.Error("could-not-update-play-group", zap.Error(err), zap.Int("id", id))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	// Reload entry.
+	q := h.client.PlayGroup.Query().Where(playgroup.ID(e.ID))
+	e, err = q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
+		default:
+			l.Error("could-not-read-play-group", zap.Error(err), zap.Int("id", id))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	l.Info("play-group rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupUpdateResponse(e), w)
+}
+
+// Update updates a given ent.Toy and saves the changes to the database.
+func (h ToyHandler) Update(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Update"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
+	// Get the post data.
+	var d ToyUpdateRequest
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
+		l.Error("error decoding json", zap.Error(err))
+		render.BadRequest(w, r, "invalid json string")
+		return
+	}
+	// Save the data.
+	b := h.client.Toy.UpdateOneID(id)
+	if d.Title != nil {
+		b.SetTitle(*d.Title)
+	}
+	if d.Owner != nil {
+		b.SetOwnerID(*d.Owner)
+
+	}
+	// Store in database.
+	e, err := b.Save(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
+		default:
+			l.Error("could-not-update-toy", zap.Error(err), zap.Int("id", id))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	// Reload entry.
+	q := h.client.Toy.Query().Where(toy.ID(e.ID))
+	e, err = q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
+		default:
+			l.Error("could-not-read-toy", zap.Error(err), zap.Int("id", id))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	l.Info("toy rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewToyUpdateResponse(e), w)
 }

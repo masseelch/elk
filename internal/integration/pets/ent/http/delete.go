@@ -12,8 +12,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// Delete removes a ent.Category from the database.
-func (h CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
+// Delete removes a ent.Badge from the database.
+func (h BadgeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Delete"))
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -22,45 +22,20 @@ func (h CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
-	if err := h.client.Category.DeleteOneID(id).Exec(r.Context()); err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
-			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "category not found")
-		default:
-			l.Error("error deleting category from db", zap.Int("id", id), zap.Error(err))
-			render.InternalServerError(w, r, nil)
-		}
-		return
-	}
-	l.Info("category deleted", zap.Int("id", id))
-	render.NoContent(w)
-}
-
-// Delete removes a ent.Owner from the database.
-func (h OwnerHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Delete"))
-	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	err = h.client.Badge.DeleteOneID(id).Exec(r.Context())
 	if err != nil {
-		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
-		return
-	}
-	if err := h.client.Owner.DeleteOneID(id).Exec(r.Context()); err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
+		switch {
+		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "owner not found")
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
 		default:
-			l.Error("error deleting owner from db", zap.Int("id", id), zap.Error(err))
+			l.Error("could-not-delete-badge", zap.Error(err), zap.Int("id", id))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
-	l.Info("owner deleted", zap.Int("id", id))
+	l.Info("badge deleted", zap.Int("id", id))
 	render.NoContent(w)
 }
 
@@ -74,18 +49,73 @@ func (h PetHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
-	if err := h.client.Pet.DeleteOneID(id).Exec(r.Context()); err != nil {
-		switch err.(type) {
-		case *ent.NotFoundError:
+	err = h.client.Pet.DeleteOneID(id).Exec(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, "pet not found")
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
 		default:
-			l.Error("error deleting pet from db", zap.Int("id", id), zap.Error(err))
+			l.Error("could-not-delete-pet", zap.Error(err), zap.Int("id", id))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
 	l.Info("pet deleted", zap.Int("id", id))
+	render.NoContent(w)
+}
+
+// Delete removes a ent.PlayGroup from the database.
+func (h PlayGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Delete"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
+	err = h.client.PlayGroup.DeleteOneID(id).Exec(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		default:
+			l.Error("could-not-delete-play-group", zap.Error(err), zap.Int("id", id))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	l.Info("play-group deleted", zap.Int("id", id))
+	render.NoContent(w)
+}
+
+// Delete removes a ent.Toy from the database.
+func (h ToyHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Delete"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
+	err = h.client.Toy.DeleteOneID(id).Exec(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		default:
+			l.Error("could-not-delete-toy", zap.Error(err), zap.Int("id", id))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	l.Info("toy deleted", zap.Int("id", id))
 	render.NoContent(w)
 }

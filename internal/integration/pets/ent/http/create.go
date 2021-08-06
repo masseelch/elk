@@ -5,105 +5,61 @@ package http
 import (
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
 	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
-	"github.com/masseelch/elk/internal/integration/pets/ent/category"
-	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
-	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
 	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )
 
-// Create creates a new ent.Category and stores it in the database.
-func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
+// Create creates a new ent.Badge and stores it in the database.
+func (h BadgeHandler) Create(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Create"))
 	// Get the post data.
-	var d CategoryCreateRequest
-
+	var d BadgeCreateRequest
 	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
 	}
 	// Save the data.
-	b := h.client.Category.Create()
-	if d.Name != nil {
-		b.SetName(*d.Name)
-	}
-	if d.Pets != nil {
-		b.AddPetIDs(d.Pets...)
+	b := h.client.Badge.Create()
+	if d.Wearer != nil {
+		b.SetWearerID(*d.Wearer)
 	}
 	e, err := b.Save(r.Context())
 	if err != nil {
-		l.Error("error saving category", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		switch {
+		default:
+			l.Error("could not create badge", zap.Error(err))
+			render.InternalServerError(w, r, nil)
+		}
 		return
 	}
 	// Reload entry.
-	q := h.client.Category.Query().Where(category.ID(e.ID))
+	q := h.client.Badge.Query().Where(badge.ID(e.ID))
 	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
 			render.NotFound(w, r, msg)
-		default:
-			l.Error("error fetching category from db", zap.Int("id", e.ID), zap.Error(err))
-			render.InternalServerError(w, r, nil)
-		}
-		return
-	}
-	l.Info("category rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewCategoryCreateResponse(e), w)
-}
-
-// Create creates a new ent.Owner and stores it in the database.
-func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Create"))
-	// Get the post data.
-	var d OwnerCreateRequest
-
-	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
-		l.Error("error decoding json", zap.Error(err))
-		render.BadRequest(w, r, "invalid json string")
-		return
-	}
-	// Save the data.
-	b := h.client.Owner.Create()
-	if d.Name != nil {
-		b.SetName(*d.Name)
-	}
-	if d.Age != nil {
-		b.SetAge(*d.Age)
-	}
-	if d.Pets != nil {
-		b.AddPetIDs(d.Pets...)
-	}
-	e, err := b.Save(r.Context())
-	if err != nil {
-		l.Error("error saving owner", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
-	// Reload entry.
-	q := h.client.Owner.Query().Where(owner.ID(e.ID))
-	e, err = q.Only(r.Context())
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
+		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
-			render.NotFound(w, r, msg)
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			render.BadRequest(w, r, msg)
 		default:
-			l.Error("error fetching owner from db", zap.Int("id", e.ID), zap.Error(err))
+			l.Error("could not read badge", zap.Error(err), zap.Int("id", e.ID))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
-	l.Info("owner rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewOwnerCreateResponse(e), w)
+	l.Info("badge rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeCreateResponse(e), w)
 }
 
 // Create creates a new ent.Pet and stores it in the database.
@@ -111,44 +67,71 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Create"))
 	// Get the post data.
 	var d PetCreateRequest
-
 	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
 		l.Error("error decoding json", zap.Error(err))
 		render.BadRequest(w, r, "invalid json string")
 		return
 	}
-	// Validate the data.
-	if err := h.validator.Struct(d); err != nil {
-		if err, ok := err.(*validator.InvalidValidationError); ok {
-			l.Error("error validating request data", zap.Error(err))
-			render.InternalServerError(w, r, nil)
-			return
-		}
-		l.Info("validation failed", zap.Error(err))
-		render.BadRequest(w, r, err)
-		return
-	}
 	// Save the data.
 	b := h.client.Pet.Create()
+	if d.Height != nil {
+		b.SetHeight(*d.Height)
+	}
+	if d.Weight != nil {
+		b.SetWeight(*d.Weight)
+	}
+	if d.Castrated != nil {
+		b.SetCastrated(*d.Castrated)
+	}
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
-	if d.Age != nil {
-		b.SetAge(*d.Age)
+	if d.Birthday != nil {
+		b.SetBirthday(*d.Birthday)
 	}
-	if d.Category != nil {
-		b.AddCategoryIDs(d.Category...)
+	if d.Nicknames != nil {
+		b.SetNicknames(*d.Nicknames)
 	}
-	if d.Owner != nil {
-		b.SetOwnerID(*d.Owner)
+	if d.Sex != nil {
+		b.SetSex(*d.Sex)
+	}
+	if d.Chip != nil {
+		b.SetChip(*d.Chip)
+	}
+	if d.Badge != nil {
+		b.SetBadgeID(*d.Badge)
+	}
+	if d.Protege != nil {
+		b.SetProtegeID(*d.Protege)
+	}
+	if d.Mentor != nil {
+		b.SetMentorID(*d.Mentor)
+	}
+	if d.Spouse != nil {
+		b.SetSpouseID(*d.Spouse)
+	}
+	if d.Toys != nil {
+		b.AddToyIDs(d.Toys...)
+	}
+	if d.Parent != nil {
+		b.SetParentID(*d.Parent)
+	}
+	if d.Children != nil {
+		b.AddChildIDs(d.Children...)
+	}
+	if d.PlayGroups != nil {
+		b.AddPlayGroupIDs(d.PlayGroups...)
 	}
 	if d.Friends != nil {
 		b.AddFriendIDs(d.Friends...)
 	}
 	e, err := b.Save(r.Context())
 	if err != nil {
-		l.Error("error saving pet", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		switch {
+		default:
+			l.Error("could not create pet", zap.Error(err))
+			render.InternalServerError(w, r, nil)
+		}
 		return
 	}
 	// Reload entry.
@@ -158,14 +141,124 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", e.ID), zap.Error(err))
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
 			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			render.BadRequest(w, r, msg)
 		default:
-			l.Error("error fetching pet from db", zap.Int("id", e.ID), zap.Error(err))
+			l.Error("could not read pet", zap.Error(err), zap.Int("id", e.ID))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
 	easyjson.MarshalToHTTPResponseWriter(NewPetCreateResponse(e), w)
+}
+
+// Create creates a new ent.PlayGroup and stores it in the database.
+func (h PlayGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Create"))
+	// Get the post data.
+	var d PlayGroupCreateRequest
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
+		l.Error("error decoding json", zap.Error(err))
+		render.BadRequest(w, r, "invalid json string")
+		return
+	}
+	// Save the data.
+	b := h.client.PlayGroup.Create()
+	if d.Title != nil {
+		b.SetTitle(*d.Title)
+	}
+	if d.Description != nil {
+		b.SetDescription(*d.Description)
+	}
+	if d.Weekday != nil {
+		b.SetWeekday(*d.Weekday)
+	}
+	if d.Participants != nil {
+		b.AddParticipantIDs(d.Participants...)
+	}
+	e, err := b.Save(r.Context())
+	if err != nil {
+		switch {
+		default:
+			l.Error("could not create play-group", zap.Error(err))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	// Reload entry.
+	q := h.client.PlayGroup.Query().Where(playgroup.ID(e.ID))
+	e, err = q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			render.BadRequest(w, r, msg)
+		default:
+			l.Error("could not read play-group", zap.Error(err), zap.Int("id", e.ID))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	l.Info("play-group rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupCreateResponse(e), w)
+}
+
+// Create creates a new ent.Toy and stores it in the database.
+func (h ToyHandler) Create(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Create"))
+	// Get the post data.
+	var d ToyCreateRequest
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
+		l.Error("error decoding json", zap.Error(err))
+		render.BadRequest(w, r, "invalid json string")
+		return
+	}
+	// Save the data.
+	b := h.client.Toy.Create()
+	if d.Title != nil {
+		b.SetTitle(*d.Title)
+	}
+	if d.Owner != nil {
+		b.SetOwnerID(*d.Owner)
+	}
+	e, err := b.Save(r.Context())
+	if err != nil {
+		switch {
+		default:
+			l.Error("could not create toy", zap.Error(err))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	// Reload entry.
+	q := h.client.Toy.Query().Where(toy.ID(e.ID))
+	e, err = q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			render.BadRequest(w, r, msg)
+		default:
+			l.Error("could not read toy", zap.Error(err), zap.Int("id", e.ID))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	l.Info("toy rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewToyCreateResponse(e), w)
 }

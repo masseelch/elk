@@ -27,6 +27,12 @@ func TestWalk_CycleDepth(t *testing.T) {
 
 	w = walk{"a", "b", "b", "c"}
 	require.Equal(t, uint(1), w.cycleDepth())
+
+	w = walk{"a", "b", "b", "a"}
+	require.Equal(t, uint(2), w.cycleDepth())
+
+	w = walk{"a", "a", "b", "a"}
+	require.Equal(t, uint(3), w.cycleDepth())
 }
 
 func TestWalk_Push(t *testing.T) {

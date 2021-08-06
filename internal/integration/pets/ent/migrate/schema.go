@@ -8,35 +8,39 @@ import (
 )
 
 var (
-	// CategoriesColumns holds the columns for the "categories" table.
-	CategoriesColumns = []*schema.Column{
+	// BadgesColumns holds the columns for the "badges" table.
+	BadgesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString},
+		{Name: "pet_badge", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
-	// CategoriesTable holds the schema information for the "categories" table.
-	CategoriesTable = &schema.Table{
-		Name:       "categories",
-		Columns:    CategoriesColumns,
-		PrimaryKey: []*schema.Column{CategoriesColumns[0]},
-	}
-	// OwnersColumns holds the columns for the "owners" table.
-	OwnersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString},
-		{Name: "age", Type: field.TypeInt},
-	}
-	// OwnersTable holds the schema information for the "owners" table.
-	OwnersTable = &schema.Table{
-		Name:       "owners",
-		Columns:    OwnersColumns,
-		PrimaryKey: []*schema.Column{OwnersColumns[0]},
+	// BadgesTable holds the schema information for the "badges" table.
+	BadgesTable = &schema.Table{
+		Name:       "badges",
+		Columns:    BadgesColumns,
+		PrimaryKey: []*schema.Column{BadgesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "badges_pets_badge",
+				Columns:    []*schema.Column{BadgesColumns[1]},
+				RefColumns: []*schema.Column{PetsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// PetsColumns holds the columns for the "pets" table.
 	PetsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString},
-		{Name: "age", Type: field.TypeInt},
-		{Name: "owner_pets", Type: field.TypeInt, Nullable: true},
+		{Name: "height", Type: field.TypeInt},
+		{Name: "weight", Type: field.TypeFloat64},
+		{Name: "castrated", Type: field.TypeBool},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "birthday", Type: field.TypeTime},
+		{Name: "nicknames", Type: field.TypeJSON, Nullable: true},
+		{Name: "sex", Type: field.TypeEnum, Enums: []string{"male", "female"}},
+		{Name: "chip", Type: field.TypeUUID},
+		{Name: "pet_mentor", Type: field.TypeInt, Unique: true, Nullable: true},
+		{Name: "pet_spouse", Type: field.TypeInt, Unique: true, Nullable: true},
+		{Name: "pet_children", Type: field.TypeInt, Nullable: true},
 	}
 	// PetsTable holds the schema information for the "pets" table.
 	PetsTable = &schema.Table{
@@ -45,34 +49,79 @@ var (
 		PrimaryKey: []*schema.Column{PetsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "pets_owners_pets",
-				Columns:    []*schema.Column{PetsColumns[3]},
-				RefColumns: []*schema.Column{OwnersColumns[0]},
+				Symbol:     "pets_pets_mentor",
+				Columns:    []*schema.Column{PetsColumns[9]},
+				RefColumns: []*schema.Column{PetsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "pets_pets_spouse",
+				Columns:    []*schema.Column{PetsColumns[10]},
+				RefColumns: []*schema.Column{PetsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "pets_pets_children",
+				Columns:    []*schema.Column{PetsColumns[11]},
+				RefColumns: []*schema.Column{PetsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 	}
-	// CategoryPetsColumns holds the columns for the "category_pets" table.
-	CategoryPetsColumns = []*schema.Column{
-		{Name: "category_id", Type: field.TypeInt},
-		{Name: "pet_id", Type: field.TypeInt},
+	// PlayGroupsColumns holds the columns for the "play_groups" table.
+	PlayGroupsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "title", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "weekday", Type: field.TypeEnum, Enums: []string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}},
 	}
-	// CategoryPetsTable holds the schema information for the "category_pets" table.
-	CategoryPetsTable = &schema.Table{
-		Name:       "category_pets",
-		Columns:    CategoryPetsColumns,
-		PrimaryKey: []*schema.Column{CategoryPetsColumns[0], CategoryPetsColumns[1]},
+	// PlayGroupsTable holds the schema information for the "play_groups" table.
+	PlayGroupsTable = &schema.Table{
+		Name:       "play_groups",
+		Columns:    PlayGroupsColumns,
+		PrimaryKey: []*schema.Column{PlayGroupsColumns[0]},
+	}
+	// ToysColumns holds the columns for the "toys" table.
+	ToysColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "title", Type: field.TypeString},
+		{Name: "pet_toys", Type: field.TypeInt, Nullable: true},
+	}
+	// ToysTable holds the schema information for the "toys" table.
+	ToysTable = &schema.Table{
+		Name:       "toys",
+		Columns:    ToysColumns,
+		PrimaryKey: []*schema.Column{ToysColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "category_pets_category_id",
-				Columns:    []*schema.Column{CategoryPetsColumns[0]},
-				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				Symbol:     "toys_pets_toys",
+				Columns:    []*schema.Column{ToysColumns[2]},
+				RefColumns: []*schema.Column{PetsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// PetPlayGroupsColumns holds the columns for the "pet_play_groups" table.
+	PetPlayGroupsColumns = []*schema.Column{
+		{Name: "pet_id", Type: field.TypeInt},
+		{Name: "play_group_id", Type: field.TypeInt},
+	}
+	// PetPlayGroupsTable holds the schema information for the "pet_play_groups" table.
+	PetPlayGroupsTable = &schema.Table{
+		Name:       "pet_play_groups",
+		Columns:    PetPlayGroupsColumns,
+		PrimaryKey: []*schema.Column{PetPlayGroupsColumns[0], PetPlayGroupsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "pet_play_groups_pet_id",
+				Columns:    []*schema.Column{PetPlayGroupsColumns[0]},
+				RefColumns: []*schema.Column{PetsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "category_pets_pet_id",
-				Columns:    []*schema.Column{CategoryPetsColumns[1]},
-				RefColumns: []*schema.Column{PetsColumns[0]},
+				Symbol:     "pet_play_groups_play_group_id",
+				Columns:    []*schema.Column{PetPlayGroupsColumns[1]},
+				RefColumns: []*schema.Column{PlayGroupsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -104,18 +153,23 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		CategoriesTable,
-		OwnersTable,
+		BadgesTable,
 		PetsTable,
-		CategoryPetsTable,
+		PlayGroupsTable,
+		ToysTable,
+		PetPlayGroupsTable,
 		PetFriendsTable,
 	}
 )
 
 func init() {
-	PetsTable.ForeignKeys[0].RefTable = OwnersTable
-	CategoryPetsTable.ForeignKeys[0].RefTable = CategoriesTable
-	CategoryPetsTable.ForeignKeys[1].RefTable = PetsTable
+	BadgesTable.ForeignKeys[0].RefTable = PetsTable
+	PetsTable.ForeignKeys[0].RefTable = PetsTable
+	PetsTable.ForeignKeys[1].RefTable = PetsTable
+	PetsTable.ForeignKeys[2].RefTable = PetsTable
+	ToysTable.ForeignKeys[0].RefTable = PetsTable
+	PetPlayGroupsTable.ForeignKeys[0].RefTable = PetsTable
+	PetPlayGroupsTable.ForeignKeys[1].RefTable = PlayGroupsTable
 	PetFriendsTable.ForeignKeys[0].RefTable = PetsTable
 	PetFriendsTable.ForeignKeys[1].RefTable = PetsTable
 }

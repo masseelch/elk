@@ -2,56 +2,121 @@
 
 package pet
 
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
+
 const (
 	// Label holds the string label denoting the pet type in the database.
 	Label = "pet"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldHeight holds the string denoting the height field in the database.
+	FieldHeight = "height"
+	// FieldWeight holds the string denoting the weight field in the database.
+	FieldWeight = "weight"
+	// FieldCastrated holds the string denoting the castrated field in the database.
+	FieldCastrated = "castrated"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldAge holds the string denoting the age field in the database.
-	FieldAge = "age"
-	// EdgeCategory holds the string denoting the category edge name in mutations.
-	EdgeCategory = "category"
-	// EdgeOwner holds the string denoting the owner edge name in mutations.
-	EdgeOwner = "owner"
+	// FieldBirthday holds the string denoting the birthday field in the database.
+	FieldBirthday = "birthday"
+	// FieldNicknames holds the string denoting the nicknames field in the database.
+	FieldNicknames = "nicknames"
+	// FieldSex holds the string denoting the sex field in the database.
+	FieldSex = "sex"
+	// FieldChip holds the string denoting the chip field in the database.
+	FieldChip = "chip"
+	// EdgeBadge holds the string denoting the badge edge name in mutations.
+	EdgeBadge = "badge"
+	// EdgeProtege holds the string denoting the protege edge name in mutations.
+	EdgeProtege = "protege"
+	// EdgeMentor holds the string denoting the mentor edge name in mutations.
+	EdgeMentor = "mentor"
+	// EdgeSpouse holds the string denoting the spouse edge name in mutations.
+	EdgeSpouse = "spouse"
+	// EdgeToys holds the string denoting the toys edge name in mutations.
+	EdgeToys = "toys"
+	// EdgeParent holds the string denoting the parent edge name in mutations.
+	EdgeParent = "parent"
+	// EdgeChildren holds the string denoting the children edge name in mutations.
+	EdgeChildren = "children"
+	// EdgePlayGroups holds the string denoting the play_groups edge name in mutations.
+	EdgePlayGroups = "play_groups"
 	// EdgeFriends holds the string denoting the friends edge name in mutations.
 	EdgeFriends = "friends"
 	// Table holds the table name of the pet in the database.
 	Table = "pets"
-	// CategoryTable is the table the holds the category relation/edge. The primary key declared below.
-	CategoryTable = "category_pets"
-	// CategoryInverseTable is the table name for the Category entity.
-	// It exists in this package in order to avoid circular dependency with the "category" package.
-	CategoryInverseTable = "categories"
-	// OwnerTable is the table the holds the owner relation/edge.
-	OwnerTable = "pets"
-	// OwnerInverseTable is the table name for the Owner entity.
-	// It exists in this package in order to avoid circular dependency with the "owner" package.
-	OwnerInverseTable = "owners"
-	// OwnerColumn is the table column denoting the owner relation/edge.
-	OwnerColumn = "owner_pets"
-	// FriendsTable is the table the holds the friends relation/edge. The primary key declared below.
+	// BadgeTable is the table that holds the badge relation/edge.
+	BadgeTable = "badges"
+	// BadgeInverseTable is the table name for the Badge entity.
+	// It exists in this package in order to avoid circular dependency with the "badge" package.
+	BadgeInverseTable = "badges"
+	// BadgeColumn is the table column denoting the badge relation/edge.
+	BadgeColumn = "pet_badge"
+	// ProtegeTable is the table that holds the protege relation/edge.
+	ProtegeTable = "pets"
+	// ProtegeColumn is the table column denoting the protege relation/edge.
+	ProtegeColumn = "pet_mentor"
+	// MentorTable is the table that holds the mentor relation/edge.
+	MentorTable = "pets"
+	// MentorColumn is the table column denoting the mentor relation/edge.
+	MentorColumn = "pet_mentor"
+	// SpouseTable is the table that holds the spouse relation/edge.
+	SpouseTable = "pets"
+	// SpouseColumn is the table column denoting the spouse relation/edge.
+	SpouseColumn = "pet_spouse"
+	// ToysTable is the table that holds the toys relation/edge.
+	ToysTable = "toys"
+	// ToysInverseTable is the table name for the Toy entity.
+	// It exists in this package in order to avoid circular dependency with the "toy" package.
+	ToysInverseTable = "toys"
+	// ToysColumn is the table column denoting the toys relation/edge.
+	ToysColumn = "pet_toys"
+	// ParentTable is the table that holds the parent relation/edge.
+	ParentTable = "pets"
+	// ParentColumn is the table column denoting the parent relation/edge.
+	ParentColumn = "pet_children"
+	// ChildrenTable is the table that holds the children relation/edge.
+	ChildrenTable = "pets"
+	// ChildrenColumn is the table column denoting the children relation/edge.
+	ChildrenColumn = "pet_children"
+	// PlayGroupsTable is the table that holds the play_groups relation/edge. The primary key declared below.
+	PlayGroupsTable = "pet_play_groups"
+	// PlayGroupsInverseTable is the table name for the PlayGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "playgroup" package.
+	PlayGroupsInverseTable = "play_groups"
+	// FriendsTable is the table that holds the friends relation/edge. The primary key declared below.
 	FriendsTable = "pet_friends"
 )
 
 // Columns holds all SQL columns for pet fields.
 var Columns = []string{
 	FieldID,
+	FieldHeight,
+	FieldWeight,
+	FieldCastrated,
 	FieldName,
-	FieldAge,
+	FieldBirthday,
+	FieldNicknames,
+	FieldSex,
+	FieldChip,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "pets"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"owner_pets",
+	"pet_mentor",
+	"pet_spouse",
+	"pet_children",
 }
 
 var (
-	// CategoryPrimaryKey and CategoryColumn2 are the table columns denoting the
-	// primary key for the category relation (M2M).
-	CategoryPrimaryKey = []string{"category_id", "pet_id"}
+	// PlayGroupsPrimaryKey and PlayGroupsColumn2 are the table columns denoting the
+	// primary key for the play_groups relation (M2M).
+	PlayGroupsPrimaryKey = []string{"pet_id", "play_group_id"}
 	// FriendsPrimaryKey and FriendsColumn2 are the table columns denoting the
 	// primary key for the friends relation (M2M).
 	FriendsPrimaryKey = []string{"pet_id", "friend_id"}
@@ -70,4 +135,36 @@ func ValidColumn(column string) bool {
 		}
 	}
 	return false
+}
+
+var (
+	// HeightValidator is a validator for the "height" field. It is called by the builders before save.
+	HeightValidator func(int) error
+	// WeightValidator is a validator for the "weight" field. It is called by the builders before save.
+	WeightValidator func(float64) error
+	// DefaultChip holds the default value on creation for the "chip" field.
+	DefaultChip func() uuid.UUID
+)
+
+// Sex defines the type for the "sex" enum field.
+type Sex string
+
+// Sex values.
+const (
+	SexMale   Sex = "male"
+	SexFemale Sex = "female"
+)
+
+func (s Sex) String() string {
+	return string(s)
+}
+
+// SexValidator is a validator for the "sex" field enum values. It is called by the builders before save.
+func SexValidator(s Sex) error {
+	switch s {
+	case SexMale, SexFemale:
+		return nil
+	default:
+		return fmt.Errorf("pet: invalid enum value for sex field: %q", s)
+	}
 }

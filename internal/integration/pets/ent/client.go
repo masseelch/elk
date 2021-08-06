@@ -9,9 +9,10 @@ import (
 
 	"github.com/masseelch/elk/internal/integration/pets/ent/migrate"
 
-	"github.com/masseelch/elk/internal/integration/pets/ent/category"
-	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
 	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -23,12 +24,14 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Category is the client for interacting with the Category builders.
-	Category *CategoryClient
-	// Owner is the client for interacting with the Owner builders.
-	Owner *OwnerClient
+	// Badge is the client for interacting with the Badge builders.
+	Badge *BadgeClient
 	// Pet is the client for interacting with the Pet builders.
 	Pet *PetClient
+	// PlayGroup is the client for interacting with the PlayGroup builders.
+	PlayGroup *PlayGroupClient
+	// Toy is the client for interacting with the Toy builders.
+	Toy *ToyClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -42,9 +45,10 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Category = NewCategoryClient(c.config)
-	c.Owner = NewOwnerClient(c.config)
+	c.Badge = NewBadgeClient(c.config)
 	c.Pet = NewPetClient(c.config)
+	c.PlayGroup = NewPlayGroupClient(c.config)
+	c.Toy = NewToyClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -76,11 +80,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Category: NewCategoryClient(cfg),
-		Owner:    NewOwnerClient(cfg),
-		Pet:      NewPetClient(cfg),
+		ctx:       ctx,
+		config:    cfg,
+		Badge:     NewBadgeClient(cfg),
+		Pet:       NewPetClient(cfg),
+		PlayGroup: NewPlayGroupClient(cfg),
+		Toy:       NewToyClient(cfg),
 	}, nil
 }
 
@@ -98,17 +103,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:   cfg,
-		Category: NewCategoryClient(cfg),
-		Owner:    NewOwnerClient(cfg),
-		Pet:      NewPetClient(cfg),
+		config:    cfg,
+		Badge:     NewBadgeClient(cfg),
+		Pet:       NewPetClient(cfg),
+		PlayGroup: NewPlayGroupClient(cfg),
+		Toy:       NewToyClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Category.
+//		Badge.
 //		Query().
 //		Count(ctx)
 //
@@ -131,89 +137,90 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Category.Use(hooks...)
-	c.Owner.Use(hooks...)
+	c.Badge.Use(hooks...)
 	c.Pet.Use(hooks...)
+	c.PlayGroup.Use(hooks...)
+	c.Toy.Use(hooks...)
 }
 
-// CategoryClient is a client for the Category schema.
-type CategoryClient struct {
+// BadgeClient is a client for the Badge schema.
+type BadgeClient struct {
 	config
 }
 
-// NewCategoryClient returns a client for the Category from the given config.
-func NewCategoryClient(c config) *CategoryClient {
-	return &CategoryClient{config: c}
+// NewBadgeClient returns a client for the Badge from the given config.
+func NewBadgeClient(c config) *BadgeClient {
+	return &BadgeClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `category.Hooks(f(g(h())))`.
-func (c *CategoryClient) Use(hooks ...Hook) {
-	c.hooks.Category = append(c.hooks.Category, hooks...)
+// A call to `Use(f, g, h)` equals to `badge.Hooks(f(g(h())))`.
+func (c *BadgeClient) Use(hooks ...Hook) {
+	c.hooks.Badge = append(c.hooks.Badge, hooks...)
 }
 
-// Create returns a create builder for Category.
-func (c *CategoryClient) Create() *CategoryCreate {
-	mutation := newCategoryMutation(c.config, OpCreate)
-	return &CategoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a create builder for Badge.
+func (c *BadgeClient) Create() *BadgeCreate {
+	mutation := newBadgeMutation(c.config, OpCreate)
+	return &BadgeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Category entities.
-func (c *CategoryClient) CreateBulk(builders ...*CategoryCreate) *CategoryCreateBulk {
-	return &CategoryCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Badge entities.
+func (c *BadgeClient) CreateBulk(builders ...*BadgeCreate) *BadgeCreateBulk {
+	return &BadgeCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Category.
-func (c *CategoryClient) Update() *CategoryUpdate {
-	mutation := newCategoryMutation(c.config, OpUpdate)
-	return &CategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Badge.
+func (c *BadgeClient) Update() *BadgeUpdate {
+	mutation := newBadgeMutation(c.config, OpUpdate)
+	return &BadgeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *CategoryClient) UpdateOne(ca *Category) *CategoryUpdateOne {
-	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategory(ca))
-	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *BadgeClient) UpdateOne(b *Badge) *BadgeUpdateOne {
+	mutation := newBadgeMutation(c.config, OpUpdateOne, withBadge(b))
+	return &BadgeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *CategoryClient) UpdateOneID(id int) *CategoryUpdateOne {
-	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategoryID(id))
-	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *BadgeClient) UpdateOneID(id int) *BadgeUpdateOne {
+	mutation := newBadgeMutation(c.config, OpUpdateOne, withBadgeID(id))
+	return &BadgeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Category.
-func (c *CategoryClient) Delete() *CategoryDelete {
-	mutation := newCategoryMutation(c.config, OpDelete)
-	return &CategoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Badge.
+func (c *BadgeClient) Delete() *BadgeDelete {
+	mutation := newBadgeMutation(c.config, OpDelete)
+	return &BadgeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *CategoryClient) DeleteOne(ca *Category) *CategoryDeleteOne {
-	return c.DeleteOneID(ca.ID)
+func (c *BadgeClient) DeleteOne(b *Badge) *BadgeDeleteOne {
+	return c.DeleteOneID(b.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *CategoryClient) DeleteOneID(id int) *CategoryDeleteOne {
-	builder := c.Delete().Where(category.ID(id))
+func (c *BadgeClient) DeleteOneID(id int) *BadgeDeleteOne {
+	builder := c.Delete().Where(badge.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &CategoryDeleteOne{builder}
+	return &BadgeDeleteOne{builder}
 }
 
-// Query returns a query builder for Category.
-func (c *CategoryClient) Query() *CategoryQuery {
-	return &CategoryQuery{
+// Query returns a query builder for Badge.
+func (c *BadgeClient) Query() *BadgeQuery {
+	return &BadgeQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a Category entity by its id.
-func (c *CategoryClient) Get(ctx context.Context, id int) (*Category, error) {
-	return c.Query().Where(category.ID(id)).Only(ctx)
+// Get returns a Badge entity by its id.
+func (c *BadgeClient) Get(ctx context.Context, id int) (*Badge, error) {
+	return c.Query().Where(badge.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *CategoryClient) GetX(ctx context.Context, id int) *Category {
+func (c *BadgeClient) GetX(ctx context.Context, id int) *Badge {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -221,131 +228,25 @@ func (c *CategoryClient) GetX(ctx context.Context, id int) *Category {
 	return obj
 }
 
-// QueryPets queries the pets edge of a Category.
-func (c *CategoryClient) QueryPets(ca *Category) *PetQuery {
+// QueryWearer queries the wearer edge of a Badge.
+func (c *BadgeClient) QueryWearer(b *Badge) *PetQuery {
 	query := &PetQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ca.ID
+		id := b.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.From(badge.Table, badge.FieldID, id),
 			sqlgraph.To(pet.Table, pet.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, category.PetsTable, category.PetsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2O, true, badge.WearerTable, badge.WearerColumn),
 		)
-		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *CategoryClient) Hooks() []Hook {
-	return c.hooks.Category
-}
-
-// OwnerClient is a client for the Owner schema.
-type OwnerClient struct {
-	config
-}
-
-// NewOwnerClient returns a client for the Owner from the given config.
-func NewOwnerClient(c config) *OwnerClient {
-	return &OwnerClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `owner.Hooks(f(g(h())))`.
-func (c *OwnerClient) Use(hooks ...Hook) {
-	c.hooks.Owner = append(c.hooks.Owner, hooks...)
-}
-
-// Create returns a create builder for Owner.
-func (c *OwnerClient) Create() *OwnerCreate {
-	mutation := newOwnerMutation(c.config, OpCreate)
-	return &OwnerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Owner entities.
-func (c *OwnerClient) CreateBulk(builders ...*OwnerCreate) *OwnerCreateBulk {
-	return &OwnerCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Owner.
-func (c *OwnerClient) Update() *OwnerUpdate {
-	mutation := newOwnerMutation(c.config, OpUpdate)
-	return &OwnerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *OwnerClient) UpdateOne(o *Owner) *OwnerUpdateOne {
-	mutation := newOwnerMutation(c.config, OpUpdateOne, withOwner(o))
-	return &OwnerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *OwnerClient) UpdateOneID(id int) *OwnerUpdateOne {
-	mutation := newOwnerMutation(c.config, OpUpdateOne, withOwnerID(id))
-	return &OwnerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Owner.
-func (c *OwnerClient) Delete() *OwnerDelete {
-	mutation := newOwnerMutation(c.config, OpDelete)
-	return &OwnerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *OwnerClient) DeleteOne(o *Owner) *OwnerDeleteOne {
-	return c.DeleteOneID(o.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *OwnerClient) DeleteOneID(id int) *OwnerDeleteOne {
-	builder := c.Delete().Where(owner.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &OwnerDeleteOne{builder}
-}
-
-// Query returns a query builder for Owner.
-func (c *OwnerClient) Query() *OwnerQuery {
-	return &OwnerQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Owner entity by its id.
-func (c *OwnerClient) Get(ctx context.Context, id int) (*Owner, error) {
-	return c.Query().Where(owner.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *OwnerClient) GetX(ctx context.Context, id int) *Owner {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryPets queries the pets edge of a Owner.
-func (c *OwnerClient) QueryPets(o *Owner) *PetQuery {
-	query := &PetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := o.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(owner.Table, owner.FieldID, id),
-			sqlgraph.To(pet.Table, pet.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, owner.PetsTable, owner.PetsColumn),
-		)
-		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *OwnerClient) Hooks() []Hook {
-	return c.hooks.Owner
+func (c *BadgeClient) Hooks() []Hook {
+	return c.hooks.Badge
 }
 
 // PetClient is a client for the Pet schema.
@@ -433,15 +334,15 @@ func (c *PetClient) GetX(ctx context.Context, id int) *Pet {
 	return obj
 }
 
-// QueryCategory queries the category edge of a Pet.
-func (c *PetClient) QueryCategory(pe *Pet) *CategoryQuery {
-	query := &CategoryQuery{config: c.config}
+// QueryBadge queries the badge edge of a Pet.
+func (c *PetClient) QueryBadge(pe *Pet) *BadgeQuery {
+	query := &BadgeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pe.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, id),
-			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+			sqlgraph.To(badge.Table, badge.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, pet.BadgeTable, pet.BadgeColumn),
 		)
 		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
 		return fromV, nil
@@ -449,15 +350,111 @@ func (c *PetClient) QueryCategory(pe *Pet) *CategoryQuery {
 	return query
 }
 
-// QueryOwner queries the owner edge of a Pet.
-func (c *PetClient) QueryOwner(pe *Pet) *OwnerQuery {
-	query := &OwnerQuery{config: c.config}
+// QueryProtege queries the protege edge of a Pet.
+func (c *PetClient) QueryProtege(pe *Pet) *PetQuery {
+	query := &PetQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pe.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, id),
-			sqlgraph.To(owner.Table, owner.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, pet.OwnerTable, pet.OwnerColumn),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, pet.ProtegeTable, pet.ProtegeColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMentor queries the mentor edge of a Pet.
+func (c *PetClient) QueryMentor(pe *Pet) *PetQuery {
+	query := &PetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, id),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, pet.MentorTable, pet.MentorColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySpouse queries the spouse edge of a Pet.
+func (c *PetClient) QuerySpouse(pe *Pet) *PetQuery {
+	query := &PetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, id),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, pet.SpouseTable, pet.SpouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToys queries the toys edge of a Pet.
+func (c *PetClient) QueryToys(pe *Pet) *ToyQuery {
+	query := &ToyQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, id),
+			sqlgraph.To(toy.Table, toy.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, pet.ToysTable, pet.ToysColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParent queries the parent edge of a Pet.
+func (c *PetClient) QueryParent(pe *Pet) *PetQuery {
+	query := &PetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, id),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, pet.ParentTable, pet.ParentColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChildren queries the children edge of a Pet.
+func (c *PetClient) QueryChildren(pe *Pet) *PetQuery {
+	query := &PetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, id),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, pet.ChildrenTable, pet.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlayGroups queries the play_groups edge of a Pet.
+func (c *PetClient) QueryPlayGroups(pe *Pet) *PlayGroupQuery {
+	query := &PlayGroupQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, id),
+			sqlgraph.To(playgroup.Table, playgroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, pet.PlayGroupsTable, pet.PlayGroupsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
 		return fromV, nil
@@ -484,4 +481,216 @@ func (c *PetClient) QueryFriends(pe *Pet) *PetQuery {
 // Hooks returns the client hooks.
 func (c *PetClient) Hooks() []Hook {
 	return c.hooks.Pet
+}
+
+// PlayGroupClient is a client for the PlayGroup schema.
+type PlayGroupClient struct {
+	config
+}
+
+// NewPlayGroupClient returns a client for the PlayGroup from the given config.
+func NewPlayGroupClient(c config) *PlayGroupClient {
+	return &PlayGroupClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `playgroup.Hooks(f(g(h())))`.
+func (c *PlayGroupClient) Use(hooks ...Hook) {
+	c.hooks.PlayGroup = append(c.hooks.PlayGroup, hooks...)
+}
+
+// Create returns a create builder for PlayGroup.
+func (c *PlayGroupClient) Create() *PlayGroupCreate {
+	mutation := newPlayGroupMutation(c.config, OpCreate)
+	return &PlayGroupCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlayGroup entities.
+func (c *PlayGroupClient) CreateBulk(builders ...*PlayGroupCreate) *PlayGroupCreateBulk {
+	return &PlayGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlayGroup.
+func (c *PlayGroupClient) Update() *PlayGroupUpdate {
+	mutation := newPlayGroupMutation(c.config, OpUpdate)
+	return &PlayGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlayGroupClient) UpdateOne(pg *PlayGroup) *PlayGroupUpdateOne {
+	mutation := newPlayGroupMutation(c.config, OpUpdateOne, withPlayGroup(pg))
+	return &PlayGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlayGroupClient) UpdateOneID(id int) *PlayGroupUpdateOne {
+	mutation := newPlayGroupMutation(c.config, OpUpdateOne, withPlayGroupID(id))
+	return &PlayGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlayGroup.
+func (c *PlayGroupClient) Delete() *PlayGroupDelete {
+	mutation := newPlayGroupMutation(c.config, OpDelete)
+	return &PlayGroupDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *PlayGroupClient) DeleteOne(pg *PlayGroup) *PlayGroupDeleteOne {
+	return c.DeleteOneID(pg.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *PlayGroupClient) DeleteOneID(id int) *PlayGroupDeleteOne {
+	builder := c.Delete().Where(playgroup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlayGroupDeleteOne{builder}
+}
+
+// Query returns a query builder for PlayGroup.
+func (c *PlayGroupClient) Query() *PlayGroupQuery {
+	return &PlayGroupQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a PlayGroup entity by its id.
+func (c *PlayGroupClient) Get(ctx context.Context, id int) (*PlayGroup, error) {
+	return c.Query().Where(playgroup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlayGroupClient) GetX(ctx context.Context, id int) *PlayGroup {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryParticipants queries the participants edge of a PlayGroup.
+func (c *PlayGroupClient) QueryParticipants(pg *PlayGroup) *PetQuery {
+	query := &PetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(playgroup.Table, playgroup.FieldID, id),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, playgroup.ParticipantsTable, playgroup.ParticipantsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlayGroupClient) Hooks() []Hook {
+	return c.hooks.PlayGroup
+}
+
+// ToyClient is a client for the Toy schema.
+type ToyClient struct {
+	config
+}
+
+// NewToyClient returns a client for the Toy from the given config.
+func NewToyClient(c config) *ToyClient {
+	return &ToyClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `toy.Hooks(f(g(h())))`.
+func (c *ToyClient) Use(hooks ...Hook) {
+	c.hooks.Toy = append(c.hooks.Toy, hooks...)
+}
+
+// Create returns a create builder for Toy.
+func (c *ToyClient) Create() *ToyCreate {
+	mutation := newToyMutation(c.config, OpCreate)
+	return &ToyCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Toy entities.
+func (c *ToyClient) CreateBulk(builders ...*ToyCreate) *ToyCreateBulk {
+	return &ToyCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Toy.
+func (c *ToyClient) Update() *ToyUpdate {
+	mutation := newToyMutation(c.config, OpUpdate)
+	return &ToyUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ToyClient) UpdateOne(t *Toy) *ToyUpdateOne {
+	mutation := newToyMutation(c.config, OpUpdateOne, withToy(t))
+	return &ToyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ToyClient) UpdateOneID(id int) *ToyUpdateOne {
+	mutation := newToyMutation(c.config, OpUpdateOne, withToyID(id))
+	return &ToyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Toy.
+func (c *ToyClient) Delete() *ToyDelete {
+	mutation := newToyMutation(c.config, OpDelete)
+	return &ToyDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ToyClient) DeleteOne(t *Toy) *ToyDeleteOne {
+	return c.DeleteOneID(t.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ToyClient) DeleteOneID(id int) *ToyDeleteOne {
+	builder := c.Delete().Where(toy.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ToyDeleteOne{builder}
+}
+
+// Query returns a query builder for Toy.
+func (c *ToyClient) Query() *ToyQuery {
+	return &ToyQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Toy entity by its id.
+func (c *ToyClient) Get(ctx context.Context, id int) (*Toy, error) {
+	return c.Query().Where(toy.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ToyClient) GetX(ctx context.Context, id int) *Toy {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOwner queries the owner edge of a Toy.
+func (c *ToyClient) QueryOwner(t *Toy) *PetQuery {
+	query := &PetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(toy.Table, toy.FieldID, id),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, toy.OwnerTable, toy.OwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ToyClient) Hooks() []Hook {
+	return c.hooks.Toy
 }

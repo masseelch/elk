@@ -4,7 +4,7 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
-    import "github.com/go-chi/chi/v5" {{/* This is needed for stupid SIV rule */}}
+    {{ template "helper/http/import" $ }}
 
     {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
@@ -22,22 +22,14 @@
                 q{{ .EntQuery }}
             {{- end }}
             e, err := q.Only(r.Context())
-            if err != nil {
-                switch {
-                case ent.IsNotFound(err):
-                    msg := stripEntError(err)
-                    l.Info(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                    render.NotFound(w, r, msg)
-                case ent.IsNotSingular(err):
-                    msg := stripEntError(err)
-                    l.Error(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                    render.BadRequest(w, r, msg)
-                default:
-                    l.Error("error fetching {{ $n.Name | kebab }} from db", zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                    render.InternalServerError(w, r, nil)
-                }
-                return
-            }
+
+            {{-
+                template "helper/http/error-handling" dict
+                "Errors" (list "not-found" "not-singular")
+                "Logs" (list (printf "zap.Int(\"%s\", id)" $n.ID.Name))
+                "Default" (print "could not read " $n.Name | kebab)
+            -}}
+
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", id))
             easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}ReadResponse(e), w)
         }

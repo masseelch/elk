@@ -2,130 +2,60 @@
 
 package http
 
-import "github.com/masseelch/elk/internal/integration/pets/ent"
+import (
+	time "time"
 
-// Response of a ent.Category create request.
-type CategoryCreateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	"github.com/google/uuid"
+	"github.com/masseelch/elk/internal/integration/pets/ent"
+	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+)
+
+// Response of a ent.Badge create request.
+type BadgeCreateResponse struct {
+	ID int `json:"id,omitempty"`
 }
 
-func NewCategoryCreateResponse(c *ent.Category) *CategoryCreateResponse {
-	return &CategoryCreateResponse{
-		ID:   c.ID,
-		Name: c.Name,
+func NewBadgeCreateResponse(b *ent.Badge) *BadgeCreateResponse {
+	return &BadgeCreateResponse{
+		ID: b.ID,
 	}
 }
 
-// Response of a ent.Category read request.
-type CategoryReadResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+// Response of a ent.Badge read request.
+type BadgeReadResponse struct {
+	ID int `json:"id,omitempty"`
 }
 
-func NewCategoryReadResponse(c *ent.Category) *CategoryReadResponse {
-	return &CategoryReadResponse{
-		ID:   c.ID,
-		Name: c.Name,
+func NewBadgeReadResponse(b *ent.Badge) *BadgeReadResponse {
+	return &BadgeReadResponse{
+		ID: b.ID,
 	}
 }
 
-// Response of a ent.Category update request.
-type CategoryUpdateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+// Response of a ent.Badge update request.
+type BadgeUpdateResponse struct {
+	ID int `json:"id,omitempty"`
 }
 
-func NewCategoryUpdateResponse(c *ent.Category) *CategoryUpdateResponse {
-	return &CategoryUpdateResponse{
-		ID:   c.ID,
-		Name: c.Name,
+func NewBadgeUpdateResponse(b *ent.Badge) *BadgeUpdateResponse {
+	return &BadgeUpdateResponse{
+		ID: b.ID,
 	}
 }
 
-// Response of a ent.Category list request.
-type CategoryListResponse []struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+// Response of a ent.Badge list request.
+type BadgeListResponse []struct {
+	ID int `json:"id,omitempty"`
 }
 
-func NewCategoryListResponse(c []*ent.Category) CategoryListResponse {
-	r := make(CategoryListResponse, len(c))
-	for i := range c {
+func NewBadgeListResponse(b []*ent.Badge) BadgeListResponse {
+	r := make(BadgeListResponse, len(b))
+	for i := range b {
 		r[i] = struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
+			ID int `json:"id,omitempty"`
 		}{
-			ID:   c[i].ID,
-			Name: c[i].Name,
-		}
-	}
-	return r
-}
-
-// Response of a ent.Owner create request.
-type OwnerCreateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
-
-func NewOwnerCreateResponse(o *ent.Owner) *OwnerCreateResponse {
-	return &OwnerCreateResponse{
-		ID:   o.ID,
-		Name: o.Name,
-		Age:  o.Age,
-	}
-}
-
-// Response of a ent.Owner read request.
-type OwnerReadResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
-
-func NewOwnerReadResponse(o *ent.Owner) *OwnerReadResponse {
-	return &OwnerReadResponse{
-		ID:   o.ID,
-		Name: o.Name,
-		Age:  o.Age,
-	}
-}
-
-// Response of a ent.Owner update request.
-type OwnerUpdateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
-
-func NewOwnerUpdateResponse(o *ent.Owner) *OwnerUpdateResponse {
-	return &OwnerUpdateResponse{
-		ID:   o.ID,
-		Name: o.Name,
-		Age:  o.Age,
-	}
-}
-
-// Response of a ent.Owner list request.
-type OwnerListResponse []struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
-
-func NewOwnerListResponse(o []*ent.Owner) OwnerListResponse {
-	r := make(OwnerListResponse, len(o))
-	for i := range o {
-		r[i] = struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Age  int    `json:"age,omitempty"`
-		}{
-			ID:   o[i].ID,
-			Name: o[i].Name,
-			Age:  o[i].Age,
+			ID: b[i].ID,
 		}
 	}
 	return r
@@ -133,394 +63,4257 @@ func NewOwnerListResponse(o []*ent.Owner) OwnerListResponse {
 
 // Response of a ent.Pet create request.
 type PetCreateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
+	ID        int       `json:"id,omitempty"`
+	Height    int       `json:"height,omitempty"`
+	Weight    float64   `json:"weight,omitempty"`
+	Castrated bool      `json:"castrated,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Birthday  time.Time `json:"birthday,omitempty"`
+	Nicknames []string  `json:"nicknames,omitempty"`
+	Sex       pet.Sex   `json:"sex,omitempty"`
+	Chip      uuid.UUID `json:"chip,omitempty"`
 }
 
 func NewPetCreateResponse(pe *ent.Pet) *PetCreateResponse {
 	return &PetCreateResponse{
-		ID:   pe.ID,
-		Name: pe.Name,
-		Age:  pe.Age,
+		ID:        pe.ID,
+		Height:    pe.Height,
+		Weight:    pe.Weight,
+		Castrated: pe.Castrated,
+		Name:      pe.Name,
+		Birthday:  pe.Birthday,
+		Nicknames: pe.Nicknames,
+		Sex:       pe.Sex,
+		Chip:      pe.Chip,
 	}
 }
 
 // Response of a ent.Pet read request.
 type PetReadResponse struct {
-	ID    int    `json:"id,omitempty"`
-	Name  string `json:"name,omitempty"`
-	Age   int    `json:"age,omitempty"`
-	Owner struct {
-		ID   int    `json:"id,omitempty"`
-		Name string `json:"name,omitempty"`
-		Age  int    `json:"age,omitempty"`
-	} `json:"owner,omitempty"`
-	Friends []struct {
-		ID    int    `json:"id,omitempty"`
-		Name  string `json:"name,omitempty"`
-		Age   int    `json:"age,omitempty"`
-		Owner struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Age  int    `json:"age,omitempty"`
-		} `json:"owner,omitempty"`
-		Friends []struct {
-			ID    int    `json:"id,omitempty"`
-			Name  string `json:"name,omitempty"`
-			Age   int    `json:"age,omitempty"`
-			Owner struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"owner,omitempty"`
-			Friends []struct {
+	ID        int       `json:"id,omitempty"`
+	Height    int       `json:"height,omitempty"`
+	Weight    float64   `json:"weight,omitempty"`
+	Castrated bool      `json:"castrated,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Birthday  time.Time `json:"birthday,omitempty"`
+	Nicknames []string  `json:"nicknames,omitempty"`
+	Sex       pet.Sex   `json:"sex,omitempty"`
+	Chip      uuid.UUID `json:"chip,omitempty"`
+	Badge     struct {
+		ID int `json:"id,omitempty"`
+	} `json:"badge,omitempty"`
+	Protege struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+		Badge     struct {
+			ID int `json:"id,omitempty"`
+		} `json:"badge,omitempty"`
+		Spouse struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Toys []struct {
 				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
 			} `json:"friends,omitempty"`
+		} `json:"spouse,omitempty"`
+		Toys []struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		} `json:"toys,omitempty"`
+		Parent struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"parent,omitempty"`
+		PlayGroups []struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		} `json:"play_groups,omitempty"`
+		Friends []struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
 		} `json:"friends,omitempty"`
+	} `json:"protege,omitempty"`
+	Spouse struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+		Badge     struct {
+			ID int `json:"id,omitempty"`
+		} `json:"badge,omitempty"`
+		Protege struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"protege,omitempty"`
+		Toys []struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		} `json:"toys,omitempty"`
+		Parent struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"parent,omitempty"`
+		PlayGroups []struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		} `json:"play_groups,omitempty"`
+		Friends []struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"friends,omitempty"`
+	} `json:"spouse,omitempty"`
+	Toys []struct {
+		ID    int    `json:"id,omitempty"`
+		Title string `json:"title,omitempty"`
+	} `json:"toys,omitempty"`
+	Parent struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+		Badge     struct {
+			ID int `json:"id,omitempty"`
+		} `json:"badge,omitempty"`
+		Protege struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"protege,omitempty"`
+		Spouse struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"spouse,omitempty"`
+		Toys []struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		} `json:"toys,omitempty"`
+		PlayGroups []struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		} `json:"play_groups,omitempty"`
+		Friends []struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"friends,omitempty"`
+	} `json:"parent,omitempty"`
+	PlayGroups []struct {
+		ID          int               `json:"id,omitempty"`
+		Title       string            `json:"title,omitempty"`
+		Description string            `json:"description,omitempty"`
+		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+	} `json:"play_groups,omitempty"`
+	Friends []struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+		Badge     struct {
+			ID int `json:"id,omitempty"`
+		} `json:"badge,omitempty"`
+		Protege struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"protege,omitempty"`
+		Spouse struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"spouse,omitempty"`
+		Toys []struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		} `json:"toys,omitempty"`
+		Parent struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"parent,omitempty"`
+		PlayGroups []struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		} `json:"play_groups,omitempty"`
 	} `json:"friends,omitempty"`
 }
 
 func NewPetReadResponse(pe *ent.Pet) *PetReadResponse {
-	owner1 := struct {
-		ID   int    `json:"id,omitempty"`
-		Name string `json:"name,omitempty"`
-		Age  int    `json:"age,omitempty"`
+	badge1 := struct {
+		ID int `json:"id,omitempty"`
 	}{
-		ID:   pe.Edges.Owner.ID,
-		Name: pe.Edges.Owner.Name,
-		Age:  pe.Edges.Owner.Age,
+		ID: pe.Edges.Badge.ID,
+	}
+	protege1 := struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+		Badge     struct {
+			ID int `json:"id,omitempty"`
+		} `json:"badge,omitempty"`
+		Spouse struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"spouse,omitempty"`
+		Toys []struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		} `json:"toys,omitempty"`
+		Parent struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"parent,omitempty"`
+		PlayGroups []struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		} `json:"play_groups,omitempty"`
+		Friends []struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"friends,omitempty"`
+	}{
+		ID:        pe.Edges.Protege.ID,
+		Height:    pe.Edges.Protege.Height,
+		Weight:    pe.Edges.Protege.Weight,
+		Castrated: pe.Edges.Protege.Castrated,
+		Name:      pe.Edges.Protege.Name,
+		Birthday:  pe.Edges.Protege.Birthday,
+		Nicknames: pe.Edges.Protege.Nicknames,
+		Sex:       pe.Edges.Protege.Sex,
+		Chip:      pe.Edges.Protege.Chip,
+	}
+	spouse1 := struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+		Badge     struct {
+			ID int `json:"id,omitempty"`
+		} `json:"badge,omitempty"`
+		Protege struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"protege,omitempty"`
+		Toys []struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		} `json:"toys,omitempty"`
+		Parent struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"parent,omitempty"`
+		PlayGroups []struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		} `json:"play_groups,omitempty"`
+		Friends []struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"friends,omitempty"`
+	}{
+		ID:        pe.Edges.Spouse.ID,
+		Height:    pe.Edges.Spouse.Height,
+		Weight:    pe.Edges.Spouse.Weight,
+		Castrated: pe.Edges.Spouse.Castrated,
+		Name:      pe.Edges.Spouse.Name,
+		Birthday:  pe.Edges.Spouse.Birthday,
+		Nicknames: pe.Edges.Spouse.Nicknames,
+		Sex:       pe.Edges.Spouse.Sex,
+		Chip:      pe.Edges.Spouse.Chip,
+	}
+	toys1 := make([]struct {
+		ID    int    `json:"id,omitempty"`
+		Title string `json:"title,omitempty"`
+	}, len(pe.Edges.Toys))
+	for i1 := range pe.Edges.Toys {
+		toys1[i1] = struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		}{
+			ID:    pe.Edges.Toys[i1].ID,
+			Title: pe.Edges.Toys[i1].Title,
+		}
+	}
+	parent1 := struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+		Badge     struct {
+			ID int `json:"id,omitempty"`
+		} `json:"badge,omitempty"`
+		Protege struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"protege,omitempty"`
+		Spouse struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+				Friends []struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"friends,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+			Friends []struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"friends,omitempty"`
+		} `json:"spouse,omitempty"`
+		Toys []struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		} `json:"toys,omitempty"`
+		PlayGroups []struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		} `json:"play_groups,omitempty"`
+		Friends []struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"friends,omitempty"`
+	}{
+		ID:        pe.Edges.Parent.ID,
+		Height:    pe.Edges.Parent.Height,
+		Weight:    pe.Edges.Parent.Weight,
+		Castrated: pe.Edges.Parent.Castrated,
+		Name:      pe.Edges.Parent.Name,
+		Birthday:  pe.Edges.Parent.Birthday,
+		Nicknames: pe.Edges.Parent.Nicknames,
+		Sex:       pe.Edges.Parent.Sex,
+		Chip:      pe.Edges.Parent.Chip,
+	}
+	playgroups1 := make([]struct {
+		ID          int               `json:"id,omitempty"`
+		Title       string            `json:"title,omitempty"`
+		Description string            `json:"description,omitempty"`
+		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+	}, len(pe.Edges.PlayGroups))
+	for i1 := range pe.Edges.PlayGroups {
+		playgroups1[i1] = struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		}{
+			ID:          pe.Edges.PlayGroups[i1].ID,
+			Title:       pe.Edges.PlayGroups[i1].Title,
+			Description: pe.Edges.PlayGroups[i1].Description,
+			Weekday:     pe.Edges.PlayGroups[i1].Weekday,
+		}
 	}
 	friends1 := make([]struct {
-		ID    int    `json:"id,omitempty"`
-		Name  string `json:"name,omitempty"`
-		Age   int    `json:"age,omitempty"`
-		Owner struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Age  int    `json:"age,omitempty"`
-		} `json:"owner,omitempty"`
-		Friends []struct {
-			ID    int    `json:"id,omitempty"`
-			Name  string `json:"name,omitempty"`
-			Age   int    `json:"age,omitempty"`
-			Owner struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"owner,omitempty"`
-			Friends []struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+		Badge     struct {
+			ID int `json:"id,omitempty"`
+		} `json:"badge,omitempty"`
+		Protege struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
 				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"friends,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"protege,omitempty"`
+		Spouse struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"spouse,omitempty"`
+		Toys []struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		} `json:"toys,omitempty"`
+		Parent struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		} `json:"parent,omitempty"`
+		PlayGroups []struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		} `json:"play_groups,omitempty"`
 	}, len(pe.Edges.Friends))
 	for i1 := range pe.Edges.Friends {
-		owner2 := struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Age  int    `json:"age,omitempty"`
+		badge2 := struct {
+			ID int `json:"id,omitempty"`
 		}{
-			ID:   pe.Edges.Friends[i1].Edges.Owner.ID,
-			Name: pe.Edges.Friends[i1].Edges.Owner.Name,
-			Age:  pe.Edges.Friends[i1].Edges.Owner.Age,
+			ID: pe.Edges.Friends[i1].Edges.Badge.ID,
 		}
-		friends2 := make([]struct {
+		protege2 := struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		}{
+			ID:        pe.Edges.Friends[i1].Edges.Protege.ID,
+			Height:    pe.Edges.Friends[i1].Edges.Protege.Height,
+			Weight:    pe.Edges.Friends[i1].Edges.Protege.Weight,
+			Castrated: pe.Edges.Friends[i1].Edges.Protege.Castrated,
+			Name:      pe.Edges.Friends[i1].Edges.Protege.Name,
+			Birthday:  pe.Edges.Friends[i1].Edges.Protege.Birthday,
+			Nicknames: pe.Edges.Friends[i1].Edges.Protege.Nicknames,
+			Sex:       pe.Edges.Friends[i1].Edges.Protege.Sex,
+			Chip:      pe.Edges.Friends[i1].Edges.Protege.Chip,
+		}
+		spouse2 := struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		}{
+			ID:        pe.Edges.Friends[i1].Edges.Spouse.ID,
+			Height:    pe.Edges.Friends[i1].Edges.Spouse.Height,
+			Weight:    pe.Edges.Friends[i1].Edges.Spouse.Weight,
+			Castrated: pe.Edges.Friends[i1].Edges.Spouse.Castrated,
+			Name:      pe.Edges.Friends[i1].Edges.Spouse.Name,
+			Birthday:  pe.Edges.Friends[i1].Edges.Spouse.Birthday,
+			Nicknames: pe.Edges.Friends[i1].Edges.Spouse.Nicknames,
+			Sex:       pe.Edges.Friends[i1].Edges.Spouse.Sex,
+			Chip:      pe.Edges.Friends[i1].Edges.Spouse.Chip,
+		}
+		toys2 := make([]struct {
 			ID    int    `json:"id,omitempty"`
-			Name  string `json:"name,omitempty"`
-			Age   int    `json:"age,omitempty"`
-			Owner struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"owner,omitempty"`
-			Friends []struct {
+			Title string `json:"title,omitempty"`
+		}, len(pe.Edges.Friends[i1].Edges.Toys))
+		for i2 := range pe.Edges.Friends[i1].Edges.Toys {
+			toys2[i2] = struct {
 				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-			} `json:"friends,omitempty"`
-		}, len(pe.Edges.Friends[i1].Edges.Friends))
-		for i2 := range pe.Edges.Friends[i1].Edges.Friends {
-			owner3 := struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
+				Title string `json:"title,omitempty"`
 			}{
-				ID:   pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.ID,
-				Name: pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.Name,
-				Age:  pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.Age,
+				ID:    pe.Edges.Friends[i1].Edges.Toys[i2].ID,
+				Title: pe.Edges.Friends[i1].Edges.Toys[i2].Title,
 			}
-			friends3 := make([]struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-			}, len(pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends))
-			for i3 := range pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends {
-				owner4 := struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				}{
-					ID:   pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.ID,
-					Name: pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.Name,
-					Age:  pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.Age,
-				}
-				friends3[i3] = struct {
+		}
+		parent2 := struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
 					ID    int    `json:"id,omitempty"`
-					Name  string `json:"name,omitempty"`
-					Age   int    `json:"age,omitempty"`
-					Owner struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"owner,omitempty"`
-				}{
-					ID:    pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].ID,
-					Name:  pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Name,
-					Age:   pe.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Age,
-					Owner: owner4,
-				}
-			}
-			friends2[i2] = struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-				Friends []struct {
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
 					ID    int    `json:"id,omitempty"`
-					Name  string `json:"name,omitempty"`
-					Age   int    `json:"age,omitempty"`
-					Owner struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"owner,omitempty"`
-				} `json:"friends,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
+		}{
+			ID:        pe.Edges.Friends[i1].Edges.Parent.ID,
+			Height:    pe.Edges.Friends[i1].Edges.Parent.Height,
+			Weight:    pe.Edges.Friends[i1].Edges.Parent.Weight,
+			Castrated: pe.Edges.Friends[i1].Edges.Parent.Castrated,
+			Name:      pe.Edges.Friends[i1].Edges.Parent.Name,
+			Birthday:  pe.Edges.Friends[i1].Edges.Parent.Birthday,
+			Nicknames: pe.Edges.Friends[i1].Edges.Parent.Nicknames,
+			Sex:       pe.Edges.Friends[i1].Edges.Parent.Sex,
+			Chip:      pe.Edges.Friends[i1].Edges.Parent.Chip,
+		}
+		playgroups2 := make([]struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		}, len(pe.Edges.Friends[i1].Edges.PlayGroups))
+		for i2 := range pe.Edges.Friends[i1].Edges.PlayGroups {
+			playgroups2[i2] = struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
 			}{
-				ID:      pe.Edges.Friends[i1].Edges.Friends[i2].ID,
-				Name:    pe.Edges.Friends[i1].Edges.Friends[i2].Name,
-				Age:     pe.Edges.Friends[i1].Edges.Friends[i2].Age,
-				Owner:   owner3,
-				Friends: friends3,
+				ID:          pe.Edges.Friends[i1].Edges.PlayGroups[i2].ID,
+				Title:       pe.Edges.Friends[i1].Edges.PlayGroups[i2].Title,
+				Description: pe.Edges.Friends[i1].Edges.PlayGroups[i2].Description,
+				Weekday:     pe.Edges.Friends[i1].Edges.PlayGroups[i2].Weekday,
 			}
 		}
 		friends1[i1] = struct {
-			ID    int    `json:"id,omitempty"`
-			Name  string `json:"name,omitempty"`
-			Age   int    `json:"age,omitempty"`
-			Owner struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"owner,omitempty"`
-			Friends []struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-				Friends []struct {
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
+			Protege struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					Parent struct {
+						ID        int       `json:"id,omitempty"`
+						Height    int       `json:"height,omitempty"`
+						Weight    float64   `json:"weight,omitempty"`
+						Castrated bool      `json:"castrated,omitempty"`
+						Name      string    `json:"name,omitempty"`
+						Birthday  time.Time `json:"birthday,omitempty"`
+						Nicknames []string  `json:"nicknames,omitempty"`
+						Sex       pet.Sex   `json:"sex,omitempty"`
+						Chip      uuid.UUID `json:"chip,omitempty"`
+						Badge     struct {
+							ID int `json:"id,omitempty"`
+						} `json:"badge,omitempty"`
+						Toys []struct {
+							ID    int    `json:"id,omitempty"`
+							Title string `json:"title,omitempty"`
+						} `json:"toys,omitempty"`
+						PlayGroups []struct {
+							ID          int               `json:"id,omitempty"`
+							Title       string            `json:"title,omitempty"`
+							Description string            `json:"description,omitempty"`
+							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+						} `json:"play_groups,omitempty"`
+					} `json:"parent,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
 					ID    int    `json:"id,omitempty"`
-					Name  string `json:"name,omitempty"`
-					Age   int    `json:"age,omitempty"`
-					Owner struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"owner,omitempty"`
-				} `json:"friends,omitempty"`
-			} `json:"friends,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Spouse struct {
+						ID        int       `json:"id,omitempty"`
+						Height    int       `json:"height,omitempty"`
+						Weight    float64   `json:"weight,omitempty"`
+						Castrated bool      `json:"castrated,omitempty"`
+						Name      string    `json:"name,omitempty"`
+						Birthday  time.Time `json:"birthday,omitempty"`
+						Nicknames []string  `json:"nicknames,omitempty"`
+						Sex       pet.Sex   `json:"sex,omitempty"`
+						Chip      uuid.UUID `json:"chip,omitempty"`
+						Badge     struct {
+							ID int `json:"id,omitempty"`
+						} `json:"badge,omitempty"`
+						Toys []struct {
+							ID    int    `json:"id,omitempty"`
+							Title string `json:"title,omitempty"`
+						} `json:"toys,omitempty"`
+						PlayGroups []struct {
+							ID          int               `json:"id,omitempty"`
+							Title       string            `json:"title,omitempty"`
+							Description string            `json:"description,omitempty"`
+							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+						} `json:"play_groups,omitempty"`
+					} `json:"spouse,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"protege,omitempty"`
+			Spouse struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					Parent struct {
+						ID        int       `json:"id,omitempty"`
+						Height    int       `json:"height,omitempty"`
+						Weight    float64   `json:"weight,omitempty"`
+						Castrated bool      `json:"castrated,omitempty"`
+						Name      string    `json:"name,omitempty"`
+						Birthday  time.Time `json:"birthday,omitempty"`
+						Nicknames []string  `json:"nicknames,omitempty"`
+						Sex       pet.Sex   `json:"sex,omitempty"`
+						Chip      uuid.UUID `json:"chip,omitempty"`
+						Badge     struct {
+							ID int `json:"id,omitempty"`
+						} `json:"badge,omitempty"`
+						Toys []struct {
+							ID    int    `json:"id,omitempty"`
+							Title string `json:"title,omitempty"`
+						} `json:"toys,omitempty"`
+						PlayGroups []struct {
+							ID          int               `json:"id,omitempty"`
+							Title       string            `json:"title,omitempty"`
+							Description string            `json:"description,omitempty"`
+							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+						} `json:"play_groups,omitempty"`
+					} `json:"parent,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				Parent struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Protege struct {
+						ID        int       `json:"id,omitempty"`
+						Height    int       `json:"height,omitempty"`
+						Weight    float64   `json:"weight,omitempty"`
+						Castrated bool      `json:"castrated,omitempty"`
+						Name      string    `json:"name,omitempty"`
+						Birthday  time.Time `json:"birthday,omitempty"`
+						Nicknames []string  `json:"nicknames,omitempty"`
+						Sex       pet.Sex   `json:"sex,omitempty"`
+						Chip      uuid.UUID `json:"chip,omitempty"`
+						Badge     struct {
+							ID int `json:"id,omitempty"`
+						} `json:"badge,omitempty"`
+						Toys []struct {
+							ID    int    `json:"id,omitempty"`
+							Title string `json:"title,omitempty"`
+						} `json:"toys,omitempty"`
+						PlayGroups []struct {
+							ID          int               `json:"id,omitempty"`
+							Title       string            `json:"title,omitempty"`
+							Description string            `json:"description,omitempty"`
+							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+						} `json:"play_groups,omitempty"`
+					} `json:"protege,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"parent,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"spouse,omitempty"`
+			Toys []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"toys,omitempty"`
+			Parent struct {
+				ID        int       `json:"id,omitempty"`
+				Height    int       `json:"height,omitempty"`
+				Weight    float64   `json:"weight,omitempty"`
+				Castrated bool      `json:"castrated,omitempty"`
+				Name      string    `json:"name,omitempty"`
+				Birthday  time.Time `json:"birthday,omitempty"`
+				Nicknames []string  `json:"nicknames,omitempty"`
+				Sex       pet.Sex   `json:"sex,omitempty"`
+				Chip      uuid.UUID `json:"chip,omitempty"`
+				Badge     struct {
+					ID int `json:"id,omitempty"`
+				} `json:"badge,omitempty"`
+				Protege struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Spouse struct {
+						ID        int       `json:"id,omitempty"`
+						Height    int       `json:"height,omitempty"`
+						Weight    float64   `json:"weight,omitempty"`
+						Castrated bool      `json:"castrated,omitempty"`
+						Name      string    `json:"name,omitempty"`
+						Birthday  time.Time `json:"birthday,omitempty"`
+						Nicknames []string  `json:"nicknames,omitempty"`
+						Sex       pet.Sex   `json:"sex,omitempty"`
+						Chip      uuid.UUID `json:"chip,omitempty"`
+						Badge     struct {
+							ID int `json:"id,omitempty"`
+						} `json:"badge,omitempty"`
+						Toys []struct {
+							ID    int    `json:"id,omitempty"`
+							Title string `json:"title,omitempty"`
+						} `json:"toys,omitempty"`
+						PlayGroups []struct {
+							ID          int               `json:"id,omitempty"`
+							Title       string            `json:"title,omitempty"`
+							Description string            `json:"description,omitempty"`
+							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+						} `json:"play_groups,omitempty"`
+					} `json:"spouse,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"protege,omitempty"`
+				Spouse struct {
+					ID        int       `json:"id,omitempty"`
+					Height    int       `json:"height,omitempty"`
+					Weight    float64   `json:"weight,omitempty"`
+					Castrated bool      `json:"castrated,omitempty"`
+					Name      string    `json:"name,omitempty"`
+					Birthday  time.Time `json:"birthday,omitempty"`
+					Nicknames []string  `json:"nicknames,omitempty"`
+					Sex       pet.Sex   `json:"sex,omitempty"`
+					Chip      uuid.UUID `json:"chip,omitempty"`
+					Badge     struct {
+						ID int `json:"id,omitempty"`
+					} `json:"badge,omitempty"`
+					Protege struct {
+						ID        int       `json:"id,omitempty"`
+						Height    int       `json:"height,omitempty"`
+						Weight    float64   `json:"weight,omitempty"`
+						Castrated bool      `json:"castrated,omitempty"`
+						Name      string    `json:"name,omitempty"`
+						Birthday  time.Time `json:"birthday,omitempty"`
+						Nicknames []string  `json:"nicknames,omitempty"`
+						Sex       pet.Sex   `json:"sex,omitempty"`
+						Chip      uuid.UUID `json:"chip,omitempty"`
+						Badge     struct {
+							ID int `json:"id,omitempty"`
+						} `json:"badge,omitempty"`
+						Toys []struct {
+							ID    int    `json:"id,omitempty"`
+							Title string `json:"title,omitempty"`
+						} `json:"toys,omitempty"`
+						PlayGroups []struct {
+							ID          int               `json:"id,omitempty"`
+							Title       string            `json:"title,omitempty"`
+							Description string            `json:"description,omitempty"`
+							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+						} `json:"play_groups,omitempty"`
+					} `json:"protege,omitempty"`
+					Toys []struct {
+						ID    int    `json:"id,omitempty"`
+						Title string `json:"title,omitempty"`
+					} `json:"toys,omitempty"`
+					PlayGroups []struct {
+						ID          int               `json:"id,omitempty"`
+						Title       string            `json:"title,omitempty"`
+						Description string            `json:"description,omitempty"`
+						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+					} `json:"play_groups,omitempty"`
+				} `json:"spouse,omitempty"`
+				Toys []struct {
+					ID    int    `json:"id,omitempty"`
+					Title string `json:"title,omitempty"`
+				} `json:"toys,omitempty"`
+				PlayGroups []struct {
+					ID          int               `json:"id,omitempty"`
+					Title       string            `json:"title,omitempty"`
+					Description string            `json:"description,omitempty"`
+					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+				} `json:"play_groups,omitempty"`
+			} `json:"parent,omitempty"`
+			PlayGroups []struct {
+				ID          int               `json:"id,omitempty"`
+				Title       string            `json:"title,omitempty"`
+				Description string            `json:"description,omitempty"`
+				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+			} `json:"play_groups,omitempty"`
 		}{
-			ID:      pe.Edges.Friends[i1].ID,
-			Name:    pe.Edges.Friends[i1].Name,
-			Age:     pe.Edges.Friends[i1].Age,
-			Owner:   owner2,
-			Friends: friends2,
+			ID:         pe.Edges.Friends[i1].ID,
+			Height:     pe.Edges.Friends[i1].Height,
+			Weight:     pe.Edges.Friends[i1].Weight,
+			Castrated:  pe.Edges.Friends[i1].Castrated,
+			Name:       pe.Edges.Friends[i1].Name,
+			Birthday:   pe.Edges.Friends[i1].Birthday,
+			Nicknames:  pe.Edges.Friends[i1].Nicknames,
+			Sex:        pe.Edges.Friends[i1].Sex,
+			Chip:       pe.Edges.Friends[i1].Chip,
+			Badge:      badge2,
+			Protege:    protege2,
+			Spouse:     spouse2,
+			Toys:       toys2,
+			Parent:     parent2,
+			PlayGroups: playgroups2,
 		}
 	}
 	return &PetReadResponse{
-		ID:      pe.ID,
-		Name:    pe.Name,
-		Age:     pe.Age,
-		Owner:   owner1,
-		Friends: friends1,
+		ID:         pe.ID,
+		Height:     pe.Height,
+		Weight:     pe.Weight,
+		Castrated:  pe.Castrated,
+		Name:       pe.Name,
+		Birthday:   pe.Birthday,
+		Nicknames:  pe.Nicknames,
+		Sex:        pe.Sex,
+		Chip:       pe.Chip,
+		Badge:      badge1,
+		Protege:    protege1,
+		Spouse:     spouse1,
+		Toys:       toys1,
+		Parent:     parent1,
+		PlayGroups: playgroups1,
+		Friends:    friends1,
 	}
 }
 
 // Response of a ent.Pet update request.
 type PetUpdateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
+	ID        int       `json:"id,omitempty"`
+	Height    int       `json:"height,omitempty"`
+	Weight    float64   `json:"weight,omitempty"`
+	Castrated bool      `json:"castrated,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Birthday  time.Time `json:"birthday,omitempty"`
+	Nicknames []string  `json:"nicknames,omitempty"`
+	Sex       pet.Sex   `json:"sex,omitempty"`
+	Chip      uuid.UUID `json:"chip,omitempty"`
 }
 
 func NewPetUpdateResponse(pe *ent.Pet) *PetUpdateResponse {
 	return &PetUpdateResponse{
-		ID:   pe.ID,
-		Name: pe.Name,
-		Age:  pe.Age,
+		ID:        pe.ID,
+		Height:    pe.Height,
+		Weight:    pe.Weight,
+		Castrated: pe.Castrated,
+		Name:      pe.Name,
+		Birthday:  pe.Birthday,
+		Nicknames: pe.Nicknames,
+		Sex:       pe.Sex,
+		Chip:      pe.Chip,
 	}
 }
 
 // Response of a ent.Pet list request.
 type PetListResponse []struct {
-	ID      int    `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Age     int    `json:"age,omitempty"`
-	Friends []struct {
-		ID      int    `json:"id,omitempty"`
-		Name    string `json:"name,omitempty"`
-		Age     int    `json:"age,omitempty"`
-		Friends []struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"friends,omitempty"`
+	ID        int       `json:"id,omitempty"`
+	Height    int       `json:"height,omitempty"`
+	Weight    float64   `json:"weight,omitempty"`
+	Castrated bool      `json:"castrated,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Birthday  time.Time `json:"birthday,omitempty"`
+	Nicknames []string  `json:"nicknames,omitempty"`
+	Sex       pet.Sex   `json:"sex,omitempty"`
+	Chip      uuid.UUID `json:"chip,omitempty"`
+	Badge     struct {
+		ID int `json:"id,omitempty"`
+	} `json:"badge,omitempty"`
 }
 
 func NewPetListResponse(pe []*ent.Pet) PetListResponse {
 	r := make(PetListResponse, len(pe))
 	for i := range pe {
-		friends1 := make([]struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"friends,omitempty"`
-			} `json:"friends,omitempty"`
-		}, len(pe[i].Edges.Friends))
-		for i1 := range pe[i].Edges.Friends {
-			friends2 := make([]struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"friends,omitempty"`
-			}, len(pe[i].Edges.Friends[i1].Edges.Friends))
-			for i2 := range pe[i].Edges.Friends[i1].Edges.Friends {
-				friends3 := make([]struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				}, len(pe[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends))
-				for i3 := range pe[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends {
-					friends3[i3] = struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					}{
-						ID:   pe[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].ID,
-						Name: pe[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Name,
-						Age:  pe[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Age,
-					}
-				}
-				friends2[i2] = struct {
-					ID      int    `json:"id,omitempty"`
-					Name    string `json:"name,omitempty"`
-					Age     int    `json:"age,omitempty"`
-					Friends []struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"friends,omitempty"`
-				}{
-					ID:      pe[i].Edges.Friends[i1].Edges.Friends[i2].ID,
-					Name:    pe[i].Edges.Friends[i1].Edges.Friends[i2].Name,
-					Age:     pe[i].Edges.Friends[i1].Edges.Friends[i2].Age,
-					Friends: friends3,
-				}
-			}
-			friends1[i1] = struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
-					ID      int    `json:"id,omitempty"`
-					Name    string `json:"name,omitempty"`
-					Age     int    `json:"age,omitempty"`
-					Friends []struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"friends,omitempty"`
-				} `json:"friends,omitempty"`
-			}{
-				ID:      pe[i].Edges.Friends[i1].ID,
-				Name:    pe[i].Edges.Friends[i1].Name,
-				Age:     pe[i].Edges.Friends[i1].Age,
-				Friends: friends2,
-			}
+		badge1 := struct {
+			ID int `json:"id,omitempty"`
+		}{
+			ID: pe[i].Edges.Badge.ID,
 		}
 		r[i] = struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
-					ID      int    `json:"id,omitempty"`
-					Name    string `json:"name,omitempty"`
-					Age     int    `json:"age,omitempty"`
-					Friends []struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"friends,omitempty"`
-				} `json:"friends,omitempty"`
-			} `json:"friends,omitempty"`
+			ID        int       `json:"id,omitempty"`
+			Height    int       `json:"height,omitempty"`
+			Weight    float64   `json:"weight,omitempty"`
+			Castrated bool      `json:"castrated,omitempty"`
+			Name      string    `json:"name,omitempty"`
+			Birthday  time.Time `json:"birthday,omitempty"`
+			Nicknames []string  `json:"nicknames,omitempty"`
+			Sex       pet.Sex   `json:"sex,omitempty"`
+			Chip      uuid.UUID `json:"chip,omitempty"`
+			Badge     struct {
+				ID int `json:"id,omitempty"`
+			} `json:"badge,omitempty"`
 		}{
-			ID:      pe[i].ID,
-			Name:    pe[i].Name,
-			Age:     pe[i].Age,
-			Friends: friends1,
+			ID:        pe[i].ID,
+			Height:    pe[i].Height,
+			Weight:    pe[i].Weight,
+			Castrated: pe[i].Castrated,
+			Name:      pe[i].Name,
+			Birthday:  pe[i].Birthday,
+			Nicknames: pe[i].Nicknames,
+			Sex:       pe[i].Sex,
+			Chip:      pe[i].Chip,
+			Badge:     badge1,
+		}
+	}
+	return r
+}
+
+// Response of a ent.PlayGroup create request.
+type PlayGroupCreateResponse struct {
+	ID          int               `json:"id,omitempty"`
+	Title       string            `json:"title,omitempty"`
+	Description string            `json:"description,omitempty"`
+	Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+}
+
+func NewPlayGroupCreateResponse(pg *ent.PlayGroup) *PlayGroupCreateResponse {
+	return &PlayGroupCreateResponse{
+		ID:          pg.ID,
+		Title:       pg.Title,
+		Description: pg.Description,
+		Weekday:     pg.Weekday,
+	}
+}
+
+// Response of a ent.PlayGroup read request.
+type PlayGroupReadResponse struct {
+	ID          int               `json:"id,omitempty"`
+	Title       string            `json:"title,omitempty"`
+	Description string            `json:"description,omitempty"`
+	Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+}
+
+func NewPlayGroupReadResponse(pg *ent.PlayGroup) *PlayGroupReadResponse {
+	return &PlayGroupReadResponse{
+		ID:          pg.ID,
+		Title:       pg.Title,
+		Description: pg.Description,
+		Weekday:     pg.Weekday,
+	}
+}
+
+// Response of a ent.PlayGroup update request.
+type PlayGroupUpdateResponse struct {
+	ID          int               `json:"id,omitempty"`
+	Title       string            `json:"title,omitempty"`
+	Description string            `json:"description,omitempty"`
+	Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+}
+
+func NewPlayGroupUpdateResponse(pg *ent.PlayGroup) *PlayGroupUpdateResponse {
+	return &PlayGroupUpdateResponse{
+		ID:          pg.ID,
+		Title:       pg.Title,
+		Description: pg.Description,
+		Weekday:     pg.Weekday,
+	}
+}
+
+// Response of a ent.PlayGroup list request.
+type PlayGroupListResponse []struct {
+	ID          int               `json:"id,omitempty"`
+	Title       string            `json:"title,omitempty"`
+	Description string            `json:"description,omitempty"`
+	Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+}
+
+func NewPlayGroupListResponse(pg []*ent.PlayGroup) PlayGroupListResponse {
+	r := make(PlayGroupListResponse, len(pg))
+	for i := range pg {
+		r[i] = struct {
+			ID          int               `json:"id,omitempty"`
+			Title       string            `json:"title,omitempty"`
+			Description string            `json:"description,omitempty"`
+			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+		}{
+			ID:          pg[i].ID,
+			Title:       pg[i].Title,
+			Description: pg[i].Description,
+			Weekday:     pg[i].Weekday,
+		}
+	}
+	return r
+}
+
+// Response of a ent.Toy create request.
+type ToyCreateResponse struct {
+	ID    int    `json:"id,omitempty"`
+	Title string `json:"title,omitempty"`
+}
+
+func NewToyCreateResponse(t *ent.Toy) *ToyCreateResponse {
+	return &ToyCreateResponse{
+		ID:    t.ID,
+		Title: t.Title,
+	}
+}
+
+// Response of a ent.Toy read request.
+type ToyReadResponse struct {
+	ID    int    `json:"id,omitempty"`
+	Title string `json:"title,omitempty"`
+}
+
+func NewToyReadResponse(t *ent.Toy) *ToyReadResponse {
+	return &ToyReadResponse{
+		ID:    t.ID,
+		Title: t.Title,
+	}
+}
+
+// Response of a ent.Toy update request.
+type ToyUpdateResponse struct {
+	ID    int    `json:"id,omitempty"`
+	Title string `json:"title,omitempty"`
+}
+
+func NewToyUpdateResponse(t *ent.Toy) *ToyUpdateResponse {
+	return &ToyUpdateResponse{
+		ID:    t.ID,
+		Title: t.Title,
+	}
+}
+
+// Response of a ent.Toy list request.
+type ToyListResponse []struct {
+	ID    int    `json:"id,omitempty"`
+	Title string `json:"title,omitempty"`
+}
+
+func NewToyListResponse(t []*ent.Toy) ToyListResponse {
+	r := make(ToyListResponse, len(t))
+	for i := range t {
+		r[i] = struct {
+			ID    int    `json:"id,omitempty"`
+			Title string `json:"title,omitempty"`
+		}{
+			ID:    t[i].ID,
+			Title: t[i].Title,
 		}
 	}
 	return r

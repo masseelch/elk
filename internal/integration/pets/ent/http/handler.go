@@ -20,17 +20,17 @@ type Routes uint32
 func (rs Routes) has(r Routes) bool { return rs&r != 0 }
 
 const (
-	CategoryCreate Routes = 1 << iota
-	CategoryRead
-	CategoryUpdate
-	CategoryDelete
-	CategoryList
-	CategoryPets
-	CategoryRoutes = 1<<iota - 1
+	BadgeCreate Routes = 1 << iota
+	BadgeRead
+	BadgeUpdate
+	BadgeDelete
+	BadgeList
+	BadgeWearer
+	BadgeRoutes = 1<<iota - 1
 )
 
-// CategoryHandler handles http crud operations on ent.Category.
-type CategoryHandler struct {
+// BadgeHandler handles http crud operations on ent.Badge.
+type BadgeHandler struct {
 	handler
 
 	client    *ent.Client
@@ -38,82 +38,33 @@ type CategoryHandler struct {
 	validator *validator.Validate
 }
 
-func NewCategoryHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *CategoryHandler {
-	return &CategoryHandler{
+func NewBadgeHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *BadgeHandler {
+	return &BadgeHandler{
 		client:    c,
-		log:       l.With(zap.String("handler", "CategoryHandler")),
+		log:       l.With(zap.String("handler", "BadgeHandler")),
 		validator: v,
 	}
 }
 
 // RegisterHandlers registers the generated handlers on the given chi router.
-func (h *CategoryHandler) Mount(r chi.Router, rs Routes) {
-	if rs.has(CategoryCreate) {
+func (h *BadgeHandler) Mount(r chi.Router, rs Routes) {
+	if rs.has(BadgeCreate) {
 		r.Post("/", h.Create)
 	}
-	if rs.has(CategoryRead) {
+	if rs.has(BadgeRead) {
 		r.Get("/{id}", h.Read)
 	}
-	if rs.has(CategoryUpdate) {
+	if rs.has(BadgeUpdate) {
 		r.Patch("/{id}", h.Update)
 	}
-	if rs.has(CategoryDelete) {
+	if rs.has(BadgeDelete) {
 		r.Delete("/{id}", h.Delete)
 	}
-	if rs.has(CategoryList) {
+	if rs.has(BadgeList) {
 		r.Get("/", h.List)
 	}
-	if rs.has(CategoryPets) {
-		r.Get("/{id}/pets", h.Pets)
-	}
-}
-
-const (
-	OwnerCreate Routes = 1 << iota
-	OwnerRead
-	OwnerUpdate
-	OwnerDelete
-	OwnerList
-	OwnerPets
-	OwnerRoutes = 1<<iota - 1
-)
-
-// OwnerHandler handles http crud operations on ent.Owner.
-type OwnerHandler struct {
-	handler
-
-	client    *ent.Client
-	log       *zap.Logger
-	validator *validator.Validate
-}
-
-func NewOwnerHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *OwnerHandler {
-	return &OwnerHandler{
-		client:    c,
-		log:       l.With(zap.String("handler", "OwnerHandler")),
-		validator: v,
-	}
-}
-
-// RegisterHandlers registers the generated handlers on the given chi router.
-func (h *OwnerHandler) Mount(r chi.Router, rs Routes) {
-	if rs.has(OwnerCreate) {
-		r.Post("/", h.Create)
-	}
-	if rs.has(OwnerRead) {
-		r.Get("/{id}", h.Read)
-	}
-	if rs.has(OwnerUpdate) {
-		r.Patch("/{id}", h.Update)
-	}
-	if rs.has(OwnerDelete) {
-		r.Delete("/{id}", h.Delete)
-	}
-	if rs.has(OwnerList) {
-		r.Get("/", h.List)
-	}
-	if rs.has(OwnerPets) {
-		r.Get("/{id}/pets", h.Pets)
+	if rs.has(BadgeWearer) {
+		r.Get("/{id}/wearer", h.Wearer)
 	}
 }
 
@@ -123,8 +74,14 @@ const (
 	PetUpdate
 	PetDelete
 	PetList
-	PetCategory
-	PetOwner
+	PetBadge
+	PetProtege
+	PetMentor
+	PetSpouse
+	PetToys
+	PetParent
+	PetChildren
+	PetPlayGroups
 	PetFriends
 	PetRoutes = 1<<iota - 1
 )
@@ -163,14 +120,130 @@ func (h *PetHandler) Mount(r chi.Router, rs Routes) {
 	if rs.has(PetList) {
 		r.Get("/", h.List)
 	}
-	if rs.has(PetCategory) {
-		r.Get("/{id}/category", h.Category)
+	if rs.has(PetBadge) {
+		r.Get("/{id}/badge", h.Badge)
 	}
-	if rs.has(PetOwner) {
-		r.Get("/{id}/owner", h.Owner)
+	if rs.has(PetProtege) {
+		r.Get("/{id}/protege", h.Protege)
+	}
+	if rs.has(PetMentor) {
+		r.Get("/{id}/mentor", h.Mentor)
+	}
+	if rs.has(PetSpouse) {
+		r.Get("/{id}/spouse", h.Spouse)
+	}
+	if rs.has(PetToys) {
+		r.Get("/{id}/toys", h.Toys)
+	}
+	if rs.has(PetParent) {
+		r.Get("/{id}/parent", h.Parent)
+	}
+	if rs.has(PetChildren) {
+		r.Get("/{id}/children", h.Children)
+	}
+	if rs.has(PetPlayGroups) {
+		r.Get("/{id}/play_groups", h.PlayGroups)
 	}
 	if rs.has(PetFriends) {
 		r.Get("/{id}/friends", h.Friends)
+	}
+}
+
+const (
+	PlayGroupCreate Routes = 1 << iota
+	PlayGroupRead
+	PlayGroupUpdate
+	PlayGroupDelete
+	PlayGroupList
+	PlayGroupParticipants
+	PlayGroupRoutes = 1<<iota - 1
+)
+
+// PlayGroupHandler handles http crud operations on ent.PlayGroup.
+type PlayGroupHandler struct {
+	handler
+
+	client    *ent.Client
+	log       *zap.Logger
+	validator *validator.Validate
+}
+
+func NewPlayGroupHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *PlayGroupHandler {
+	return &PlayGroupHandler{
+		client:    c,
+		log:       l.With(zap.String("handler", "PlayGroupHandler")),
+		validator: v,
+	}
+}
+
+// RegisterHandlers registers the generated handlers on the given chi router.
+func (h *PlayGroupHandler) Mount(r chi.Router, rs Routes) {
+	if rs.has(PlayGroupCreate) {
+		r.Post("/", h.Create)
+	}
+	if rs.has(PlayGroupRead) {
+		r.Get("/{id}", h.Read)
+	}
+	if rs.has(PlayGroupUpdate) {
+		r.Patch("/{id}", h.Update)
+	}
+	if rs.has(PlayGroupDelete) {
+		r.Delete("/{id}", h.Delete)
+	}
+	if rs.has(PlayGroupList) {
+		r.Get("/", h.List)
+	}
+	if rs.has(PlayGroupParticipants) {
+		r.Get("/{id}/participants", h.Participants)
+	}
+}
+
+const (
+	ToyCreate Routes = 1 << iota
+	ToyRead
+	ToyUpdate
+	ToyDelete
+	ToyList
+	ToyOwner
+	ToyRoutes = 1<<iota - 1
+)
+
+// ToyHandler handles http crud operations on ent.Toy.
+type ToyHandler struct {
+	handler
+
+	client    *ent.Client
+	log       *zap.Logger
+	validator *validator.Validate
+}
+
+func NewToyHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *ToyHandler {
+	return &ToyHandler{
+		client:    c,
+		log:       l.With(zap.String("handler", "ToyHandler")),
+		validator: v,
+	}
+}
+
+// RegisterHandlers registers the generated handlers on the given chi router.
+func (h *ToyHandler) Mount(r chi.Router, rs Routes) {
+	if rs.has(ToyCreate) {
+		r.Post("/", h.Create)
+	}
+	if rs.has(ToyRead) {
+		r.Get("/{id}", h.Read)
+	}
+	if rs.has(ToyUpdate) {
+		r.Patch("/{id}", h.Update)
+	}
+	if rs.has(ToyDelete) {
+		r.Delete("/{id}", h.Delete)
+	}
+	if rs.has(ToyList) {
+		r.Get("/", h.List)
+	}
+	if rs.has(ToyOwner) {
+		r.Get("/{id}/owner", h.Owner)
 	}
 }
 

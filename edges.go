@@ -2,9 +2,12 @@ package elk
 
 import (
 	"entgo.io/ent/entc/gen"
+	"errors"
 	"fmt"
 	"strings"
 )
+
+const maxDepth = 25
 
 type (
 	// EdgeToLoad specifies and edge to load for a type.
@@ -48,6 +51,7 @@ func (etl EdgeToLoad) EntQuery() string {
 // a->b->c: 1 -> 1st visit on c
 // a->b->b: 2 -> 2nd visit on b
 // a->a->a: 3 -> 3rd visit on a
+// a->b->a: 2 -> 2nd visit on a
 func (w walk) cycleDepth() uint {
 	if len(w) == 0 {
 		return 0
@@ -57,11 +61,26 @@ func (w walk) cycleDepth() uint {
 	for i := len(w) - 2; i >= 0; i-- {
 		if n == w[i] {
 			c++
-		} else {
-			return c
 		}
 	}
 	return c
+}
+
+// reachedMaxDepth returns if the walk has reached a depth greater then maxDepth.
+func (w walk) reachedMaxDepth() bool {
+	return len(w) > maxDepth
+}
+
+// tail returns a formatted string of the last c steps in walk.
+func (w walk) tail(c int) string {
+	f := "%s"
+	for i := 0; i < c; i++ {
+		f += " -> %s"
+	}
+	if c > len(w) {
+		c = len(w)
+	}
+	return fmt.Sprintf(f, w[len(w)-c:])
 }
 
 // push adds a new step to the walk.
@@ -106,6 +125,11 @@ func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 
 // edgesToLoadHelper recursively collects the edges to load on this type for requested groups on the given action.
 func edgesToLoadHelper(n *gen.Type, w walk, groupsToLoad []string) (EdgesToLoad, error) {
+	// If we have reached maxDepth there most possibly is an unwanted circular reference.
+	if w.reachedMaxDepth() {
+		return nil, errors.New(fmt.Sprintf("max depth of %d reached: ", maxDepth))
+	}
+
 	// What edges to load on this type.
 	var edges []EdgeToLoad
 
@@ -154,5 +178,5 @@ func edgesToLoadHelper(n *gen.Type, w walk, groupsToLoad []string) (EdgesToLoad,
 }
 
 func encodeTypeAndEdge(n *gen.Type, e *gen.Edge) string {
-	return n.Name + "_" + e.Name
+	return n.Name + "." + e.Name
 }

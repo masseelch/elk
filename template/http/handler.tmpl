@@ -4,10 +4,7 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
-    import ( {{/* This is needed for stupid SIV rule */}}
-        "github.com/go-chi/chi/v5"
-        "github.com/go-playground/validator/v10"
-    )
+    {{ template "helper/http/import" $ }}
 
     // handler has some convenience methods used on node-handlers.
     type handler struct {}

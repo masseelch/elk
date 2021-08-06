@@ -1,11 +1,4 @@
-{{/* gotype: entgo.io/ent/entc/gen.Type */}}
-
 {{ define "helper/http/decode-request-body" }}
-{{/*    if err := json.NewDecoder(r.Body).Decode(&d); err != nil {*/}}
-{{/*        l.Error("error decoding json", zap.Error(err))*/}}
-{{/*        render.BadRequest(w, r, "invalid json string")*/}}
-{{/*        return*/}}
-{{/*    }*/}}
     if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
         l.Error("error decoding json", zap.Error(err))
         render.BadRequest(w, r, "invalid json string")
@@ -41,22 +34,34 @@
     {{ end -}}
 {{ end }}
 
-{{ define "helper/http/reload/error-handling" }}
+{{ define "helper/http/error-handling" }}
     if err != nil {
         switch {
-        case ent.IsNotFound(err):
-            msg := stripEntError(err)
-            l.Info(msg, zap.Int("{{ $.ID.Name }}", e.{{ $.ID.StructField}}), zap.Error(err))
-            render.NotFound(w, r, msg)
+        {{- range $err := $.Errors }}
+            {{- if eq $err "not-found" }}
+                case ent.IsNotFound(err):
+                    msg := stripEntError(err)
+                    l.Info(msg, zap.Error(err){{ range $.Logs }}, {{ . }}{{ end }})
+                    render.NotFound(w, r, msg)
+            {{- else if eq $err "not-singular" }}
+                case ent.IsNotSingular(err):
+                    msg := stripEntError(err)
+                    l.Error(msg, zap.Error(err){{ range $.Logs }}, {{ . }}{{ end }})
+                    render.BadRequest(w, r, msg)
+            {{- else if eq $err "privacy" }}
+                // Privacy case
+            {{- end }}
+        {{- end }}
         default:
-            l.Error("error fetching {{ $.Name | kebab }} from db", zap.Int("{{ $.ID.Name }}", e.{{ $.ID.StructField}}), zap.Error(err))
+            l.Error("{{ $.Default }}", zap.Error(err){{ range $.Logs }}, {{ . }}{{ end }})
             render.InternalServerError(w, r, nil)
         }
         return
     }
 {{ end }}
 
-{{ define "helper/http/pagination" }}
+{{ define "helper/http/pagination" -}}
+    {{/* gotype: entgo.io/ent/entc/gen.Type */}}
     page := 1
     if d := r.URL.Query().Get("page"); d != "" {
         page, err = strconv.Atoi(d)

@@ -7,16 +7,15 @@ import (
 	"strconv"
 
 	easyjson "github.com/mailru/easyjson"
-	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )
 
-// Read fetches the ent.Category identified by a given url-parameter from the
+// Read fetches the ent.Badge identified by a given url-parameter from the
 // database and returns it to the client.
-func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
+func (h *BadgeHandler) List(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "List"))
-	q := h.client.Category.Query()
+	q := h.client.Badge.Query()
 	var err error
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
@@ -38,46 +37,12 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
 	if err != nil {
-		l.Error("error fetching categories from db", zap.Error(err))
+		l.Error("error fetching badges from db", zap.Error(err))
 		render.InternalServerError(w, r, nil)
 		return
 	}
-	l.Info("categories rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewCategoryListResponse(es), w)
-}
-
-// Read fetches the ent.Owner identified by a given url-parameter from the
-// database and returns it to the client.
-func (h *OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "List"))
-	q := h.client.Owner.Query()
-	var err error
-	page := 1
-	if d := r.URL.Query().Get("page"); d != "" {
-		page, err = strconv.Atoi(d)
-		if err != nil {
-			l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
-			render.BadRequest(w, r, "page must be an integer greater zero")
-			return
-		}
-	}
-	itemsPerPage := 30
-	if d := r.URL.Query().Get("itemsPerPage"); d != "" {
-		itemsPerPage, err = strconv.Atoi(d)
-		if err != nil {
-			l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
-			render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
-			return
-		}
-	}
-	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
-	if err != nil {
-		l.Error("error fetching owners from db", zap.Error(err))
-		render.InternalServerError(w, r, nil)
-		return
-	}
-	l.Info("owners rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewOwnerListResponse(es), w)
+	l.Info("badges rendered", zap.Int("amount", len(es)))
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeListResponse(es), w)
 }
 
 // Read fetches the ent.Pet identified by a given url-parameter from the
@@ -86,11 +51,7 @@ func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "List"))
 	q := h.client.Pet.Query()
 	// Eager load edges that are required on list operation.
-	q.WithFriends(func(q *ent.PetQuery) {
-		q.WithFriends(func(q *ent.PetQuery) {
-			q.WithFriends()
-		})
-	})
+	q.WithBadge()
 	var err error
 	page := 1
 	if d := r.URL.Query().Get("page"); d != "" {
@@ -118,4 +79,72 @@ func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
 	easyjson.MarshalToHTTPResponseWriter(NewPetListResponse(es), w)
+}
+
+// Read fetches the ent.PlayGroup identified by a given url-parameter from the
+// database and returns it to the client.
+func (h *PlayGroupHandler) List(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "List"))
+	q := h.client.PlayGroup.Query()
+	var err error
+	page := 1
+	if d := r.URL.Query().Get("page"); d != "" {
+		page, err = strconv.Atoi(d)
+		if err != nil {
+			l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
+			render.BadRequest(w, r, "page must be an integer greater zero")
+			return
+		}
+	}
+	itemsPerPage := 30
+	if d := r.URL.Query().Get("itemsPerPage"); d != "" {
+		itemsPerPage, err = strconv.Atoi(d)
+		if err != nil {
+			l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
+			render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
+			return
+		}
+	}
+	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
+	if err != nil {
+		l.Error("error fetching play-groups from db", zap.Error(err))
+		render.InternalServerError(w, r, nil)
+		return
+	}
+	l.Info("play-groups rendered", zap.Int("amount", len(es)))
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupListResponse(es), w)
+}
+
+// Read fetches the ent.Toy identified by a given url-parameter from the
+// database and returns it to the client.
+func (h *ToyHandler) List(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "List"))
+	q := h.client.Toy.Query()
+	var err error
+	page := 1
+	if d := r.URL.Query().Get("page"); d != "" {
+		page, err = strconv.Atoi(d)
+		if err != nil {
+			l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
+			render.BadRequest(w, r, "page must be an integer greater zero")
+			return
+		}
+	}
+	itemsPerPage := 30
+	if d := r.URL.Query().Get("itemsPerPage"); d != "" {
+		itemsPerPage, err = strconv.Atoi(d)
+		if err != nil {
+			l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
+			render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
+			return
+		}
+	}
+	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
+	if err != nil {
+		l.Error("error fetching toys from db", zap.Error(err))
+		render.InternalServerError(w, r, nil)
+		return
+	}
+	l.Info("toys rendered", zap.Int("amount", len(es)))
+	easyjson.MarshalToHTTPResponseWriter(NewToyListResponse(es), w)
 }

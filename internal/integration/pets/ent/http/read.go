@@ -9,16 +9,17 @@ import (
 	"github.com/go-chi/chi/v5"
 	easyjson "github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
-	"github.com/masseelch/elk/internal/integration/pets/ent/category"
-	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
-	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
 	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )
 
-// Read fetches the ent.Category identified by a given url-parameter from the
+// Read fetches the ent.Badge identified by a given url-parameter from the
 // database and renders it to the client.
-func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
+func (h *BadgeHandler) Read(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -27,61 +28,27 @@ func (h *CategoryHandler) Read(w http.ResponseWriter, r *http.Request) {
 		render.BadRequest(w, r, "id must be an integer greater zero")
 		return
 	}
-	// Create the query to fetch the Category
-	q := h.client.Category.Query().Where(category.ID(id))
+	// Create the query to fetch the Badge
+	q := h.client.Badge.Query().Where(badge.ID(id))
 	e, err := q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", id), zap.Error(err))
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
 			render.NotFound(w, r, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Int("id", id), zap.Error(err))
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
 			render.BadRequest(w, r, msg)
 		default:
-			l.Error("error fetching category from db", zap.Int("id", id), zap.Error(err))
+			l.Error("could-not-read-badge", zap.Error(err), zap.Int("id", id))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
-	l.Info("category rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewCategoryReadResponse(e), w)
-}
-
-// Read fetches the ent.Owner identified by a given url-parameter from the
-// database and renders it to the client.
-func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Read"))
-	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
-		return
-	}
-	// Create the query to fetch the Owner
-	q := h.client.Owner.Query().Where(owner.ID(id))
-	e, err := q.Only(r.Context())
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", id), zap.Error(err))
-			render.NotFound(w, r, msg)
-		case ent.IsNotSingular(err):
-			msg := stripEntError(err)
-			l.Error(msg, zap.Int("id", id), zap.Error(err))
-			render.BadRequest(w, r, msg)
-		default:
-			l.Error("error fetching owner from db", zap.Int("id", id), zap.Error(err))
-			render.InternalServerError(w, r, nil)
-		}
-		return
-	}
-	l.Info("owner rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewOwnerReadResponse(e), w)
+	l.Info("badge rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeReadResponse(e), w)
 }
 
 // Read fetches the ent.Pet identified by a given url-parameter from the
@@ -98,30 +65,220 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	// Create the query to fetch the Pet
 	q := h.client.Pet.Query().Where(pet.ID(id))
 	// Eager load edges that are required on read operation.
-	q.WithOwner().WithFriends(func(q *ent.PetQuery) {
-		q.WithOwner().WithFriends(func(q *ent.PetQuery) {
-			q.WithOwner().WithFriends(func(q *ent.PetQuery) {
-				q.WithOwner()
+	q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+		q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+			q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				})
+			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithPlayGroups()
 			})
+		}).WithToys().WithParent(func(q *ent.PetQuery) {
+			q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				})
+			}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			})
+		}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+			q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithPlayGroups()
+			}).WithToys().WithParent(func(q *ent.PetQuery) {
+				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			}).WithPlayGroups()
 		})
+	}).WithSpouse(func(q *ent.PetQuery) {
+		q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+			q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				})
+			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithPlayGroups()
+			})
+		}).WithToys().WithParent(func(q *ent.PetQuery) {
+			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				})
+			}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			})
+		}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithPlayGroups()
+			}).WithToys().WithParent(func(q *ent.PetQuery) {
+				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			}).WithPlayGroups()
+		})
+	}).WithToys().WithParent(func(q *ent.PetQuery) {
+		q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+			q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				})
+			}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			})
+		}).WithSpouse(func(q *ent.PetQuery) {
+			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				})
+			}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			})
+		}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			}).WithSpouse(func(q *ent.PetQuery) {
+				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			}).WithToys().WithPlayGroups()
+		})
+	}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
+		q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+			q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithPlayGroups()
+			}).WithToys().WithParent(func(q *ent.PetQuery) {
+				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			}).WithPlayGroups()
+		}).WithSpouse(func(q *ent.PetQuery) {
+			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithPlayGroups()
+			}).WithToys().WithParent(func(q *ent.PetQuery) {
+				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			}).WithPlayGroups()
+		}).WithToys().WithParent(func(q *ent.PetQuery) {
+			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			}).WithSpouse(func(q *ent.PetQuery) {
+				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
+					q.WithBadge().WithToys().WithPlayGroups()
+				}).WithToys().WithPlayGroups()
+			}).WithToys().WithPlayGroups()
+		}).WithPlayGroups()
 	})
 	e, err := q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Int("id", id), zap.Error(err))
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
 			render.NotFound(w, r, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Int("id", id), zap.Error(err))
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
 			render.BadRequest(w, r, msg)
 		default:
-			l.Error("error fetching pet from db", zap.Int("id", id), zap.Error(err))
+			l.Error("could-not-read-pet", zap.Error(err), zap.Int("id", id))
 			render.InternalServerError(w, r, nil)
 		}
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewPetReadResponse(e), w)
+}
+
+// Read fetches the ent.PlayGroup identified by a given url-parameter from the
+// database and renders it to the client.
+func (h *PlayGroupHandler) Read(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Read"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
+	// Create the query to fetch the PlayGroup
+	q := h.client.PlayGroup.Query().Where(playgroup.ID(id))
+	e, err := q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
+		default:
+			l.Error("could-not-read-play-group", zap.Error(err), zap.Int("id", id))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	l.Info("play-group rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupReadResponse(e), w)
+}
+
+// Read fetches the ent.Toy identified by a given url-parameter from the
+// database and renders it to the client.
+func (h *ToyHandler) Read(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Read"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		render.BadRequest(w, r, "id must be an integer greater zero")
+		return
+	}
+	// Create the query to fetch the Toy
+	q := h.client.Toy.Query().Where(toy.ID(id))
+	e, err := q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			render.NotFound(w, r, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			render.BadRequest(w, r, msg)
+		default:
+			l.Error("could-not-read-toy", zap.Error(err), zap.Int("id", id))
+			render.InternalServerError(w, r, nil)
+		}
+		return
+	}
+	l.Info("toy rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewToyReadResponse(e), w)
 }

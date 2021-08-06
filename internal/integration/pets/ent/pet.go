@@ -3,11 +3,14 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
+	"github.com/google/uuid"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
 	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
 )
 
@@ -16,56 +19,156 @@ type Pet struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// Height holds the value of the "height" field.
+	Height int `json:"height,omitempty"`
+	// Weight holds the value of the "weight" field.
+	Weight float64 `json:"weight,omitempty"`
+	// Castrated holds the value of the "castrated" field.
+	Castrated bool `json:"castrated,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// Age holds the value of the "age" field.
-	Age int `json:"age,omitempty"`
+	// Birthday holds the value of the "birthday" field.
+	Birthday time.Time `json:"birthday,omitempty"`
+	// Nicknames holds the value of the "nicknames" field.
+	Nicknames []string `json:"nicknames,omitempty"`
+	// Sex holds the value of the "sex" field.
+	Sex pet.Sex `json:"sex,omitempty"`
+	// Chip holds the value of the "chip" field.
+	Chip uuid.UUID `json:"chip,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PetQuery when eager-loading is set.
-	Edges      PetEdges `json:"edges"`
-	owner_pets *int
+	Edges        PetEdges `json:"edges"`
+	pet_mentor   *int
+	pet_spouse   *int
+	pet_children *int
 }
 
 // PetEdges holds the relations/edges for other nodes in the graph.
 type PetEdges struct {
-	// Category holds the value of the category edge.
-	Category []*Category `json:"category,omitempty"`
-	// Owner holds the value of the owner edge.
-	Owner *Owner `json:"owner,omitempty"`
+	// Badge holds the value of the badge edge.
+	Badge *Badge `json:"badge,omitempty"`
+	// Protege holds the value of the protege edge.
+	Protege *Pet `json:"protege,omitempty"`
+	// Mentor holds the value of the mentor edge.
+	Mentor *Pet `json:"mentor,omitempty"`
+	// Spouse holds the value of the spouse edge.
+	Spouse *Pet `json:"spouse,omitempty"`
+	// Toys holds the value of the toys edge.
+	Toys []*Toy `json:"toys,omitempty"`
+	// Parent holds the value of the parent edge.
+	Parent *Pet `json:"parent,omitempty"`
+	// Children holds the value of the children edge.
+	Children []*Pet `json:"children,omitempty"`
+	// PlayGroups holds the value of the play_groups edge.
+	PlayGroups []*PlayGroup `json:"play_groups,omitempty"`
 	// Friends holds the value of the friends edge.
 	Friends []*Pet `json:"friends,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [9]bool
 }
 
-// CategoryOrErr returns the Category value or an error if the edge
-// was not loaded in eager-loading.
-func (e PetEdges) CategoryOrErr() ([]*Category, error) {
-	if e.loadedTypes[0] {
-		return e.Category, nil
-	}
-	return nil, &NotLoadedError{edge: "category"}
-}
-
-// OwnerOrErr returns the Owner value or an error if the edge
+// BadgeOrErr returns the Badge value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e PetEdges) OwnerOrErr() (*Owner, error) {
-	if e.loadedTypes[1] {
-		if e.Owner == nil {
-			// The edge owner was loaded in eager-loading,
+func (e PetEdges) BadgeOrErr() (*Badge, error) {
+	if e.loadedTypes[0] {
+		if e.Badge == nil {
+			// The edge badge was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: owner.Label}
+			return nil, &NotFoundError{label: badge.Label}
 		}
-		return e.Owner, nil
+		return e.Badge, nil
 	}
-	return nil, &NotLoadedError{edge: "owner"}
+	return nil, &NotLoadedError{edge: "badge"}
+}
+
+// ProtegeOrErr returns the Protege value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PetEdges) ProtegeOrErr() (*Pet, error) {
+	if e.loadedTypes[1] {
+		if e.Protege == nil {
+			// The edge protege was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: pet.Label}
+		}
+		return e.Protege, nil
+	}
+	return nil, &NotLoadedError{edge: "protege"}
+}
+
+// MentorOrErr returns the Mentor value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PetEdges) MentorOrErr() (*Pet, error) {
+	if e.loadedTypes[2] {
+		if e.Mentor == nil {
+			// The edge mentor was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: pet.Label}
+		}
+		return e.Mentor, nil
+	}
+	return nil, &NotLoadedError{edge: "mentor"}
+}
+
+// SpouseOrErr returns the Spouse value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PetEdges) SpouseOrErr() (*Pet, error) {
+	if e.loadedTypes[3] {
+		if e.Spouse == nil {
+			// The edge spouse was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: pet.Label}
+		}
+		return e.Spouse, nil
+	}
+	return nil, &NotLoadedError{edge: "spouse"}
+}
+
+// ToysOrErr returns the Toys value or an error if the edge
+// was not loaded in eager-loading.
+func (e PetEdges) ToysOrErr() ([]*Toy, error) {
+	if e.loadedTypes[4] {
+		return e.Toys, nil
+	}
+	return nil, &NotLoadedError{edge: "toys"}
+}
+
+// ParentOrErr returns the Parent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PetEdges) ParentOrErr() (*Pet, error) {
+	if e.loadedTypes[5] {
+		if e.Parent == nil {
+			// The edge parent was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: pet.Label}
+		}
+		return e.Parent, nil
+	}
+	return nil, &NotLoadedError{edge: "parent"}
+}
+
+// ChildrenOrErr returns the Children value or an error if the edge
+// was not loaded in eager-loading.
+func (e PetEdges) ChildrenOrErr() ([]*Pet, error) {
+	if e.loadedTypes[6] {
+		return e.Children, nil
+	}
+	return nil, &NotLoadedError{edge: "children"}
+}
+
+// PlayGroupsOrErr returns the PlayGroups value or an error if the edge
+// was not loaded in eager-loading.
+func (e PetEdges) PlayGroupsOrErr() ([]*PlayGroup, error) {
+	if e.loadedTypes[7] {
+		return e.PlayGroups, nil
+	}
+	return nil, &NotLoadedError{edge: "play_groups"}
 }
 
 // FriendsOrErr returns the Friends value or an error if the edge
 // was not loaded in eager-loading.
 func (e PetEdges) FriendsOrErr() ([]*Pet, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[8] {
 		return e.Friends, nil
 	}
 	return nil, &NotLoadedError{edge: "friends"}
@@ -76,11 +179,25 @@ func (*Pet) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case pet.FieldID, pet.FieldAge:
+		case pet.FieldNicknames:
+			values[i] = new([]byte)
+		case pet.FieldCastrated:
+			values[i] = new(sql.NullBool)
+		case pet.FieldWeight:
+			values[i] = new(sql.NullFloat64)
+		case pet.FieldID, pet.FieldHeight:
 			values[i] = new(sql.NullInt64)
-		case pet.FieldName:
+		case pet.FieldName, pet.FieldSex:
 			values[i] = new(sql.NullString)
-		case pet.ForeignKeys[0]: // owner_pets
+		case pet.FieldBirthday:
+			values[i] = new(sql.NullTime)
+		case pet.FieldChip:
+			values[i] = new(uuid.UUID)
+		case pet.ForeignKeys[0]: // pet_mentor
+			values[i] = new(sql.NullInt64)
+		case pet.ForeignKeys[1]: // pet_spouse
+			values[i] = new(sql.NullInt64)
+		case pet.ForeignKeys[2]: // pet_children
 			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Pet", columns[i])
@@ -103,38 +220,120 @@ func (pe *Pet) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			pe.ID = int(value.Int64)
+		case pet.FieldHeight:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field height", values[i])
+			} else if value.Valid {
+				pe.Height = int(value.Int64)
+			}
+		case pet.FieldWeight:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field weight", values[i])
+			} else if value.Valid {
+				pe.Weight = value.Float64
+			}
+		case pet.FieldCastrated:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field castrated", values[i])
+			} else if value.Valid {
+				pe.Castrated = value.Bool
+			}
 		case pet.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				pe.Name = value.String
 			}
-		case pet.FieldAge:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field age", values[i])
+		case pet.FieldBirthday:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field birthday", values[i])
 			} else if value.Valid {
-				pe.Age = int(value.Int64)
+				pe.Birthday = value.Time
+			}
+		case pet.FieldNicknames:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field nicknames", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pe.Nicknames); err != nil {
+					return fmt.Errorf("unmarshal field nicknames: %w", err)
+				}
+			}
+		case pet.FieldSex:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sex", values[i])
+			} else if value.Valid {
+				pe.Sex = pet.Sex(value.String)
+			}
+		case pet.FieldChip:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field chip", values[i])
+			} else if value != nil {
+				pe.Chip = *value
 			}
 		case pet.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field owner_pets", value)
+				return fmt.Errorf("unexpected type %T for edge-field pet_mentor", value)
 			} else if value.Valid {
-				pe.owner_pets = new(int)
-				*pe.owner_pets = int(value.Int64)
+				pe.pet_mentor = new(int)
+				*pe.pet_mentor = int(value.Int64)
+			}
+		case pet.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field pet_spouse", value)
+			} else if value.Valid {
+				pe.pet_spouse = new(int)
+				*pe.pet_spouse = int(value.Int64)
+			}
+		case pet.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field pet_children", value)
+			} else if value.Valid {
+				pe.pet_children = new(int)
+				*pe.pet_children = int(value.Int64)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryCategory queries the "category" edge of the Pet entity.
-func (pe *Pet) QueryCategory() *CategoryQuery {
-	return (&PetClient{config: pe.config}).QueryCategory(pe)
+// QueryBadge queries the "badge" edge of the Pet entity.
+func (pe *Pet) QueryBadge() *BadgeQuery {
+	return (&PetClient{config: pe.config}).QueryBadge(pe)
 }
 
-// QueryOwner queries the "owner" edge of the Pet entity.
-func (pe *Pet) QueryOwner() *OwnerQuery {
-	return (&PetClient{config: pe.config}).QueryOwner(pe)
+// QueryProtege queries the "protege" edge of the Pet entity.
+func (pe *Pet) QueryProtege() *PetQuery {
+	return (&PetClient{config: pe.config}).QueryProtege(pe)
+}
+
+// QueryMentor queries the "mentor" edge of the Pet entity.
+func (pe *Pet) QueryMentor() *PetQuery {
+	return (&PetClient{config: pe.config}).QueryMentor(pe)
+}
+
+// QuerySpouse queries the "spouse" edge of the Pet entity.
+func (pe *Pet) QuerySpouse() *PetQuery {
+	return (&PetClient{config: pe.config}).QuerySpouse(pe)
+}
+
+// QueryToys queries the "toys" edge of the Pet entity.
+func (pe *Pet) QueryToys() *ToyQuery {
+	return (&PetClient{config: pe.config}).QueryToys(pe)
+}
+
+// QueryParent queries the "parent" edge of the Pet entity.
+func (pe *Pet) QueryParent() *PetQuery {
+	return (&PetClient{config: pe.config}).QueryParent(pe)
+}
+
+// QueryChildren queries the "children" edge of the Pet entity.
+func (pe *Pet) QueryChildren() *PetQuery {
+	return (&PetClient{config: pe.config}).QueryChildren(pe)
+}
+
+// QueryPlayGroups queries the "play_groups" edge of the Pet entity.
+func (pe *Pet) QueryPlayGroups() *PlayGroupQuery {
+	return (&PetClient{config: pe.config}).QueryPlayGroups(pe)
 }
 
 // QueryFriends queries the "friends" edge of the Pet entity.
@@ -165,10 +364,22 @@ func (pe *Pet) String() string {
 	var builder strings.Builder
 	builder.WriteString("Pet(")
 	builder.WriteString(fmt.Sprintf("id=%v", pe.ID))
+	builder.WriteString(", height=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Height))
+	builder.WriteString(", weight=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Weight))
+	builder.WriteString(", castrated=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Castrated))
 	builder.WriteString(", name=")
 	builder.WriteString(pe.Name)
-	builder.WriteString(", age=")
-	builder.WriteString(fmt.Sprintf("%v", pe.Age))
+	builder.WriteString(", birthday=")
+	builder.WriteString(pe.Birthday.Format(time.ANSIC))
+	builder.WriteString(", nicknames=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Nicknames))
+	builder.WriteString(", sex=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Sex))
+	builder.WriteString(", chip=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Chip))
 	builder.WriteByte(')')
 	return builder.String()
 }
