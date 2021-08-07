@@ -23,13 +23,13 @@
     }
 
     {{- $list := eq $.Scope.Action "list" }}
-    func New{{ $.Name }}{{ $.Scope.Action | pascal }}Response({{ $.Receiver }} {{ if $list }}[]{{ end }}*{{ base $.Config.Package }}.{{ $.Name }}) {{ if not $list }}*{{ end }}{{ $.Name }}{{ $.Scope.Action | pascal }}Response {
+    func New{{ $.Name }}{{ $.Scope.Action | pascal }}Response(e {{ if $list }}[]{{ end }}*{{ base $.Config.Package }}.{{ $.Name }}) {{ if not $list }}*{{ end }}{{ $.Name }}{{ $.Scope.Action | pascal }}Response {
         {{- $etl := edgesToLoad $.Type $.Scope.Action }}
         {{- if $list }}
-            r := make({{ $.Name }}{{ $.Scope.Action | pascal }}Response, len({{ $.Receiver }}))
-            for i := range {{ $.Receiver }} {
+            r := make({{ $.Name }}{{ $.Scope.Action | pascal }}Response, len(e))
+            for i := range e {
                 {{- range $etl }}
-                    {{- template "helper/http/response/edges/setter" xextend . "Accessor" (printf "%s[i].Edges" $.Receiver) "Level" 1 }}
+                    {{- template "helper/http/response/edges/setter" xextend . "Accessor" "e[i].Edges" "Level" 1 }}
                 {{- end }}
                 r[i] = struct{
                     {{- template "helper/http/response/fields" $ }}
@@ -41,7 +41,7 @@
                         template "helper/http/response/fields/setter"
                         extend $
                         "Groups" $.Scope.Groups
-                        "Accessor" (printf "%s[i]" $.Receiver)
+                        "Accessor" "e[i]"
                     }}
                     {{- range $etl }}
                         {{ .Edge.StructField }}: {{ .Edge.StructField | lower }}1,
@@ -51,14 +51,14 @@
             return r
         {{- else }}
             {{- range $etl }}
-                {{- template "helper/http/response/edges/setter" xextend . "Accessor" (print $.Receiver ".Edges") "Level" 1 }}
+                {{- template "helper/http/response/edges/setter" xextend . "Accessor" "e.Edges" "Level" 1 }}
             {{- end }}
             return &{{ $.Name }}{{ $.Scope.Action | pascal }}Response{
                 {{-
                     template "helper/http/response/fields/setter"
                     extend $
                     "Groups" $.Scope.Groups
-                    "Accessor" $.Receiver
+                    "Accessor" "e"
                 }}
                 {{- range $etl }}
                     {{ .Edge.StructField }}: {{ .Edge.StructField | lower }}1,
