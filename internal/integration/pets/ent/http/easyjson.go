@@ -83,7 +83,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(i
 				*out.Owner = int(in.Int())
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -204,7 +208,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(
 				*out.Owner = int(in.Int())
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -357,7 +365,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(
 		case "title":
 			out.Title = string(in.String())
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -491,7 +503,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(
 				in.Delim(']')
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -632,7 +648,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(
 				in.Delim(']')
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -792,7 +812,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(
 		case "weekday":
 			out.Weekday = playgroup.Weekday(in.String())
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -1120,7 +1144,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(
 				in.Delim(']')
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -1604,7 +1632,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(
 				in.Delim(']')
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -1925,7 +1957,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11
 				(*out.Badge).UnmarshalEasyJSON(in)
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -2123,7 +2159,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 				in.AddError((out.Chip).UnmarshalText(data))
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -2416,7 +2456,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15
 		case "friends":
 			(out.Friends).UnmarshalEasyJSON(in)
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -2656,7 +2700,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16
 				*out.Wearer = int(in.Int())
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -2758,7 +2806,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 				*out.Wearer = int(in.Int())
 			}
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
@@ -2900,7 +2952,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19
 		case "material":
 			out.Material = badge.Material(in.String())
 		default:
-			in.SkipRecursive()
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
 		}
 		in.WantComma()
 	}
