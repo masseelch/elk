@@ -42,7 +42,6 @@ var (
 		"needsValidation": needsValidation,
 		"responseView":    responseView,
 		"responseViews":   responseViews,
-		"validationTags":  validationTags,
 		"xextend":         xextend,
 	}
 )
@@ -51,24 +50,6 @@ func parse(path string) *gen.Template {
 	return gen.MustParse(gen.NewTemplate(path).
 		Funcs(TemplateFuncs).
 		Parse(string(internal.MustAsset(path))))
-}
-
-// validationTags extracts the validation tags to use for the given action / method.
-func validationTags(a interface{}, m string) string {
-	if a == nil {
-		return ""
-	}
-	an := Annotation{}
-	if err := an.Decode(a); err != nil {
-		return ""
-	}
-	if m == "create" && an.CreateValidation != "" {
-		return an.CreateValidation
-	}
-	if m == "update" && an.UpdateValidation != "" {
-		return an.UpdateValidation
-	}
-	return an.Validation
 }
 
 // needsValidation returns if a type needs validation because there is some defined on one of its fields.

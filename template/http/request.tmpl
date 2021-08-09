@@ -18,13 +18,11 @@
         {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
         {{- range $f := $.Fields }}
             {{- if or (ne $.Scope.Action "update") (not $f.Immutable) }}
-                {{ $f.StructField }} *{{ $f.Type }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"
-                {{- with validationTags $f.Annotations.Elk $.Scope.Action }} validate:"{{ . }}"{{ end }}`
+                {{ $f.StructField }} *{{ $f.Type }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"`
             {{- end }}
         {{- end -}}
         {{- range $e := $.Edges }}
-            {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"
-            {{- with validationTags $e.Annotations.Elk $.Scope.Action }} validate:"{{ . }}"{{ end }}`
+            {{ $e.StructField }}{{ if $e.Unique }}*{{ else }}[]{{ end }}{{ $e.Type.ID.Type }} `json:"{{ index (split (tagLookup $e.StructTag "json") ",") 0 }}"`
         {{- end }}
     }
 {{ end }}

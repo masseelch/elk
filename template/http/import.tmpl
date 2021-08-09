@@ -5,8 +5,8 @@
         {{ range $n := $.Nodes }}
             {{ template "import/types" $n }}
         {{ end }}
-        "github.com/go-playground/validator/v10"
         "github.com/go-chi/chi/v5"
         "github.com/masseelch/render"
+        "github.com/mailru/easyjson"
     )
 {{ end }}

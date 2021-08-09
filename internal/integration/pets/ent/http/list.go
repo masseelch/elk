@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	easyjson "github.com/mailru/easyjson"
+	"github.com/mailru/easyjson"
 	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )

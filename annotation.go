@@ -23,15 +23,6 @@ type (
 		Groups groups `json:"Groups,omitempty"`
 		// MaxDepth tells the generator the maximum depth of this field when there is a cycle possible.
 		MaxDepth uint
-		// Validation holds the struct tags to use for github.com/go-playground/validator/v10. Used when no specific
-		// validation tags are given in CreateValidation or UpdateValidation.
-		Validation string
-		// CreateValidation holds the struct tags to use for github.com/go-playground/validator/v10
-		// when creating a new model.
-		CreateValidation string
-		// UpdateValidation holds the struct tags to use for github.com/go-playground/validator/v10
-		// when updating an existing model.
-		UpdateValidation string
 	}
 )
 
@@ -63,21 +54,6 @@ func Groups(gs ...string) Annotation {
 // MaxDepth returns a max depth annotation.
 func MaxDepth(d uint) Annotation {
 	return Annotation{MaxDepth: d}
-}
-
-// Validation returns a validation annotation.
-func Validation(v string) Annotation {
-	return Annotation{Validation: v}
-}
-
-// CreateValidation returns a create validation annotation.
-func CreateValidation(v string) Annotation {
-	return Annotation{CreateValidation: v}
-}
-
-// UpdateValidation returns an update validation annotation.
-func UpdateValidation(v string) Annotation {
-	return Annotation{UpdateValidation: v}
 }
 
 // Name implements ent.Annotation interface.
@@ -146,15 +122,6 @@ func (a Annotation) Merge(o schema.Annotation) schema.Annotation {
 	}
 	if ant.MaxDepth != 1 {
 		a.MaxDepth = ant.MaxDepth
-	}
-	if ant.Validation != "" {
-		a.Validation = ant.Validation
-	}
-	if ant.CreateValidation != "" {
-		a.CreateValidation = ant.CreateValidation
-	}
-	if ant.UpdateValidation != "" {
-		a.UpdateValidation = ant.UpdateValidation
 	}
 	return a
 }
