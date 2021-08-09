@@ -2,18 +2,20 @@ package elk
 
 import (
 	"entgo.io/ent/entc/gen"
+	"errors"
 	"fmt"
 	"strings"
 )
+
+const maxDepth = 25
 
 type (
 	// EdgeToLoad specifies and edge to load for a type.
 	EdgeToLoad struct {
 		Edge        *gen.Edge
 		EdgesToLoad EdgesToLoad
-		Groups      []string
 	}
-	// EdgesToLoad is a list of several EdgeToLoad.
+	// EdgesToLoad is a list of multiple EdgeToLoad.
 	EdgesToLoad []EdgeToLoad
 	// walk is a node sequence in the schema graph. Used to keep track when computing EdgesToLoad.
 	walk []string
@@ -48,6 +50,7 @@ func (etl EdgeToLoad) EntQuery() string {
 // a->b->c: 1 -> 1st visit on c
 // a->b->b: 2 -> 2nd visit on b
 // a->a->a: 3 -> 3rd visit on a
+// a->b->a: 2 -> 2nd visit on a
 func (w walk) cycleDepth() uint {
 	if len(w) == 0 {
 		return 0
@@ -57,11 +60,14 @@ func (w walk) cycleDepth() uint {
 	for i := len(w) - 2; i >= 0; i-- {
 		if n == w[i] {
 			c++
-		} else {
-			return c
 		}
 	}
 	return c
+}
+
+// reachedMaxDepth returns if the walk has reached a depth greater then maxDepth.
+func (w walk) reachedMaxDepth() bool {
+	return len(w) > maxDepth
 }
 
 // push adds a new step to the walk.
@@ -76,9 +82,9 @@ func (w *walk) pop() {
 	}
 }
 
-// edgesToLoad returns the EdgesToLoad for the given node and action.
-func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
-	// If there are no annotations given do not load any edges.
+// groupsForAction returns the requested groups for a given type and action.
+func groupsForAction(n *gen.Type, action string) (groups, error) {
+	// If there are no annotations given do not load any groups.
 	a := &SchemaAnnotation{}
 	if n.Annotations == nil || n.Annotations[a.Name()] == nil {
 		return nil, nil
@@ -89,7 +95,7 @@ func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 		return nil, err
 	}
 
-	var g []string
+	var g groups
 	switch action {
 	case actionCreate:
 		g = a.CreateGroups
@@ -101,11 +107,25 @@ func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 		g = a.ListGroups
 	}
 
+	return g, nil
+}
+
+// edgesToLoad returns the EdgesToLoad for the given node and action.
+func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
+	g, err := groupsForAction(n, action)
+	if err != nil {
+		return nil, err
+	}
 	return edgesToLoadHelper(n, walk{}, g)
 }
 
 // edgesToLoadHelper recursively collects the edges to load on this type for requested groups on the given action.
 func edgesToLoadHelper(n *gen.Type, w walk, groupsToLoad []string) (EdgesToLoad, error) {
+	// If we have reached maxDepth there most possibly is an unwanted circular reference.
+	if w.reachedMaxDepth() {
+		return nil, errors.New(fmt.Sprintf("max depth of %d reached: ", maxDepth))
+	}
+
 	// What edges to load on this type.
 	var edges []EdgeToLoad
 
@@ -145,7 +165,6 @@ func edgesToLoadHelper(n *gen.Type, w walk, groupsToLoad []string) (EdgesToLoad,
 			edges = append(edges, EdgeToLoad{
 				Edge:        e,
 				EdgesToLoad: etl,
-				Groups:      groupsToLoad,
 			})
 		}
 	}
@@ -154,5 +173,5 @@ func edgesToLoadHelper(n *gen.Type, w walk, groupsToLoad []string) (EdgesToLoad,
 }
 
 func encodeTypeAndEdge(n *gen.Type, e *gen.Edge) string {
-	return n.Name + "_" + e.Name
+	return n.Name + "." + e.Name
 }

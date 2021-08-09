@@ -12,10 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/masseelch/elk/internal/integration/pets/ent/category"
-	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
 	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
 	"github.com/masseelch/elk/internal/integration/pets/ent/predicate"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
 )
 
 // PetQuery is the builder for querying Pet entities.
@@ -28,10 +29,16 @@ type PetQuery struct {
 	fields     []string
 	predicates []predicate.Pet
 	// eager-loading edges.
-	withCategory *CategoryQuery
-	withOwner    *OwnerQuery
-	withFriends  *PetQuery
-	withFKs      bool
+	withBadge      *BadgeQuery
+	withProtege    *PetQuery
+	withMentor     *PetQuery
+	withSpouse     *PetQuery
+	withToys       *ToyQuery
+	withParent     *PetQuery
+	withChildren   *PetQuery
+	withPlayGroups *PlayGroupQuery
+	withFriends    *PetQuery
+	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -68,9 +75,9 @@ func (pq *PetQuery) Order(o ...OrderFunc) *PetQuery {
 	return pq
 }
 
-// QueryCategory chains the current query on the "category" edge.
-func (pq *PetQuery) QueryCategory() *CategoryQuery {
-	query := &CategoryQuery{config: pq.config}
+// QueryBadge chains the current query on the "badge" edge.
+func (pq *PetQuery) QueryBadge() *BadgeQuery {
+	query := &BadgeQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -81,8 +88,8 @@ func (pq *PetQuery) QueryCategory() *CategoryQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, selector),
-			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+			sqlgraph.To(badge.Table, badge.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, pet.BadgeTable, pet.BadgeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -90,9 +97,9 @@ func (pq *PetQuery) QueryCategory() *CategoryQuery {
 	return query
 }
 
-// QueryOwner chains the current query on the "owner" edge.
-func (pq *PetQuery) QueryOwner() *OwnerQuery {
-	query := &OwnerQuery{config: pq.config}
+// QueryProtege chains the current query on the "protege" edge.
+func (pq *PetQuery) QueryProtege() *PetQuery {
+	query := &PetQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -103,8 +110,140 @@ func (pq *PetQuery) QueryOwner() *OwnerQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, selector),
-			sqlgraph.To(owner.Table, owner.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, pet.OwnerTable, pet.OwnerColumn),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, pet.ProtegeTable, pet.ProtegeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMentor chains the current query on the "mentor" edge.
+func (pq *PetQuery) QueryMentor() *PetQuery {
+	query := &PetQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, selector),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, pet.MentorTable, pet.MentorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySpouse chains the current query on the "spouse" edge.
+func (pq *PetQuery) QuerySpouse() *PetQuery {
+	query := &PetQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, selector),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, pet.SpouseTable, pet.SpouseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryToys chains the current query on the "toys" edge.
+func (pq *PetQuery) QueryToys() *ToyQuery {
+	query := &ToyQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, selector),
+			sqlgraph.To(toy.Table, toy.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, pet.ToysTable, pet.ToysColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParent chains the current query on the "parent" edge.
+func (pq *PetQuery) QueryParent() *PetQuery {
+	query := &PetQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, selector),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, pet.ParentTable, pet.ParentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryChildren chains the current query on the "children" edge.
+func (pq *PetQuery) QueryChildren() *PetQuery {
+	query := &PetQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, selector),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, pet.ChildrenTable, pet.ChildrenColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlayGroups chains the current query on the "play_groups" edge.
+func (pq *PetQuery) QueryPlayGroups() *PlayGroupQuery {
+	query := &PlayGroupQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, selector),
+			sqlgraph.To(playgroup.Table, playgroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, pet.PlayGroupsTable, pet.PlayGroupsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -310,39 +449,111 @@ func (pq *PetQuery) Clone() *PetQuery {
 		return nil
 	}
 	return &PetQuery{
-		config:       pq.config,
-		limit:        pq.limit,
-		offset:       pq.offset,
-		order:        append([]OrderFunc{}, pq.order...),
-		predicates:   append([]predicate.Pet{}, pq.predicates...),
-		withCategory: pq.withCategory.Clone(),
-		withOwner:    pq.withOwner.Clone(),
-		withFriends:  pq.withFriends.Clone(),
+		config:         pq.config,
+		limit:          pq.limit,
+		offset:         pq.offset,
+		order:          append([]OrderFunc{}, pq.order...),
+		predicates:     append([]predicate.Pet{}, pq.predicates...),
+		withBadge:      pq.withBadge.Clone(),
+		withProtege:    pq.withProtege.Clone(),
+		withMentor:     pq.withMentor.Clone(),
+		withSpouse:     pq.withSpouse.Clone(),
+		withToys:       pq.withToys.Clone(),
+		withParent:     pq.withParent.Clone(),
+		withChildren:   pq.withChildren.Clone(),
+		withPlayGroups: pq.withPlayGroups.Clone(),
+		withFriends:    pq.withFriends.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
 	}
 }
 
-// WithCategory tells the query-builder to eager-load the nodes that are connected to
-// the "category" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PetQuery) WithCategory(opts ...func(*CategoryQuery)) *PetQuery {
-	query := &CategoryQuery{config: pq.config}
+// WithBadge tells the query-builder to eager-load the nodes that are connected to
+// the "badge" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithBadge(opts ...func(*BadgeQuery)) *PetQuery {
+	query := &BadgeQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withCategory = query
+	pq.withBadge = query
 	return pq
 }
 
-// WithOwner tells the query-builder to eager-load the nodes that are connected to
-// the "owner" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PetQuery) WithOwner(opts ...func(*OwnerQuery)) *PetQuery {
-	query := &OwnerQuery{config: pq.config}
+// WithProtege tells the query-builder to eager-load the nodes that are connected to
+// the "protege" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithProtege(opts ...func(*PetQuery)) *PetQuery {
+	query := &PetQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withOwner = query
+	pq.withProtege = query
+	return pq
+}
+
+// WithMentor tells the query-builder to eager-load the nodes that are connected to
+// the "mentor" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithMentor(opts ...func(*PetQuery)) *PetQuery {
+	query := &PetQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withMentor = query
+	return pq
+}
+
+// WithSpouse tells the query-builder to eager-load the nodes that are connected to
+// the "spouse" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithSpouse(opts ...func(*PetQuery)) *PetQuery {
+	query := &PetQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withSpouse = query
+	return pq
+}
+
+// WithToys tells the query-builder to eager-load the nodes that are connected to
+// the "toys" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithToys(opts ...func(*ToyQuery)) *PetQuery {
+	query := &ToyQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withToys = query
+	return pq
+}
+
+// WithParent tells the query-builder to eager-load the nodes that are connected to
+// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithParent(opts ...func(*PetQuery)) *PetQuery {
+	query := &PetQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withParent = query
+	return pq
+}
+
+// WithChildren tells the query-builder to eager-load the nodes that are connected to
+// the "children" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithChildren(opts ...func(*PetQuery)) *PetQuery {
+	query := &PetQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withChildren = query
+	return pq
+}
+
+// WithPlayGroups tells the query-builder to eager-load the nodes that are connected to
+// the "play_groups" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithPlayGroups(opts ...func(*PlayGroupQuery)) *PetQuery {
+	query := &PlayGroupQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withPlayGroups = query
 	return pq
 }
 
@@ -363,12 +574,12 @@ func (pq *PetQuery) WithFriends(opts ...func(*PetQuery)) *PetQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Height int `json:"height,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Pet.Query().
-//		GroupBy(pet.FieldName).
+//		GroupBy(pet.FieldHeight).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -390,11 +601,11 @@ func (pq *PetQuery) GroupBy(field string, fields ...string) *PetGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Height int `json:"height,omitempty"`
 //	}
 //
 //	client.Pet.Query().
-//		Select(pet.FieldName).
+//		Select(pet.FieldHeight).
 //		Scan(ctx, &v)
 //
 func (pq *PetQuery) Select(fields ...string) *PetSelect {
@@ -423,13 +634,19 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		nodes       = []*Pet{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [3]bool{
-			pq.withCategory != nil,
-			pq.withOwner != nil,
+		loadedTypes = [9]bool{
+			pq.withBadge != nil,
+			pq.withProtege != nil,
+			pq.withMentor != nil,
+			pq.withSpouse != nil,
+			pq.withToys != nil,
+			pq.withParent != nil,
+			pq.withChildren != nil,
+			pq.withPlayGroups != nil,
 			pq.withFriends != nil,
 		}
 	)
-	if pq.withOwner != nil {
+	if pq.withProtege != nil || pq.withSpouse != nil || pq.withParent != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -455,13 +672,214 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		return nodes, nil
 	}
 
-	if query := pq.withCategory; query != nil {
+	if query := pq.withBadge; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Pet)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.withFKs = true
+		query.Where(predicate.Badge(func(s *sql.Selector) {
+			s.Where(sql.InValues(pet.BadgeColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.pet_badge
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "pet_badge" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_badge" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Badge = n
+		}
+	}
+
+	if query := pq.withProtege; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Pet)
+		for i := range nodes {
+			if nodes[i].pet_mentor == nil {
+				continue
+			}
+			fk := *nodes[i].pet_mentor
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(pet.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_mentor" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Protege = n
+			}
+		}
+	}
+
+	if query := pq.withMentor; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Pet)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.withFKs = true
+		query.Where(predicate.Pet(func(s *sql.Selector) {
+			s.Where(sql.InValues(pet.MentorColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.pet_mentor
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "pet_mentor" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_mentor" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Mentor = n
+		}
+	}
+
+	if query := pq.withSpouse; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Pet)
+		for i := range nodes {
+			if nodes[i].pet_spouse == nil {
+				continue
+			}
+			fk := *nodes[i].pet_spouse
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(pet.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_spouse" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Spouse = n
+			}
+		}
+	}
+
+	if query := pq.withToys; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Pet)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Toys = []*Toy{}
+		}
+		query.withFKs = true
+		query.Where(predicate.Toy(func(s *sql.Selector) {
+			s.Where(sql.InValues(pet.ToysColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.pet_toys
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "pet_toys" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_toys" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Toys = append(node.Edges.Toys, n)
+		}
+	}
+
+	if query := pq.withParent; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Pet)
+		for i := range nodes {
+			if nodes[i].pet_children == nil {
+				continue
+			}
+			fk := *nodes[i].pet_children
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(pet.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_children" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Parent = n
+			}
+		}
+	}
+
+	if query := pq.withChildren; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Pet)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Children = []*Pet{}
+		}
+		query.withFKs = true
+		query.Where(predicate.Pet(func(s *sql.Selector) {
+			s.Where(sql.InValues(pet.ChildrenColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.pet_children
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "pet_children" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_children" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Children = append(node.Edges.Children, n)
+		}
+	}
+
+	if query := pq.withPlayGroups; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		ids := make(map[int]*Pet, len(nodes))
 		for _, node := range nodes {
 			ids[node.ID] = node
 			fks = append(fks, node.ID)
-			node.Edges.Category = []*Category{}
+			node.Edges.PlayGroups = []*PlayGroup{}
 		}
 		var (
 			edgeids []int
@@ -469,12 +887,12 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		)
 		_spec := &sqlgraph.EdgeQuerySpec{
 			Edge: &sqlgraph.EdgeSpec{
-				Inverse: true,
-				Table:   pet.CategoryTable,
-				Columns: pet.CategoryPrimaryKey,
+				Inverse: false,
+				Table:   pet.PlayGroupsTable,
+				Columns: pet.PlayGroupsPrimaryKey,
 			},
 			Predicate: func(s *sql.Selector) {
-				s.Where(sql.InValues(pet.CategoryPrimaryKey[1], fks...))
+				s.Where(sql.InValues(pet.PlayGroupsPrimaryKey[0], fks...))
 			},
 			ScanValues: func() [2]interface{} {
 				return [2]interface{}{new(sql.NullInt64), new(sql.NullInt64)}
@@ -502,9 +920,9 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 			},
 		}
 		if err := sqlgraph.QueryEdges(ctx, pq.driver, _spec); err != nil {
-			return nil, fmt.Errorf(`query edges "category": %w`, err)
+			return nil, fmt.Errorf(`query edges "play_groups": %w`, err)
 		}
-		query.Where(category.IDIn(edgeids...))
+		query.Where(playgroup.IDIn(edgeids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -512,39 +930,10 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		for _, n := range neighbors {
 			nodes, ok := edges[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected "category" node returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected "play_groups" node returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Category = append(nodes[i].Edges.Category, n)
-			}
-		}
-	}
-
-	if query := pq.withOwner; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Pet)
-		for i := range nodes {
-			if nodes[i].owner_pets == nil {
-				continue
-			}
-			fk := *nodes[i].owner_pets
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(owner.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "owner_pets" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Owner = n
+				nodes[i].Edges.PlayGroups = append(nodes[i].Edges.PlayGroups, n)
 			}
 		}
 	}

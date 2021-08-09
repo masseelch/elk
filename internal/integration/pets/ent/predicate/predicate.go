@@ -6,11 +6,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Category is the predicate function for category builders.
-type Category func(*sql.Selector)
-
-// Owner is the predicate function for owner builders.
-type Owner func(*sql.Selector)
+// Badge is the predicate function for badge builders.
+type Badge func(*sql.Selector)
 
 // Pet is the predicate function for pet builders.
 type Pet func(*sql.Selector)
+
+// PlayGroup is the predicate function for playgroup builders.
+type PlayGroup func(*sql.Selector)
+
+// Toy is the predicate function for toy builders.
+type Toy func(*sql.Selector)

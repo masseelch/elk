@@ -6,12 +6,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/masseelch/elk/internal/integration/pets/ent/category"
-	"github.com/masseelch/elk/internal/integration/pets/ent/owner"
+	"github.com/google/uuid"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
 	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
 )
 
 // PetCreate is the builder for creating a Pet entity.
@@ -21,50 +24,184 @@ type PetCreate struct {
 	hooks    []Hook
 }
 
+// SetHeight sets the "height" field.
+func (pc *PetCreate) SetHeight(i int) *PetCreate {
+	pc.mutation.SetHeight(i)
+	return pc
+}
+
+// SetWeight sets the "weight" field.
+func (pc *PetCreate) SetWeight(f float64) *PetCreate {
+	pc.mutation.SetWeight(f)
+	return pc
+}
+
+// SetCastrated sets the "castrated" field.
+func (pc *PetCreate) SetCastrated(b bool) *PetCreate {
+	pc.mutation.SetCastrated(b)
+	return pc
+}
+
 // SetName sets the "name" field.
 func (pc *PetCreate) SetName(s string) *PetCreate {
 	pc.mutation.SetName(s)
 	return pc
 }
 
-// SetAge sets the "age" field.
-func (pc *PetCreate) SetAge(i int) *PetCreate {
-	pc.mutation.SetAge(i)
+// SetBirthday sets the "birthday" field.
+func (pc *PetCreate) SetBirthday(t time.Time) *PetCreate {
+	pc.mutation.SetBirthday(t)
 	return pc
 }
 
-// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
-func (pc *PetCreate) AddCategoryIDs(ids ...int) *PetCreate {
-	pc.mutation.AddCategoryIDs(ids...)
+// SetNicknames sets the "nicknames" field.
+func (pc *PetCreate) SetNicknames(s []string) *PetCreate {
+	pc.mutation.SetNicknames(s)
 	return pc
 }
 
-// AddCategory adds the "category" edges to the Category entity.
-func (pc *PetCreate) AddCategory(c ...*Category) *PetCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return pc.AddCategoryIDs(ids...)
-}
-
-// SetOwnerID sets the "owner" edge to the Owner entity by ID.
-func (pc *PetCreate) SetOwnerID(id int) *PetCreate {
-	pc.mutation.SetOwnerID(id)
+// SetSex sets the "sex" field.
+func (pc *PetCreate) SetSex(pe pet.Sex) *PetCreate {
+	pc.mutation.SetSex(pe)
 	return pc
 }
 
-// SetNillableOwnerID sets the "owner" edge to the Owner entity by ID if the given value is not nil.
-func (pc *PetCreate) SetNillableOwnerID(id *int) *PetCreate {
+// SetChip sets the "chip" field.
+func (pc *PetCreate) SetChip(u uuid.UUID) *PetCreate {
+	pc.mutation.SetChip(u)
+	return pc
+}
+
+// SetBadgeID sets the "badge" edge to the Badge entity by ID.
+func (pc *PetCreate) SetBadgeID(id int) *PetCreate {
+	pc.mutation.SetBadgeID(id)
+	return pc
+}
+
+// SetBadge sets the "badge" edge to the Badge entity.
+func (pc *PetCreate) SetBadge(b *Badge) *PetCreate {
+	return pc.SetBadgeID(b.ID)
+}
+
+// SetProtegeID sets the "protege" edge to the Pet entity by ID.
+func (pc *PetCreate) SetProtegeID(id int) *PetCreate {
+	pc.mutation.SetProtegeID(id)
+	return pc
+}
+
+// SetNillableProtegeID sets the "protege" edge to the Pet entity by ID if the given value is not nil.
+func (pc *PetCreate) SetNillableProtegeID(id *int) *PetCreate {
 	if id != nil {
-		pc = pc.SetOwnerID(*id)
+		pc = pc.SetProtegeID(*id)
 	}
 	return pc
 }
 
-// SetOwner sets the "owner" edge to the Owner entity.
-func (pc *PetCreate) SetOwner(o *Owner) *PetCreate {
-	return pc.SetOwnerID(o.ID)
+// SetProtege sets the "protege" edge to the Pet entity.
+func (pc *PetCreate) SetProtege(p *Pet) *PetCreate {
+	return pc.SetProtegeID(p.ID)
+}
+
+// SetMentorID sets the "mentor" edge to the Pet entity by ID.
+func (pc *PetCreate) SetMentorID(id int) *PetCreate {
+	pc.mutation.SetMentorID(id)
+	return pc
+}
+
+// SetNillableMentorID sets the "mentor" edge to the Pet entity by ID if the given value is not nil.
+func (pc *PetCreate) SetNillableMentorID(id *int) *PetCreate {
+	if id != nil {
+		pc = pc.SetMentorID(*id)
+	}
+	return pc
+}
+
+// SetMentor sets the "mentor" edge to the Pet entity.
+func (pc *PetCreate) SetMentor(p *Pet) *PetCreate {
+	return pc.SetMentorID(p.ID)
+}
+
+// SetSpouseID sets the "spouse" edge to the Pet entity by ID.
+func (pc *PetCreate) SetSpouseID(id int) *PetCreate {
+	pc.mutation.SetSpouseID(id)
+	return pc
+}
+
+// SetNillableSpouseID sets the "spouse" edge to the Pet entity by ID if the given value is not nil.
+func (pc *PetCreate) SetNillableSpouseID(id *int) *PetCreate {
+	if id != nil {
+		pc = pc.SetSpouseID(*id)
+	}
+	return pc
+}
+
+// SetSpouse sets the "spouse" edge to the Pet entity.
+func (pc *PetCreate) SetSpouse(p *Pet) *PetCreate {
+	return pc.SetSpouseID(p.ID)
+}
+
+// AddToyIDs adds the "toys" edge to the Toy entity by IDs.
+func (pc *PetCreate) AddToyIDs(ids ...int) *PetCreate {
+	pc.mutation.AddToyIDs(ids...)
+	return pc
+}
+
+// AddToys adds the "toys" edges to the Toy entity.
+func (pc *PetCreate) AddToys(t ...*Toy) *PetCreate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pc.AddToyIDs(ids...)
+}
+
+// SetParentID sets the "parent" edge to the Pet entity by ID.
+func (pc *PetCreate) SetParentID(id int) *PetCreate {
+	pc.mutation.SetParentID(id)
+	return pc
+}
+
+// SetNillableParentID sets the "parent" edge to the Pet entity by ID if the given value is not nil.
+func (pc *PetCreate) SetNillableParentID(id *int) *PetCreate {
+	if id != nil {
+		pc = pc.SetParentID(*id)
+	}
+	return pc
+}
+
+// SetParent sets the "parent" edge to the Pet entity.
+func (pc *PetCreate) SetParent(p *Pet) *PetCreate {
+	return pc.SetParentID(p.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Pet entity by IDs.
+func (pc *PetCreate) AddChildIDs(ids ...int) *PetCreate {
+	pc.mutation.AddChildIDs(ids...)
+	return pc
+}
+
+// AddChildren adds the "children" edges to the Pet entity.
+func (pc *PetCreate) AddChildren(p ...*Pet) *PetCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddChildIDs(ids...)
+}
+
+// AddPlayGroupIDs adds the "play_groups" edge to the PlayGroup entity by IDs.
+func (pc *PetCreate) AddPlayGroupIDs(ids ...int) *PetCreate {
+	pc.mutation.AddPlayGroupIDs(ids...)
+	return pc
+}
+
+// AddPlayGroups adds the "play_groups" edges to the PlayGroup entity.
+func (pc *PetCreate) AddPlayGroups(p ...*PlayGroup) *PetCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddPlayGroupIDs(ids...)
 }
 
 // AddFriendIDs adds the "friends" edge to the Pet entity by IDs.
@@ -93,6 +230,7 @@ func (pc *PetCreate) Save(ctx context.Context) (*Pet, error) {
 		err  error
 		node *Pet
 	)
+	pc.defaults()
 	if len(pc.hooks) == 0 {
 		if err = pc.check(); err != nil {
 			return nil, err
@@ -137,13 +275,67 @@ func (pc *PetCreate) SaveX(ctx context.Context) *Pet {
 	return v
 }
 
+// Exec executes the query.
+func (pc *PetCreate) Exec(ctx context.Context) error {
+	_, err := pc.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (pc *PetCreate) ExecX(ctx context.Context) {
+	if err := pc.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pc *PetCreate) defaults() {
+	if _, ok := pc.mutation.Chip(); !ok {
+		v := pet.DefaultChip()
+		pc.mutation.SetChip(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pc *PetCreate) check() error {
+	if _, ok := pc.mutation.Height(); !ok {
+		return &ValidationError{Name: "height", err: errors.New(`ent: missing required field "height"`)}
+	}
+	if v, ok := pc.mutation.Height(); ok {
+		if err := pet.HeightValidator(v); err != nil {
+			return &ValidationError{Name: "height", err: fmt.Errorf(`ent: validator failed for field "height": %w`, err)}
+		}
+	}
+	if _, ok := pc.mutation.Weight(); !ok {
+		return &ValidationError{Name: "weight", err: errors.New(`ent: missing required field "weight"`)}
+	}
+	if v, ok := pc.mutation.Weight(); ok {
+		if err := pet.WeightValidator(v); err != nil {
+			return &ValidationError{Name: "weight", err: fmt.Errorf(`ent: validator failed for field "weight": %w`, err)}
+		}
+	}
+	if _, ok := pc.mutation.Castrated(); !ok {
+		return &ValidationError{Name: "castrated", err: errors.New(`ent: missing required field "castrated"`)}
+	}
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
-	if _, ok := pc.mutation.Age(); !ok {
-		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "age"`)}
+	if _, ok := pc.mutation.Birthday(); !ok {
+		return &ValidationError{Name: "birthday", err: errors.New(`ent: missing required field "birthday"`)}
+	}
+	if _, ok := pc.mutation.Sex(); !ok {
+		return &ValidationError{Name: "sex", err: errors.New(`ent: missing required field "sex"`)}
+	}
+	if v, ok := pc.mutation.Sex(); ok {
+		if err := pet.SexValidator(v); err != nil {
+			return &ValidationError{Name: "sex", err: fmt.Errorf(`ent: validator failed for field "sex": %w`, err)}
+		}
+	}
+	if _, ok := pc.mutation.Chip(); !ok {
+		return &ValidationError{Name: "chip", err: errors.New(`ent: missing required field "chip"`)}
+	}
+	if _, ok := pc.mutation.BadgeID(); !ok {
+		return &ValidationError{Name: "badge", err: errors.New("ent: missing required edge \"badge\"")}
 	}
 	return nil
 }
@@ -172,6 +364,30 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if value, ok := pc.mutation.Height(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: pet.FieldHeight,
+		})
+		_node.Height = value
+	}
+	if value, ok := pc.mutation.Weight(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: pet.FieldWeight,
+		})
+		_node.Weight = value
+	}
+	if value, ok := pc.mutation.Castrated(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: pet.FieldCastrated,
+		})
+		_node.Castrated = value
+	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -180,25 +396,49 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 		})
 		_node.Name = value
 	}
-	if value, ok := pc.mutation.Age(); ok {
+	if value, ok := pc.mutation.Birthday(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
+			Type:   field.TypeTime,
 			Value:  value,
-			Column: pet.FieldAge,
+			Column: pet.FieldBirthday,
 		})
-		_node.Age = value
+		_node.Birthday = value
 	}
-	if nodes := pc.mutation.CategoryIDs(); len(nodes) > 0 {
+	if value, ok := pc.mutation.Nicknames(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: pet.FieldNicknames,
+		})
+		_node.Nicknames = value
+	}
+	if value, ok := pc.mutation.Sex(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: pet.FieldSex,
+		})
+		_node.Sex = value
+	}
+	if value, ok := pc.mutation.Chip(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: pet.FieldChip,
+		})
+		_node.Chip = value
+	}
+	if nodes := pc.mutation.BadgeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   pet.BadgeTable,
+			Columns: []string{pet.BadgeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: category.FieldID,
+					Column: badge.FieldID,
 				},
 			},
 		}
@@ -207,24 +447,140 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.ProtegeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   pet.OwnerTable,
-			Columns: []string{pet.OwnerColumn},
+			Table:   pet.ProtegeTable,
+			Columns: []string{pet.ProtegeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: owner.FieldID,
+					Column: pet.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.owner_pets = &nodes[0]
+		_node.pet_mentor = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.MentorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   pet.MentorTable,
+			Columns: []string{pet.MentorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: pet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.SpouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   pet.SpouseTable,
+			Columns: []string{pet.SpouseColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: pet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.pet_spouse = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ToysIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   pet.ToysTable,
+			Columns: []string{pet.ToysColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: toy.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   pet.ParentTable,
+			Columns: []string{pet.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: pet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.pet_children = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   pet.ChildrenTable,
+			Columns: []string{pet.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: pet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.PlayGroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   pet.PlayGroupsTable,
+			Columns: pet.PlayGroupsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: playgroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.FriendsIDs(); len(nodes) > 0 {
@@ -263,6 +619,7 @@ func (pcb *PetCreateBulk) Save(ctx context.Context) ([]*Pet, error) {
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PetMutation)
 				if !ok {
@@ -277,8 +634,9 @@ func (pcb *PetCreateBulk) Save(ctx context.Context) ([]*Pet, error) {
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, pcb.builders[i+1].mutation)
 				} else {
+					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, pcb.driver, &sqlgraph.BatchCreateSpec{Nodes: specs}); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, pcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{err.Error(), err}
 						}
@@ -289,8 +647,10 @@ func (pcb *PetCreateBulk) Save(ctx context.Context) ([]*Pet, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				id := specs[i].ID.Value.(int64)
-				nodes[i].ID = int(id)
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
@@ -314,4 +674,17 @@ func (pcb *PetCreateBulk) SaveX(ctx context.Context) []*Pet {
 		panic(err)
 	}
 	return v
+}
+
+// Exec executes the query.
+func (pcb *PetCreateBulk) Exec(ctx context.Context) error {
+	_, err := pcb.Save(ctx)
+	return err
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (pcb *PetCreateBulk) ExecX(ctx context.Context) {
+	if err := pcb.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

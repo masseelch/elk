@@ -4,6 +4,7 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
+    {{ template "helper/http/import" $ }}
 
     {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
@@ -22,24 +23,16 @@
                         q{{ .EntQuery }}
                     {{- end }}
                     e, err := q.Only(r.Context())
-                    if err != nil {
-                        switch {
-                        case ent.IsNotFound(err):
-                            msg := stripEntError(err)
-                            l.Info(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                            render.NotFound(w, r, strings.TrimPrefix(err.Error(), "ent: "))
-                        case ent.IsNotSingular(err):
-                            msg := stripEntError(err)
-                            l.Error(msg, zap.Int("{{ $n.ID.Name }}", id), zap.Error(err))
-                            render.BadRequest(w, r, strings.TrimPrefix(err.Error(), "ent: "))
-                        default:
-                            l.Error("error fetching {{ $e.Type.Name | kebab }} from db", zap.Int("{{ $n.Name | kebab }}.{{ $n.ID.Name }}", id), zap.Error(err))
-                            render.InternalServerError(w, r, nil)
-                        }
-                        return
-                    }
+
+                    {{-
+                        template "helper/http/error-handling" dict
+                        "Errors" (list "not-found" "not-singular")
+                        "Logs" (list (printf "zap.Int(\"%s\", id)" $n.ID.Name))
+                        "Default" (print "could not read " $n.Name | kebab)
+                    -}}
+
                     l.Info("{{ $e.Type.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $e.Type.ID.StructField }}))
-                    easyjson.MarshalToHTTPResponseWriter(New{{ $e.Type.Name }}ReadResponse(e), w)
+                    easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $e.Type $e.Type.Annotations.Elk.ReadGroups).ViewName }}(e), w)
                 {{- else }}
                     {{- with edgesToLoad $e.Type "list" }}
                         // Eager load edges that are required on list operation.
@@ -49,7 +42,7 @@
                     {{- template "helper/http/pagination" $e.Type -}}
 
                     l.Info("{{ $e.Type.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
-                    easyjson.MarshalToHTTPResponseWriter(New{{ $e.Type.Name }}ListResponse(es), w)
+                    easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $e.Type $e.Type.Annotations.Elk.ListGroups).ViewName }}s(es), w)
                 {{- end }}
             }
         {{ end }}

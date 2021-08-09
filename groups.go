@@ -1,6 +1,11 @@
 package elk
 
-import "strings"
+import (
+	"hash/fnv"
+	"sort"
+	"strconv"
+	"strings"
+)
 
 // groups are used to determine what properties to load and serialize.
 type groups []string
@@ -34,6 +39,29 @@ func (gs groups) Match(other groups) bool {
 	}
 
 	return false
+}
+
+// Equal reports if two groups have the same entries.
+func (gs groups) Equal(other groups) bool {
+	if len(gs) != len(other) {
+		return false
+	}
+	for _, g := range other {
+		if !gs.HasGroup(g) {
+			return false
+		}
+	}
+	return true
+}
+
+func (gs groups) Hash() uint32 {
+	sort.Strings(gs)
+	h := fnv.New32a()
+	for _, g := range gs {
+		h.Write([]byte(g))
+	}
+	h.Write([]byte(strconv.Itoa(len(gs))))
+	return h.Sum32()
 }
 
 // StructTag returns the struct tag representation of the groups.

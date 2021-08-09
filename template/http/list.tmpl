@@ -4,6 +4,7 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
+    {{ template "helper/http/import" $ }}
 
     {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
@@ -20,7 +21,7 @@
             {{- template "helper/http/pagination" $n -}}
 
             l.Info("{{ $n.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
-            easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}ListResponse(es), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n $n.Annotations.Elk.ListGroups).ViewName }}s(es), w)
         }
     {{ end }}
 {{ end }}

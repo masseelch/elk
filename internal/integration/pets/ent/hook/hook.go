@@ -9,28 +9,15 @@ import (
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 )
 
-// The CategoryFunc type is an adapter to allow the use of ordinary
-// function as Category mutator.
-type CategoryFunc func(context.Context, *ent.CategoryMutation) (ent.Value, error)
+// The BadgeFunc type is an adapter to allow the use of ordinary
+// function as Badge mutator.
+type BadgeFunc func(context.Context, *ent.BadgeMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f CategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CategoryMutation)
+func (f BadgeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.BadgeMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoryMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The OwnerFunc type is an adapter to allow the use of ordinary
-// function as Owner mutator.
-type OwnerFunc func(context.Context, *ent.OwnerMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f OwnerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.OwnerMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OwnerMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BadgeMutation", m)
 	}
 	return f(ctx, mv)
 }
@@ -44,6 +31,32 @@ func (f PetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) 
 	mv, ok := m.(*ent.PetMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PetMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The PlayGroupFunc type is an adapter to allow the use of ordinary
+// function as PlayGroup mutator.
+type PlayGroupFunc func(context.Context, *ent.PlayGroupMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlayGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PlayGroupMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlayGroupMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The ToyFunc type is an adapter to allow the use of ordinary
+// function as Toy mutator.
+type ToyFunc func(context.Context, *ent.ToyMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ToyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ToyMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ToyMutation", m)
 	}
 	return f(ctx, mv)
 }

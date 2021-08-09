@@ -24,4 +24,16 @@ func TestGroups(t *testing.T) {
 	require.True(t, gs.Match(groups{"group", "nobody"}))
 
 	require.Equal(t, `groups:"group_one,GROUP_two,group:3"`, groups{"group_one", "GROUP_two", "group:3"}.StructTag())
+
+	require.True(t, groups{}.Equal(groups{}))
+	require.True(t, groups{"a"}.Equal(groups{"a"}))
+	require.True(t, groups{"a", "b"}.Equal(groups{"a", "b"}))
+	require.False(t, groups{"a"}.Equal(groups{}))
+	require.False(t, groups{"a"}.Equal(groups{"b"}))
+
+	require.Equal(t, groups{}.Hash(), groups{}.Hash())
+	require.Equal(t, groups{"a"}.Hash(), groups{"a"}.Hash())
+	require.Equal(t, groups{"a", "b"}.Hash(), groups{"a", "b"}.Hash())
+	require.NotEqual(t, groups{"a", "b"}.Hash(), groups{"ab"}.Hash())
+	require.NotEqual(t, groups{"a"}.Hash(), groups{"b"}.Hash())
 }

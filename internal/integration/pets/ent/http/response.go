@@ -2,526 +2,227 @@
 
 package http
 
-import "github.com/masseelch/elk/internal/integration/pets/ent"
+import (
+	time "time"
 
-// Response of a ent.Category create request.
-type CategoryCreateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
+	"github.com/google/uuid"
+	"github.com/masseelch/elk/internal/integration/pets/ent"
+	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
+)
 
-func NewCategoryCreateResponse(e *ent.Category) *CategoryCreateResponse {
-	return &CategoryCreateResponse{
-		ID:   e.ID,
-		Name: e.Name,
+type (
+	Badge2492344257View struct {
+		ID       int            `json:"id,omitempty"`
+		Color    badge.Color    `json:"color,omitempty"`
+		Material badge.Material `json:"material,omitempty"`
+	}
+	Badge2492344257Views []*Badge2492344257View
+)
+
+func NewBadge2492344257View(e *ent.Badge) *Badge2492344257View {
+	return &Badge2492344257View{
+		ID:       e.ID,
+		Color:    e.Color,
+		Material: e.Material,
 	}
 }
 
-// Response of a ent.Category read request.
-type CategoryReadResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
-func NewCategoryReadResponse(e *ent.Category) *CategoryReadResponse {
-	return &CategoryReadResponse{
-		ID:   e.ID,
-		Name: e.Name,
+func NewBadge2492344257Views(es []*ent.Badge) Badge2492344257Views {
+	if len(es) == 0 {
+		return nil
 	}
-}
-
-// Response of a ent.Category update request.
-type CategoryUpdateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
-func NewCategoryUpdateResponse(e *ent.Category) *CategoryUpdateResponse {
-	return &CategoryUpdateResponse{
-		ID:   e.ID,
-		Name: e.Name,
-	}
-}
-
-// Response of a ent.Category list request.
-type CategoryListResponse []struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
-func NewCategoryListResponse(e []*ent.Category) CategoryListResponse {
-	r := make(CategoryListResponse, len(e))
-	for i := range e {
-		r[i] = struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-		}{
-			ID:   e[i].ID,
-			Name: e[i].Name,
-		}
+	r := make(Badge2492344257Views, len(es))
+	for i, e := range es {
+		r[i] = NewBadge2492344257View(e)
 	}
 	return r
 }
 
-// Response of a ent.Owner create request.
-type OwnerCreateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
+type (
+	Pet1954225839View struct {
+		ID         int                      `json:"id,omitempty"`
+		Height     int                      `json:"height,omitempty"`
+		Weight     float64                  `json:"weight,omitempty"`
+		Castrated  bool                     `json:"castrated,omitempty"`
+		Name       string                   `json:"name,omitempty"`
+		Birthday   time.Time                `json:"birthday,omitempty"`
+		Nicknames  []string                 `json:"nicknames,omitempty"`
+		Sex        pet.Sex                  `json:"sex,omitempty"`
+		Chip       uuid.UUID                `json:"chip,omitempty"`
+		Badge      *Badge2492344257View     `json:"badge,omitempty"`
+		Protege    *Pet1954225839View       `json:"protege,omitempty"`
+		Spouse     *Pet1954225839View       `json:"spouse,omitempty"`
+		Toys       Toy36157710Views         `json:"toys,omitempty"`
+		Parent     *Pet1954225839View       `json:"parent,omitempty"`
+		PlayGroups PlayGroup3432834655Views `json:"play_groups,omitempty"`
+		Friends    Pet1954225839Views       `json:"friends,omitempty"`
+	}
+	Pet1954225839Views []*Pet1954225839View
+)
 
-func NewOwnerCreateResponse(e *ent.Owner) *OwnerCreateResponse {
-	return &OwnerCreateResponse{
-		ID:   e.ID,
-		Name: e.Name,
-		Age:  e.Age,
+func NewPet1954225839View(e *ent.Pet) *Pet1954225839View {
+	return &Pet1954225839View{
+		ID:         e.ID,
+		Height:     e.Height,
+		Weight:     e.Weight,
+		Castrated:  e.Castrated,
+		Name:       e.Name,
+		Birthday:   e.Birthday,
+		Nicknames:  e.Nicknames,
+		Sex:        e.Sex,
+		Chip:       e.Chip,
+		Badge:      NewBadge2492344257View(e.Edges.Badge),
+		Protege:    NewPet1954225839View(e.Edges.Protege),
+		Spouse:     NewPet1954225839View(e.Edges.Spouse),
+		Toys:       NewToy36157710Views(e.Edges.Toys),
+		Parent:     NewPet1954225839View(e.Edges.Parent),
+		PlayGroups: NewPlayGroup3432834655Views(e.Edges.PlayGroups),
+		Friends:    NewPet1954225839Views(e.Edges.Friends),
 	}
 }
 
-// Response of a ent.Owner read request.
-type OwnerReadResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
-
-func NewOwnerReadResponse(e *ent.Owner) *OwnerReadResponse {
-	return &OwnerReadResponse{
-		ID:   e.ID,
-		Name: e.Name,
-		Age:  e.Age,
+func NewPet1954225839Views(es []*ent.Pet) Pet1954225839Views {
+	if len(es) == 0 {
+		return nil
 	}
-}
-
-// Response of a ent.Owner update request.
-type OwnerUpdateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
-
-func NewOwnerUpdateResponse(e *ent.Owner) *OwnerUpdateResponse {
-	return &OwnerUpdateResponse{
-		ID:   e.ID,
-		Name: e.Name,
-		Age:  e.Age,
-	}
-}
-
-// Response of a ent.Owner list request.
-type OwnerListResponse []struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
-
-func NewOwnerListResponse(e []*ent.Owner) OwnerListResponse {
-	r := make(OwnerListResponse, len(e))
-	for i := range e {
-		r[i] = struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Age  int    `json:"age,omitempty"`
-		}{
-			ID:   e[i].ID,
-			Name: e[i].Name,
-			Age:  e[i].Age,
-		}
+	r := make(Pet1954225839Views, len(es))
+	for i, e := range es {
+		r[i] = NewPet1954225839View(e)
 	}
 	return r
 }
 
-// Response of a ent.Pet create request.
-type PetCreateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
-}
+type (
+	Pet340207500View struct {
+		ID        int       `json:"id,omitempty"`
+		Height    int       `json:"height,omitempty"`
+		Weight    float64   `json:"weight,omitempty"`
+		Castrated bool      `json:"castrated,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		Birthday  time.Time `json:"birthday,omitempty"`
+		Nicknames []string  `json:"nicknames,omitempty"`
+		Sex       pet.Sex   `json:"sex,omitempty"`
+		Chip      uuid.UUID `json:"chip,omitempty"`
+	}
+	Pet340207500Views []*Pet340207500View
+)
 
-func NewPetCreateResponse(e *ent.Pet) *PetCreateResponse {
-	return &PetCreateResponse{
-		ID:   e.ID,
-		Name: e.Name,
-		Age:  e.Age,
+func NewPet340207500View(e *ent.Pet) *Pet340207500View {
+	return &Pet340207500View{
+		ID:        e.ID,
+		Height:    e.Height,
+		Weight:    e.Weight,
+		Castrated: e.Castrated,
+		Name:      e.Name,
+		Birthday:  e.Birthday,
+		Nicknames: e.Nicknames,
+		Sex:       e.Sex,
+		Chip:      e.Chip,
 	}
 }
 
-// Response of a ent.Pet read request.
-type PetReadResponse struct {
-	ID    int    `json:"id,omitempty"`
-	Name  string `json:"name,omitempty"`
-	Age   int    `json:"age,omitempty"`
-	Owner struct {
-		ID   int    `json:"id,omitempty"`
-		Name string `json:"name,omitempty"`
-		Age  int    `json:"age,omitempty"`
-	} `json:"owner,omitempty"`
-	Friends []struct {
-		ID    int    `json:"id,omitempty"`
-		Name  string `json:"name,omitempty"`
-		Age   int    `json:"age,omitempty"`
-		Owner struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Age  int    `json:"age,omitempty"`
-		} `json:"owner,omitempty"`
-		Friends []struct {
-			ID    int    `json:"id,omitempty"`
-			Name  string `json:"name,omitempty"`
-			Age   int    `json:"age,omitempty"`
-			Owner struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"owner,omitempty"`
-			Friends []struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"friends,omitempty"`
+func NewPet340207500Views(es []*ent.Pet) Pet340207500Views {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(Pet340207500Views, len(es))
+	for i, e := range es {
+		r[i] = NewPet340207500View(e)
+	}
+	return r
 }
 
-func NewPetReadResponse(e *ent.Pet) *PetReadResponse {
-	owner1 := struct {
-		ID   int    `json:"id,omitempty"`
-		Name string `json:"name,omitempty"`
-		Age  int    `json:"age,omitempty"`
-	}{
-		ID:   e.Edges.Owner.ID,
-		Name: e.Edges.Owner.Name,
-		Age:  e.Edges.Owner.Age,
+type (
+	Pet855087725View struct {
+		ID    int                  `json:"id,omitempty"`
+		Name  string               `json:"name,omitempty"`
+		Sex   pet.Sex              `json:"sex,omitempty"`
+		Chip  uuid.UUID            `json:"chip,omitempty"`
+		Badge *Badge2492344257View `json:"badge,omitempty"`
 	}
-	friends1 := make([]struct {
-		ID    int    `json:"id,omitempty"`
-		Name  string `json:"name,omitempty"`
-		Age   int    `json:"age,omitempty"`
-		Owner struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Age  int    `json:"age,omitempty"`
-		} `json:"owner,omitempty"`
-		Friends []struct {
-			ID    int    `json:"id,omitempty"`
-			Name  string `json:"name,omitempty"`
-			Age   int    `json:"age,omitempty"`
-			Owner struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"owner,omitempty"`
-			Friends []struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"friends,omitempty"`
-	}, len(e.Edges.Friends))
-	for i1 := range e.Edges.Friends {
-		owner2 := struct {
-			ID   int    `json:"id,omitempty"`
-			Name string `json:"name,omitempty"`
-			Age  int    `json:"age,omitempty"`
-		}{
-			ID:   e.Edges.Friends[i1].Edges.Owner.ID,
-			Name: e.Edges.Friends[i1].Edges.Owner.Name,
-			Age:  e.Edges.Friends[i1].Edges.Owner.Age,
-		}
-		friends2 := make([]struct {
-			ID    int    `json:"id,omitempty"`
-			Name  string `json:"name,omitempty"`
-			Age   int    `json:"age,omitempty"`
-			Owner struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"owner,omitempty"`
-			Friends []struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-			} `json:"friends,omitempty"`
-		}, len(e.Edges.Friends[i1].Edges.Friends))
-		for i2 := range e.Edges.Friends[i1].Edges.Friends {
-			owner3 := struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			}{
-				ID:   e.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.ID,
-				Name: e.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.Name,
-				Age:  e.Edges.Friends[i1].Edges.Friends[i2].Edges.Owner.Age,
-			}
-			friends3 := make([]struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-			}, len(e.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends))
-			for i3 := range e.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends {
-				owner4 := struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				}{
-					ID:   e.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.ID,
-					Name: e.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.Name,
-					Age:  e.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Edges.Owner.Age,
-				}
-				friends3[i3] = struct {
-					ID    int    `json:"id,omitempty"`
-					Name  string `json:"name,omitempty"`
-					Age   int    `json:"age,omitempty"`
-					Owner struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"owner,omitempty"`
-				}{
-					ID:    e.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].ID,
-					Name:  e.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Name,
-					Age:   e.Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Age,
-					Owner: owner4,
-				}
-			}
-			friends2[i2] = struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-				Friends []struct {
-					ID    int    `json:"id,omitempty"`
-					Name  string `json:"name,omitempty"`
-					Age   int    `json:"age,omitempty"`
-					Owner struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"owner,omitempty"`
-				} `json:"friends,omitempty"`
-			}{
-				ID:      e.Edges.Friends[i1].Edges.Friends[i2].ID,
-				Name:    e.Edges.Friends[i1].Edges.Friends[i2].Name,
-				Age:     e.Edges.Friends[i1].Edges.Friends[i2].Age,
-				Owner:   owner3,
-				Friends: friends3,
-			}
-		}
-		friends1[i1] = struct {
-			ID    int    `json:"id,omitempty"`
-			Name  string `json:"name,omitempty"`
-			Age   int    `json:"age,omitempty"`
-			Owner struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"owner,omitempty"`
-			Friends []struct {
-				ID    int    `json:"id,omitempty"`
-				Name  string `json:"name,omitempty"`
-				Age   int    `json:"age,omitempty"`
-				Owner struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"owner,omitempty"`
-				Friends []struct {
-					ID    int    `json:"id,omitempty"`
-					Name  string `json:"name,omitempty"`
-					Age   int    `json:"age,omitempty"`
-					Owner struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"owner,omitempty"`
-				} `json:"friends,omitempty"`
-			} `json:"friends,omitempty"`
-		}{
-			ID:      e.Edges.Friends[i1].ID,
-			Name:    e.Edges.Friends[i1].Name,
-			Age:     e.Edges.Friends[i1].Age,
-			Owner:   owner2,
-			Friends: friends2,
-		}
-	}
-	return &PetReadResponse{
-		ID:      e.ID,
-		Name:    e.Name,
-		Age:     e.Age,
-		Owner:   owner1,
-		Friends: friends1,
+	Pet855087725Views []*Pet855087725View
+)
+
+func NewPet855087725View(e *ent.Pet) *Pet855087725View {
+	return &Pet855087725View{
+		ID:    e.ID,
+		Name:  e.Name,
+		Sex:   e.Sex,
+		Chip:  e.Chip,
+		Badge: NewBadge2492344257View(e.Edges.Badge),
 	}
 }
 
-// Response of a ent.Pet update request.
-type PetUpdateResponse struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Age  int    `json:"age,omitempty"`
+func NewPet855087725Views(es []*ent.Pet) Pet855087725Views {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(Pet855087725Views, len(es))
+	for i, e := range es {
+		r[i] = NewPet855087725View(e)
+	}
+	return r
 }
 
-func NewPetUpdateResponse(e *ent.Pet) *PetUpdateResponse {
-	return &PetUpdateResponse{
-		ID:   e.ID,
-		Name: e.Name,
-		Age:  e.Age,
+type (
+	PlayGroup3432834655View struct {
+		ID          int               `json:"id,omitempty"`
+		Title       string            `json:"title,omitempty"`
+		Description string            `json:"description,omitempty"`
+		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
+	}
+	PlayGroup3432834655Views []*PlayGroup3432834655View
+)
+
+func NewPlayGroup3432834655View(e *ent.PlayGroup) *PlayGroup3432834655View {
+	return &PlayGroup3432834655View{
+		ID:          e.ID,
+		Title:       e.Title,
+		Description: e.Description,
+		Weekday:     e.Weekday,
 	}
 }
 
-// Response of a ent.Pet list request.
-type PetListResponse []struct {
-	ID      int    `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Age     int    `json:"age,omitempty"`
-	Friends []struct {
-		ID      int    `json:"id,omitempty"`
-		Name    string `json:"name,omitempty"`
-		Age     int    `json:"age,omitempty"`
-		Friends []struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
-				ID   int    `json:"id,omitempty"`
-				Name string `json:"name,omitempty"`
-				Age  int    `json:"age,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"friends,omitempty"`
+func NewPlayGroup3432834655Views(es []*ent.PlayGroup) PlayGroup3432834655Views {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(PlayGroup3432834655Views, len(es))
+	for i, e := range es {
+		r[i] = NewPlayGroup3432834655View(e)
+	}
+	return r
 }
 
-func NewPetListResponse(e []*ent.Pet) PetListResponse {
-	r := make(PetListResponse, len(e))
-	for i := range e {
-		friends1 := make([]struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"friends,omitempty"`
-			} `json:"friends,omitempty"`
-		}, len(e[i].Edges.Friends))
-		for i1 := range e[i].Edges.Friends {
-			friends2 := make([]struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				} `json:"friends,omitempty"`
-			}, len(e[i].Edges.Friends[i1].Edges.Friends))
-			for i2 := range e[i].Edges.Friends[i1].Edges.Friends {
-				friends3 := make([]struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-					Age  int    `json:"age,omitempty"`
-				}, len(e[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends))
-				for i3 := range e[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends {
-					friends3[i3] = struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					}{
-						ID:   e[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].ID,
-						Name: e[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Name,
-						Age:  e[i].Edges.Friends[i1].Edges.Friends[i2].Edges.Friends[i3].Age,
-					}
-				}
-				friends2[i2] = struct {
-					ID      int    `json:"id,omitempty"`
-					Name    string `json:"name,omitempty"`
-					Age     int    `json:"age,omitempty"`
-					Friends []struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"friends,omitempty"`
-				}{
-					ID:      e[i].Edges.Friends[i1].Edges.Friends[i2].ID,
-					Name:    e[i].Edges.Friends[i1].Edges.Friends[i2].Name,
-					Age:     e[i].Edges.Friends[i1].Edges.Friends[i2].Age,
-					Friends: friends3,
-				}
-			}
-			friends1[i1] = struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
-					ID      int    `json:"id,omitempty"`
-					Name    string `json:"name,omitempty"`
-					Age     int    `json:"age,omitempty"`
-					Friends []struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"friends,omitempty"`
-				} `json:"friends,omitempty"`
-			}{
-				ID:      e[i].Edges.Friends[i1].ID,
-				Name:    e[i].Edges.Friends[i1].Name,
-				Age:     e[i].Edges.Friends[i1].Age,
-				Friends: friends2,
-			}
-		}
-		r[i] = struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Age     int    `json:"age,omitempty"`
-			Friends []struct {
-				ID      int    `json:"id,omitempty"`
-				Name    string `json:"name,omitempty"`
-				Age     int    `json:"age,omitempty"`
-				Friends []struct {
-					ID      int    `json:"id,omitempty"`
-					Name    string `json:"name,omitempty"`
-					Age     int    `json:"age,omitempty"`
-					Friends []struct {
-						ID   int    `json:"id,omitempty"`
-						Name string `json:"name,omitempty"`
-						Age  int    `json:"age,omitempty"`
-					} `json:"friends,omitempty"`
-				} `json:"friends,omitempty"`
-			} `json:"friends,omitempty"`
-		}{
-			ID:      e[i].ID,
-			Name:    e[i].Name,
-			Age:     e[i].Age,
-			Friends: friends1,
-		}
+type (
+	Toy36157710View struct {
+		ID       int          `json:"id,omitempty"`
+		Color    toy.Color    `json:"color,omitempty"`
+		Material toy.Material `json:"material,omitempty"`
+		Title    string       `json:"title,omitempty"`
+	}
+	Toy36157710Views []*Toy36157710View
+)
+
+func NewToy36157710View(e *ent.Toy) *Toy36157710View {
+	return &Toy36157710View{
+		ID:       e.ID,
+		Color:    e.Color,
+		Material: e.Material,
+		Title:    e.Title,
+	}
+}
+
+func NewToy36157710Views(es []*ent.Toy) Toy36157710Views {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(Toy36157710Views, len(es))
+	for i, e := range es {
+		r[i] = NewToy36157710View(e)
 	}
 	return r
 }

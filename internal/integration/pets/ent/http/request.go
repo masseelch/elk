@@ -2,46 +2,100 @@
 
 package http
 
-// Payload of a ent.Category create request.
-type CategoryCreateRequest struct {
-	Name *string `json:"name"`
-	Pets []int   `json:"pets"`
+import (
+	time "time"
+
+	"github.com/google/uuid"
+	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
+)
+
+// Payload of a ent.Badge create request.
+type BadgeCreateRequest struct {
+	Color    *badge.Color    `json:"color"`
+	Material *badge.Material `json:"material"`
+	Wearer   *int            `json:"wearer"`
 }
 
-// Payload of a ent.Category update request.
-type CategoryUpdateRequest struct {
-	Name *string `json:"name"`
-	Pets []int   `json:"pets"`
-}
-
-// Payload of a ent.Owner create request.
-type OwnerCreateRequest struct {
-	Name *string `json:"name"`
-	Age  *int    `json:"age"`
-	Pets []int   `json:"pets"`
-}
-
-// Payload of a ent.Owner update request.
-type OwnerUpdateRequest struct {
-	Name *string `json:"name"`
-	Age  *int    `json:"age"`
-	Pets []int   `json:"pets"`
+// Payload of a ent.Badge update request.
+type BadgeUpdateRequest struct {
+	Color    *badge.Color    `json:"color"`
+	Material *badge.Material `json:"material"`
+	Wearer   *int            `json:"wearer"`
 }
 
 // Payload of a ent.Pet create request.
 type PetCreateRequest struct {
-	Name     *string `json:"name" validate:"required"`
-	Age      *int    `json:"age" validate:"required,gt=0"`
-	Category []int   `json:"category"`
-	Owner    *int    `json:"owner" validate:"required"`
-	Friends  []int   `json:"friends"`
+	Height     *int       `json:"height"`
+	Weight     *float64   `json:"weight"`
+	Castrated  *bool      `json:"castrated"`
+	Name       *string    `json:"name"`
+	Birthday   *time.Time `json:"birthday"`
+	Nicknames  *[]string  `json:"nicknames"`
+	Sex        *pet.Sex   `json:"sex"`
+	Chip       *uuid.UUID `json:"chip"`
+	Badge      *int       `json:"badge"`
+	Protege    *int       `json:"protege"`
+	Mentor     *int       `json:"mentor"`
+	Spouse     *int       `json:"spouse"`
+	Toys       []int      `json:"toys"`
+	Parent     *int       `json:"parent"`
+	Children   []int      `json:"children"`
+	PlayGroups []int      `json:"play_groups"`
+	Friends    []int      `json:"friends"`
 }
 
 // Payload of a ent.Pet update request.
 type PetUpdateRequest struct {
-	Name     *string `json:"name"`
-	Age      *int    `json:"age" validate:"gt=0"`
-	Category []int   `json:"category"`
-	Owner    *int    `json:"owner"`
-	Friends  []int   `json:"friends"`
+	Height     *int       `json:"height"`
+	Weight     *float64   `json:"weight"`
+	Castrated  *bool      `json:"castrated"`
+	Name       *string    `json:"name"`
+	Birthday   *time.Time `json:"birthday"`
+	Nicknames  *[]string  `json:"nicknames"`
+	Sex        *pet.Sex   `json:"sex"`
+	Chip       *uuid.UUID `json:"chip"`
+	Badge      *int       `json:"badge"`
+	Protege    *int       `json:"protege"`
+	Mentor     *int       `json:"mentor"`
+	Spouse     *int       `json:"spouse"`
+	Toys       []int      `json:"toys"`
+	Parent     *int       `json:"parent"`
+	Children   []int      `json:"children"`
+	PlayGroups []int      `json:"play_groups"`
+	Friends    []int      `json:"friends"`
+}
+
+// Payload of a ent.PlayGroup create request.
+type PlayGroupCreateRequest struct {
+	Title        *string            `json:"title"`
+	Description  *string            `json:"description"`
+	Weekday      *playgroup.Weekday `json:"weekday"`
+	Participants []int              `json:"participants"`
+}
+
+// Payload of a ent.PlayGroup update request.
+type PlayGroupUpdateRequest struct {
+	Title        *string            `json:"title"`
+	Description  *string            `json:"description"`
+	Weekday      *playgroup.Weekday `json:"weekday"`
+	Participants []int              `json:"participants"`
+}
+
+// Payload of a ent.Toy create request.
+type ToyCreateRequest struct {
+	Color    *toy.Color    `json:"color"`
+	Material *toy.Material `json:"material"`
+	Title    *string       `json:"title"`
+	Owner    *int          `json:"owner"`
+}
+
+// Payload of a ent.Toy update request.
+type ToyUpdateRequest struct {
+	Color    *toy.Color    `json:"color"`
+	Material *toy.Material `json:"material"`
+	Title    *string       `json:"title"`
+	Owner    *int          `json:"owner"`
 }

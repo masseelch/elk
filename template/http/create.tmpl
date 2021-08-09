@@ -4,7 +4,7 @@
     {{- with extend $ "Package" "http" -}}
         {{ template "header" . }}
     {{ end }}
-    import "github.com/go-playground/validator/v10" {{/* This is needed for stupid SIV rule */}}
+    {{ template "helper/http/import" $ }}
 
     {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
@@ -14,9 +14,7 @@
             // Get the post data.
             var d {{ $n.Name }}CreateRequest
 
-            {{- template "helper/http/decode-request-body" -}}
-
-            {{- if needsValidation $n "create" }}{{ template "helper/http/validate-request-body" }}{{ end -}}
+            {{- template "helper/http/decode-and-validate-request" $n -}}
 
             // Save the data.
             b := h.client.{{ $n.Name }}.Create()
@@ -35,11 +33,9 @@
                 }
             {{ end -}}
             e, err := b.Save(r.Context())
-            if err != nil {
-                l.Error("error saving {{ $n.Name | kebab }}", zap.Error(err))
-                render.InternalServerError(w, r, nil)
-                return
-            }
+
+            {{- template "helper/http/error-handling" dict "Default" (print "could not create " ($n.Name | kebab)) -}}
+
             // Reload entry.
             q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(e.{{ $n.ID.StructField }}))
 
@@ -49,10 +45,15 @@
             {{- end }}
             e, err = q.Only(r.Context())
 
-            {{- template "helper/http/reload/error-handling" . -}}
+            {{-
+                template "helper/http/error-handling" dict
+                "Errors" (list "not-found" "not-singular")
+                "Logs" (list (printf "zap.Int(\"%s\", e.%s)" $n.ID.Name $n.ID.StructField))
+                "Default" (print "could not read " ($n.Name | kebab)) " after update"
+            -}}
 
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
-            easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}CreateResponse(e), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n $n.Annotations.Elk.CreateGroups).ViewName }}(e), w)
         }
     {{ end }}
 {{ end }}
