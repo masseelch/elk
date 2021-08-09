@@ -12,15 +12,10 @@
         func (h {{ $n.Name }}Handler) Update(w http.ResponseWriter, r *http.Request) {
             l := h.log.With(zap.String("method", "Update"))
             {{- template "helper/http/id-from-url" $n -}}
-
             // Get the post data.
             var d {{ $n.Name }}UpdateRequest
 
-            {{- template "helper/http/decode-request-body" -}}
-
-            {{- if needsValidation $n "update" }}
-                {{- template "helper/http/validate-request-body" $n }}
-            {{- end -}}
+            {{- template "helper/http/decode-and-validate-request" $n -}}
 
             // Save the data.
             b := h.client.{{ $n.Name }}.UpdateOneID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }})
@@ -67,7 +62,7 @@
             -}}
 
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
-            easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}UpdateResponse(e), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n $n.Annotations.Elk.UpdateGroups).ViewName }}(e), w)
         }
     {{ end }}
 {{ end }}

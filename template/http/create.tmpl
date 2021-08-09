@@ -14,11 +14,7 @@
             // Get the post data.
             var d {{ $n.Name }}CreateRequest
 
-            {{- template "helper/http/decode-request-body" -}}
-
-            {{- if needsValidation $n "create" }}
-                {{- template "helper/http/validate-request-body" $n }}
-            {{- end -}}
+            {{- template "helper/http/decode-and-validate-request" $n -}}
 
             // Save the data.
             b := h.client.{{ $n.Name }}.Create()
@@ -57,7 +53,7 @@
             -}}
 
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
-            easyjson.MarshalToHTTPResponseWriter(New{{ $n.Name }}CreateResponse(e), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n $n.Annotations.Elk.CreateGroups).ViewName }}(e), w)
         }
     {{ end }}
 {{ end }}

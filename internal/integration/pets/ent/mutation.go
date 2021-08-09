@@ -39,6 +39,8 @@ type BadgeMutation struct {
 	op            Op
 	typ           string
 	id            *int
+	color         *badge.Color
+	material      *badge.Material
 	clearedFields map[string]struct{}
 	wearer        *int
 	clearedwearer bool
@@ -126,6 +128,78 @@ func (m *BadgeMutation) ID() (id int, exists bool) {
 	return *m.id, true
 }
 
+// SetColor sets the "color" field.
+func (m *BadgeMutation) SetColor(b badge.Color) {
+	m.color = &b
+}
+
+// Color returns the value of the "color" field in the mutation.
+func (m *BadgeMutation) Color() (r badge.Color, exists bool) {
+	v := m.color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldColor returns the old "color" field's value of the Badge entity.
+// If the Badge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BadgeMutation) OldColor(ctx context.Context) (v badge.Color, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldColor: %w", err)
+	}
+	return oldValue.Color, nil
+}
+
+// ResetColor resets all changes to the "color" field.
+func (m *BadgeMutation) ResetColor() {
+	m.color = nil
+}
+
+// SetMaterial sets the "material" field.
+func (m *BadgeMutation) SetMaterial(b badge.Material) {
+	m.material = &b
+}
+
+// Material returns the value of the "material" field in the mutation.
+func (m *BadgeMutation) Material() (r badge.Material, exists bool) {
+	v := m.material
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaterial returns the old "material" field's value of the Badge entity.
+// If the Badge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BadgeMutation) OldMaterial(ctx context.Context) (v badge.Material, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldMaterial is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldMaterial requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaterial: %w", err)
+	}
+	return oldValue.Material, nil
+}
+
+// ResetMaterial resets all changes to the "material" field.
+func (m *BadgeMutation) ResetMaterial() {
+	m.material = nil
+}
+
 // SetWearerID sets the "wearer" edge to the Pet entity by id.
 func (m *BadgeMutation) SetWearerID(id int) {
 	m.wearer = &id
@@ -184,7 +258,13 @@ func (m *BadgeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BadgeMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 2)
+	if m.color != nil {
+		fields = append(fields, badge.FieldColor)
+	}
+	if m.material != nil {
+		fields = append(fields, badge.FieldMaterial)
+	}
 	return fields
 }
 
@@ -192,6 +272,12 @@ func (m *BadgeMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *BadgeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case badge.FieldColor:
+		return m.Color()
+	case badge.FieldMaterial:
+		return m.Material()
+	}
 	return nil, false
 }
 
@@ -199,6 +285,12 @@ func (m *BadgeMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *BadgeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case badge.FieldColor:
+		return m.OldColor(ctx)
+	case badge.FieldMaterial:
+		return m.OldMaterial(ctx)
+	}
 	return nil, fmt.Errorf("unknown Badge field %s", name)
 }
 
@@ -207,6 +299,20 @@ func (m *BadgeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *BadgeMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case badge.FieldColor:
+		v, ok := value.(badge.Color)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetColor(v)
+		return nil
+	case badge.FieldMaterial:
+		v, ok := value.(badge.Material)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaterial(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Badge field %s", name)
 }
@@ -228,6 +334,8 @@ func (m *BadgeMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *BadgeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown Badge numeric field %s", name)
 }
 
@@ -253,6 +361,14 @@ func (m *BadgeMutation) ClearField(name string) error {
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *BadgeMutation) ResetField(name string) error {
+	switch name {
+	case badge.FieldColor:
+		m.ResetColor()
+		return nil
+	case badge.FieldMaterial:
+		m.ResetMaterial()
+		return nil
+	}
 	return fmt.Errorf("unknown Badge field %s", name)
 }
 
@@ -2251,6 +2367,8 @@ type ToyMutation struct {
 	op            Op
 	typ           string
 	id            *int
+	color         *toy.Color
+	material      *toy.Material
 	title         *string
 	clearedFields map[string]struct{}
 	owner         *int
@@ -2337,6 +2455,78 @@ func (m *ToyMutation) ID() (id int, exists bool) {
 		return
 	}
 	return *m.id, true
+}
+
+// SetColor sets the "color" field.
+func (m *ToyMutation) SetColor(t toy.Color) {
+	m.color = &t
+}
+
+// Color returns the value of the "color" field in the mutation.
+func (m *ToyMutation) Color() (r toy.Color, exists bool) {
+	v := m.color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldColor returns the old "color" field's value of the Toy entity.
+// If the Toy object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ToyMutation) OldColor(ctx context.Context) (v toy.Color, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldColor: %w", err)
+	}
+	return oldValue.Color, nil
+}
+
+// ResetColor resets all changes to the "color" field.
+func (m *ToyMutation) ResetColor() {
+	m.color = nil
+}
+
+// SetMaterial sets the "material" field.
+func (m *ToyMutation) SetMaterial(t toy.Material) {
+	m.material = &t
+}
+
+// Material returns the value of the "material" field in the mutation.
+func (m *ToyMutation) Material() (r toy.Material, exists bool) {
+	v := m.material
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaterial returns the old "material" field's value of the Toy entity.
+// If the Toy object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ToyMutation) OldMaterial(ctx context.Context) (v toy.Material, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldMaterial is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldMaterial requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaterial: %w", err)
+	}
+	return oldValue.Material, nil
+}
+
+// ResetMaterial resets all changes to the "material" field.
+func (m *ToyMutation) ResetMaterial() {
+	m.material = nil
 }
 
 // SetTitle sets the "title" field.
@@ -2433,7 +2623,13 @@ func (m *ToyMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ToyMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 3)
+	if m.color != nil {
+		fields = append(fields, toy.FieldColor)
+	}
+	if m.material != nil {
+		fields = append(fields, toy.FieldMaterial)
+	}
 	if m.title != nil {
 		fields = append(fields, toy.FieldTitle)
 	}
@@ -2445,6 +2641,10 @@ func (m *ToyMutation) Fields() []string {
 // schema.
 func (m *ToyMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case toy.FieldColor:
+		return m.Color()
+	case toy.FieldMaterial:
+		return m.Material()
 	case toy.FieldTitle:
 		return m.Title()
 	}
@@ -2456,6 +2656,10 @@ func (m *ToyMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ToyMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case toy.FieldColor:
+		return m.OldColor(ctx)
+	case toy.FieldMaterial:
+		return m.OldMaterial(ctx)
 	case toy.FieldTitle:
 		return m.OldTitle(ctx)
 	}
@@ -2467,6 +2671,20 @@ func (m *ToyMutation) OldField(ctx context.Context, name string) (ent.Value, err
 // type.
 func (m *ToyMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case toy.FieldColor:
+		v, ok := value.(toy.Color)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetColor(v)
+		return nil
+	case toy.FieldMaterial:
+		v, ok := value.(toy.Material)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaterial(v)
+		return nil
 	case toy.FieldTitle:
 		v, ok := value.(string)
 		if !ok {
@@ -2523,6 +2741,12 @@ func (m *ToyMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ToyMutation) ResetField(name string) error {
 	switch name {
+	case toy.FieldColor:
+		m.ResetColor()
+		return nil
+	case toy.FieldMaterial:
+		m.ResetMaterial()
+		return nil
 	case toy.FieldTitle:
 		m.ResetTitle()
 		return nil

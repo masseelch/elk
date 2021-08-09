@@ -1,29 +1,26 @@
-{{ define "helper/http/decode-request-body" }}
+{{ define "helper/http/decode-and-validate-request" -}}
+    {{/* gotype: entgo.io/ent/entc/gen.Type */}}
     if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
         l.Error("error decoding json", zap.Error(err))
         render.BadRequest(w, r, "invalid json string")
         return
     }
-{{ end }}
-
-{{ define "helper/http/validate-request-body" -}}
-    {{ if fieldValidationRequired $ -}}
+    {{ if needsValidation $ -}}
         // Validate the data.
-        // TODO: what about slice fields that have custom marshallers?
         errs := make(map[string]string)
         {{ range $f := $.Fields -}}
             {{ if $f.Validators -}}
                 if d.{{ $f.StructField }} != nil {
-                if err := {{ $.Package }}.{{ $f.Validator }}(*d.{{ $f.StructField }}); err != nil {
-                errs["{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"] = err.Error()
-                }
+                    if err := {{ $.Package }}.{{ $f.Validator }}(*d.{{ $f.StructField }}); err != nil {
+                        errs["{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"] = err.Error()
+                    }
                 }
             {{ end -}}
         {{ end -}}
         if len(errs) > 0 {
-        l.Info("validation failed", zapFields(errs)...)
-        render.BadRequest(w, r, errs)
-        return
+            l.Info("validation failed", zapFields(errs)...)
+            render.BadRequest(w, r, errs)
+            return
         }
     {{ end -}}
 {{ end }}

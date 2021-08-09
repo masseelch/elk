@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-playground/validator/v10"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"go.uber.org/zap"
 )
@@ -33,16 +32,14 @@ const (
 type BadgeHandler struct {
 	handler
 
-	client    *ent.Client
-	log       *zap.Logger
-	validator *validator.Validate
+	client *ent.Client
+	log    *zap.Logger
 }
 
-func NewBadgeHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *BadgeHandler {
+func NewBadgeHandler(c *ent.Client, l *zap.Logger) *BadgeHandler {
 	return &BadgeHandler{
-		client:    c,
-		log:       l.With(zap.String("handler", "BadgeHandler")),
-		validator: v,
+		client: c,
+		log:    l.With(zap.String("handler", "BadgeHandler")),
 	}
 }
 
@@ -90,16 +87,14 @@ const (
 type PetHandler struct {
 	handler
 
-	client    *ent.Client
-	log       *zap.Logger
-	validator *validator.Validate
+	client *ent.Client
+	log    *zap.Logger
 }
 
-func NewPetHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *PetHandler {
+func NewPetHandler(c *ent.Client, l *zap.Logger) *PetHandler {
 	return &PetHandler{
-		client:    c,
-		log:       l.With(zap.String("handler", "PetHandler")),
-		validator: v,
+		client: c,
+		log:    l.With(zap.String("handler", "PetHandler")),
 	}
 }
 
@@ -163,16 +158,14 @@ const (
 type PlayGroupHandler struct {
 	handler
 
-	client    *ent.Client
-	log       *zap.Logger
-	validator *validator.Validate
+	client *ent.Client
+	log    *zap.Logger
 }
 
-func NewPlayGroupHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *PlayGroupHandler {
+func NewPlayGroupHandler(c *ent.Client, l *zap.Logger) *PlayGroupHandler {
 	return &PlayGroupHandler{
-		client:    c,
-		log:       l.With(zap.String("handler", "PlayGroupHandler")),
-		validator: v,
+		client: c,
+		log:    l.With(zap.String("handler", "PlayGroupHandler")),
 	}
 }
 
@@ -212,16 +205,14 @@ const (
 type ToyHandler struct {
 	handler
 
-	client    *ent.Client
-	log       *zap.Logger
-	validator *validator.Validate
+	client *ent.Client
+	log    *zap.Logger
 }
 
-func NewToyHandler(c *ent.Client, l *zap.Logger, v *validator.Validate) *ToyHandler {
+func NewToyHandler(c *ent.Client, l *zap.Logger) *ToyHandler {
 	return &ToyHandler{
-		client:    c,
-		log:       l.With(zap.String("handler", "ToyHandler")),
-		validator: v,
+		client: c,
+		log:    l.With(zap.String("handler", "ToyHandler")),
 	}
 }
 
@@ -249,4 +240,15 @@ func (h *ToyHandler) Mount(r chi.Router, rs Routes) {
 
 func stripEntError(err error) string {
 	return strings.TrimPrefix(err.Error(), "ent: ")
+}
+
+func zapFields(errs map[string]string) []zap.Field {
+	if errs == nil || len(errs) == 0 {
+		return nil
+	}
+	r := make([]zap.Field, 0)
+	for k, v := range errs {
+		r = append(r, zap.String(k, v))
+	}
+	return r
 }

@@ -11,6 +11,8 @@ var (
 	// BadgesColumns holds the columns for the "badges" table.
 	BadgesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "color", Type: field.TypeEnum, Enums: []string{"red", "orange", "yellow", "green", "blue", "indigo", "violet", "purple", "pink", "silver", "gold", "beige", "brown", "grey", "black", "white"}},
+		{Name: "material", Type: field.TypeEnum, Enums: []string{"leather", "plastic", "fabric"}},
 		{Name: "pet_badge", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
 	// BadgesTable holds the schema information for the "badges" table.
@@ -21,7 +23,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "badges_pets_badge",
-				Columns:    []*schema.Column{BadgesColumns[1]},
+				Columns:    []*schema.Column{BadgesColumns[3]},
 				RefColumns: []*schema.Column{PetsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -84,6 +86,8 @@ var (
 	// ToysColumns holds the columns for the "toys" table.
 	ToysColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "color", Type: field.TypeEnum, Enums: []string{"red", "orange", "yellow", "green", "blue", "indigo", "violet", "purple", "pink", "silver", "gold", "beige", "brown", "grey", "black", "white"}},
+		{Name: "material", Type: field.TypeEnum, Enums: []string{"leather", "plastic", "fabric"}},
 		{Name: "title", Type: field.TypeString},
 		{Name: "pet_toys", Type: field.TypeInt, Nullable: true},
 	}
@@ -95,7 +99,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "toys_pets_toys",
-				Columns:    []*schema.Column{ToysColumns[2]},
+				Columns:    []*schema.Column{ToysColumns[4]},
 				RefColumns: []*schema.Column{PetsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

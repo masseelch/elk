@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -102,14 +103,6 @@ func (pu *PetUpdate) SetChip(u uuid.UUID) *PetUpdate {
 // SetBadgeID sets the "badge" edge to the Badge entity by ID.
 func (pu *PetUpdate) SetBadgeID(id int) *PetUpdate {
 	pu.mutation.SetBadgeID(id)
-	return pu
-}
-
-// SetNillableBadgeID sets the "badge" edge to the Badge entity by ID if the given value is not nil.
-func (pu *PetUpdate) SetNillableBadgeID(id *int) *PetUpdate {
-	if id != nil {
-		pu = pu.SetBadgeID(*id)
-	}
 	return pu
 }
 
@@ -449,6 +442,9 @@ func (pu *PetUpdate) check() error {
 		if err := pet.SexValidator(v); err != nil {
 			return &ValidationError{Name: "sex", err: fmt.Errorf("ent: validator failed for field \"sex\": %w", err)}
 		}
+	}
+	if _, ok := pu.mutation.BadgeID(); pu.mutation.BadgeCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"badge\"")
 	}
 	return nil
 }
@@ -1031,14 +1027,6 @@ func (puo *PetUpdateOne) SetBadgeID(id int) *PetUpdateOne {
 	return puo
 }
 
-// SetNillableBadgeID sets the "badge" edge to the Badge entity by ID if the given value is not nil.
-func (puo *PetUpdateOne) SetNillableBadgeID(id *int) *PetUpdateOne {
-	if id != nil {
-		puo = puo.SetBadgeID(*id)
-	}
-	return puo
-}
-
 // SetBadge sets the "badge" edge to the Badge entity.
 func (puo *PetUpdateOne) SetBadge(b *Badge) *PetUpdateOne {
 	return puo.SetBadgeID(b.ID)
@@ -1382,6 +1370,9 @@ func (puo *PetUpdateOne) check() error {
 		if err := pet.SexValidator(v); err != nil {
 			return &ValidationError{Name: "sex", err: fmt.Errorf("ent: validator failed for field \"sex\": %w", err)}
 		}
+	}
+	if _, ok := puo.mutation.BadgeID(); puo.mutation.BadgeCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"badge\"")
 	}
 	return nil
 }

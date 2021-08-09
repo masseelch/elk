@@ -32,7 +32,7 @@
                     -}}
 
                     l.Info("{{ $e.Type.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $e.Type.ID.StructField }}))
-                    easyjson.MarshalToHTTPResponseWriter(New{{ $e.Type.Name }}ReadResponse(e), w)
+                    easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $e.Type $e.Type.Annotations.Elk.ReadGroups).ViewName }}(e), w)
                 {{- else }}
                     {{- with edgesToLoad $e.Type "list" }}
                         // Eager load edges that are required on list operation.
@@ -42,7 +42,7 @@
                     {{- template "helper/http/pagination" $e.Type -}}
 
                     l.Info("{{ $e.Type.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
-                    easyjson.MarshalToHTTPResponseWriter(New{{ $e.Type.Name }}ListResponse(es), w)
+                    easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $e.Type $e.Type.Annotations.Elk.ListGroups).ViewName }}s(es), w)
                 {{- end }}
             }
         {{ end }}

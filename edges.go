@@ -14,9 +14,8 @@ type (
 	EdgeToLoad struct {
 		Edge        *gen.Edge
 		EdgesToLoad EdgesToLoad
-		Groups      []string
 	}
-	// EdgesToLoad is a list of several EdgeToLoad.
+	// EdgesToLoad is a list of multiple EdgeToLoad.
 	EdgesToLoad []EdgeToLoad
 	// walk is a node sequence in the schema graph. Used to keep track when computing EdgesToLoad.
 	walk []string
@@ -71,18 +70,6 @@ func (w walk) reachedMaxDepth() bool {
 	return len(w) > maxDepth
 }
 
-// tail returns a formatted string of the last c steps in walk.
-func (w walk) tail(c int) string {
-	f := "%s"
-	for i := 0; i < c; i++ {
-		f += " -> %s"
-	}
-	if c > len(w) {
-		c = len(w)
-	}
-	return fmt.Sprintf(f, w[len(w)-c:])
-}
-
 // push adds a new step to the walk.
 func (w *walk) push(s string) {
 	*w = append(*w, s)
@@ -95,9 +82,9 @@ func (w *walk) pop() {
 	}
 }
 
-// edgesToLoad returns the EdgesToLoad for the given node and action.
-func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
-	// If there are no annotations given do not load any edges.
+// groupsForAction returns the requested groups for a given type and action.
+func groupsForAction(n *gen.Type, action string) (groups, error) {
+	// If there are no annotations given do not load any groups.
 	a := &SchemaAnnotation{}
 	if n.Annotations == nil || n.Annotations[a.Name()] == nil {
 		return nil, nil
@@ -108,7 +95,7 @@ func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 		return nil, err
 	}
 
-	var g []string
+	var g groups
 	switch action {
 	case actionCreate:
 		g = a.CreateGroups
@@ -120,6 +107,15 @@ func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
 		g = a.ListGroups
 	}
 
+	return g, nil
+}
+
+// edgesToLoad returns the EdgesToLoad for the given node and action.
+func edgesToLoad(n *gen.Type, action string) (EdgesToLoad, error) {
+	g, err := groupsForAction(n, action)
+	if err != nil {
+		return nil, err
+	}
 	return edgesToLoadHelper(n, walk{}, g)
 }
 
@@ -169,7 +165,6 @@ func edgesToLoadHelper(n *gen.Type, w walk, groupsToLoad []string) (EdgesToLoad,
 			edges = append(edges, EdgeToLoad{
 				Edge:        e,
 				EdgesToLoad: etl,
-				Groups:      groupsToLoad,
 			})
 		}
 	}

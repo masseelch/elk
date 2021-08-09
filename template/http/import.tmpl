@@ -1,0 +1,12 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "helper/http/import" }}
+    import (
+        {{ range $n := $.Nodes }}
+            {{ template "import/types" $n }}
+        {{ end }}
+        "github.com/go-playground/validator/v10"
+        "github.com/go-chi/chi/v5"
+        "github.com/masseelch/render"
+    )
+{{ end }}

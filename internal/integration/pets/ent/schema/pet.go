@@ -18,15 +18,20 @@ type Pet struct {
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("height").
-			Positive(),
+			Positive().
+			Annotations(elk.Groups("pet:read")),
 		field.Float("weight").
-			Positive(),
-		field.Bool("castrated"),
+			Positive().
+			Annotations(elk.Groups("pet:read")),
+		field.Bool("castrated").
+			Annotations(elk.Groups("pet:read")),
 		field.String("name").
 			Unique(),
-		field.Time("birthday"),
+		field.Time("birthday").
+			Annotations(elk.Groups("pet:read")),
 		field.JSON("nicknames", []string{}).
-			Optional(),
+			Optional().
+			Annotations(elk.Groups("pet:read")),
 		field.Enum("sex").
 			Values("male", "female"),
 		field.UUID("chip", uuid.UUID{}).
@@ -40,40 +45,32 @@ func (Pet) Edges() []ent.Edge {
 		// O20 - Two Types
 		edge.To("badge", Badge.Type).
 			Unique().
-			Annotations(
-				elk.Groups("pet:read", "pet:list"),
-			),
+			Required().
+			Annotations(elk.Groups("pet:read", "pet:list")),
 		// O20 - Same Types
 		edge.To("mentor", Pet.Type).
 			Unique().
 			From("protege").
 			Unique().
-			Annotations(
-				elk.Groups("pet:read"),
-			),
+			Annotations(elk.Groups("pet:read")),
 		// O20 - Bidirectional
 		edge.To("spouse", Pet.Type).
 			Unique().
-			Annotations(
-				elk.Groups("pet:read"),
-			),
+			Annotations(elk.Groups("pet:read")),
 		// O2M - Two Types
 		edge.To("toys", Toy.Type).
-			Annotations(
-				elk.Groups("pet:read"),
-			),
+			Annotations(elk.Groups("pet:read")),
 		// O2M - Same Types
 		edge.To("children", Pet.Type).
 			From("parent").
 			Unique().
 			Annotations(
 				elk.Groups("pet:read"),
+				elk.MaxDepth(2),
 			),
 		// M2M - Two Types
 		edge.To("play_groups", PlayGroup.Type).
-			Annotations(
-				elk.Groups("pet:read"),
-			),
+			Annotations(elk.Groups("pet:read")),
 		// M2M - Same Type - no idea
 		// M2M - Bidirectional
 		edge.To("friends", Pet.Type).
@@ -89,5 +86,6 @@ func (Pet) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		elk.ListGroups("pet:list"),
 		elk.ReadGroups("pet:read"),
+		elk.CreateGroups("pet:list", "pet:read"),
 	}
 }

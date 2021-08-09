@@ -6,18 +6,24 @@ import (
 	time "time"
 
 	"github.com/google/uuid"
+	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
 	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
 	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
 )
 
 // Payload of a ent.Badge create request.
 type BadgeCreateRequest struct {
-	Wearer *int `json:"wearer"`
+	Color    *badge.Color    `json:"color"`
+	Material *badge.Material `json:"material"`
+	Wearer   *int            `json:"wearer"`
 }
 
 // Payload of a ent.Badge update request.
 type BadgeUpdateRequest struct {
-	Wearer *int `json:"wearer"`
+	Color    *badge.Color    `json:"color"`
+	Material *badge.Material `json:"material"`
+	Wearer   *int            `json:"wearer"`
 }
 
 // Payload of a ent.Pet create request.
@@ -80,12 +86,16 @@ type PlayGroupUpdateRequest struct {
 
 // Payload of a ent.Toy create request.
 type ToyCreateRequest struct {
-	Title *string `json:"title"`
-	Owner *int    `json:"owner"`
+	Color    *toy.Color    `json:"color"`
+	Material *toy.Material `json:"material"`
+	Title    *string       `json:"title"`
+	Owner    *int          `json:"owner"`
 }
 
 // Payload of a ent.Toy update request.
 type ToyUpdateRequest struct {
-	Title *string `json:"title"`
-	Owner *int    `json:"owner"`
+	Color    *toy.Color    `json:"color"`
+	Material *toy.Material `json:"material"`
+	Title    *string       `json:"title"`
+	Owner    *int          `json:"owner"`
 }

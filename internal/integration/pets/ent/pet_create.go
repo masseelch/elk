@@ -78,14 +78,6 @@ func (pc *PetCreate) SetBadgeID(id int) *PetCreate {
 	return pc
 }
 
-// SetNillableBadgeID sets the "badge" edge to the Badge entity by ID if the given value is not nil.
-func (pc *PetCreate) SetNillableBadgeID(id *int) *PetCreate {
-	if id != nil {
-		pc = pc.SetBadgeID(*id)
-	}
-	return pc
-}
-
 // SetBadge sets the "badge" edge to the Badge entity.
 func (pc *PetCreate) SetBadge(b *Badge) *PetCreate {
 	return pc.SetBadgeID(b.ID)
@@ -341,6 +333,9 @@ func (pc *PetCreate) check() error {
 	}
 	if _, ok := pc.mutation.Chip(); !ok {
 		return &ValidationError{Name: "chip", err: errors.New(`ent: missing required field "chip"`)}
+	}
+	if _, ok := pc.mutation.BadgeID(); !ok {
+		return &ValidationError{Name: "badge", err: errors.New("ent: missing required edge \"badge\"")}
 	}
 	return nil
 }

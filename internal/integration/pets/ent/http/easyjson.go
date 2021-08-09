@@ -8,8 +8,10 @@ import (
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
 	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
 	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
 	time "time"
 )
 
@@ -21,7 +23,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(in *jlexer.Lexer, out *ToyUpdateResponse) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(in *jlexer.Lexer, out *ToyUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -40,75 +42,26 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(i
 			continue
 		}
 		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "title":
-			out.Title = string(in.String())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(out *jwriter.Writer, in ToyUpdateResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Title != "" {
-		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Title))
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ToyUpdateResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ToyUpdateResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(in *jlexer.Lexer, out *ToyUpdateRequest) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
+		case "color":
+			if in.IsNull() {
+				in.Skip()
+				out.Color = nil
+			} else {
+				if out.Color == nil {
+					out.Color = new(toy.Color)
+				}
+				*out.Color = toy.Color(in.String())
+			}
+		case "material":
+			if in.IsNull() {
+				in.Skip()
+				out.Material = nil
+			} else {
+				if out.Material == nil {
+					out.Material = new(toy.Material)
+				}
+				*out.Material = toy.Material(in.String())
+			}
 		case "title":
 			if in.IsNull() {
 				in.Skip()
@@ -130,11 +83,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(
 				*out.Owner = int(in.Int())
 			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -143,13 +92,31 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(out *jwriter.Writer, in ToyUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(out *jwriter.Writer, in ToyUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"title\":"
+		const prefix string = ",\"color\":"
 		out.RawString(prefix[1:])
+		if in.Color == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Color))
+		}
+	}
+	{
+		const prefix string = ",\"material\":"
+		out.RawString(prefix)
+		if in.Material == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Material))
+		}
+	}
+	{
+		const prefix string = ",\"title\":"
+		out.RawString(prefix)
 		if in.Title == nil {
 			out.RawString("null")
 		} else {
@@ -170,14 +137,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ToyUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ToyUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(in *jlexer.Lexer, out *ToyReadResponse) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(in *jlexer.Lexer, out *ToyCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -196,264 +163,26 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(
 			continue
 		}
 		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "title":
-			out.Title = string(in.String())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(out *jwriter.Writer, in ToyReadResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Title != "" {
-		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Title))
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ToyReadResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ToyReadResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(in *jlexer.Lexer, out *ToyListResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		in.Skip()
-		*out = nil
-	} else {
-		in.Delim('[')
-		if *out == nil {
-			if !in.IsDelim(']') {
-				*out = make(ToyListResponse, 0, 2)
+		case "color":
+			if in.IsNull() {
+				in.Skip()
+				out.Color = nil
 			} else {
-				*out = ToyListResponse{}
+				if out.Color == nil {
+					out.Color = new(toy.Color)
+				}
+				*out.Color = toy.Color(in.String())
 			}
-		} else {
-			*out = (*out)[:0]
-		}
-		for !in.IsDelim(']') {
-			var v1 struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
+		case "material":
+			if in.IsNull() {
+				in.Skip()
+				out.Material = nil
+			} else {
+				if out.Material == nil {
+					out.Material = new(toy.Material)
+				}
+				*out.Material = toy.Material(in.String())
 			}
-			easyjsonC5a4559bDecode(in, &v1)
-			*out = append(*out, v1)
-			in.WantComma()
-		}
-		in.Delim(']')
-	}
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(out *jwriter.Writer, in ToyListResponse) {
-	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-		out.RawString("null")
-	} else {
-		out.RawByte('[')
-		for v2, v3 := range in {
-			if v2 > 0 {
-				out.RawByte(',')
-			}
-			easyjsonC5a4559bEncode(out, v3)
-		}
-		out.RawByte(']')
-	}
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ToyListResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ToyListResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(l, v)
-}
-func easyjsonC5a4559bDecode(in *jlexer.Lexer, out *struct {
-	ID    int    `json:"id,omitempty"`
-	Title string `json:"title,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "title":
-			out.Title = string(in.String())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode(out *jwriter.Writer, in struct {
-	ID    int    `json:"id,omitempty"`
-	Title string `json:"title,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Title != "" {
-		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Title))
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(in *jlexer.Lexer, out *ToyCreateResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "title":
-			out.Title = string(in.String())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(out *jwriter.Writer, in ToyCreateResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Title != "" {
-		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Title))
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ToyCreateResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ToyCreateResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(in *jlexer.Lexer, out *ToyCreateRequest) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
 		case "title":
 			if in.IsNull() {
 				in.Skip()
@@ -475,11 +204,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(
 				*out.Owner = int(in.Int())
 			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -488,13 +213,31 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(out *jwriter.Writer, in ToyCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(out *jwriter.Writer, in ToyCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"title\":"
+		const prefix string = ",\"color\":"
 		out.RawString(prefix[1:])
+		if in.Color == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Color))
+		}
+	}
+	{
+		const prefix string = ",\"material\":"
+		out.RawString(prefix)
+		if in.Material == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Material))
+		}
+	}
+	{
+		const prefix string = ",\"title\":"
+		out.RawString(prefix)
 		if in.Title == nil {
 			out.RawString("null")
 		} else {
@@ -515,14 +258,78 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ToyCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ToyCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp1(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(in *jlexer.Lexer, out *PlayGroupUpdateResponse) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(in *jlexer.Lexer, out *Toy36157710Views) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(Toy36157710Views, 0, 8)
+			} else {
+				*out = Toy36157710Views{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v1 *Toy36157710View
+			if in.IsNull() {
+				in.Skip()
+				v1 = nil
+			} else {
+				if v1 == nil {
+					v1 = new(Toy36157710View)
+				}
+				(*v1).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v1)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(out *jwriter.Writer, in Toy36157710Views) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v2, v3 := range in {
+			if v2 > 0 {
+				out.RawByte(',')
+			}
+			if v3 == nil {
+				out.RawString("null")
+			} else {
+				(*v3).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Toy36157710Views) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Toy36157710Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp2(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(in *jlexer.Lexer, out *Toy36157710View) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -543,18 +350,14 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(
 		switch key {
 		case "id":
 			out.ID = int(in.Int())
+		case "color":
+			out.Color = toy.Color(in.String())
+		case "material":
+			out.Material = toy.Material(in.String())
 		case "title":
 			out.Title = string(in.String())
-		case "description":
-			out.Description = string(in.String())
-		case "weekday":
-			out.Weekday = playgroup.Weekday(in.String())
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -563,7 +366,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(out *jwriter.Writer, in PlayGroupUpdateResponse) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(out *jwriter.Writer, in Toy36157710View) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -572,6 +375,26 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(
 		first = false
 		out.RawString(prefix[1:])
 		out.Int(int(in.ID))
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	if in.Material != "" {
+		const prefix string = ",\"material\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Material))
 	}
 	if in.Title != "" {
 		const prefix string = ",\"title\":"
@@ -583,39 +406,19 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(
 		}
 		out.String(string(in.Title))
 	}
-	if in.Description != "" {
-		const prefix string = ",\"description\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Description))
-	}
-	if in.Weekday != "" {
-		const prefix string = ",\"weekday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Weekday))
-	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PlayGroupUpdateResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(w, v)
+func (v Toy36157710View) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PlayGroupUpdateResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(l, v)
+func (v *Toy36157710View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp3(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(in *jlexer.Lexer, out *PlayGroupUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(in *jlexer.Lexer, out *PlayGroupUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -688,11 +491,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(
 				in.Delim(']')
 			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -701,7 +500,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(out *jwriter.Writer, in PlayGroupUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(out *jwriter.Writer, in PlayGroupUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -753,350 +552,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PlayGroupUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PlayGroupUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp4(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(in *jlexer.Lexer, out *PlayGroupReadResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "title":
-			out.Title = string(in.String())
-		case "description":
-			out.Description = string(in.String())
-		case "weekday":
-			out.Weekday = playgroup.Weekday(in.String())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(out *jwriter.Writer, in PlayGroupReadResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Title != "" {
-		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Title))
-	}
-	if in.Description != "" {
-		const prefix string = ",\"description\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Description))
-	}
-	if in.Weekday != "" {
-		const prefix string = ",\"weekday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Weekday))
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PlayGroupReadResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PlayGroupReadResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(in *jlexer.Lexer, out *PlayGroupListResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		in.Skip()
-		*out = nil
-	} else {
-		in.Delim('[')
-		if *out == nil {
-			if !in.IsDelim(']') {
-				*out = make(PlayGroupListResponse, 0, 1)
-			} else {
-				*out = PlayGroupListResponse{}
-			}
-		} else {
-			*out = (*out)[:0]
-		}
-		for !in.IsDelim(']') {
-			var v7 struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			}
-			easyjsonC5a4559bDecode1(in, &v7)
-			*out = append(*out, v7)
-			in.WantComma()
-		}
-		in.Delim(']')
-	}
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(out *jwriter.Writer, in PlayGroupListResponse) {
-	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-		out.RawString("null")
-	} else {
-		out.RawByte('[')
-		for v8, v9 := range in {
-			if v8 > 0 {
-				out.RawByte(',')
-			}
-			easyjsonC5a4559bEncode1(out, v9)
-		}
-		out.RawByte(']')
-	}
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PlayGroupListResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PlayGroupListResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(l, v)
-}
-func easyjsonC5a4559bDecode1(in *jlexer.Lexer, out *struct {
-	ID          int               `json:"id,omitempty"`
-	Title       string            `json:"title,omitempty"`
-	Description string            `json:"description,omitempty"`
-	Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "title":
-			out.Title = string(in.String())
-		case "description":
-			out.Description = string(in.String())
-		case "weekday":
-			out.Weekday = playgroup.Weekday(in.String())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode1(out *jwriter.Writer, in struct {
-	ID          int               `json:"id,omitempty"`
-	Title       string            `json:"title,omitempty"`
-	Description string            `json:"description,omitempty"`
-	Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Title != "" {
-		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Title))
-	}
-	if in.Description != "" {
-		const prefix string = ",\"description\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Description))
-	}
-	if in.Weekday != "" {
-		const prefix string = ",\"weekday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Weekday))
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(in *jlexer.Lexer, out *PlayGroupCreateResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "title":
-			out.Title = string(in.String())
-		case "description":
-			out.Description = string(in.String())
-		case "weekday":
-			out.Weekday = playgroup.Weekday(in.String())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(out *jwriter.Writer, in PlayGroupCreateResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Title != "" {
-		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Title))
-	}
-	if in.Description != "" {
-		const prefix string = ",\"description\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Description))
-	}
-	if in.Weekday != "" {
-		const prefix string = ",\"weekday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Weekday))
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PlayGroupCreateResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PlayGroupCreateResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11(in *jlexer.Lexer, out *PlayGroupCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(in *jlexer.Lexer, out *PlayGroupCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1161,19 +624,15 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11
 					out.Participants = (out.Participants)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v10 int
-					v10 = int(in.Int())
-					out.Participants = append(out.Participants, v10)
+					var v7 int
+					v7 = int(in.Int())
+					out.Participants = append(out.Participants, v7)
 					in.WantComma()
 				}
 				in.Delim(']')
 			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -1182,7 +641,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11(out *jwriter.Writer, in PlayGroupCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(out *jwriter.Writer, in PlayGroupCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1220,11 +679,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v11, v12 := range in.Participants {
-				if v11 > 0 {
+			for v8, v9 := range in.Participants {
+				if v8 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v12))
+				out.Int(int(v9))
 			}
 			out.RawByte(']')
 		}
@@ -1234,14 +693,78 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PlayGroupCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PlayGroupCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp5(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12(in *jlexer.Lexer, out *PetUpdateResponse) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(in *jlexer.Lexer, out *PlayGroup3432834655Views) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(PlayGroup3432834655Views, 0, 8)
+			} else {
+				*out = PlayGroup3432834655Views{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v10 *PlayGroup3432834655View
+			if in.IsNull() {
+				in.Skip()
+				v10 = nil
+			} else {
+				if v10 == nil {
+					v10 = new(PlayGroup3432834655View)
+				}
+				(*v10).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v10)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(out *jwriter.Writer, in PlayGroup3432834655Views) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v11, v12 := range in {
+			if v11 > 0 {
+				out.RawByte(',')
+			}
+			if v12 == nil {
+				out.RawString("null")
+			} else {
+				(*v12).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PlayGroup3432834655Views) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PlayGroup3432834655Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp6(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(in *jlexer.Lexer, out *PlayGroup3432834655View) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1262,53 +785,14 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12
 		switch key {
 		case "id":
 			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v13 string
-					v13 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v13)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
+		case "title":
+			out.Title = string(in.String())
+		case "description":
+			out.Description = string(in.String())
+		case "weekday":
+			out.Weekday = playgroup.Weekday(in.String())
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -1317,7 +801,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12(out *jwriter.Writer, in PetUpdateResponse) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(out *jwriter.Writer, in PlayGroup3432834655View) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1327,108 +811,49 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12
 		out.RawString(prefix[1:])
 		out.Int(int(in.ID))
 	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
+	if in.Title != "" {
+		const prefix string = ",\"title\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
 		} else {
 			out.RawString(prefix)
 		}
-		out.Int(int(in.Height))
+		out.String(string(in.Title))
 	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
+	if in.Description != "" {
+		const prefix string = ",\"description\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
 		} else {
 			out.RawString(prefix)
 		}
-		out.Float64(float64(in.Weight))
+		out.String(string(in.Description))
 	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
+	if in.Weekday != "" {
+		const prefix string = ",\"weekday\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
 		} else {
 			out.RawString(prefix)
 		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v14, v15 := range in.Nicknames {
-				if v14 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v15))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
+		out.String(string(in.Weekday))
 	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PetUpdateResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12(w, v)
+func (v PlayGroup3432834655View) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PetUpdateResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12(l, v)
+func (v *PlayGroup3432834655View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp7(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13(in *jlexer.Lexer, out *PetUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(in *jlexer.Lexer, out *PetUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1522,9 +947,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 						*out.Nicknames = (*out.Nicknames)[:0]
 					}
 					for !in.IsDelim(']') {
-						var v16 string
-						v16 = string(in.String())
-						*out.Nicknames = append(*out.Nicknames, v16)
+						var v13 string
+						v13 = string(in.String())
+						*out.Nicknames = append(*out.Nicknames, v13)
 						in.WantComma()
 					}
 					in.Delim(']')
@@ -1608,9 +1033,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 					out.Toys = (out.Toys)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v17 int
-					v17 = int(in.Int())
-					out.Toys = append(out.Toys, v17)
+					var v14 int
+					v14 = int(in.Int())
+					out.Toys = append(out.Toys, v14)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1641,9 +1066,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 					out.Children = (out.Children)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v18 int
-					v18 = int(in.Int())
-					out.Children = append(out.Children, v18)
+					var v15 int
+					v15 = int(in.Int())
+					out.Children = append(out.Children, v15)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1664,9 +1089,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 					out.PlayGroups = (out.PlayGroups)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v19 int
-					v19 = int(in.Int())
-					out.PlayGroups = append(out.PlayGroups, v19)
+					var v16 int
+					v16 = int(in.Int())
+					out.PlayGroups = append(out.PlayGroups, v16)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1687,19 +1112,15 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 					out.Friends = (out.Friends)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v20 int
-					v20 = int(in.Int())
-					out.Friends = append(out.Friends, v20)
+					var v17 int
+					v17 = int(in.Int())
+					out.Friends = append(out.Friends, v17)
 					in.WantComma()
 				}
 				in.Delim(']')
 			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -1708,7 +1129,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13(out *jwriter.Writer, in PetUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(out *jwriter.Writer, in PetUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1767,11 +1188,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 				out.RawString("null")
 			} else {
 				out.RawByte('[')
-				for v21, v22 := range *in.Nicknames {
-					if v21 > 0 {
+				for v18, v19 := range *in.Nicknames {
+					if v18 > 0 {
 						out.RawByte(',')
 					}
-					out.String(string(v22))
+					out.String(string(v19))
 				}
 				out.RawByte(']')
 			}
@@ -1838,11 +1259,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v23, v24 := range in.Toys {
-				if v23 > 0 {
+			for v20, v21 := range in.Toys {
+				if v20 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v24))
+				out.Int(int(v21))
 			}
 			out.RawByte(']')
 		}
@@ -1863,11 +1284,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v25, v26 := range in.Children {
-				if v25 > 0 {
+			for v22, v23 := range in.Children {
+				if v22 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v26))
+				out.Int(int(v23))
 			}
 			out.RawByte(']')
 		}
@@ -1879,11 +1300,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v27, v28 := range in.PlayGroups {
-				if v27 > 0 {
+			for v24, v25 := range in.PlayGroups {
+				if v24 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v28))
+				out.Int(int(v25))
 			}
 			out.RawByte(']')
 		}
@@ -1895,11 +1316,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v29, v30 := range in.Friends {
-				if v29 > 0 {
+			for v26, v27 := range in.Friends {
+				if v26 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v30))
+				out.Int(int(v27))
 			}
 			out.RawByte(']')
 		}
@@ -1909,13544 +1330,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PetUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PetUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp8(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp14(in *jlexer.Lexer, out *PetReadResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v31 string
-					v31 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v31)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "protege":
-			easyjsonC5a4559bDecode3(in, &out.Protege)
-		case "spouse":
-			easyjsonC5a4559bDecode4(in, &out.Spouse)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v32 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v32)
-					out.Toys = append(out.Toys, v32)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "parent":
-			easyjsonC5a4559bDecode5(in, &out.Parent)
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v33 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v33)
-					out.PlayGroups = append(out.PlayGroups, v33)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "friends":
-			if in.IsNull() {
-				in.Skip()
-				out.Friends = nil
-			} else {
-				in.Delim('[')
-				if out.Friends == nil {
-					if !in.IsDelim(']') {
-						out.Friends = make([]struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									Parent struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"parent,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Spouse struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"spouse,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									Parent struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"parent,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Protege struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"protege,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Spouse struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"spouse,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Protege struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"protege,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}, 0, 0)
-					} else {
-						out.Friends = []struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									Parent struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"parent,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Spouse struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"spouse,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									Parent struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"parent,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Protege struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"protege,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Spouse struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"spouse,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Protege struct {
-										ID        int       `json:"id,omitempty"`
-										Height    int       `json:"height,omitempty"`
-										Weight    float64   `json:"weight,omitempty"`
-										Castrated bool      `json:"castrated,omitempty"`
-										Name      string    `json:"name,omitempty"`
-										Birthday  time.Time `json:"birthday,omitempty"`
-										Nicknames []string  `json:"nicknames,omitempty"`
-										Sex       pet.Sex   `json:"sex,omitempty"`
-										Chip      uuid.UUID `json:"chip,omitempty"`
-										Badge     struct {
-											ID int `json:"id,omitempty"`
-										} `json:"badge,omitempty"`
-										Toys []struct {
-											ID    int    `json:"id,omitempty"`
-											Title string `json:"title,omitempty"`
-										} `json:"toys,omitempty"`
-										PlayGroups []struct {
-											ID          int               `json:"id,omitempty"`
-											Title       string            `json:"title,omitempty"`
-											Description string            `json:"description,omitempty"`
-											Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-										} `json:"play_groups,omitempty"`
-									} `json:"protege,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}{}
-					}
-				} else {
-					out.Friends = (out.Friends)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v34 struct {
-						ID        int       `json:"id,omitempty"`
-						Height    int       `json:"height,omitempty"`
-						Weight    float64   `json:"weight,omitempty"`
-						Castrated bool      `json:"castrated,omitempty"`
-						Name      string    `json:"name,omitempty"`
-						Birthday  time.Time `json:"birthday,omitempty"`
-						Nicknames []string  `json:"nicknames,omitempty"`
-						Sex       pet.Sex   `json:"sex,omitempty"`
-						Chip      uuid.UUID `json:"chip,omitempty"`
-						Badge     struct {
-							ID int `json:"id,omitempty"`
-						} `json:"badge,omitempty"`
-						Protege struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"protege,omitempty"`
-						Spouse struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"spouse,omitempty"`
-						Toys []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						} `json:"toys,omitempty"`
-						Parent struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"parent,omitempty"`
-						PlayGroups []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						} `json:"play_groups,omitempty"`
-					}
-					easyjsonC5a4559bDecode6(in, &v34)
-					out.Friends = append(out.Friends, v34)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp14(out *jwriter.Writer, in PetReadResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v35, v36 := range in.Nicknames {
-				if v35 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v36))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"protege\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode3(out, in.Protege)
-	}
-	if true {
-		const prefix string = ",\"spouse\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode4(out, in.Spouse)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v37, v38 := range in.Toys {
-				if v37 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v38)
-			}
-			out.RawByte(']')
-		}
-	}
-	if true {
-		const prefix string = ",\"parent\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode5(out, in.Parent)
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v39, v40 := range in.PlayGroups {
-				if v39 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v40)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Friends) != 0 {
-		const prefix string = ",\"friends\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v41, v42 := range in.Friends {
-				if v41 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode6(out, v42)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PetReadResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp14(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PetReadResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp14(l, v)
-}
-func easyjsonC5a4559bDecode6(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"protege,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v43 string
-					v43 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v43)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "protege":
-			easyjsonC5a4559bDecode7(in, &out.Protege)
-		case "spouse":
-			easyjsonC5a4559bDecode8(in, &out.Spouse)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v44 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v44)
-					out.Toys = append(out.Toys, v44)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "parent":
-			easyjsonC5a4559bDecode9(in, &out.Parent)
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v45 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v45)
-					out.PlayGroups = append(out.PlayGroups, v45)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode6(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"protege,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v46, v47 := range in.Nicknames {
-				if v46 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v47))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"protege\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode7(out, in.Protege)
-	}
-	if true {
-		const prefix string = ",\"spouse\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode8(out, in.Spouse)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v48, v49 := range in.Toys {
-				if v48 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v49)
-			}
-			out.RawByte(']')
-		}
-	}
-	if true {
-		const prefix string = ",\"parent\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode9(out, in.Parent)
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v50, v51 := range in.PlayGroups {
-				if v50 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v51)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode9(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"protege,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v52 string
-					v52 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v52)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "protege":
-			easyjsonC5a4559bDecode10(in, &out.Protege)
-		case "spouse":
-			easyjsonC5a4559bDecode11(in, &out.Spouse)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v53 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v53)
-					out.Toys = append(out.Toys, v53)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v54 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v54)
-					out.PlayGroups = append(out.PlayGroups, v54)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode9(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"protege,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v55, v56 := range in.Nicknames {
-				if v55 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v56))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"protege\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode10(out, in.Protege)
-	}
-	if true {
-		const prefix string = ",\"spouse\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode11(out, in.Spouse)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v57, v58 := range in.Toys {
-				if v57 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v58)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v59, v60 := range in.PlayGroups {
-				if v59 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v60)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode11(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"protege,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v61 string
-					v61 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v61)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "protege":
-			easyjsonC5a4559bDecode12(in, &out.Protege)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v62 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v62)
-					out.Toys = append(out.Toys, v62)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v63 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v63)
-					out.PlayGroups = append(out.PlayGroups, v63)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode11(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"protege,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v64, v65 := range in.Nicknames {
-				if v64 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v65))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"protege\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode12(out, in.Protege)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v66, v67 := range in.Toys {
-				if v66 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v67)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v68, v69 := range in.PlayGroups {
-				if v68 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v69)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode12(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v70 string
-					v70 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v70)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v71 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v71)
-					out.Toys = append(out.Toys, v71)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v72 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v72)
-					out.PlayGroups = append(out.PlayGroups, v72)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode12(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v73, v74 := range in.Nicknames {
-				if v73 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v74))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v75, v76 := range in.Toys {
-				if v75 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v76)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v77, v78 := range in.PlayGroups {
-				if v77 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v78)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode10(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v79 string
-					v79 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v79)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "spouse":
-			easyjsonC5a4559bDecode12(in, &out.Spouse)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v80 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v80)
-					out.Toys = append(out.Toys, v80)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v81 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v81)
-					out.PlayGroups = append(out.PlayGroups, v81)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode10(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v82, v83 := range in.Nicknames {
-				if v82 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v83))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"spouse\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode12(out, in.Spouse)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v84, v85 := range in.Toys {
-				if v84 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v85)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v86, v87 := range in.PlayGroups {
-				if v86 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v87)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode8(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"protege,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v88 string
-					v88 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v88)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "protege":
-			easyjsonC5a4559bDecode13(in, &out.Protege)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v89 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v89)
-					out.Toys = append(out.Toys, v89)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "parent":
-			easyjsonC5a4559bDecode11(in, &out.Parent)
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v90 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v90)
-					out.PlayGroups = append(out.PlayGroups, v90)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode8(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"protege,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v91, v92 := range in.Nicknames {
-				if v91 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v92))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"protege\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode13(out, in.Protege)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v93, v94 := range in.Toys {
-				if v93 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v94)
-			}
-			out.RawByte(']')
-		}
-	}
-	if true {
-		const prefix string = ",\"parent\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode11(out, in.Parent)
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v95, v96 := range in.PlayGroups {
-				if v95 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v96)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode13(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v97 string
-					v97 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v97)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v98 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v98)
-					out.Toys = append(out.Toys, v98)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "parent":
-			easyjsonC5a4559bDecode12(in, &out.Parent)
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v99 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v99)
-					out.PlayGroups = append(out.PlayGroups, v99)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode13(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v100, v101 := range in.Nicknames {
-				if v100 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v101))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v102, v103 := range in.Toys {
-				if v102 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v103)
-			}
-			out.RawByte(']')
-		}
-	}
-	if true {
-		const prefix string = ",\"parent\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode12(out, in.Parent)
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v104, v105 := range in.PlayGroups {
-				if v104 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v105)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode7(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v106 string
-					v106 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v106)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "spouse":
-			easyjsonC5a4559bDecode13(in, &out.Spouse)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v107 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v107)
-					out.Toys = append(out.Toys, v107)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "parent":
-			easyjsonC5a4559bDecode10(in, &out.Parent)
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v108 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v108)
-					out.PlayGroups = append(out.PlayGroups, v108)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode7(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v109, v110 := range in.Nicknames {
-				if v109 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v110))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"spouse\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode13(out, in.Spouse)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v111, v112 := range in.Toys {
-				if v111 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v112)
-			}
-			out.RawByte(']')
-		}
-	}
-	if true {
-		const prefix string = ",\"parent\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode10(out, in.Parent)
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v113, v114 := range in.PlayGroups {
-				if v113 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v114)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode5(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"protege,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v115 string
-					v115 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v115)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "protege":
-			easyjsonC5a4559bDecode14(in, &out.Protege)
-		case "spouse":
-			easyjsonC5a4559bDecode15(in, &out.Spouse)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v116 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v116)
-					out.Toys = append(out.Toys, v116)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v117 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v117)
-					out.PlayGroups = append(out.PlayGroups, v117)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "friends":
-			if in.IsNull() {
-				in.Skip()
-				out.Friends = nil
-			} else {
-				in.Delim('[')
-				if out.Friends == nil {
-					if !in.IsDelim(']') {
-						out.Friends = make([]struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}, 0, 0)
-					} else {
-						out.Friends = []struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}{}
-					}
-				} else {
-					out.Friends = (out.Friends)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v118 struct {
-						ID        int       `json:"id,omitempty"`
-						Height    int       `json:"height,omitempty"`
-						Weight    float64   `json:"weight,omitempty"`
-						Castrated bool      `json:"castrated,omitempty"`
-						Name      string    `json:"name,omitempty"`
-						Birthday  time.Time `json:"birthday,omitempty"`
-						Nicknames []string  `json:"nicknames,omitempty"`
-						Sex       pet.Sex   `json:"sex,omitempty"`
-						Chip      uuid.UUID `json:"chip,omitempty"`
-						Badge     struct {
-							ID int `json:"id,omitempty"`
-						} `json:"badge,omitempty"`
-						Protege struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"protege,omitempty"`
-						Spouse struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"spouse,omitempty"`
-						Toys []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						} `json:"toys,omitempty"`
-						PlayGroups []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						} `json:"play_groups,omitempty"`
-					}
-					easyjsonC5a4559bDecode9(in, &v118)
-					out.Friends = append(out.Friends, v118)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode5(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"protege,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v119, v120 := range in.Nicknames {
-				if v119 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v120))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"protege\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode14(out, in.Protege)
-	}
-	if true {
-		const prefix string = ",\"spouse\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode15(out, in.Spouse)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v121, v122 := range in.Toys {
-				if v121 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v122)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v123, v124 := range in.PlayGroups {
-				if v123 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v124)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Friends) != 0 {
-		const prefix string = ",\"friends\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v125, v126 := range in.Friends {
-				if v125 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode9(out, v126)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode15(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"protege,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v127 string
-					v127 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v127)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "protege":
-			easyjsonC5a4559bDecode16(in, &out.Protege)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v128 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v128)
-					out.Toys = append(out.Toys, v128)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v129 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v129)
-					out.PlayGroups = append(out.PlayGroups, v129)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "friends":
-			if in.IsNull() {
-				in.Skip()
-				out.Friends = nil
-			} else {
-				in.Delim('[')
-				if out.Friends == nil {
-					if !in.IsDelim(']') {
-						out.Friends = make([]struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}, 0, 0)
-					} else {
-						out.Friends = []struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}{}
-					}
-				} else {
-					out.Friends = (out.Friends)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v130 struct {
-						ID        int       `json:"id,omitempty"`
-						Height    int       `json:"height,omitempty"`
-						Weight    float64   `json:"weight,omitempty"`
-						Castrated bool      `json:"castrated,omitempty"`
-						Name      string    `json:"name,omitempty"`
-						Birthday  time.Time `json:"birthday,omitempty"`
-						Nicknames []string  `json:"nicknames,omitempty"`
-						Sex       pet.Sex   `json:"sex,omitempty"`
-						Chip      uuid.UUID `json:"chip,omitempty"`
-						Badge     struct {
-							ID int `json:"id,omitempty"`
-						} `json:"badge,omitempty"`
-						Protege struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"protege,omitempty"`
-						Toys []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						} `json:"toys,omitempty"`
-						PlayGroups []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						} `json:"play_groups,omitempty"`
-					}
-					easyjsonC5a4559bDecode11(in, &v130)
-					out.Friends = append(out.Friends, v130)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode15(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"protege,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v131, v132 := range in.Nicknames {
-				if v131 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v132))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"protege\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode16(out, in.Protege)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v133, v134 := range in.Toys {
-				if v133 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v134)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v135, v136 := range in.PlayGroups {
-				if v135 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v136)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Friends) != 0 {
-		const prefix string = ",\"friends\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v137, v138 := range in.Friends {
-				if v137 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode11(out, v138)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode16(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v139 string
-					v139 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v139)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v140 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v140)
-					out.Toys = append(out.Toys, v140)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v141 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v141)
-					out.PlayGroups = append(out.PlayGroups, v141)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "friends":
-			if in.IsNull() {
-				in.Skip()
-				out.Friends = nil
-			} else {
-				in.Delim('[')
-				if out.Friends == nil {
-					if !in.IsDelim(']') {
-						out.Friends = make([]struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}, 0, 0)
-					} else {
-						out.Friends = []struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}{}
-					}
-				} else {
-					out.Friends = (out.Friends)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v142 struct {
-						ID        int       `json:"id,omitempty"`
-						Height    int       `json:"height,omitempty"`
-						Weight    float64   `json:"weight,omitempty"`
-						Castrated bool      `json:"castrated,omitempty"`
-						Name      string    `json:"name,omitempty"`
-						Birthday  time.Time `json:"birthday,omitempty"`
-						Nicknames []string  `json:"nicknames,omitempty"`
-						Sex       pet.Sex   `json:"sex,omitempty"`
-						Chip      uuid.UUID `json:"chip,omitempty"`
-						Badge     struct {
-							ID int `json:"id,omitempty"`
-						} `json:"badge,omitempty"`
-						Toys []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						} `json:"toys,omitempty"`
-						PlayGroups []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						} `json:"play_groups,omitempty"`
-					}
-					easyjsonC5a4559bDecode12(in, &v142)
-					out.Friends = append(out.Friends, v142)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode16(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v143, v144 := range in.Nicknames {
-				if v143 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v144))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v145, v146 := range in.Toys {
-				if v145 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v146)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v147, v148 := range in.PlayGroups {
-				if v147 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v148)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Friends) != 0 {
-		const prefix string = ",\"friends\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v149, v150 := range in.Friends {
-				if v149 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode12(out, v150)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode14(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v151 string
-					v151 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v151)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "spouse":
-			easyjsonC5a4559bDecode16(in, &out.Spouse)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v152 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v152)
-					out.Toys = append(out.Toys, v152)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v153 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v153)
-					out.PlayGroups = append(out.PlayGroups, v153)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "friends":
-			if in.IsNull() {
-				in.Skip()
-				out.Friends = nil
-			} else {
-				in.Delim('[')
-				if out.Friends == nil {
-					if !in.IsDelim(']') {
-						out.Friends = make([]struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}, 0, 0)
-					} else {
-						out.Friends = []struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}{}
-					}
-				} else {
-					out.Friends = (out.Friends)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v154 struct {
-						ID        int       `json:"id,omitempty"`
-						Height    int       `json:"height,omitempty"`
-						Weight    float64   `json:"weight,omitempty"`
-						Castrated bool      `json:"castrated,omitempty"`
-						Name      string    `json:"name,omitempty"`
-						Birthday  time.Time `json:"birthday,omitempty"`
-						Nicknames []string  `json:"nicknames,omitempty"`
-						Sex       pet.Sex   `json:"sex,omitempty"`
-						Chip      uuid.UUID `json:"chip,omitempty"`
-						Badge     struct {
-							ID int `json:"id,omitempty"`
-						} `json:"badge,omitempty"`
-						Spouse struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"spouse,omitempty"`
-						Toys []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						} `json:"toys,omitempty"`
-						PlayGroups []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						} `json:"play_groups,omitempty"`
-					}
-					easyjsonC5a4559bDecode10(in, &v154)
-					out.Friends = append(out.Friends, v154)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode14(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v155, v156 := range in.Nicknames {
-				if v155 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v156))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"spouse\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode16(out, in.Spouse)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v157, v158 := range in.Toys {
-				if v157 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v158)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v159, v160 := range in.PlayGroups {
-				if v159 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v160)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Friends) != 0 {
-		const prefix string = ",\"friends\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v161, v162 := range in.Friends {
-				if v161 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode10(out, v162)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode4(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"protege,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v163 string
-					v163 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v163)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "protege":
-			easyjsonC5a4559bDecode17(in, &out.Protege)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v164 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v164)
-					out.Toys = append(out.Toys, v164)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "parent":
-			easyjsonC5a4559bDecode15(in, &out.Parent)
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v165 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v165)
-					out.PlayGroups = append(out.PlayGroups, v165)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "friends":
-			if in.IsNull() {
-				in.Skip()
-				out.Friends = nil
-			} else {
-				in.Delim('[')
-				if out.Friends == nil {
-					if !in.IsDelim(']') {
-						out.Friends = make([]struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}, 0, 0)
-					} else {
-						out.Friends = []struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Protege struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"protege,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}{}
-					}
-				} else {
-					out.Friends = (out.Friends)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v166 struct {
-						ID        int       `json:"id,omitempty"`
-						Height    int       `json:"height,omitempty"`
-						Weight    float64   `json:"weight,omitempty"`
-						Castrated bool      `json:"castrated,omitempty"`
-						Name      string    `json:"name,omitempty"`
-						Birthday  time.Time `json:"birthday,omitempty"`
-						Nicknames []string  `json:"nicknames,omitempty"`
-						Sex       pet.Sex   `json:"sex,omitempty"`
-						Chip      uuid.UUID `json:"chip,omitempty"`
-						Badge     struct {
-							ID int `json:"id,omitempty"`
-						} `json:"badge,omitempty"`
-						Protege struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"protege,omitempty"`
-						Toys []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						} `json:"toys,omitempty"`
-						Parent struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Protege struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"protege,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"parent,omitempty"`
-						PlayGroups []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						} `json:"play_groups,omitempty"`
-					}
-					easyjsonC5a4559bDecode8(in, &v166)
-					out.Friends = append(out.Friends, v166)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode4(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Protege struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"protege,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Protege struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"protege,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Protege struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"protege,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v167, v168 := range in.Nicknames {
-				if v167 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v168))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"protege\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode17(out, in.Protege)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v169, v170 := range in.Toys {
-				if v169 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v170)
-			}
-			out.RawByte(']')
-		}
-	}
-	if true {
-		const prefix string = ",\"parent\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode15(out, in.Parent)
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v171, v172 := range in.PlayGroups {
-				if v171 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v172)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Friends) != 0 {
-		const prefix string = ",\"friends\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v173, v174 := range in.Friends {
-				if v173 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode8(out, v174)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode17(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v175 string
-					v175 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v175)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v176 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v176)
-					out.Toys = append(out.Toys, v176)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "parent":
-			easyjsonC5a4559bDecode16(in, &out.Parent)
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v177 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v177)
-					out.PlayGroups = append(out.PlayGroups, v177)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "friends":
-			if in.IsNull() {
-				in.Skip()
-				out.Friends = nil
-			} else {
-				in.Delim('[')
-				if out.Friends == nil {
-					if !in.IsDelim(']') {
-						out.Friends = make([]struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}, 0, 0)
-					} else {
-						out.Friends = []struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}{}
-					}
-				} else {
-					out.Friends = (out.Friends)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v178 struct {
-						ID        int       `json:"id,omitempty"`
-						Height    int       `json:"height,omitempty"`
-						Weight    float64   `json:"weight,omitempty"`
-						Castrated bool      `json:"castrated,omitempty"`
-						Name      string    `json:"name,omitempty"`
-						Birthday  time.Time `json:"birthday,omitempty"`
-						Nicknames []string  `json:"nicknames,omitempty"`
-						Sex       pet.Sex   `json:"sex,omitempty"`
-						Chip      uuid.UUID `json:"chip,omitempty"`
-						Badge     struct {
-							ID int `json:"id,omitempty"`
-						} `json:"badge,omitempty"`
-						Toys []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						} `json:"toys,omitempty"`
-						Parent struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"parent,omitempty"`
-						PlayGroups []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						} `json:"play_groups,omitempty"`
-					}
-					easyjsonC5a4559bDecode13(in, &v178)
-					out.Friends = append(out.Friends, v178)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode17(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v179, v180 := range in.Nicknames {
-				if v179 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v180))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v181, v182 := range in.Toys {
-				if v181 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v182)
-			}
-			out.RawByte(']')
-		}
-	}
-	if true {
-		const prefix string = ",\"parent\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode16(out, in.Parent)
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v183, v184 := range in.PlayGroups {
-				if v183 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v184)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Friends) != 0 {
-		const prefix string = ",\"friends\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v185, v186 := range in.Friends {
-				if v185 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode13(out, v186)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode3(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v187 string
-					v187 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v187)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		case "spouse":
-			easyjsonC5a4559bDecode17(in, &out.Spouse)
-		case "toys":
-			if in.IsNull() {
-				in.Skip()
-				out.Toys = nil
-			} else {
-				in.Delim('[')
-				if out.Toys == nil {
-					if !in.IsDelim(']') {
-						out.Toys = make([]struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}, 0, 2)
-					} else {
-						out.Toys = []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						}{}
-					}
-				} else {
-					out.Toys = (out.Toys)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v188 struct {
-						ID    int    `json:"id,omitempty"`
-						Title string `json:"title,omitempty"`
-					}
-					easyjsonC5a4559bDecode(in, &v188)
-					out.Toys = append(out.Toys, v188)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "parent":
-			easyjsonC5a4559bDecode14(in, &out.Parent)
-		case "play_groups":
-			if in.IsNull() {
-				in.Skip()
-				out.PlayGroups = nil
-			} else {
-				in.Delim('[')
-				if out.PlayGroups == nil {
-					if !in.IsDelim(']') {
-						out.PlayGroups = make([]struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}, 0, 1)
-					} else {
-						out.PlayGroups = []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						}{}
-					}
-				} else {
-					out.PlayGroups = (out.PlayGroups)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v189 struct {
-						ID          int               `json:"id,omitempty"`
-						Title       string            `json:"title,omitempty"`
-						Description string            `json:"description,omitempty"`
-						Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-					}
-					easyjsonC5a4559bDecode1(in, &v189)
-					out.PlayGroups = append(out.PlayGroups, v189)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "friends":
-			if in.IsNull() {
-				in.Skip()
-				out.Friends = nil
-			} else {
-				in.Delim('[')
-				if out.Friends == nil {
-					if !in.IsDelim(']') {
-						out.Friends = make([]struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}, 0, 0)
-					} else {
-						out.Friends = []struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								Parent struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"parent,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Spouse struct {
-									ID        int       `json:"id,omitempty"`
-									Height    int       `json:"height,omitempty"`
-									Weight    float64   `json:"weight,omitempty"`
-									Castrated bool      `json:"castrated,omitempty"`
-									Name      string    `json:"name,omitempty"`
-									Birthday  time.Time `json:"birthday,omitempty"`
-									Nicknames []string  `json:"nicknames,omitempty"`
-									Sex       pet.Sex   `json:"sex,omitempty"`
-									Chip      uuid.UUID `json:"chip,omitempty"`
-									Badge     struct {
-										ID int `json:"id,omitempty"`
-									} `json:"badge,omitempty"`
-									Toys []struct {
-										ID    int    `json:"id,omitempty"`
-										Title string `json:"title,omitempty"`
-									} `json:"toys,omitempty"`
-									PlayGroups []struct {
-										ID          int               `json:"id,omitempty"`
-										Title       string            `json:"title,omitempty"`
-										Description string            `json:"description,omitempty"`
-										Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-									} `json:"play_groups,omitempty"`
-								} `json:"spouse,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						}{}
-					}
-				} else {
-					out.Friends = (out.Friends)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v190 struct {
-						ID        int       `json:"id,omitempty"`
-						Height    int       `json:"height,omitempty"`
-						Weight    float64   `json:"weight,omitempty"`
-						Castrated bool      `json:"castrated,omitempty"`
-						Name      string    `json:"name,omitempty"`
-						Birthday  time.Time `json:"birthday,omitempty"`
-						Nicknames []string  `json:"nicknames,omitempty"`
-						Sex       pet.Sex   `json:"sex,omitempty"`
-						Chip      uuid.UUID `json:"chip,omitempty"`
-						Badge     struct {
-							ID int `json:"id,omitempty"`
-						} `json:"badge,omitempty"`
-						Spouse struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							Parent struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"parent,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"spouse,omitempty"`
-						Toys []struct {
-							ID    int    `json:"id,omitempty"`
-							Title string `json:"title,omitempty"`
-						} `json:"toys,omitempty"`
-						Parent struct {
-							ID        int       `json:"id,omitempty"`
-							Height    int       `json:"height,omitempty"`
-							Weight    float64   `json:"weight,omitempty"`
-							Castrated bool      `json:"castrated,omitempty"`
-							Name      string    `json:"name,omitempty"`
-							Birthday  time.Time `json:"birthday,omitempty"`
-							Nicknames []string  `json:"nicknames,omitempty"`
-							Sex       pet.Sex   `json:"sex,omitempty"`
-							Chip      uuid.UUID `json:"chip,omitempty"`
-							Badge     struct {
-								ID int `json:"id,omitempty"`
-							} `json:"badge,omitempty"`
-							Spouse struct {
-								ID        int       `json:"id,omitempty"`
-								Height    int       `json:"height,omitempty"`
-								Weight    float64   `json:"weight,omitempty"`
-								Castrated bool      `json:"castrated,omitempty"`
-								Name      string    `json:"name,omitempty"`
-								Birthday  time.Time `json:"birthday,omitempty"`
-								Nicknames []string  `json:"nicknames,omitempty"`
-								Sex       pet.Sex   `json:"sex,omitempty"`
-								Chip      uuid.UUID `json:"chip,omitempty"`
-								Badge     struct {
-									ID int `json:"id,omitempty"`
-								} `json:"badge,omitempty"`
-								Toys []struct {
-									ID    int    `json:"id,omitempty"`
-									Title string `json:"title,omitempty"`
-								} `json:"toys,omitempty"`
-								PlayGroups []struct {
-									ID          int               `json:"id,omitempty"`
-									Title       string            `json:"title,omitempty"`
-									Description string            `json:"description,omitempty"`
-									Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-								} `json:"play_groups,omitempty"`
-							} `json:"spouse,omitempty"`
-							Toys []struct {
-								ID    int    `json:"id,omitempty"`
-								Title string `json:"title,omitempty"`
-							} `json:"toys,omitempty"`
-							PlayGroups []struct {
-								ID          int               `json:"id,omitempty"`
-								Title       string            `json:"title,omitempty"`
-								Description string            `json:"description,omitempty"`
-								Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-							} `json:"play_groups,omitempty"`
-						} `json:"parent,omitempty"`
-						PlayGroups []struct {
-							ID          int               `json:"id,omitempty"`
-							Title       string            `json:"title,omitempty"`
-							Description string            `json:"description,omitempty"`
-							Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-						} `json:"play_groups,omitempty"`
-					}
-					easyjsonC5a4559bDecode7(in, &v190)
-					out.Friends = append(out.Friends, v190)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode3(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-	Spouse struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"spouse,omitempty"`
-	Toys []struct {
-		ID    int    `json:"id,omitempty"`
-		Title string `json:"title,omitempty"`
-	} `json:"toys,omitempty"`
-	Parent struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-			Friends []struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"friends,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-		Friends []struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"friends,omitempty"`
-	} `json:"parent,omitempty"`
-	PlayGroups []struct {
-		ID          int               `json:"id,omitempty"`
-		Title       string            `json:"title,omitempty"`
-		Description string            `json:"description,omitempty"`
-		Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-	} `json:"play_groups,omitempty"`
-	Friends []struct {
-		ID        int       `json:"id,omitempty"`
-		Height    int       `json:"height,omitempty"`
-		Weight    float64   `json:"weight,omitempty"`
-		Castrated bool      `json:"castrated,omitempty"`
-		Name      string    `json:"name,omitempty"`
-		Birthday  time.Time `json:"birthday,omitempty"`
-		Nicknames []string  `json:"nicknames,omitempty"`
-		Sex       pet.Sex   `json:"sex,omitempty"`
-		Chip      uuid.UUID `json:"chip,omitempty"`
-		Badge     struct {
-			ID int `json:"id,omitempty"`
-		} `json:"badge,omitempty"`
-		Spouse struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			Parent struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"parent,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"spouse,omitempty"`
-		Toys []struct {
-			ID    int    `json:"id,omitempty"`
-			Title string `json:"title,omitempty"`
-		} `json:"toys,omitempty"`
-		Parent struct {
-			ID        int       `json:"id,omitempty"`
-			Height    int       `json:"height,omitempty"`
-			Weight    float64   `json:"weight,omitempty"`
-			Castrated bool      `json:"castrated,omitempty"`
-			Name      string    `json:"name,omitempty"`
-			Birthday  time.Time `json:"birthday,omitempty"`
-			Nicknames []string  `json:"nicknames,omitempty"`
-			Sex       pet.Sex   `json:"sex,omitempty"`
-			Chip      uuid.UUID `json:"chip,omitempty"`
-			Badge     struct {
-				ID int `json:"id,omitempty"`
-			} `json:"badge,omitempty"`
-			Spouse struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-				Toys []struct {
-					ID    int    `json:"id,omitempty"`
-					Title string `json:"title,omitempty"`
-				} `json:"toys,omitempty"`
-				PlayGroups []struct {
-					ID          int               `json:"id,omitempty"`
-					Title       string            `json:"title,omitempty"`
-					Description string            `json:"description,omitempty"`
-					Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-				} `json:"play_groups,omitempty"`
-			} `json:"spouse,omitempty"`
-			Toys []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"toys,omitempty"`
-			PlayGroups []struct {
-				ID          int               `json:"id,omitempty"`
-				Title       string            `json:"title,omitempty"`
-				Description string            `json:"description,omitempty"`
-				Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-			} `json:"play_groups,omitempty"`
-		} `json:"parent,omitempty"`
-		PlayGroups []struct {
-			ID          int               `json:"id,omitempty"`
-			Title       string            `json:"title,omitempty"`
-			Description string            `json:"description,omitempty"`
-			Weekday     playgroup.Weekday `json:"weekday,omitempty"`
-		} `json:"play_groups,omitempty"`
-	} `json:"friends,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v191, v192 := range in.Nicknames {
-				if v191 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v192))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	if true {
-		const prefix string = ",\"spouse\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode17(out, in.Spouse)
-	}
-	if len(in.Toys) != 0 {
-		const prefix string = ",\"toys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v193, v194 := range in.Toys {
-				if v193 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode(out, v194)
-			}
-			out.RawByte(']')
-		}
-	}
-	if true {
-		const prefix string = ",\"parent\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode14(out, in.Parent)
-	}
-	if len(in.PlayGroups) != 0 {
-		const prefix string = ",\"play_groups\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v195, v196 := range in.PlayGroups {
-				if v195 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode1(out, v196)
-			}
-			out.RawByte(']')
-		}
-	}
-	if len(in.Friends) != 0 {
-		const prefix string = ",\"friends\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v197, v198 := range in.Friends {
-				if v197 > 0 {
-					out.RawByte(',')
-				}
-				easyjsonC5a4559bEncode7(out, v198)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecode2(in *jlexer.Lexer, out *struct {
-	ID int `json:"id,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode2(out *jwriter.Writer, in struct {
-	ID int `json:"id,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(in *jlexer.Lexer, out *PetListResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		in.Skip()
-		*out = nil
-	} else {
-		in.Delim('[')
-		if *out == nil {
-			if !in.IsDelim(']') {
-				*out = make(PetListResponse, 0, 0)
-			} else {
-				*out = PetListResponse{}
-			}
-		} else {
-			*out = (*out)[:0]
-		}
-		for !in.IsDelim(']') {
-			var v199 struct {
-				ID        int       `json:"id,omitempty"`
-				Height    int       `json:"height,omitempty"`
-				Weight    float64   `json:"weight,omitempty"`
-				Castrated bool      `json:"castrated,omitempty"`
-				Name      string    `json:"name,omitempty"`
-				Birthday  time.Time `json:"birthday,omitempty"`
-				Nicknames []string  `json:"nicknames,omitempty"`
-				Sex       pet.Sex   `json:"sex,omitempty"`
-				Chip      uuid.UUID `json:"chip,omitempty"`
-				Badge     struct {
-					ID int `json:"id,omitempty"`
-				} `json:"badge,omitempty"`
-			}
-			easyjsonC5a4559bDecode18(in, &v199)
-			*out = append(*out, v199)
-			in.WantComma()
-		}
-		in.Delim(']')
-	}
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(out *jwriter.Writer, in PetListResponse) {
-	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-		out.RawString("null")
-	} else {
-		out.RawByte('[')
-		for v200, v201 := range in {
-			if v200 > 0 {
-				out.RawByte(',')
-			}
-			easyjsonC5a4559bEncode18(out, v201)
-		}
-		out.RawByte(']')
-	}
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PetListResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PetListResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(l, v)
-}
-func easyjsonC5a4559bDecode18(in *jlexer.Lexer, out *struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-}) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v202 string
-					v202 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v202)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		case "badge":
-			easyjsonC5a4559bDecode2(in, &out.Badge)
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncode18(out *jwriter.Writer, in struct {
-	ID        int       `json:"id,omitempty"`
-	Height    int       `json:"height,omitempty"`
-	Weight    float64   `json:"weight,omitempty"`
-	Castrated bool      `json:"castrated,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Birthday  time.Time `json:"birthday,omitempty"`
-	Nicknames []string  `json:"nicknames,omitempty"`
-	Sex       pet.Sex   `json:"sex,omitempty"`
-	Chip      uuid.UUID `json:"chip,omitempty"`
-	Badge     struct {
-		ID int `json:"id,omitempty"`
-	} `json:"badge,omitempty"`
-}) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v203, v204 := range in.Nicknames {
-				if v203 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v204))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	if true {
-		const prefix string = ",\"badge\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		easyjsonC5a4559bEncode2(out, in.Badge)
-	}
-	out.RawByte('}')
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(in *jlexer.Lexer, out *PetCreateResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		case "height":
-			out.Height = int(in.Int())
-		case "weight":
-			out.Weight = float64(in.Float64())
-		case "castrated":
-			out.Castrated = bool(in.Bool())
-		case "name":
-			out.Name = string(in.String())
-		case "birthday":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Birthday).UnmarshalJSON(data))
-			}
-		case "nicknames":
-			if in.IsNull() {
-				in.Skip()
-				out.Nicknames = nil
-			} else {
-				in.Delim('[')
-				if out.Nicknames == nil {
-					if !in.IsDelim(']') {
-						out.Nicknames = make([]string, 0, 4)
-					} else {
-						out.Nicknames = []string{}
-					}
-				} else {
-					out.Nicknames = (out.Nicknames)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v205 string
-					v205 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v205)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "sex":
-			out.Sex = pet.Sex(in.String())
-		case "chip":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Chip).UnmarshalText(data))
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(out *jwriter.Writer, in PetCreateResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Height != 0 {
-		const prefix string = ",\"height\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Int(int(in.Height))
-	}
-	if in.Weight != 0 {
-		const prefix string = ",\"weight\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.Weight))
-	}
-	if in.Castrated {
-		const prefix string = ",\"castrated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Bool(bool(in.Castrated))
-	}
-	if in.Name != "" {
-		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Name))
-	}
-	if true {
-		const prefix string = ",\"birthday\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Raw((in.Birthday).MarshalJSON())
-	}
-	if len(in.Nicknames) != 0 {
-		const prefix string = ",\"nicknames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		{
-			out.RawByte('[')
-			for v206, v207 := range in.Nicknames {
-				if v206 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v207))
-			}
-			out.RawByte(']')
-		}
-	}
-	if in.Sex != "" {
-		const prefix string = ",\"sex\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.String(string(in.Sex))
-	}
-	if true {
-		const prefix string = ",\"chip\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.RawText((in.Chip).MarshalText())
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PetCreateResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PetCreateResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(in *jlexer.Lexer, out *PetCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(in *jlexer.Lexer, out *PetCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -15540,9 +1431,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 						*out.Nicknames = (*out.Nicknames)[:0]
 					}
 					for !in.IsDelim(']') {
-						var v208 string
-						v208 = string(in.String())
-						*out.Nicknames = append(*out.Nicknames, v208)
+						var v28 string
+						v28 = string(in.String())
+						*out.Nicknames = append(*out.Nicknames, v28)
 						in.WantComma()
 					}
 					in.Delim(']')
@@ -15626,9 +1517,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 					out.Toys = (out.Toys)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v209 int
-					v209 = int(in.Int())
-					out.Toys = append(out.Toys, v209)
+					var v29 int
+					v29 = int(in.Int())
+					out.Toys = append(out.Toys, v29)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -15659,9 +1550,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 					out.Children = (out.Children)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v210 int
-					v210 = int(in.Int())
-					out.Children = append(out.Children, v210)
+					var v30 int
+					v30 = int(in.Int())
+					out.Children = append(out.Children, v30)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -15682,9 +1573,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 					out.PlayGroups = (out.PlayGroups)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v211 int
-					v211 = int(in.Int())
-					out.PlayGroups = append(out.PlayGroups, v211)
+					var v31 int
+					v31 = int(in.Int())
+					out.PlayGroups = append(out.PlayGroups, v31)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -15705,19 +1596,15 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 					out.Friends = (out.Friends)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v212 int
-					v212 = int(in.Int())
-					out.Friends = append(out.Friends, v212)
+					var v32 int
+					v32 = int(in.Int())
+					out.Friends = append(out.Friends, v32)
 					in.WantComma()
 				}
 				in.Delim(']')
 			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -15726,7 +1613,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(out *jwriter.Writer, in PetCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(out *jwriter.Writer, in PetCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -15785,11 +1672,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 				out.RawString("null")
 			} else {
 				out.RawByte('[')
-				for v213, v214 := range *in.Nicknames {
-					if v213 > 0 {
+				for v33, v34 := range *in.Nicknames {
+					if v33 > 0 {
 						out.RawByte(',')
 					}
-					out.String(string(v214))
+					out.String(string(v34))
 				}
 				out.RawByte(']')
 			}
@@ -15856,11 +1743,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v215, v216 := range in.Toys {
-				if v215 > 0 {
+			for v35, v36 := range in.Toys {
+				if v35 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v216))
+				out.Int(int(v36))
 			}
 			out.RawByte(']')
 		}
@@ -15881,11 +1768,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v217, v218 := range in.Children {
-				if v217 > 0 {
+			for v37, v38 := range in.Children {
+				if v37 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v218))
+				out.Int(int(v38))
 			}
 			out.RawByte(']')
 		}
@@ -15897,11 +1784,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v219, v220 := range in.PlayGroups {
-				if v219 > 0 {
+			for v39, v40 := range in.PlayGroups {
+				if v39 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v220))
+				out.Int(int(v40))
 			}
 			out.RawByte(']')
 		}
@@ -15913,11 +1800,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v221, v222 := range in.Friends {
-				if v221 > 0 {
+			for v41, v42 := range in.Friends {
+				if v41 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v222))
+				out.Int(int(v42))
 			}
 			out.RawByte(']')
 		}
@@ -15927,14 +1814,78 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PetCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PetCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp9(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(in *jlexer.Lexer, out *BadgeUpdateResponse) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(in *jlexer.Lexer, out *Pet855087725Views) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(Pet855087725Views, 0, 8)
+			} else {
+				*out = Pet855087725Views{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v43 *Pet855087725View
+			if in.IsNull() {
+				in.Skip()
+				v43 = nil
+			} else {
+				if v43 == nil {
+					v43 = new(Pet855087725View)
+				}
+				(*v43).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v43)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(out *jwriter.Writer, in Pet855087725Views) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v44, v45 := range in {
+			if v44 > 0 {
+				out.RawByte(',')
+			}
+			if v45 == nil {
+				out.RawString("null")
+			} else {
+				(*v45).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Pet855087725Views) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Pet855087725Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp10(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11(in *jlexer.Lexer, out *Pet855087725View) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -15955,12 +1906,26 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18
 		switch key {
 		case "id":
 			out.ID = int(in.Int())
+		case "name":
+			out.Name = string(in.String())
+		case "sex":
+			out.Sex = pet.Sex(in.String())
+		case "chip":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.Chip).UnmarshalText(data))
+			}
+		case "badge":
+			if in.IsNull() {
+				in.Skip()
+				out.Badge = nil
+			} else {
+				if out.Badge == nil {
+					out.Badge = new(Badge2492344257View)
+				}
+				(*out.Badge).UnmarshalEasyJSON(in)
+			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -15969,7 +1934,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(out *jwriter.Writer, in BadgeUpdateResponse) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11(out *jwriter.Writer, in Pet855087725View) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -15979,19 +1944,123 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18
 		out.RawString(prefix[1:])
 		out.Int(int(in.ID))
 	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if in.Sex != "" {
+		const prefix string = ",\"sex\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Sex))
+	}
+	if true {
+		const prefix string = ",\"chip\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.RawText((in.Chip).MarshalText())
+	}
+	if in.Badge != nil {
+		const prefix string = ",\"badge\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Badge).MarshalEasyJSON(out)
+	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v BadgeUpdateResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(w, v)
+func (v Pet855087725View) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *BadgeUpdateResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(l, v)
+func (v *Pet855087725View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp11(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(in *jlexer.Lexer, out *BadgeUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12(in *jlexer.Lexer, out *Pet340207500Views) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(Pet340207500Views, 0, 8)
+			} else {
+				*out = Pet340207500Views{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v46 *Pet340207500View
+			if in.IsNull() {
+				in.Skip()
+				v46 = nil
+			} else {
+				if v46 == nil {
+					v46 = new(Pet340207500View)
+				}
+				(*v46).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v46)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12(out *jwriter.Writer, in Pet340207500Views) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v47, v48 := range in {
+			if v47 > 0 {
+				out.RawByte(',')
+			}
+			if v48 == nil {
+				out.RawString("null")
+			} else {
+				(*v48).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Pet340207500Views) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Pet340207500Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp12(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13(in *jlexer.Lexer, out *Pet340207500View) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -16010,6 +2079,572 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19
 			continue
 		}
 		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "height":
+			out.Height = int(in.Int())
+		case "weight":
+			out.Weight = float64(in.Float64())
+		case "castrated":
+			out.Castrated = bool(in.Bool())
+		case "name":
+			out.Name = string(in.String())
+		case "birthday":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Birthday).UnmarshalJSON(data))
+			}
+		case "nicknames":
+			if in.IsNull() {
+				in.Skip()
+				out.Nicknames = nil
+			} else {
+				in.Delim('[')
+				if out.Nicknames == nil {
+					if !in.IsDelim(']') {
+						out.Nicknames = make([]string, 0, 4)
+					} else {
+						out.Nicknames = []string{}
+					}
+				} else {
+					out.Nicknames = (out.Nicknames)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v49 string
+					v49 = string(in.String())
+					out.Nicknames = append(out.Nicknames, v49)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "sex":
+			out.Sex = pet.Sex(in.String())
+		case "chip":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.Chip).UnmarshalText(data))
+			}
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13(out *jwriter.Writer, in Pet340207500View) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Height != 0 {
+		const prefix string = ",\"height\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int(int(in.Height))
+	}
+	if in.Weight != 0 {
+		const prefix string = ",\"weight\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Float64(float64(in.Weight))
+	}
+	if in.Castrated {
+		const prefix string = ",\"castrated\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.Castrated))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if true {
+		const prefix string = ",\"birthday\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.Birthday).MarshalJSON())
+	}
+	if len(in.Nicknames) != 0 {
+		const prefix string = ",\"nicknames\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		{
+			out.RawByte('[')
+			for v50, v51 := range in.Nicknames {
+				if v50 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v51))
+			}
+			out.RawByte(']')
+		}
+	}
+	if in.Sex != "" {
+		const prefix string = ",\"sex\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Sex))
+	}
+	if true {
+		const prefix string = ",\"chip\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.RawText((in.Chip).MarshalText())
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Pet340207500View) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Pet340207500View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp13(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp14(in *jlexer.Lexer, out *Pet1954225839Views) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(Pet1954225839Views, 0, 8)
+			} else {
+				*out = Pet1954225839Views{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v52 *Pet1954225839View
+			if in.IsNull() {
+				in.Skip()
+				v52 = nil
+			} else {
+				if v52 == nil {
+					v52 = new(Pet1954225839View)
+				}
+				(*v52).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v52)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp14(out *jwriter.Writer, in Pet1954225839Views) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v53, v54 := range in {
+			if v53 > 0 {
+				out.RawByte(',')
+			}
+			if v54 == nil {
+				out.RawString("null")
+			} else {
+				(*v54).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Pet1954225839Views) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp14(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Pet1954225839Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp14(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(in *jlexer.Lexer, out *Pet1954225839View) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "height":
+			out.Height = int(in.Int())
+		case "weight":
+			out.Weight = float64(in.Float64())
+		case "castrated":
+			out.Castrated = bool(in.Bool())
+		case "name":
+			out.Name = string(in.String())
+		case "birthday":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Birthday).UnmarshalJSON(data))
+			}
+		case "nicknames":
+			if in.IsNull() {
+				in.Skip()
+				out.Nicknames = nil
+			} else {
+				in.Delim('[')
+				if out.Nicknames == nil {
+					if !in.IsDelim(']') {
+						out.Nicknames = make([]string, 0, 4)
+					} else {
+						out.Nicknames = []string{}
+					}
+				} else {
+					out.Nicknames = (out.Nicknames)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v55 string
+					v55 = string(in.String())
+					out.Nicknames = append(out.Nicknames, v55)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "sex":
+			out.Sex = pet.Sex(in.String())
+		case "chip":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.Chip).UnmarshalText(data))
+			}
+		case "badge":
+			if in.IsNull() {
+				in.Skip()
+				out.Badge = nil
+			} else {
+				if out.Badge == nil {
+					out.Badge = new(Badge2492344257View)
+				}
+				(*out.Badge).UnmarshalEasyJSON(in)
+			}
+		case "protege":
+			if in.IsNull() {
+				in.Skip()
+				out.Protege = nil
+			} else {
+				if out.Protege == nil {
+					out.Protege = new(Pet1954225839View)
+				}
+				(*out.Protege).UnmarshalEasyJSON(in)
+			}
+		case "spouse":
+			if in.IsNull() {
+				in.Skip()
+				out.Spouse = nil
+			} else {
+				if out.Spouse == nil {
+					out.Spouse = new(Pet1954225839View)
+				}
+				(*out.Spouse).UnmarshalEasyJSON(in)
+			}
+		case "toys":
+			(out.Toys).UnmarshalEasyJSON(in)
+		case "parent":
+			if in.IsNull() {
+				in.Skip()
+				out.Parent = nil
+			} else {
+				if out.Parent == nil {
+					out.Parent = new(Pet1954225839View)
+				}
+				(*out.Parent).UnmarshalEasyJSON(in)
+			}
+		case "play_groups":
+			(out.PlayGroups).UnmarshalEasyJSON(in)
+		case "friends":
+			(out.Friends).UnmarshalEasyJSON(in)
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(out *jwriter.Writer, in Pet1954225839View) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Height != 0 {
+		const prefix string = ",\"height\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int(int(in.Height))
+	}
+	if in.Weight != 0 {
+		const prefix string = ",\"weight\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Float64(float64(in.Weight))
+	}
+	if in.Castrated {
+		const prefix string = ",\"castrated\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.Castrated))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if true {
+		const prefix string = ",\"birthday\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.Birthday).MarshalJSON())
+	}
+	if len(in.Nicknames) != 0 {
+		const prefix string = ",\"nicknames\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		{
+			out.RawByte('[')
+			for v56, v57 := range in.Nicknames {
+				if v56 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v57))
+			}
+			out.RawByte(']')
+		}
+	}
+	if in.Sex != "" {
+		const prefix string = ",\"sex\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Sex))
+	}
+	if true {
+		const prefix string = ",\"chip\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.RawText((in.Chip).MarshalText())
+	}
+	if in.Badge != nil {
+		const prefix string = ",\"badge\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Badge).MarshalEasyJSON(out)
+	}
+	if in.Protege != nil {
+		const prefix string = ",\"protege\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Protege).MarshalEasyJSON(out)
+	}
+	if in.Spouse != nil {
+		const prefix string = ",\"spouse\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Spouse).MarshalEasyJSON(out)
+	}
+	if len(in.Toys) != 0 {
+		const prefix string = ",\"toys\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.Toys).MarshalEasyJSON(out)
+	}
+	if in.Parent != nil {
+		const prefix string = ",\"parent\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Parent).MarshalEasyJSON(out)
+	}
+	if len(in.PlayGroups) != 0 {
+		const prefix string = ",\"play_groups\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.PlayGroups).MarshalEasyJSON(out)
+	}
+	if len(in.Friends) != 0 {
+		const prefix string = ",\"friends\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.Friends).MarshalEasyJSON(out)
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Pet1954225839View) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Pet1954225839View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(in *jlexer.Lexer, out *BadgeUpdateRequest) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "color":
+			if in.IsNull() {
+				in.Skip()
+				out.Color = nil
+			} else {
+				if out.Color == nil {
+					out.Color = new(badge.Color)
+				}
+				*out.Color = badge.Color(in.String())
+			}
+		case "material":
+			if in.IsNull() {
+				in.Skip()
+				out.Material = nil
+			} else {
+				if out.Material == nil {
+					out.Material = new(badge.Material)
+				}
+				*out.Material = badge.Material(in.String())
+			}
 		case "wearer":
 			if in.IsNull() {
 				in.Skip()
@@ -16021,11 +2656,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19
 				*out.Wearer = int(in.Int())
 			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -16034,13 +2665,31 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(out *jwriter.Writer, in BadgeUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(out *jwriter.Writer, in BadgeUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"wearer\":"
+		const prefix string = ",\"color\":"
 		out.RawString(prefix[1:])
+		if in.Color == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Color))
+		}
+	}
+	{
+		const prefix string = ",\"material\":"
+		out.RawString(prefix)
+		if in.Material == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Material))
+		}
+	}
+	{
+		const prefix string = ",\"wearer\":"
+		out.RawString(prefix)
 		if in.Wearer == nil {
 			out.RawString("null")
 		} else {
@@ -16052,14 +2701,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v BadgeUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BadgeUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20(in *jlexer.Lexer, out *BadgeReadResponse) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(in *jlexer.Lexer, out *BadgeCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -16078,174 +2727,26 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20
 			continue
 		}
 		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20(out *jwriter.Writer, in BadgeReadResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v BadgeReadResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *BadgeReadResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp21(in *jlexer.Lexer, out *BadgeListResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		in.Skip()
-		*out = nil
-	} else {
-		in.Delim('[')
-		if *out == nil {
-			if !in.IsDelim(']') {
-				*out = make(BadgeListResponse, 0, 8)
+		case "color":
+			if in.IsNull() {
+				in.Skip()
+				out.Color = nil
 			} else {
-				*out = BadgeListResponse{}
+				if out.Color == nil {
+					out.Color = new(badge.Color)
+				}
+				*out.Color = badge.Color(in.String())
 			}
-		} else {
-			*out = (*out)[:0]
-		}
-		for !in.IsDelim(']') {
-			var v223 struct {
-				ID int `json:"id,omitempty"`
+		case "material":
+			if in.IsNull() {
+				in.Skip()
+				out.Material = nil
+			} else {
+				if out.Material == nil {
+					out.Material = new(badge.Material)
+				}
+				*out.Material = badge.Material(in.String())
 			}
-			easyjsonC5a4559bDecode2(in, &v223)
-			*out = append(*out, v223)
-			in.WantComma()
-		}
-		in.Delim(']')
-	}
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp21(out *jwriter.Writer, in BadgeListResponse) {
-	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-		out.RawString("null")
-	} else {
-		out.RawByte('[')
-		for v224, v225 := range in {
-			if v224 > 0 {
-				out.RawByte(',')
-			}
-			easyjsonC5a4559bEncode2(out, v225)
-		}
-		out.RawByte(']')
-	}
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v BadgeListResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp21(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *BadgeListResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp21(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp22(in *jlexer.Lexer, out *BadgeCreateResponse) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = int(in.Int())
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp22(out *jwriter.Writer, in BadgeCreateResponse) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v BadgeCreateResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp22(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *BadgeCreateResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp22(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp23(in *jlexer.Lexer, out *BadgeCreateRequest) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
 		case "wearer":
 			if in.IsNull() {
 				in.Skip()
@@ -16257,11 +2758,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp23
 				*out.Wearer = int(in.Int())
 			}
 		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
+			in.SkipRecursive()
 		}
 		in.WantComma()
 	}
@@ -16270,13 +2767,31 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp23
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp23(out *jwriter.Writer, in BadgeCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(out *jwriter.Writer, in BadgeCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"wearer\":"
+		const prefix string = ",\"color\":"
 		out.RawString(prefix[1:])
+		if in.Color == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Color))
+		}
+	}
+	{
+		const prefix string = ",\"material\":"
+		out.RawString(prefix)
+		if in.Material == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Material))
+		}
+	}
+	{
+		const prefix string = ",\"wearer\":"
+		out.RawString(prefix)
 		if in.Wearer == nil {
 			out.RawString("null")
 		} else {
@@ -16288,10 +2803,151 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp23
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v BadgeCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp23(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BadgeCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp23(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(in *jlexer.Lexer, out *Badge2492344257Views) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(Badge2492344257Views, 0, 8)
+			} else {
+				*out = Badge2492344257Views{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v58 *Badge2492344257View
+			if in.IsNull() {
+				in.Skip()
+				v58 = nil
+			} else {
+				if v58 == nil {
+					v58 = new(Badge2492344257View)
+				}
+				(*v58).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v58)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(out *jwriter.Writer, in Badge2492344257Views) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v59, v60 := range in {
+			if v59 > 0 {
+				out.RawByte(',')
+			}
+			if v60 == nil {
+				out.RawString("null")
+			} else {
+				(*v60).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Badge2492344257Views) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Badge2492344257Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(in *jlexer.Lexer, out *Badge2492344257View) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "color":
+			out.Color = badge.Color(in.String())
+		case "material":
+			out.Material = badge.Material(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(out *jwriter.Writer, in Badge2492344257View) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	if in.Material != "" {
+		const prefix string = ",\"material\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Material))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Badge2492344257View) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Badge2492344257View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(l, v)
 }
