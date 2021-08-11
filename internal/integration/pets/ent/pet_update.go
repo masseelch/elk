@@ -52,9 +52,23 @@ func (pu *PetUpdate) SetWeight(f float64) *PetUpdate {
 	return pu
 }
 
+// SetNillableWeight sets the "weight" field if the given value is not nil.
+func (pu *PetUpdate) SetNillableWeight(f *float64) *PetUpdate {
+	if f != nil {
+		pu.SetWeight(*f)
+	}
+	return pu
+}
+
 // AddWeight adds f to the "weight" field.
 func (pu *PetUpdate) AddWeight(f float64) *PetUpdate {
 	pu.mutation.AddWeight(f)
+	return pu
+}
+
+// ClearWeight clears the value of the "weight" field.
+func (pu *PetUpdate) ClearWeight() *PetUpdate {
+	pu.mutation.ClearWeight()
 	return pu
 }
 
@@ -73,6 +87,20 @@ func (pu *PetUpdate) SetName(s string) *PetUpdate {
 // SetBirthday sets the "birthday" field.
 func (pu *PetUpdate) SetBirthday(t time.Time) *PetUpdate {
 	pu.mutation.SetBirthday(t)
+	return pu
+}
+
+// SetNillableBirthday sets the "birthday" field if the given value is not nil.
+func (pu *PetUpdate) SetNillableBirthday(t *time.Time) *PetUpdate {
+	if t != nil {
+		pu.SetBirthday(*t)
+	}
+	return pu
+}
+
+// ClearBirthday clears the value of the "birthday" field.
+func (pu *PetUpdate) ClearBirthday() *PetUpdate {
+	pu.mutation.ClearBirthday()
 	return pu
 }
 
@@ -495,6 +523,12 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: pet.FieldWeight,
 		})
 	}
+	if pu.mutation.WeightCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: pet.FieldWeight,
+		})
+	}
 	if value, ok := pu.mutation.Castrated(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -513,6 +547,12 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: pet.FieldBirthday,
+		})
+	}
+	if pu.mutation.BirthdayCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: pet.FieldBirthday,
 		})
 	}
@@ -973,9 +1013,23 @@ func (puo *PetUpdateOne) SetWeight(f float64) *PetUpdateOne {
 	return puo
 }
 
+// SetNillableWeight sets the "weight" field if the given value is not nil.
+func (puo *PetUpdateOne) SetNillableWeight(f *float64) *PetUpdateOne {
+	if f != nil {
+		puo.SetWeight(*f)
+	}
+	return puo
+}
+
 // AddWeight adds f to the "weight" field.
 func (puo *PetUpdateOne) AddWeight(f float64) *PetUpdateOne {
 	puo.mutation.AddWeight(f)
+	return puo
+}
+
+// ClearWeight clears the value of the "weight" field.
+func (puo *PetUpdateOne) ClearWeight() *PetUpdateOne {
+	puo.mutation.ClearWeight()
 	return puo
 }
 
@@ -994,6 +1048,20 @@ func (puo *PetUpdateOne) SetName(s string) *PetUpdateOne {
 // SetBirthday sets the "birthday" field.
 func (puo *PetUpdateOne) SetBirthday(t time.Time) *PetUpdateOne {
 	puo.mutation.SetBirthday(t)
+	return puo
+}
+
+// SetNillableBirthday sets the "birthday" field if the given value is not nil.
+func (puo *PetUpdateOne) SetNillableBirthday(t *time.Time) *PetUpdateOne {
+	if t != nil {
+		puo.SetBirthday(*t)
+	}
+	return puo
+}
+
+// ClearBirthday clears the value of the "birthday" field.
+func (puo *PetUpdateOne) ClearBirthday() *PetUpdateOne {
+	puo.mutation.ClearBirthday()
 	return puo
 }
 
@@ -1440,6 +1508,12 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Column: pet.FieldWeight,
 		})
 	}
+	if puo.mutation.WeightCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: pet.FieldWeight,
+		})
+	}
 	if value, ok := puo.mutation.Castrated(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -1458,6 +1532,12 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: pet.FieldBirthday,
+		})
+	}
+	if puo.mutation.BirthdayCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: pet.FieldBirthday,
 		})
 	}

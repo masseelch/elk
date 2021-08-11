@@ -21,6 +21,7 @@ func (Pet) Fields() []ent.Field {
 			Positive().
 			Annotations(elk.Groups("pet:read")),
 		field.Float("weight").
+			Optional().
 			Positive().
 			Annotations(elk.Groups("pet:read")),
 		field.Bool("castrated").
@@ -28,6 +29,7 @@ func (Pet) Fields() []ent.Field {
 		field.String("name").
 			Unique(),
 		field.Time("birthday").
+			Optional().
 			Annotations(elk.Groups("pet:read")),
 		field.JSON("nicknames", []string{}).
 			Optional().

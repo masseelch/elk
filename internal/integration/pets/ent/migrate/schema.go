@@ -33,10 +33,10 @@ var (
 	PetsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "height", Type: field.TypeInt},
-		{Name: "weight", Type: field.TypeFloat64},
+		{Name: "weight", Type: field.TypeFloat64, Nullable: true},
 		{Name: "castrated", Type: field.TypeBool},
 		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "birthday", Type: field.TypeTime},
+		{Name: "birthday", Type: field.TypeTime, Nullable: true},
 		{Name: "nicknames", Type: field.TypeJSON, Nullable: true},
 		{Name: "sex", Type: field.TypeEnum, Enums: []string{"male", "female"}},
 		{Name: "chip", Type: field.TypeUUID},

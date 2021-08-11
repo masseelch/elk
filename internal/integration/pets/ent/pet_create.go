@@ -36,6 +36,14 @@ func (pc *PetCreate) SetWeight(f float64) *PetCreate {
 	return pc
 }
 
+// SetNillableWeight sets the "weight" field if the given value is not nil.
+func (pc *PetCreate) SetNillableWeight(f *float64) *PetCreate {
+	if f != nil {
+		pc.SetWeight(*f)
+	}
+	return pc
+}
+
 // SetCastrated sets the "castrated" field.
 func (pc *PetCreate) SetCastrated(b bool) *PetCreate {
 	pc.mutation.SetCastrated(b)
@@ -51,6 +59,14 @@ func (pc *PetCreate) SetName(s string) *PetCreate {
 // SetBirthday sets the "birthday" field.
 func (pc *PetCreate) SetBirthday(t time.Time) *PetCreate {
 	pc.mutation.SetBirthday(t)
+	return pc
+}
+
+// SetNillableBirthday sets the "birthday" field if the given value is not nil.
+func (pc *PetCreate) SetNillableBirthday(t *time.Time) *PetCreate {
+	if t != nil {
+		pc.SetBirthday(*t)
+	}
 	return pc
 }
 
@@ -306,9 +322,6 @@ func (pc *PetCreate) check() error {
 			return &ValidationError{Name: "height", err: fmt.Errorf(`ent: validator failed for field "height": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.Weight(); !ok {
-		return &ValidationError{Name: "weight", err: errors.New(`ent: missing required field "weight"`)}
-	}
 	if v, ok := pc.mutation.Weight(); ok {
 		if err := pet.WeightValidator(v); err != nil {
 			return &ValidationError{Name: "weight", err: fmt.Errorf(`ent: validator failed for field "weight": %w`, err)}
@@ -319,9 +332,6 @@ func (pc *PetCreate) check() error {
 	}
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
-	}
-	if _, ok := pc.mutation.Birthday(); !ok {
-		return &ValidationError{Name: "birthday", err: errors.New(`ent: missing required field "birthday"`)}
 	}
 	if _, ok := pc.mutation.Sex(); !ok {
 		return &ValidationError{Name: "sex", err: errors.New(`ent: missing required field "sex"`)}

@@ -366,16 +366,25 @@ type Pet struct {
 // Fields of the Pet.
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
+		field.Int("age").
+			// Validator will only be called if the request body has a 
+			// non nil value for the field 'age'.
+			Optional().
+			// Works for built-in validators.
+			Positive(),
 		field.String("name").
-			// Works with built-in validators.
+			// Works for built-in validators.
 			MinLen(3).
-			// Works with custom validators.
+			// Works for custom validators.
 			Validate(func(s string) error {
 				if strings.ToLower(s) == s {
 					return errors.New("group name must begin with uppercase")
 				}
 				return nil
 			}),
+		// Enums are validated against the allowed values.
+		field.Enum("color").
+			Values("red", "blue", "green", "yellow"),
 	}
 }
 
@@ -450,5 +459,5 @@ curl 'localhost:8080/pets?page=2&itemsPerPage=1'
 ## Contribution
 
 `elk` is in an early stage of development, we welcome any suggestion or feedback and if you are willing to help I'd be
-very glad. The [issues tab](https://github.com/masseelch/elk/issues) is a wonderful place for you to reach out for
-help, feedback, suggestions and contribution.
+very glad. The [issues tab](https://github.com/masseelch/elk/issues) is a wonderful place for you to reach out for help,
+feedback, suggestions and contribution.

@@ -8,15 +8,32 @@
     {{ if needsValidation $ -}}
         // Validate the data.
         errs := make(map[string]string)
-        {{ range $f := $.Fields -}}
-            {{ if $f.Validators -}}
-                if d.{{ $f.StructField }} != nil {
-                    if err := {{ $.Package }}.{{ $f.Validator }}(*d.{{ $f.StructField }}); err != nil {
-                        errs["{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"] = err.Error()
-                    }
+        {{- range $f := $.Fields }}
+            {{- $checkRequired := and (not $f.Optional) (ne $f.Name $.ID.Name) }}
+            {{- if $checkRequired }}
+                if d.{{ $f.StructField }} == nil {
+                    errs["{{ $f.Name }}"] = `missing required field: "{{ $f.Name }}"`
                 }
-            {{ end -}}
-        {{ end -}}
+            {{- end }}
+            {{- if or $f.Validators $f.IsEnum }}
+                {{- if $checkRequired -}}
+                    else
+               {{- else }}
+                    if d.{{ $f.StructField }} != nil {
+                {{- end }}
+                    if err := {{ $.Package }}.{{ $f.Validator }}({{$f.BasicType (print "*d." $f.StructField) }}); err != nil {
+                        errs["{{ $f.Name }}"] = err.Error()
+                    }
+                 {{- if not $checkRequired}}}{{ end }}
+            {{- end }}
+        {{- end }}
+        {{- range $e := $.Edges }}
+            {{- if not $e.Optional }}
+                if d.{{ $e.StructField }} == nil {
+                    errs["{{ $e.Name }}"] = `missing required edge "{{ $e.Name }}"`
+                }
+            {{- end }}
+        {{- end }}
         if len(errs) > 0 {
             l.Info("validation failed", zapFields(errs)...)
             render.BadRequest(w, r, errs)

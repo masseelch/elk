@@ -106,15 +106,32 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Validate the data.
 	errs := make(map[string]string)
-	if d.Height != nil {
-		if err := pet.HeightValidator(*d.Height); err != nil {
-			errs["height"] = err.Error()
-		}
+	if d.Height == nil {
+		errs["height"] = `missing required field: "height"`
+	} else if err := pet.HeightValidator(*d.Height); err != nil {
+		errs["height"] = err.Error()
 	}
 	if d.Weight != nil {
 		if err := pet.WeightValidator(*d.Weight); err != nil {
 			errs["weight"] = err.Error()
 		}
+	}
+	if d.Castrated == nil {
+		errs["castrated"] = `missing required field: "castrated"`
+	}
+	if d.Name == nil {
+		errs["name"] = `missing required field: "name"`
+	}
+	if d.Sex == nil {
+		errs["sex"] = `missing required field: "sex"`
+	} else if err := pet.SexValidator(*d.Sex); err != nil {
+		errs["sex"] = err.Error()
+	}
+	if d.Chip == nil {
+		errs["chip"] = `missing required field: "chip"`
+	}
+	if d.Badge == nil {
+		errs["badge"] = `missing required edge "badge"`
 	}
 	if len(errs) > 0 {
 		l.Info("validation failed", zapFields(errs)...)
