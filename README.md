@@ -378,7 +378,7 @@ func (Pet) Fields() []ent.Field {
 			// Works for custom validators.
 			Validate(func(s string) error {
 				if strings.ToLower(s) == s {
-					return errors.New("group name must begin with uppercase")
+					return errors.New("name must begin with uppercase")
 				}
 				return nil
 			}),
@@ -440,6 +440,9 @@ curl 'localhost:8080/pets?page=2&itemsPerPage=1'
   }
 ]
 ```
+
+For more information about how to configure `elk` and what it can do have a look at
+the [integration test setup](https://github.com/masseelch/elk/tree/master/internal/integration/pets/ent).
 
 ## Known Issues and Outlook
 
