@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
-	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +18,7 @@ func (h BadgeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
 	err = h.client.Badge.DeleteOneID(id).Exec(r.Context())
@@ -28,15 +27,15 @@ func (h BadgeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			render.NotFound(w, r, msg)
+			NotFound(w, msg)
 		default:
 			l.Error("could-not-delete-badge", zap.Error(err), zap.Int("id", id))
-			render.InternalServerError(w, r, nil)
+			InternalServerError(w, nil)
 		}
 		return
 	}
 	l.Info("badge deleted", zap.Int("id", id))
-	render.NoContent(w)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // Delete removes a ent.Pet from the database.
@@ -46,7 +45,7 @@ func (h PetHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
 	err = h.client.Pet.DeleteOneID(id).Exec(r.Context())
@@ -55,15 +54,15 @@ func (h PetHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			render.NotFound(w, r, msg)
+			NotFound(w, msg)
 		default:
 			l.Error("could-not-delete-pet", zap.Error(err), zap.Int("id", id))
-			render.InternalServerError(w, r, nil)
+			InternalServerError(w, nil)
 		}
 		return
 	}
 	l.Info("pet deleted", zap.Int("id", id))
-	render.NoContent(w)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // Delete removes a ent.PlayGroup from the database.
@@ -73,7 +72,7 @@ func (h PlayGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
 	err = h.client.PlayGroup.DeleteOneID(id).Exec(r.Context())
@@ -82,15 +81,15 @@ func (h PlayGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			render.NotFound(w, r, msg)
+			NotFound(w, msg)
 		default:
 			l.Error("could-not-delete-play-group", zap.Error(err), zap.Int("id", id))
-			render.InternalServerError(w, r, nil)
+			InternalServerError(w, nil)
 		}
 		return
 	}
 	l.Info("play-group deleted", zap.Int("id", id))
-	render.NoContent(w)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // Delete removes a ent.Toy from the database.
@@ -100,7 +99,7 @@ func (h ToyHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
 	err = h.client.Toy.DeleteOneID(id).Exec(r.Context())
@@ -109,13 +108,13 @@ func (h ToyHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			render.NotFound(w, r, msg)
+			NotFound(w, msg)
 		default:
 			l.Error("could-not-delete-toy", zap.Error(err), zap.Int("id", id))
-			render.InternalServerError(w, r, nil)
+			InternalServerError(w, nil)
 		}
 		return
 	}
 	l.Info("toy deleted", zap.Int("id", id))
-	render.NoContent(w)
+	w.WriteHeader(http.StatusNoContent)
 }

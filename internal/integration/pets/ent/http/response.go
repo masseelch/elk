@@ -3,15 +3,77 @@
 package http
 
 import (
-	time "time"
+	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
-	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
+
+	"github.com/mailru/easyjson"
 )
+
+// Basic HTTP Error Response
+type ErrResponse struct {
+	Code   int         `json:"code"`             // http response status code
+	Status string      `json:"status"`           // user-level status message
+	Errors interface{} `json:"errors,omitempty"` // application-level error
+}
+
+func (e ErrResponse) MarshalToHTTPResponseWriter(w http.ResponseWriter) (int, error) {
+	d, err := easyjson.Marshal(e)
+	if err != nil {
+		return 0, err
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-Length", strconv.Itoa(len(d)))
+	w.WriteHeader(e.Code)
+	return w.Write(d)
+}
+
+func BadRequest(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusBadRequest,
+		Status: http.StatusText(http.StatusBadRequest),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
+
+func Forbidden(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusForbidden,
+		Status: http.StatusText(http.StatusForbidden),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
+
+func InternalServerError(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusInternalServerError,
+		Status: http.StatusText(http.StatusInternalServerError),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
+
+func NotFound(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusNotFound,
+		Status: http.StatusText(http.StatusNotFound),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
+
+func Unauthorized(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusUnauthorized,
+		Status: http.StatusText(http.StatusUnauthorized),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
 
 type (
 	Badge2492344257View struct {

@@ -23,7 +23,7 @@
             -}}
 
             l.Info("{{ $n.Name | kebab }} deleted", zap.Int("{{ $n.ID.Name }}", id))
-            render.NoContent(w)
+            w.WriteHeader(http.StatusNoContent)
         }
     {{ end }}
 {{ end }}

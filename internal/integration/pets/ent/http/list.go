@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/mailru/easyjson"
-	"github.com/masseelch/render"
 	"go.uber.org/zap"
 )
 
@@ -22,7 +21,7 @@ func (h *BadgeHandler) List(w http.ResponseWriter, r *http.Request) {
 		page, err = strconv.Atoi(d)
 		if err != nil {
 			l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
-			render.BadRequest(w, r, "page must be an integer greater zero")
+			BadRequest(w, "page must be an integer greater zero")
 			return
 		}
 	}
@@ -31,14 +30,14 @@ func (h *BadgeHandler) List(w http.ResponseWriter, r *http.Request) {
 		itemsPerPage, err = strconv.Atoi(d)
 		if err != nil {
 			l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
-			render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
+			BadRequest(w, "itemsPerPage must be an integer greater zero")
 			return
 		}
 	}
 	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
 	if err != nil {
 		l.Error("error fetching badges from db", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		InternalServerError(w, nil)
 		return
 	}
 	l.Info("badges rendered", zap.Int("amount", len(es)))
@@ -58,7 +57,7 @@ func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 		page, err = strconv.Atoi(d)
 		if err != nil {
 			l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
-			render.BadRequest(w, r, "page must be an integer greater zero")
+			BadRequest(w, "page must be an integer greater zero")
 			return
 		}
 	}
@@ -67,14 +66,14 @@ func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 		itemsPerPage, err = strconv.Atoi(d)
 		if err != nil {
 			l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
-			render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
+			BadRequest(w, "itemsPerPage must be an integer greater zero")
 			return
 		}
 	}
 	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
 	if err != nil {
 		l.Error("error fetching pets from db", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		InternalServerError(w, nil)
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
@@ -92,7 +91,7 @@ func (h *PlayGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 		page, err = strconv.Atoi(d)
 		if err != nil {
 			l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
-			render.BadRequest(w, r, "page must be an integer greater zero")
+			BadRequest(w, "page must be an integer greater zero")
 			return
 		}
 	}
@@ -101,14 +100,14 @@ func (h *PlayGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 		itemsPerPage, err = strconv.Atoi(d)
 		if err != nil {
 			l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
-			render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
+			BadRequest(w, "itemsPerPage must be an integer greater zero")
 			return
 		}
 	}
 	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
 	if err != nil {
 		l.Error("error fetching play-groups from db", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		InternalServerError(w, nil)
 		return
 	}
 	l.Info("play-groups rendered", zap.Int("amount", len(es)))
@@ -126,7 +125,7 @@ func (h *ToyHandler) List(w http.ResponseWriter, r *http.Request) {
 		page, err = strconv.Atoi(d)
 		if err != nil {
 			l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
-			render.BadRequest(w, r, "page must be an integer greater zero")
+			BadRequest(w, "page must be an integer greater zero")
 			return
 		}
 	}
@@ -135,14 +134,14 @@ func (h *ToyHandler) List(w http.ResponseWriter, r *http.Request) {
 		itemsPerPage, err = strconv.Atoi(d)
 		if err != nil {
 			l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
-			render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
+			BadRequest(w, "itemsPerPage must be an integer greater zero")
 			return
 		}
 	}
 	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
 	if err != nil {
 		l.Error("error fetching toys from db", zap.Error(err))
-		render.InternalServerError(w, r, nil)
+		InternalServerError(w, nil)
 		return
 	}
 	l.Info("toys rendered", zap.Int("amount", len(es)))

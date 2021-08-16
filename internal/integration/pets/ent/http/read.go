@@ -9,11 +9,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
-	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
-	"github.com/masseelch/render"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
 	"go.uber.org/zap"
 )
 
@@ -25,7 +24,7 @@ func (h *BadgeHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
 	// Create the query to fetch the Badge
@@ -36,14 +35,14 @@ func (h *BadgeHandler) Read(w http.ResponseWriter, r *http.Request) {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			render.NotFound(w, r, msg)
+			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
 			l.Error(msg, zap.Error(err), zap.Int("id", id))
-			render.BadRequest(w, r, msg)
+			BadRequest(w, msg)
 		default:
 			l.Error("could not read badge", zap.Error(err), zap.Int("id", id))
-			render.InternalServerError(w, r, nil)
+			InternalServerError(w, nil)
 		}
 		return
 	}
@@ -59,7 +58,7 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
 	// Create the query to fetch the Pet
@@ -1116,14 +1115,14 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			render.NotFound(w, r, msg)
+			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
 			l.Error(msg, zap.Error(err), zap.Int("id", id))
-			render.BadRequest(w, r, msg)
+			BadRequest(w, msg)
 		default:
 			l.Error("could not read pet", zap.Error(err), zap.Int("id", id))
-			render.InternalServerError(w, r, nil)
+			InternalServerError(w, nil)
 		}
 		return
 	}
@@ -1139,7 +1138,7 @@ func (h *PlayGroupHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
 	// Create the query to fetch the PlayGroup
@@ -1150,14 +1149,14 @@ func (h *PlayGroupHandler) Read(w http.ResponseWriter, r *http.Request) {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			render.NotFound(w, r, msg)
+			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
 			l.Error(msg, zap.Error(err), zap.Int("id", id))
-			render.BadRequest(w, r, msg)
+			BadRequest(w, msg)
 		default:
 			l.Error("could not read play-group", zap.Error(err), zap.Int("id", id))
-			render.InternalServerError(w, r, nil)
+			InternalServerError(w, nil)
 		}
 		return
 	}
@@ -1173,7 +1172,7 @@ func (h *ToyHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		render.BadRequest(w, r, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
 	// Create the query to fetch the Toy
@@ -1184,14 +1183,14 @@ func (h *ToyHandler) Read(w http.ResponseWriter, r *http.Request) {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			render.NotFound(w, r, msg)
+			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
 			l.Error(msg, zap.Error(err), zap.Int("id", id))
-			render.BadRequest(w, r, msg)
+			BadRequest(w, msg)
 		default:
 			l.Error("could not read toy", zap.Error(err), zap.Int("id", id))
-			render.InternalServerError(w, r, nil)
+			InternalServerError(w, nil)
 		}
 		return
 	}

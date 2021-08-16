@@ -2,7 +2,7 @@
     {{/* gotype: entgo.io/ent/entc/gen.Type */}}
     if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
         l.Error("error decoding json", zap.Error(err))
-        render.BadRequest(w, r, "invalid json string")
+        BadRequest(w, "invalid json string")
         return
     }
     {{ if needsValidation $ -}}
@@ -36,7 +36,7 @@
         {{- end }}
         if len(errs) > 0 {
             l.Info("validation failed", zapFields(errs)...)
-            render.BadRequest(w, r, errs)
+            BadRequest(w, errs)
             return
         }
     {{ end -}}
@@ -48,7 +48,7 @@
         id, err := strconv.Atoi(chi.URLParam(r, "id"))
         if err != nil {
             l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-            render.BadRequest(w, r, "id must be an integer greater zero")
+            BadRequest(w, "id must be an integer greater zero")
             return
         }
     {{ else }}
@@ -64,19 +64,19 @@
                 case ent.IsNotFound(err):
                     msg := stripEntError(err)
                     l.Info(msg, zap.Error(err){{ range $.Logs }}, {{ . }}{{ end }})
-                    render.NotFound(w, r, msg)
+                    NotFound(w, msg)
             {{- else if eq $err "not-singular" }}
                 case ent.IsNotSingular(err):
                     msg := stripEntError(err)
                     l.Error(msg, zap.Error(err){{ range $.Logs }}, {{ . }}{{ end }})
-                    render.BadRequest(w, r, msg)
+                    BadRequest(w, msg)
             {{- else if eq $err "privacy" }}
                 // Privacy case
             {{- end }}
         {{- end }}
         default:
             l.Error("{{ $.Default }}", zap.Error(err){{ range $.Logs }}, {{ . }}{{ end }})
-            render.InternalServerError(w, r, nil)
+            InternalServerError(w, nil)
         }
         return
     }
@@ -89,7 +89,7 @@
         page, err = strconv.Atoi(d)
         if err != nil {
             l.Info("error parsing query parameter 'page'", zap.String("page", d), zap.Error(err))
-            render.BadRequest(w, r, "page must be an integer greater zero")
+            BadRequest(w, "page must be an integer greater zero")
             return
         }
     }
@@ -98,14 +98,14 @@
         itemsPerPage, err = strconv.Atoi(d)
         if err != nil {
             l.Info("error parsing query parameter 'itemsPerPage'", zap.String("itemsPerPage", d), zap.Error(err))
-            render.BadRequest(w, r, "itemsPerPage must be an integer greater zero")
+            BadRequest(w, "itemsPerPage must be an integer greater zero")
             return
         }
     }
     es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
     if err != nil {
         l.Error("error fetching {{ $.Name | kebab | plural}} from db", zap.Error(err))
-        render.InternalServerError(w, r, nil)
+        InternalServerError(w, nil)
         return
     }
 {{ end }}

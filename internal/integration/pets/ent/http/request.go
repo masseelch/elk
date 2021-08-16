@@ -3,13 +3,13 @@
 package http
 
 import (
-	time "time"
+	"time"
 
 	"github.com/google/uuid"
-	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
+	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	"github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
 )
 
 // Payload of a ent.Badge create request.

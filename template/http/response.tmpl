@@ -5,6 +5,34 @@
     {{ end }}
     {{ template "helper/http/import" $ }}
 
+    // Basic HTTP Error Response
+    type ErrResponse struct {
+        Code   int         `json:"code"`             // http response status code
+        Status string      `json:"status"`           // user-level status message
+        Errors interface{} `json:"errors,omitempty"` // application-level error
+    }
+
+    func (e ErrResponse) MarshalToHTTPResponseWriter(w http.ResponseWriter) (int, error) {
+        d, err := easyjson.Marshal(e)
+        if err != nil {
+            return 0, err
+        }
+        w.Header().Set("Content-Type", "application/json; charset=utf-8")
+        w.Header().Set("Content-Length", strconv.Itoa(len(d)))
+        w.WriteHeader(e.Code)
+        return w.Write(d)
+    }
+
+    {{ range (list "BadRequest" "Forbidden" "InternalServerError" "NotFound" "Unauthorized") }}
+        func {{ . }}(w http.ResponseWriter, msg interface{}) (int, error) {
+            return ErrResponse{
+                Code: http.Status{{ . }},
+                Status: http.StatusText(http.Status{{ . }}),
+                Errors: msg,
+            }.MarshalToHTTPResponseWriter(w)
+        }
+    {{ end }}
+
     {{- range $n, $v := responseViews $ }}
         type (
             {{ $n }} struct {

@@ -66,7 +66,7 @@ package ent
    setting up `elk`:
 
 ```shell
-go get github.com/mailru/easyjson github.com/masseelch/render github.com/go-chi/chi/v5 go.uber.org/zap
+go get github.com/mailru/easyjson github.com/go-chi/chi/v5 go.uber.org/zap
 ```
 
 4. Run the code generator:

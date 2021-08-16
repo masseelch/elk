@@ -50,6 +50,8 @@ func GenerateEasyJSON(c EasyJsonConfig) gen.Hook {
 					n.Name+"UpdateRequest",
 				)
 			}
+			// Add the ErrResponse.
+			ns = append(ns, "ErrResponse")
 
 			// Run the easyjson generator.
 			return (&bootstrap.Generator{

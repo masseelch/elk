@@ -2650,7 +2650,89 @@ func (v Pet1954225839View) MarshalEasyJSON(w *jwriter.Writer) {
 func (v *Pet1954225839View) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp15(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(in *jlexer.Lexer, out *BadgeUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(in *jlexer.Lexer, out *ErrResponse) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "code":
+			out.Code = int(in.Int())
+		case "status":
+			out.Status = string(in.String())
+		case "errors":
+			if m, ok := out.Errors.(easyjson.Unmarshaler); ok {
+				m.UnmarshalEasyJSON(in)
+			} else if m, ok := out.Errors.(json.Unmarshaler); ok {
+				_ = m.UnmarshalJSON(in.Raw())
+			} else {
+				out.Errors = in.Interface()
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(out *jwriter.Writer, in ErrResponse) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"code\":"
+		out.RawString(prefix[1:])
+		out.Int(int(in.Code))
+	}
+	{
+		const prefix string = ",\"status\":"
+		out.RawString(prefix)
+		out.String(string(in.Status))
+	}
+	if in.Errors != nil {
+		const prefix string = ",\"errors\":"
+		out.RawString(prefix)
+		if m, ok := in.Errors.(easyjson.Marshaler); ok {
+			m.MarshalEasyJSON(out)
+		} else if m, ok := in.Errors.(json.Marshaler); ok {
+			out.Raw(m.MarshalJSON())
+		} else {
+			out.Raw(json.Marshal(in.Errors))
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ErrResponse) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ErrResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(in *jlexer.Lexer, out *BadgeUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2713,7 +2795,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(out *jwriter.Writer, in BadgeUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(out *jwriter.Writer, in BadgeUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2749,14 +2831,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v BadgeUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BadgeUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp16(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(in *jlexer.Lexer, out *BadgeCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(in *jlexer.Lexer, out *BadgeCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2819,7 +2901,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(out *jwriter.Writer, in BadgeCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(out *jwriter.Writer, in BadgeCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2855,14 +2937,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v BadgeCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BadgeCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp17(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(in *jlexer.Lexer, out *Badge2492344257Views) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(in *jlexer.Lexer, out *Badge2492344257Views) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -2898,7 +2980,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(out *jwriter.Writer, in Badge2492344257Views) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(out *jwriter.Writer, in Badge2492344257Views) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
@@ -2919,14 +3001,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Badge2492344257Views) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Badge2492344257Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp18(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(in *jlexer.Lexer, out *Badge2492344257View) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20(in *jlexer.Lexer, out *Badge2492344257View) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2965,7 +3047,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(out *jwriter.Writer, in Badge2492344257View) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20(out *jwriter.Writer, in Badge2492344257View) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -3000,10 +3082,10 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Badge2492344257View) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Badge2492344257View) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp19(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalIntegrationPetsEntHttp20(l, v)
 }
