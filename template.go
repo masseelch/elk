@@ -42,6 +42,7 @@ var (
 		"needsValidation": needsValidation,
 		"responseView":    responseView,
 		"responseViews":   responseViews,
+		"stringSlice":     stringSlice,
 		"xextend":         xextend,
 	}
 )
@@ -244,6 +245,17 @@ func contains(haystack []groups, needle groups) bool {
 		}
 	}
 	return false
+}
+
+func stringSlice(src []interface{}) []string {
+	if len(src) == 0 {
+		return nil
+	}
+	dst := make([]string, len(src))
+	for i, v := range src {
+		dst[i] = v.(string)
+	}
+	return dst
 }
 
 // graphScope wraps the Graph object with extended scope.

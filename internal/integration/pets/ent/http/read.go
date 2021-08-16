@@ -1128,7 +1128,7 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPet340207500View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPet1954225839View(e), w)
 }
 
 // Read fetches the ent.PlayGroup identified by a given url-parameter from the

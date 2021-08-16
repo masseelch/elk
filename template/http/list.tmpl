@@ -21,7 +21,7 @@
             {{- template "helper/http/pagination" $n -}}
 
             l.Info("{{ $n.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
-            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n $n.Annotations.Elk.ListGroups).ViewName }}s(es), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n ($n.Annotations.ElkSchema.ListGroups | stringSlice)).ViewName }}s(es), w)
         }
     {{ end }}
 {{ end }}

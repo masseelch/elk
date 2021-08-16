@@ -1240,7 +1240,7 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet340207500View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPet1954225839View(e), w)
 }
 
 // Create creates a new ent.PlayGroup and stores it in the database.

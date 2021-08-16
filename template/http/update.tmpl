@@ -62,7 +62,7 @@
             -}}
 
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
-            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n $n.Annotations.Elk.UpdateGroups).ViewName }}(e), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n ($n.Annotations.Elk.UpdateGroups | stringSlice)).ViewName }}(e), w)
         }
     {{ end }}
 {{ end }}
