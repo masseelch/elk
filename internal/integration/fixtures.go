@@ -29,13 +29,11 @@ type fixtureFn func(ctx context.Context, refs refs, c *ent.Client) error
 
 func fixtures(ctx context.Context, c *ent.Client) error {
 	refs := make(refs)
-
 	for _, fn := range []fixtureFn{playGroups, pets, toys} {
 		if err := fn(ctx, refs, c); err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
 

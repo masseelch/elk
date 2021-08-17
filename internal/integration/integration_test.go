@@ -9,8 +9,6 @@ import (
 	"github.com/masseelch/elk/internal/integration/pets/ent"
 	"github.com/masseelch/elk/internal/integration/pets/ent/enttest"
 	elkhttp "github.com/masseelch/elk/internal/integration/pets/ent/http"
-	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
-	"github.com/masseelch/render"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -18,36 +16,220 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
-type test struct {
-	// name of the test
-	name string
-	// request to send
-	req *http.Request
-	// expected status
-	status int
-	// expected body
-	body []byte
-	// expected outputs to logging
-	logs []map[string]interface{}
-	// func to run before the request gets sent.
-	preFn func(tt *test) interface{}
-	// additional test logic on response body. result of preFn (if any) is passed as last arg.
-	checkFn func(t *testing.T, tt *test, b []byte, r interface{})
+func TestElk(t *testing.T) {
+	var tts []*test
+	tts = append(tts, testInvalidJson(t)...)
+	tts = append(tts, testMalformedId(t)...)
+	tts = append(tts, testNotFound(t)...)
+	tts = append(tts, testMount()...)
+	for _, tt := range tts {
+		t.Run(tt.name, func(t *testing.T) {
+			_, l, r, rec := setup(t)
+			req, d := tt.req(t, tt)
+			r.ServeHTTP(rec, req)
+			tt.check(t, tt, rec, l, d)
+		})
+	}
 }
 
-func TestHttp(t *testing.T) {
-	c := enttest.Open(t, dialect.SQLite, "file:ent?mode=memory&cache=shared&_fk=1", enttest.WithOptions(ent.Log(t.Log)))
-	defer c.Close()
+func testInvalidJson(t *testing.T) []*test {
+	name := prefixNameFn("invalid json _ ")
+	body := []byte("invalid")
+	check := defaultCheckFn(http.StatusBadRequest, mustEncode(t, elkhttp.ErrResponse{
+		Code:   http.StatusBadRequest,
+		Status: http.StatusText(http.StatusBadRequest),
+		Errors: "invalid json string",
+	}), nil)
+	return []*test{
+		{
+			name:  name("create"),
+			req:   defaultReqFn(http.MethodPost, "/pets", body, nil),
+			check: check,
+		}, {
+			name:  name("update"),
+			req:   defaultReqFn(http.MethodPatch, "/pets/1", body, nil),
+			check: check,
+		},
+	} // TODO: logs
+}
 
-	// Load test data.
+func testMalformedId(t *testing.T) []*test {
+	const path = "/pets/invalid"
+	name := prefixNameFn("malformed id _ ")
+	check := defaultCheckFn(http.StatusBadRequest, mustEncode(t, elkhttp.ErrResponse{
+		Code:   http.StatusBadRequest,
+		Status: http.StatusText(http.StatusBadRequest),
+		Errors: "id must be an integer greater zero",
+	}), nil)
+	return []*test{
+		{
+			name:  name("read"),
+			req:   defaultReqFn(http.MethodGet, path, nil, nil),
+			check: check,
+		}, {
+			name:  name("update"),
+			req:   defaultReqFn(http.MethodPatch, path, nil, nil),
+			check: check,
+		}, {
+			name:  name("delete"),
+			req:   defaultReqFn(http.MethodDelete, path, nil, nil),
+			check: check,
+		},
+	} // TODO: logs
+}
+
+func testNotFound(t *testing.T) []*test {
+	const path = "/toys/10000"
+	name := prefixNameFn("not found _ ")
+	check := defaultCheckFn(http.StatusNotFound, mustEncode(t, elkhttp.ErrResponse{
+		Code:   http.StatusNotFound,
+		Status: http.StatusText(http.StatusNotFound),
+		Errors: "toy not found",
+	}), nil)
+	return []*test{
+		{
+			name:  name("read"),
+			req:   defaultReqFn(http.MethodGet, path, nil, nil),
+			check: check,
+		}, {
+			name:  name("update"),
+			req:   defaultReqFn(http.MethodPatch, path, mustEncode(t, map[string]interface{}{}), nil),
+			check: check,
+		}, {
+			name:  name("delete"),
+			req:   defaultReqFn(http.MethodDelete, path, nil, nil),
+			check: check,
+		}, // TODO: sub-resources
+	} // TODO: logs
+}
+
+func testMount() []*test {
+	name := prefixNameFn("mount _ ")
+	check := func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, logs *bytes.Buffer, d interface{}) {
+		require.NotEqual(t, http.StatusNotFound, rec.Result().StatusCode)
+		// TODO: logs
+	}
+	return []*test{
+		{
+			name:  name("registered create"),
+			req:   defaultReqFn(http.MethodGet, "/pets", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered read"),
+			req:   defaultReqFn(http.MethodGet, "/pets/1", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered update"),
+			req:   defaultReqFn(http.MethodPatch, "/pets/1", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered delete"),
+			req:   defaultReqFn(http.MethodDelete, "/pets/1", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered list"),
+			req:   defaultReqFn(http.MethodGet, "/pets", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered badge-read"),
+			req:   defaultReqFn(http.MethodGet, "/pets/badge", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered mentor-read"),
+			req:   defaultReqFn(http.MethodGet, "/pets/mentor", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered spouse-read"),
+			req:   defaultReqFn(http.MethodGet, "/pets/spouse", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered toys list"),
+			req:   defaultReqFn(http.MethodGet, "/pets/toys", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered children list"),
+			req:   defaultReqFn(http.MethodGet, "/pets/children", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered play-groups list"),
+			req:   defaultReqFn(http.MethodGet, "/pets/play-groups", nil, nil),
+			check: check,
+		},
+		{
+			name:  name("registered friends list"),
+			req:   defaultReqFn(http.MethodGet, "/pets/friends", nil, nil),
+			check: check,
+		},
+	}
+}
+
+type (
+	// reqFn returns the request to send and some data to pass to the checkFn.
+	reqFn func(*testing.T, *test) (*http.Request, interface{})
+	// checkFn is the signature of the func to run for a test.
+	checkFn func(*testing.T, *test, *httptest.ResponseRecorder, *bytes.Buffer, interface{})
+	// test describes one test to execute. Every test has its own database.
+	test struct {
+		// name of the test
+		name  string
+		req   reqFn
+		check checkFn
+	}
+)
+
+// defaultCheckFn returns a postFn to simply test a responses status-code, body-bytes and logs.
+func defaultCheckFn(status int, body []byte, logs []map[string]interface{}) checkFn {
+	return func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, l *bytes.Buffer, d interface{}) {
+		rsp := rec.Result()
+		b := bodyBytes(t, rsp)
+		// expected status code
+		require.Equalf(t, status, rsp.StatusCode, "expected: %s\nactual  : %s\nlogs    :%s", body, b, l)
+		// expected body
+		if body != nil {
+			require.Equalf(t, body, b, "expected: %s\nactual  : %s\nlogs    :%s", body, b, l)
+		}
+		// If logs are given check that they indeed are present in the correct order
+		if logs != nil { // TODO: Improve log check
+			// Read logs line by line.
+			for i, s := range bytes.Split(bytes.TrimSpace(l.Bytes()), []byte("\n")) {
+				var j map[string]interface{}
+				require.NoError(t, json.Unmarshal(s, &j))
+				for k, e := range logs[i] {
+					v, ok := j[k]
+					require.True(t, ok, "log entry not existing: %s: %v", k, e)
+					require.EqualValues(t, e, v)
+				}
+			}
+		}
+	}
+}
+
+// defaultReqFn returns a reqFn to create a very basic http.Request.
+func defaultReqFn(method, path string, body []byte, d interface{}) reqFn {
+	return func(t *testing.T, tt *test) (*http.Request, interface{}) {
+		return httptest.NewRequest(method, path, bytes.NewReader(body)), d
+	}
+}
+
+func setup(t *testing.T) (*ent.Client, *bytes.Buffer, chi.Router, *httptest.ResponseRecorder) {
+	// ent client
+	c := enttest.Open(t, dialect.SQLite, ":memory:?_fk=1", enttest.WithOptions(ent.Log(t.Log)))
 	require.NoError(t, fixtures(context.Background(), c))
-
-	// Logger
 	logs := new(bytes.Buffer)
+	// logging
 	l := zap.New(zapcore.NewCore(
 		zapcore.NewJSONEncoder(
 			zapcore.EncoderConfig{
@@ -62,549 +244,18 @@ func TestHttp(t *testing.T) {
 		zapcore.AddSync(logs),
 		zap.DebugLevel,
 	))
-	defer l.Sync()
-
-	// Needed to test url param fetching
+	// handlers
 	r := chi.NewRouter()
-
-	// Register pet endpoints.
 	r.Route("/pets", func(r chi.Router) {
 		elkhttp.NewPetHandler(c, l).Mount(r, elkhttp.PetRoutes)
 	})
-
-	// Create the tests.
-	tests := []test{
-		{
-			name:   "create _ invalid json",
-			req:    httptest.NewRequest(http.MethodPost, "/pets", strings.NewReader("invalid")),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "invalid json string")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "error",
-					"msg":     "error decoding json",
-					"handler": "PetHandler",
-					"method":  "Create",
-				},
-			},
-		},
-		{
-			name:   "create _ failed validation",
-			req:    httptest.NewRequest(http.MethodPost, "/pets", bytes.NewReader(mustEncode(t, map[string]interface{}{"weight": -1, "height": 0}))),
-			status: http.StatusBadRequest,
-			body: mustEncode(t, render.NewResponse(http.StatusBadRequest, map[string]interface{}{
-				"weight": "value out of range",
-				"height": "value out of range",
-			})),
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "validation failed",
-					"handler": "PetHandler",
-					"method":  "Create",
-					"height":  "value out of range",
-					"weight":  "value out of range",
-				},
-			},
-		},
-		// { // TODO: func to create request since we dont know the next badge id.
-		// 	name: "create _ ok",
-		// 	req: httptest.NewRequest(http.MethodPost, "/pets", bytes.NewReader(mustEncode(t, map[string]interface{}{
-		// 		"name":  "my new pet",
-		// 		"owner": 1,
-		// 	}))),
-		// 	status: http.StatusOK,
-		// 	checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-		// 		p, err := c.Pet.Query().Order(ent.Desc(pet.FieldID)).First(context.Background())
-		// 		require.NoError(t, err)
-		// 		var j map[string]interface{}
-		// 		require.NoError(t, json.Unmarshal(b, &j))
-		// 		require.EqualValues(t, p.ID, j["id"])
-		// 		require.Equal(t, p.Age, 1)
-		// 		require.Equal(t, p.Name, "my new pet")
-		// 	},
-		// 	logs: []map[string]interface{}{
-		// 		{
-		// 			"level":   "info",
-		// 			"msg":     "pet rendered",
-		// 			"handler": "PetHandler",
-		// 			"method":  "Create",
-		// 			"id":      51,
-		// 		},
-		// 	},
-		// },
-		{
-			name:   "read _ malformed id",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/invalid", nil),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "id must be an integer greater zero")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "error",
-					"msg":     "error getting id from url parameter",
-					"handler": "PetHandler",
-					"method":  "Read",
-					"id":      "invalid",
-				},
-			},
-		},
-		{
-			name:   "read _ not found",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/10000", nil),
-			status: http.StatusNotFound,
-			body:   mustEncode(t, render.NewResponse(http.StatusNotFound, "pet not found")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pet not found",
-					"handler": "PetHandler",
-					"method":  "Read",
-					"id":      10000,
-				},
-			},
-		},
-		{
-			name:   "read _ ok",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/1", nil),
-			status: http.StatusOK,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				var j map[string]interface{}
-				require.NoError(t, json.Unmarshal(b, &j))
-
-				require.Contains(t, j, "id")
-				require.Contains(t, j, "height")
-				require.Contains(t, j, "weight")
-				require.Contains(t, j, "castrated")
-				require.Contains(t, j, "name")
-				require.Contains(t, j, "birthday")
-				require.Contains(t, j, "nicknames")
-				require.Contains(t, j, "sex")
-				require.Contains(t, j, "chip")
-				require.Contains(t, j, "badge")
-				require.Contains(t, j["badge"], "id")
-				require.Contains(t, j, "mentor")
-				require.Contains(t, j["mentor"], "id")
-				require.Contains(t, j, "spouse")
-				require.Contains(t, j["spouse"], "id")
-				require.Contains(t, j, "toys")
-				require.Contains(t, j["toys"], "id")
-				require.Contains(t, j, "children")
-				require.Contains(t, j["children"], "id")
-				require.Contains(t, j, "play_groups")
-				require.Contains(t, j["play_groups"], "id")
-				require.Contains(t, j, "friends")
-				require.Contains(t, j["friends"], "id")
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pet rendered",
-					"handler": "PetHandler",
-					"method":  "Read",
-					"id":      1,
-				},
-			},
-		},
-		{
-			name:   "update _ malformed id",
-			req:    httptest.NewRequest(http.MethodPatch, "/pets/invalid", nil),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "id must be an integer greater zero")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "error",
-					"msg":     "error getting id from url parameter",
-					"handler": "PetHandler",
-					"method":  "Update",
-					"id":      "invalid",
-				},
-			},
-		},
-		{
-			name:   "update _ invalid json",
-			req:    httptest.NewRequest(http.MethodPatch, "/pets/1", strings.NewReader("invalid")),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "invalid json string")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "error",
-					"msg":     "error decoding json",
-					"handler": "PetHandler",
-					"method":  "Update",
-				},
-			},
-		},
-		{
-			name:   "update _ failed validation",
-			req:    httptest.NewRequest(http.MethodPatch, "/pets/1000", bytes.NewReader(mustEncode(t, map[string]interface{}{"age": 0}))),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, map[string]interface{}{"age": "This value failed validation on 'gt:0'."})),
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "validation failed",
-					"handler": "PetHandler",
-					"method":  "Update",
-				},
-			},
-		},
-		{
-			name: "update _ not found",
-			req: httptest.NewRequest(http.MethodPatch, "/pets/1000", bytes.NewReader(mustEncode(t, map[string]interface{}{
-				"age":  1,
-				"name": "this is my new name",
-			}))),
-			status: http.StatusNotFound,
-			body:   mustEncode(t, render.NewResponse(http.StatusNotFound, "pet not found")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pet not found",
-					"handler": "PetHandler",
-					"method":  "Update",
-					"id":      1000,
-				},
-			},
-		},
-		{
-			name: "update _ ok",
-			req: httptest.NewRequest(http.MethodPatch, "/pets/1", bytes.NewReader(mustEncode(t, map[string]interface{}{
-				"height": 1000,
-				"name":   "this is my new name",
-			}))),
-			status: http.StatusOK,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				p, err := c.Pet.Get(context.Background(), 1)
-				require.NoError(t, err)
-				var j map[string]interface{}
-				require.NoError(t, json.Unmarshal(b, &j))
-				require.EqualValues(t, p.ID, j["id"])
-				require.EqualValues(t, p.Height, 1000)
-				require.Equal(t, p.Name, "this is my new name")
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pet rendered",
-					"handler": "PetHandler",
-					"method":  "Update",
-					"id":      1,
-				},
-			},
-		},
-		{
-			name:   "delete _ malformed id",
-			req:    httptest.NewRequest(http.MethodDelete, "/pets/invalid", nil),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "id must be an integer greater zero")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "error",
-					"msg":     "error getting id from url parameter",
-					"handler": "PetHandler",
-					"method":  "Delete",
-					"id":      "invalid",
-				},
-			},
-		},
-		{
-			name:   "delete _ not found",
-			req:    httptest.NewRequest(http.MethodDelete, "/pets/1000", nil),
-			status: http.StatusNotFound,
-			body:   mustEncode(t, render.NewResponse(http.StatusNotFound, "pet not found")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pet not found",
-					"handler": "PetHandler",
-					"method":  "Delete",
-					"id":      1000,
-				},
-			},
-		},
-		{
-			name:   "delete _ ok",
-			req:    httptest.NewRequest(http.MethodDelete, "/pets/50", nil),
-			status: http.StatusNoContent,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				_, err := c.Pet.Get(context.Background(), 50)
-				require.EqualError(t, err, "ent: pet not found")
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pet deleted",
-					"handler": "PetHandler",
-					"method":  "Delete",
-					"id":      50,
-				},
-			},
-		},
-		{
-			name:   "list _ malformed page",
-			req:    httptest.NewRequest(http.MethodGet, "/pets?page=invalid", nil),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "page must be an integer greater zero")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "error parsing query parameter 'page'",
-					"handler": "PetHandler",
-					"method":  "List",
-					"page":    "invalid",
-				},
-			},
-		},
-		{
-			name:   "list _ malformed itemsPerPage",
-			req:    httptest.NewRequest(http.MethodGet, "/pets?itemsPerPage=invalid", nil),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "itemsPerPage must be an integer greater zero")),
-			logs: []map[string]interface{}{
-				{
-					"level":        "info",
-					"msg":          "error parsing query parameter 'itemsPerPage'",
-					"handler":      "PetHandler",
-					"method":       "List",
-					"itemsPerPage": "invalid",
-				},
-			},
-		},
-		{
-			name:   "list _ ok",
-			req:    httptest.NewRequest(http.MethodGet, "/pets", nil),
-			status: http.StatusOK,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				var j []ent.Pet
-				require.NoError(t, json.Unmarshal(b, &j))
-				require.Len(t, j, 30)
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pets rendered",
-					"handler": "PetHandler",
-					"method":  "List",
-					"amount":  30,
-				},
-			},
-		},
-		{
-			name:   "list _ custom page and itemsPerPage ok",
-			req:    httptest.NewRequest(http.MethodGet, "/pets?page=2&itemsPerPage=2", nil),
-			status: http.StatusOK,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				var j []ent.Pet
-				require.NoError(t, json.Unmarshal(b, &j))
-				require.Len(t, j, 2)
-				require.Equal(t, 3, j[0].ID) // default order is ascending id
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pets rendered",
-					"handler": "PetHandler",
-					"method":  "List",
-					"amount":  2,
-				},
-			},
-		},
-		{
-			name:   "relation _ unique _ malformed id",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/invalid/owner", nil),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "id must be an integer greater zero")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "error",
-					"msg":     "error getting id from url parameter",
-					"handler": "PetHandler",
-					"method":  "Owner",
-					"id":      "invalid",
-				},
-			},
-		},
-		{
-			name:   "relation _ unique _ not found",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/10000/owner", nil),
-			status: http.StatusNotFound,
-			body:   mustEncode(t, render.NewResponse(http.StatusNotFound, "owner not found")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "owner not found",
-					"handler": "PetHandler",
-					"method":  "Owner",
-					"id":      10000,
-				},
-			},
-		},
-		{
-			name:   "relation _ unique _ ok",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/1/owner", nil),
-			status: http.StatusOK,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				e, err := c.Pet.Query().Where(pet.ID(1)).QuerySpouse().Only(context.Background())
-				require.NoError(t, err)
-
-				var a ent.Pet
-				require.NoError(t, json.Unmarshal(b, &a))
-
-				require.Equal(t, e.ID, a.ID)
-				require.Equal(t, e.Name, a.Name)
-				require.Equal(t, e.Sex, a.Sex)
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "owner rendered",
-					"handler": "PetHandler",
-					"method":  "Owner",
-				},
-			},
-		},
-		{
-			name:   "relation _ many _ malformed page",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/1/friends?page=invalid", nil),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "page must be an integer greater zero")),
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "error parsing query parameter 'page'",
-					"handler": "PetHandler",
-					"method":  "Friends",
-					"page":    "invalid",
-				},
-			},
-		},
-		{
-			name:   "relation _ many _ malformed itemsPerPage",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/1/friends?itemsPerPage=invalid", nil),
-			status: http.StatusBadRequest,
-			body:   mustEncode(t, render.NewResponse(http.StatusBadRequest, "itemsPerPage must be an integer greater zero")),
-			logs: []map[string]interface{}{
-				{
-					"level":        "info",
-					"msg":          "error parsing query parameter 'itemsPerPage'",
-					"handler":      "PetHandler",
-					"method":       "Friends",
-					"itemsPerPage": "invalid",
-				},
-			},
-		},
-		{
-			name:   "relation _ many _ ok 1",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/1/friends", nil),
-			status: http.StatusOK,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				a, err := c.Pet.Query().Where(pet.ID(1)).QueryFriends().All(context.Background())
-				require.NoError(t, err)
-
-				var j []*ent.Pet
-				require.NoError(t, json.Unmarshal(b, &j))
-
-				for i := range a {
-					require.Equal(t, a[i].ID, j[i].ID)
-				}
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pets rendered",
-					"handler": "PetHandler",
-					"method":  "Friends",
-				},
-			},
-		},
-		{
-			name:   "relation _ many _ ok 2",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/2/friends", nil),
-			status: http.StatusOK,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				a, err := c.Pet.Query().Where(pet.ID(2)).QueryFriends().All(context.Background())
-				require.NoError(t, err)
-
-				var j []*ent.Pet
-				require.NoError(t, json.Unmarshal(b, &j))
-
-				for i := range a {
-					require.Equal(t, a[i].ID, j[i].ID)
-				}
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pets rendered",
-					"handler": "PetHandler",
-					"method":  "Friends",
-				},
-			},
-		},
-		{
-			name:   "relation _ many _ custom page and itemsPerPage ok",
-			req:    httptest.NewRequest(http.MethodGet, "/pets/4/friends?page=1&itemsPerPage=1", nil),
-			status: http.StatusOK,
-			checkFn: func(t *testing.T, tt *test, b []byte, r interface{}) {
-				a, err := c.Pet.Query().Where(pet.ID(4)).QueryFriends().First(context.Background())
-				require.NoError(t, err)
-
-				var j []*ent.Pet
-				require.NoError(t, json.Unmarshal(b, &j))
-				require.Len(t, j, 1)
-				require.EqualValues(t, a.ID, j[0].ID)
-			},
-			logs: []map[string]interface{}{
-				{
-					"level":   "info",
-					"msg":     "pets rendered",
-					"handler": "PetHandler",
-					"method":  "Friends",
-					"amount":  1,
-				},
-			},
-		},
-		// TODO: Test sheriff
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			logs.Reset()
-			rec := httptest.NewRecorder()
-			// If a func to run before is given execute it and collect the result.
-			var preFnR interface{}
-			if tt.preFn != nil {
-				preFnR = tt.preFn(&tt)
-			}
-			r.ServeHTTP(rec, tt.req)
-			rsp := rec.Result()
-			// expected status code
-			require.Equal(t, tt.status, rsp.StatusCode, logs)
-			b, err := io.ReadAll(rsp.Body)
-			require.NoError(t, err)
-			// expected body
-			if tt.body != nil {
-				require.Equalf(t, tt.body, b, "expected: %s\nactual  : %s\nlogs    :%s", tt.body, b, logs)
-			}
-			// if a func to run on response is given run it.
-			if tt.checkFn != nil {
-				tt.checkFn(t, &tt, b, preFnR)
-			}
-			// If logs are given check that they indeed are present in the correct order
-			if tt.logs != nil {
-				// Read logs line by line.
-				for i, s := range bytes.Split(bytes.TrimSpace(logs.Bytes()), []byte("\n")) {
-					var j map[string]interface{}
-					require.NoError(t, json.Unmarshal(s, &j))
-					for k, e := range tt.logs[i] {
-						v, ok := j[k]
-						require.True(t, ok, "log entry not existing: %s: %v", k, e)
-						require.EqualValues(t, e, v)
-					}
-				}
-			}
-		})
-	}
+	r.Route("/toys", func(r chi.Router) {
+		elkhttp.NewToyHandler(c, l).Mount(r, elkhttp.ToyRoutes)
+	})
+	r.Route("/play-groups", func(r chi.Router) {
+		elkhttp.NewToyHandler(c, l).Mount(r, elkhttp.PlayGroupList|elkhttp.PlayGroupRead)
+	})
+	return c, logs, r, httptest.NewRecorder()
 }
 
 func mustEncode(t *testing.T, d interface{}) []byte {
@@ -613,4 +264,16 @@ func mustEncode(t *testing.T, d interface{}) []byte {
 		t.Fatalf("Cannot json encode data: %s", err)
 	}
 	return r
+}
+
+func prefixNameFn(s string) func(string) string {
+	return func(s2 string) string {
+		return s + s2
+	}
+}
+
+func bodyBytes(t *testing.T, rsp *http.Response) []byte {
+	b, err := io.ReadAll(rsp.Body)
+	require.NoError(t, err)
+	return b
 }
