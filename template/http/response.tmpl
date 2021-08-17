@@ -50,6 +50,9 @@
 
         {{- $pkg := base $.Config.Package }}
         func New{{ $n }}(e *{{ $pkg }}.{{ $v.Node.Name }}) *{{ $n }} {
+            if e == nil {
+                return nil
+            }
             return &{{ $n }}{
                 {{- range $f := $v.Fields }}
                     {{ $f.StructField }}: e.{{ $f.StructField }},

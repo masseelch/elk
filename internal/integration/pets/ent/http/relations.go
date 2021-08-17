@@ -9,10 +9,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
-	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
-	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
-	"github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
-	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
+	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
 	"go.uber.org/zap"
 )
 

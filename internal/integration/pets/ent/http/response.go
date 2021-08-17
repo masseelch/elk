@@ -5,14 +5,14 @@ package http
 import (
 	"net/http"
 	"strconv"
-	"time"
+	time "time"
 
 	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
-	"github.com/masseelch/elk/internal/integration/pets/ent/badge"
-	"github.com/masseelch/elk/internal/integration/pets/ent/pet"
-	"github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
-	"github.com/masseelch/elk/internal/integration/pets/ent/toy"
+	badge "github.com/masseelch/elk/internal/integration/pets/ent/badge"
+	pet "github.com/masseelch/elk/internal/integration/pets/ent/pet"
+	playgroup "github.com/masseelch/elk/internal/integration/pets/ent/playgroup"
+	toy "github.com/masseelch/elk/internal/integration/pets/ent/toy"
 
 	"github.com/mailru/easyjson"
 )
@@ -85,6 +85,9 @@ type (
 )
 
 func NewBadge2492344257View(e *ent.Badge) *Badge2492344257View {
+	if e == nil {
+		return nil
+	}
 	return &Badge2492344257View{
 		ID:       e.ID,
 		Color:    e.Color,
@@ -126,6 +129,9 @@ type (
 )
 
 func NewPet1954225839View(e *ent.Pet) *Pet1954225839View {
+	if e == nil {
+		return nil
+	}
 	return &Pet1954225839View{
 		ID:         e.ID,
 		Height:     e.Height,
@@ -173,6 +179,9 @@ type (
 )
 
 func NewPet340207500View(e *ent.Pet) *Pet340207500View {
+	if e == nil {
+		return nil
+	}
 	return &Pet340207500View{
 		ID:        e.ID,
 		Height:    e.Height,
@@ -209,6 +218,9 @@ type (
 )
 
 func NewPet855087725View(e *ent.Pet) *Pet855087725View {
+	if e == nil {
+		return nil
+	}
 	return &Pet855087725View{
 		ID:    e.ID,
 		Name:  e.Name,
@@ -240,6 +252,9 @@ type (
 )
 
 func NewPlayGroup3432834655View(e *ent.PlayGroup) *PlayGroup3432834655View {
+	if e == nil {
+		return nil
+	}
 	return &PlayGroup3432834655View{
 		ID:          e.ID,
 		Title:       e.Title,
@@ -270,6 +285,9 @@ type (
 )
 
 func NewToy36157710View(e *ent.Toy) *Toy36157710View {
+	if e == nil {
+		return nil
+	}
 	return &Toy36157710View{
 		ID:       e.ID,
 		Color:    e.Color,
