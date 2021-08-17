@@ -3,7 +3,7 @@ module github.com/masseelch/elk
 go 1.16
 
 require (
-	entgo.io/ent v0.9.0
+	entgo.io/ent v0.9.1
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/go-chi/chi/v5 v5.0.3
 	github.com/google/uuid v1.3.0
