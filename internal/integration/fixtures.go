@@ -52,7 +52,6 @@ func pets(ctx context.Context, refs refs, c *ent.Client) error {
 	var sex pet.Sex
 	pb := make([]*ent.PetCreate, petCount)
 	bb := make([]*ent.BadgeCreate, petCount)
-
 	for i := 0; i < len(pb); i++ {
 		bb[i] = c.Badge.Create().
 			SetColor(badgeColors[randomdata.Number(len(badgeColors))]).
@@ -62,7 +61,6 @@ func pets(ctx context.Context, refs refs, c *ent.Client) error {
 	if err != nil {
 		return err
 	}
-
 	for i := 0; i < len(pb); i++ {
 		bday, err = time.Parse(randomdata.DateOutputLayout, randomdata.FullDate())
 		if err != nil {
@@ -77,7 +75,6 @@ func pets(ctx context.Context, refs refs, c *ent.Client) error {
 		} else {
 			sex = pet.SexFemale
 		}
-
 		pb[i] = c.Pet.Create().
 			SetHeight(randomdata.Number(40, 200)).
 			SetWeight(randomdata.Decimal(1, 500)).
@@ -87,18 +84,17 @@ func pets(ctx context.Context, refs refs, c *ent.Client) error {
 			SetNicknames(nns).
 			SetSex(sex).
 			SetBadge(bs[i])
-
-		pg := refs.playGroups(randomdata.Number(2))
+		// playgroups
+		pg := refs.playGroups(randomdata.Number(1, 3))
 		if len(pg) > 0 {
 			pb[i].AddPlayGroups(pg...)
 		}
 	}
-
 	refs[petKey], err = c.Pet.CreateBulk(pb...).Save(ctx)
 	if err != nil {
 		return err
 	}
-
+	// friends
 	ps := refs[petKey].([]*ent.Pet)
 	for i, p := range ps {
 		if i < 4 {
@@ -112,7 +108,18 @@ func pets(ctx context.Context, refs refs, c *ent.Client) error {
 			return err
 		}
 	}
-
+	// mentor
+	if err := c.Pet.UpdateOneID(1).SetMentorID(2).Exec(ctx); err != nil {
+		return err
+	}
+	// spouse
+	if err := c.Pet.UpdateOneID(1).SetSpouseID(2).Exec(ctx); err != nil {
+		return err
+	}
+	// children
+	if err := c.Pet.UpdateOneID(1).AddChildIDs(2).Exec(ctx); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -136,7 +143,6 @@ func (r refs) toys(c int) []*ent.Toy {
 func toys(ctx context.Context, refs refs, c *ent.Client) error {
 	var err error
 	b := make([]*ent.ToyCreate, toyCount)
-
 	for i := 0; i < len(b); i++ {
 		b[i] = c.Toy.Create().
 			SetTitle(randomdata.SillyName()).
@@ -144,13 +150,12 @@ func toys(ctx context.Context, refs refs, c *ent.Client) error {
 			SetMaterial(toyMaterials[randomdata.Number(len(toyMaterials))]).
 			SetOwner(refs.pet())
 	}
-
 	refs[toyKey], err = c.Toy.CreateBulk(b...).Save(ctx)
 	return err
 }
 
 // playGroups fixtures
-var playGroupdWeekdays = []playgroup.Weekday{playgroup.WeekdayMon, playgroup.WeekdayTue, playgroup.WeekdayWed, playgroup.WeekdayThu, playgroup.WeekdayFri, playgroup.WeekdaySat, playgroup.WeekdaySun}
+var playGroupWeekdays = []playgroup.Weekday{playgroup.WeekdayMon, playgroup.WeekdayTue, playgroup.WeekdayWed, playgroup.WeekdayThu, playgroup.WeekdayFri, playgroup.WeekdaySat, playgroup.WeekdaySun}
 
 func (r refs) playGroup() *ent.PlayGroup {
 	m := r[playGroupKey].([]*ent.PlayGroup)
@@ -168,14 +173,12 @@ func (r refs) playGroups(c int) []*ent.PlayGroup {
 func playGroups(ctx context.Context, refs refs, c *ent.Client) error {
 	var err error
 	b := make([]*ent.PlayGroupCreate, playGroupCount)
-
 	for i := 0; i < len(b); i++ {
 		b[i] = c.PlayGroup.Create().
 			SetTitle(randomdata.SillyName()).
 			SetDescription(randomdata.Paragraph()).
-			SetWeekday(playGroupdWeekdays[randomdata.Number(len(playGroupdWeekdays))])
+			SetWeekday(playGroupWeekdays[randomdata.Number(len(playGroupWeekdays))])
 	}
-
 	refs[playGroupKey], err = c.PlayGroup.CreateBulk(b...).Save(ctx)
 	return err
 }

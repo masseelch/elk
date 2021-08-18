@@ -108,70 +108,123 @@ func testNotFound(t *testing.T) []*test {
 
 func testMount() []*test {
 	name := prefixNameFn("mount _ ")
-	check := func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, logs *bytes.Buffer, d interface{}) {
+	checkRegistered := func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, logs *bytes.Buffer, d interface{}) {
 		require.NotEqual(t, http.StatusNotFound, rec.Result().StatusCode)
 		// TODO: logs
 	}
+	checkNotRegistered := func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, logs *bytes.Buffer, d interface{}) {
+		rsp := rec.Result()
+		require.Equal(t, http.StatusNotFound, rsp.StatusCode)
+		b := bodyBytes(t, rsp)
+		require.Equal(t, "404 page not found\n", string(b))
+		// TODO: logs
+	}
+	checkMethodNotAllowed := func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, logs *bytes.Buffer, d interface{}) {
+		require.Equal(t, http.StatusMethodNotAllowed, rec.Result().StatusCode)
+		// TODO: logs
+	}
 	return []*test{
+		// all routes registered
 		{
-			name:  name("registered create"),
+			name:  name("registered pet create"),
 			req:   defaultReqFn(http.MethodGet, "/pets", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered read"),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet read"),
 			req:   defaultReqFn(http.MethodGet, "/pets/1", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered update"),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet update"),
 			req:   defaultReqFn(http.MethodPatch, "/pets/1", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered delete"),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet delete"),
 			req:   defaultReqFn(http.MethodDelete, "/pets/1", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered list"),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet list"),
 			req:   defaultReqFn(http.MethodGet, "/pets", nil, nil),
-			check: check,
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet badge read"),
+			req:   defaultReqFn(http.MethodGet, "/pets/1/badge", nil, nil),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet mentor read"),
+			req:   defaultReqFn(http.MethodGet, "/pets/1/mentor", nil, nil),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet spouse read"),
+			req:   defaultReqFn(http.MethodGet, "/pets/1/spouse", nil, nil),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet toys list"),
+			req:   defaultReqFn(http.MethodGet, "/pets/1/toys", nil, nil),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet children list"),
+			req:   defaultReqFn(http.MethodGet, "/pets/1/children", nil, nil),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet play-groups list"),
+			req:   defaultReqFn(http.MethodGet, "/pets/1/play-groups", nil, nil),
+			check: checkRegistered,
+		}, {
+			name:  name("registered pet friends list"),
+			req:   defaultReqFn(http.MethodGet, "/pets/1/friends", nil, nil),
+			check: checkRegistered,
 		},
+		// no routes registered
 		{
-			name:  name("registered badge-read"),
-			req:   defaultReqFn(http.MethodGet, "/pets/badge", nil, nil),
-			check: check,
+			name:  name("not registered badge create"),
+			req:   defaultReqFn(http.MethodGet, "/badges", nil, nil),
+			check: checkNotRegistered,
+		}, {
+			name:  name("not registered badge read"),
+			req:   defaultReqFn(http.MethodGet, "/badges/1", nil, nil),
+			check: checkNotRegistered,
+		}, {
+			name:  name("not registered badge update"),
+			req:   defaultReqFn(http.MethodPatch, "/badges/1", nil, nil),
+			check: checkNotRegistered,
+		}, {
+			name:  name("not registered badge delete"),
+			req:   defaultReqFn(http.MethodDelete, "/badges/1", nil, nil),
+			check: checkNotRegistered,
+		}, {
+			name:  name("not registered badge list"),
+			req:   defaultReqFn(http.MethodGet, "/badges", nil, nil),
+			check: checkNotRegistered,
+		}, {
+			name:  name("not registered badge wearer read"),
+			req:   defaultReqFn(http.MethodGet, "/badges/wearer", nil, nil),
+			check: checkNotRegistered,
 		},
+		// some routes registered
 		{
-			name:  name("registered mentor-read"),
-			req:   defaultReqFn(http.MethodGet, "/pets/mentor", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered spouse-read"),
-			req:   defaultReqFn(http.MethodGet, "/pets/spouse", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered toys list"),
-			req:   defaultReqFn(http.MethodGet, "/pets/toys", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered children list"),
-			req:   defaultReqFn(http.MethodGet, "/pets/children", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered play-groups list"),
-			req:   defaultReqFn(http.MethodGet, "/pets/play-groups", nil, nil),
-			check: check,
-		},
-		{
-			name:  name("registered friends list"),
-			req:   defaultReqFn(http.MethodGet, "/pets/friends", nil, nil),
-			check: check,
+			name:  name("registered play-group read"),
+			req:   defaultReqFn(http.MethodGet, "/play-groups/1", nil, nil),
+			check: checkRegistered,
+		}, {
+			name:  name("registered play-group list"),
+			req:   defaultReqFn(http.MethodGet, "/play-groups", nil, nil),
+			check: checkRegistered,
+		}, {
+			name:  name("not registered play-group create"),
+			req:   defaultReqFn(http.MethodPost, "/play-groups", nil, nil),
+			check: checkMethodNotAllowed,
+		}, {
+			name:  name("not registered play-group update"),
+			req:   defaultReqFn(http.MethodPatch, "/play-groups/1", nil, nil),
+			check: checkMethodNotAllowed,
+		}, {
+			name:  name("not registered play-group delete"),
+			req:   defaultReqFn(http.MethodDelete, "/play-groups/1", nil, nil),
+			check: checkMethodNotAllowed,
+		}, {
+			name:  name("not registered play-group participants list"),
+			req:   defaultReqFn(http.MethodGet, "/play-groups/1/participants", nil, nil),
+			check: checkNotRegistered,
 		},
 	}
 }
