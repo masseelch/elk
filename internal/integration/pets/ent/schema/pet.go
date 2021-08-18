@@ -27,6 +27,7 @@ func (Pet) Fields() []ent.Field {
 		field.Bool("castrated").
 			Annotations(elk.Groups("pet:read")),
 		field.String("name").
+			MinLen(2).
 			Unique(),
 		field.Time("birthday").
 			Optional().

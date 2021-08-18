@@ -466,6 +466,11 @@ func (pu *PetUpdate) check() error {
 			return &ValidationError{Name: "weight", err: fmt.Errorf("ent: validator failed for field \"weight\": %w", err)}
 		}
 	}
+	if v, ok := pu.mutation.Name(); ok {
+		if err := pet.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+		}
+	}
 	if v, ok := pu.mutation.Sex(); ok {
 		if err := pet.SexValidator(v); err != nil {
 			return &ValidationError{Name: "sex", err: fmt.Errorf("ent: validator failed for field \"sex\": %w", err)}
@@ -1432,6 +1437,11 @@ func (puo *PetUpdateOne) check() error {
 	if v, ok := puo.mutation.Weight(); ok {
 		if err := pet.WeightValidator(v); err != nil {
 			return &ValidationError{Name: "weight", err: fmt.Errorf("ent: validator failed for field \"weight\": %w", err)}
+		}
+	}
+	if v, ok := puo.mutation.Name(); ok {
+		if err := pet.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
 		}
 	}
 	if v, ok := puo.mutation.Sex(); ok {

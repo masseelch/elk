@@ -22,6 +22,10 @@ func init() {
 	petDescWeight := petFields[1].Descriptor()
 	// pet.WeightValidator is a validator for the "weight" field. It is called by the builders before save.
 	pet.WeightValidator = petDescWeight.Validators[0].(func(float64) error)
+	// petDescName is the schema descriptor for name field.
+	petDescName := petFields[3].Descriptor()
+	// pet.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	pet.NameValidator = petDescName.Validators[0].(func(string) error)
 	// petDescChip is the schema descriptor for chip field.
 	petDescChip := petFields[7].Descriptor()
 	// pet.DefaultChip holds the default value on creation for the chip field.

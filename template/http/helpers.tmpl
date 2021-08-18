@@ -9,7 +9,7 @@
         // Validate the data.
         errs := make(map[string]string)
         {{- range $f := $.Fields }}
-            {{- $checkRequired := and (not $f.Optional) (ne $f.Name $.ID.Name) }}
+            {{- $checkRequired := and (not $f.Optional) (ne $f.Name $.ID.Name) (not $f.Default) }}
             {{- if $checkRequired }}
                 if d.{{ $f.StructField }} == nil {
                     errs["{{ $f.Name }}"] = `missing required field: "{{ $f.Name }}"`
@@ -22,7 +22,7 @@
                     if d.{{ $f.StructField }} != nil {
                 {{- end }}
                     if err := {{ $.Package }}.{{ $f.Validator }}({{$f.BasicType (print "*d." $f.StructField) }}); err != nil {
-                        errs["{{ $f.Name }}"] = err.Error()
+                        errs["{{ $f.Name }}"] = strings.TrimPrefix(err.Error(), "{{ base $.Package }}: ")
                     }
                  {{- if not $checkRequired}}}{{ end }}
             {{- end }}
@@ -30,7 +30,7 @@
         {{- range $e := $.Edges }}
             {{- if not $e.Optional }}
                 if d.{{ $e.StructField }} == nil {
-                    errs["{{ $e.Name }}"] = `missing required edge "{{ $e.Name }}"`
+                    errs["{{ $e.Name }}"] = `missing required edge: "{{ $e.Name }}"`
                 }
             {{- end }}
         {{- end }}

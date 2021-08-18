@@ -142,6 +142,8 @@ var (
 	HeightValidator func(int) error
 	// WeightValidator is a validator for the "weight" field. It is called by the builders before save.
 	WeightValidator func(float64) error
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
 	// DefaultChip holds the default value on creation for the "chip" field.
 	DefaultChip func() uuid.UUID
 )

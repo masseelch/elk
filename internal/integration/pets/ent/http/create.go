@@ -4,6 +4,7 @@ package http
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/integration/pets/ent"
@@ -82,11 +83,11 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if d.Height == nil {
 		errs["height"] = `missing required field: "height"`
 	} else if err := pet.HeightValidator(*d.Height); err != nil {
-		errs["height"] = err.Error()
+		errs["height"] = strings.TrimPrefix(err.Error(), "pet: ")
 	}
 	if d.Weight != nil {
 		if err := pet.WeightValidator(*d.Weight); err != nil {
-			errs["weight"] = err.Error()
+			errs["weight"] = strings.TrimPrefix(err.Error(), "pet: ")
 		}
 	}
 	if d.Castrated == nil {
@@ -94,17 +95,16 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if d.Name == nil {
 		errs["name"] = `missing required field: "name"`
+	} else if err := pet.NameValidator(*d.Name); err != nil {
+		errs["name"] = strings.TrimPrefix(err.Error(), "pet: ")
 	}
 	if d.Sex == nil {
 		errs["sex"] = `missing required field: "sex"`
 	} else if err := pet.SexValidator(*d.Sex); err != nil {
-		errs["sex"] = err.Error()
-	}
-	if d.Chip == nil {
-		errs["chip"] = `missing required field: "chip"`
+		errs["sex"] = strings.TrimPrefix(err.Error(), "pet: ")
 	}
 	if d.Badge == nil {
-		errs["badge"] = `missing required edge "badge"`
+		errs["badge"] = `missing required edge: "badge"`
 	}
 	if len(errs) > 0 {
 		l.Info("validation failed", zapFields(errs)...)

@@ -25,12 +25,13 @@ func TestElk(t *testing.T) {
 	tts = append(tts, testMalformedId(t)...)
 	tts = append(tts, testNotFound(t)...)
 	tts = append(tts, testMount()...)
+	tts = append(tts, testValidation(t)...)
 	for _, tt := range tts {
 		t.Run(tt.name, func(t *testing.T) {
-			_, l, r, rec := setup(t)
-			req, d := tt.req(t, tt)
-			r.ServeHTTP(rec, req)
-			tt.check(t, tt, rec, l, d)
+			deps := setup(t)
+			req, d := tt.req(t, tt, deps)
+			deps.router.ServeHTTP(deps.rec, req)
+			tt.check(t, tt, deps, d)
 		})
 	}
 }
@@ -108,19 +109,19 @@ func testNotFound(t *testing.T) []*test {
 
 func testMount() []*test {
 	name := prefixNameFn("mount _ ")
-	checkRegistered := func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, logs *bytes.Buffer, d interface{}) {
-		require.NotEqual(t, http.StatusNotFound, rec.Result().StatusCode)
+	checkRegistered := func(t *testing.T, tt *test, deps *deps, d interface{}) {
+		require.NotEqual(t, http.StatusNotFound, deps.rec.Result().StatusCode)
 		// TODO: logs
 	}
-	checkNotRegistered := func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, logs *bytes.Buffer, d interface{}) {
-		rsp := rec.Result()
+	checkNotRegistered := func(t *testing.T, tt *test, deps *deps, d interface{}) {
+		rsp := deps.rec.Result()
 		require.Equal(t, http.StatusNotFound, rsp.StatusCode)
 		b := bodyBytes(t, rsp)
 		require.Equal(t, "404 page not found\n", string(b))
 		// TODO: logs
 	}
-	checkMethodNotAllowed := func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, logs *bytes.Buffer, d interface{}) {
-		require.Equal(t, http.StatusMethodNotAllowed, rec.Result().StatusCode)
+	checkMethodNotAllowed := func(t *testing.T, tt *test, deps *deps, d interface{}) {
+		require.Equal(t, http.StatusMethodNotAllowed, deps.rec.Result().StatusCode)
 		// TODO: logs
 	}
 	return []*test{
@@ -229,11 +230,55 @@ func testMount() []*test {
 	}
 }
 
+func testValidation(t *testing.T) []*test {
+	name := prefixNameFn("validation _ ")
+	return []*test{
+		{
+			name: name("1"),
+			req:  defaultReqFn(http.MethodPost, "/pets", mustEncode(t, make(map[string]interface{})), nil),
+			check: func(t *testing.T, tt *test, deps *deps, _ interface{}) {
+				rsp := deps.rec.Result()
+				require.Equal(t, http.StatusBadRequest, rsp.StatusCode)
+				var err elkhttp.ErrResponse
+				require.NoError(t, json.Unmarshal(bodyBytes(t, rsp), &err))
+				require.Equal(t, map[string]interface{}{
+					"badge":     "missing required edge: \"badge\"",
+					"castrated": "missing required field: \"castrated\"",
+					"height":    "missing required field: \"height\"",
+					"name":      "missing required field: \"name\"",
+					"sex":       "missing required field: \"sex\"",
+				}, err.Errors)
+			},
+		}, {
+			name: name("2"),
+			req: defaultReqFn(http.MethodPost, "/pets", mustEncode(t, map[string]interface{}{
+				"castrated": true,     // valid
+				"sex":       "divers", // invalid - (male or female)
+				"name":      "a",      // invalid - too short
+				"weight":    0,        // invalid - must be positive
+			}), nil),
+			check: func(t *testing.T, tt *test, deps *deps, _ interface{}) {
+				rsp := deps.rec.Result()
+				require.Equal(t, http.StatusBadRequest, rsp.StatusCode)
+				var err elkhttp.ErrResponse
+				require.NoError(t, json.Unmarshal(bodyBytes(t, rsp), &err))
+				require.Equal(t, map[string]interface{}{
+					"badge":  "missing required edge: \"badge\"",
+					"height": "missing required field: \"height\"",
+					"name":   "value is less than the required length",
+					"sex":    "invalid enum value for sex field: \"divers\"",
+					"weight": "value out of range",
+				}, err.Errors)
+			},
+		},
+	}
+}
+
 type (
 	// reqFn returns the request to send and some data to pass to the checkFn.
-	reqFn func(*testing.T, *test) (*http.Request, interface{})
+	reqFn func(*testing.T, *test, *deps) (*http.Request, interface{})
 	// checkFn is the signature of the func to run for a test.
-	checkFn func(*testing.T, *test, *httptest.ResponseRecorder, *bytes.Buffer, interface{})
+	checkFn func(*testing.T, *test, *deps, interface{})
 	// test describes one test to execute. Every test has its own database.
 	test struct {
 		// name of the test
@@ -245,19 +290,19 @@ type (
 
 // defaultCheckFn returns a postFn to simply test a responses status-code, body-bytes and logs.
 func defaultCheckFn(status int, body []byte, logs []map[string]interface{}) checkFn {
-	return func(t *testing.T, tt *test, rec *httptest.ResponseRecorder, l *bytes.Buffer, d interface{}) {
-		rsp := rec.Result()
+	return func(t *testing.T, tt *test, deps *deps, d interface{}) {
+		rsp := deps.rec.Result()
 		b := bodyBytes(t, rsp)
 		// expected status code
-		require.Equalf(t, status, rsp.StatusCode, "expected: %s\nactual  : %s\nlogs    :%s", body, b, l)
+		require.Equalf(t, status, rsp.StatusCode, "expected: %s\nactual  : %s\nlogs    :%s", body, b, deps.logs)
 		// expected body
 		if body != nil {
-			require.Equalf(t, body, b, "expected: %s\nactual  : %s\nlogs    :%s", body, b, l)
+			require.Equalf(t, body, b, "expected: %s\nactual  : %s\nlogs    :%s", body, b, deps.logs)
 		}
 		// If logs are given check that they indeed are present in the correct order
 		if logs != nil { // TODO: Improve log check
 			// Read logs line by line.
-			for i, s := range bytes.Split(bytes.TrimSpace(l.Bytes()), []byte("\n")) {
+			for i, s := range bytes.Split(bytes.TrimSpace(deps.logs.Bytes()), []byte("\n")) {
 				var j map[string]interface{}
 				require.NoError(t, json.Unmarshal(s, &j))
 				for k, e := range logs[i] {
@@ -272,12 +317,19 @@ func defaultCheckFn(status int, body []byte, logs []map[string]interface{}) chec
 
 // defaultReqFn returns a reqFn to create a very basic http.Request.
 func defaultReqFn(method, path string, body []byte, d interface{}) reqFn {
-	return func(t *testing.T, tt *test) (*http.Request, interface{}) {
+	return func(t *testing.T, tt *test, _ *deps) (*http.Request, interface{}) {
 		return httptest.NewRequest(method, path, bytes.NewReader(body)), d
 	}
 }
 
-func setup(t *testing.T) (*ent.Client, *bytes.Buffer, chi.Router, *httptest.ResponseRecorder) {
+type deps struct {
+	client *ent.Client
+	logs   *bytes.Buffer
+	router chi.Router
+	rec    *httptest.ResponseRecorder
+}
+
+func setup(t *testing.T) *deps {
 	// ent client
 	c := enttest.Open(t, dialect.SQLite, ":memory:?_fk=1", enttest.WithOptions(ent.Log(t.Log)))
 	require.NoError(t, fixtures(context.Background(), c))
@@ -308,7 +360,7 @@ func setup(t *testing.T) (*ent.Client, *bytes.Buffer, chi.Router, *httptest.Resp
 	r.Route("/play-groups", func(r chi.Router) {
 		elkhttp.NewToyHandler(c, l).Mount(r, elkhttp.PlayGroupList|elkhttp.PlayGroupRead)
 	})
-	return c, logs, r, httptest.NewRecorder()
+	return &deps{c, logs, r, httptest.NewRecorder()}
 }
 
 func mustEncode(t *testing.T, d interface{}) []byte {
