@@ -62,7 +62,7 @@
             }
             {{ range $e := $n.Edges -}}
                 if rs.has({{ $n.Name }}{{ $e.Name | pascal }}) {
-                    r.Get("/{id}/{{ $e.Name }}", h.{{ $e.Name | pascal }})
+                    r.Get("/{id}/{{ $e.Name | kebab }}", h.{{ $e.Name | pascal }})
                 }
             {{ end -}}
         }

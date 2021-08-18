@@ -137,7 +137,7 @@ func (h *PetHandler) Mount(r chi.Router, rs Routes) {
 		r.Get("/{id}/children", h.Children)
 	}
 	if rs.has(PetPlayGroups) {
-		r.Get("/{id}/play_groups", h.PlayGroups)
+		r.Get("/{id}/play-groups", h.PlayGroups)
 	}
 	if rs.has(PetFriends) {
 		r.Get("/{id}/friends", h.Friends)
