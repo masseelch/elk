@@ -19,7 +19,7 @@ const (
 	playGroupKey
 	toyKey
 
-	petCount       = 10
+	petCount       = 50
 	playGroupCount = 5
 	toyCount       = 20
 )

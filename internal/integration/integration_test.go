@@ -26,6 +26,7 @@ func TestElk(t *testing.T) {
 	tts = append(tts, testNotFound(t)...)
 	tts = append(tts, testMount()...)
 	tts = append(tts, testValidation(t)...)
+	tts = append(tts, testPagination(t)...)
 	for _, tt := range tts {
 		t.Run(tt.name, func(t *testing.T) {
 			deps := setup(t)
@@ -270,6 +271,45 @@ func testValidation(t *testing.T) []*test {
 					"weight": "value out of range",
 				}, err.Errors)
 			},
+		},
+	}
+}
+
+func testPagination(t *testing.T) []*test {
+	name := prefixNameFn("pagination _ ")
+	return []*test{
+		{
+			name: name("malformed page"),
+			req:  defaultReqFn(http.MethodGet, "/pets?page=invalid", nil, nil),
+			check: defaultCheckFn(http.StatusBadRequest, mustEncode(t, elkhttp.ErrResponse{
+				Code:   http.StatusBadRequest,
+				Status: http.StatusText(http.StatusBadRequest),
+				Errors: "page must be an integer greater zero",
+			}), nil), // TODO: logs
+		}, {
+			name: name("malformed itemsPerPage"),
+			req:  defaultReqFn(http.MethodGet, "/pets?itemsPerPage=invalid", nil, nil),
+			check: defaultCheckFn(http.StatusBadRequest, mustEncode(t, elkhttp.ErrResponse{
+				Code:   http.StatusBadRequest,
+				Status: http.StatusText(http.StatusBadRequest),
+				Errors: "itemsPerPage must be an integer greater zero",
+			}), nil), // TODO: logs
+		}, {
+			name: name("ok"),
+			req: func(t *testing.T, tt *test, deps *deps) (*http.Request, interface{}) {
+				// Get a list of the first 30 (default page size) pets
+				ps, err := deps.client.Pet.Query().Limit(30).All(context.Background())
+				require.NoError(t, err)
+				return httptest.NewRequest(http.MethodGet, "/pets", nil), ps
+			},
+			check: func(t *testing.T, tt *test, deps *deps, ps interface{}) {
+				rsp := deps.rec.Result()
+				require.Equal(t, http.StatusOK, rsp.StatusCode)
+				// List must have 30 items and must match that one saved.
+				var v []*ent.Pet
+				require.NoError(t, json.Unmarshal(bodyBytes(t, rsp), &v))
+				require.Len(t, v, 30)
+			}, // TODO: logs
 		},
 	}
 }
