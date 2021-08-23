@@ -1,15 +1,13 @@
 package elk
 
 import (
+	"embed"
 	"entgo.io/ent/entc/gen"
 	"fmt"
-	"github.com/masseelch/elk/internal"
 	"github.com/stoewer/go-strcase"
 	"hash/fnv"
 	"text/template"
 )
-
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -o=internal/bindata.go -pkg=internal -modtime=1 ./template/...
 
 const (
 	actionCreate = "create"
@@ -18,25 +16,15 @@ const (
 	actionList   = "list"
 )
 
-var actions = [...]string{actionCreate, actionRead, actionUpdate, actionList}
+var (
+	actions = [...]string{actionCreate, actionRead, actionUpdate, actionList}
+	//go:embed template
+	templateDir embed.FS
+)
 
 var (
-	// HTTPTemplates holds all templates for generating http handlers.
-	HTTPTemplates = []*gen.Template{
-		parse("template/http/handler.tmpl"),
-		parse("template/http/create.tmpl"),
-		parse("template/http/read.tmpl"),
-		parse("template/http/update.tmpl"),
-		parse("template/http/delete.tmpl"),
-		parse("template/http/list.tmpl"),
-		parse("template/http/relations.tmpl"),
-		parse("template/http/request.tmpl"),
-		parse("template/http/response.tmpl"),
-		parse("template/http/helpers.tmpl"),
-		parse("template/http/import.tmpl"),
-	}
-	// TemplateFuncs contains the extra template functions used by elk.
-	TemplateFuncs = template.FuncMap{
+	// Funcs contains the extra template functions used by elk.
+	Funcs = template.FuncMap{
 		"edgesToLoad":     edgesToLoad,
 		"kebab":           strcase.KebabCase,
 		"needsValidation": needsValidation,
@@ -45,13 +33,9 @@ var (
 		"stringSlice":     stringSlice,
 		"xextend":         xextend,
 	}
+	// HTTPTemplate holds all templates for generating http handlers.
+	HTTPTemplate = gen.MustParse(gen.NewTemplate("elk").Funcs(Funcs).ParseFS(templateDir, "template/http/*.tmpl"))
 )
-
-func parse(path string) *gen.Template {
-	return gen.MustParse(gen.NewTemplate(path).
-		Funcs(TemplateFuncs).
-		Parse(string(internal.MustAsset(path))))
-}
 
 // needsValidation returns if a type needs validation because there is some defined on one of its fields.
 func needsValidation(n *gen.Type) bool {

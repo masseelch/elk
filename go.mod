@@ -3,7 +3,7 @@ module github.com/masseelch/elk
 go 1.17
 
 require (
-	entgo.io/ent v0.9.1
+	entgo.io/ent v0.9.2-0.20210822190728-d84ac191b1c7
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-chi/chi/v5 v5.0.3
@@ -16,7 +16,6 @@ require (
 )
 
 require (
-	github.com/go-bindata/go-bindata v1.0.1-0.20190711162640-ee3c2418e368 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

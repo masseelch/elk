@@ -13,14 +13,14 @@ type (
 		hooks          []gen.Hook
 		templates      []*gen.Template
 	}
-	// ExtensionOption allows to manage Extension configuration using functional arguments.
+	// ExtensionOption allows managin Extension configuration using functional arguments.
 	ExtensionOption func(*Extension) error
 )
 
 // NewExtension returns a new elk extension with default values.
 func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 	ex := &Extension{
-		templates:      HTTPTemplates,
+		templates:      []*gen.Template{HTTPTemplate},
 		easyjsonConfig: newEasyJsonConfig(),
 	}
 	for _, opt := range opts {
