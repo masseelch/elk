@@ -8,7 +8,7 @@ import (
 type (
 	// SchemaAnnotation annotates an entity with metadata for templates.
 	SchemaAnnotation struct {
-		// CreateGroups holds the serializations groups to use on the create handler.
+		// CreateGroups holds the serializations groups to use on the creation handler.
 		CreateGroups groups `json:"CreateGroups,omitempty"`
 		// ReadGroups holds the serializations groups to use on the read handler.
 		ReadGroups groups `json:"ReadGroups,omitempty"`
@@ -36,7 +36,7 @@ func ReadGroups(gs ...string) SchemaAnnotation {
 	return SchemaAnnotation{ReadGroups: gs}
 }
 
-// UpdateGroups returns a update groups schema-annotation.
+// UpdateGroups returns an update groups schema-annotation.
 func UpdateGroups(gs ...string) SchemaAnnotation {
 	return SchemaAnnotation{UpdateGroups: gs}
 }

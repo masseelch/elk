@@ -15,7 +15,6 @@
     {{/* gotype: entgo.io/ent/entc/gen.Type */}}
     // Payload of a {{ base $.Config.Package }}.{{ $.Name }} {{ $.Scope.Action }} request.
     type {{ $.Name }}{{ $.Scope.Action | pascal }}Request struct {
-        {{/* TODO: Having all pointers here seems not right. Maybe this can be done in another way ... */}}
         {{- range $f := $.Fields }}
             {{- if or (ne $.Scope.Action "update") (not $f.Immutable) }}
                 {{ $f.StructField }} *{{ $f.Type }} `json:"{{ index (split (tagLookup $f.StructTag "json") ",") 0 }}"`

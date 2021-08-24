@@ -13,7 +13,7 @@ type (
 		hooks          []gen.Hook
 		templates      []*gen.Template
 	}
-	// ExtensionOption allows managin Extension configuration using functional arguments.
+	// ExtensionOption allows managing Extension configuration using functional arguments.
 	ExtensionOption func(*Extension) error
 )
 

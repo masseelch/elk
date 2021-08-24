@@ -44,8 +44,6 @@ func needsValidation(n *gen.Type) bool {
 			return true
 		}
 	}
-	// TODO: Edges
-
 	return false
 }
 

@@ -22,7 +22,7 @@
             {{ range $f := $n.Fields -}}
                 {{ if not $f.Immutable -}}
                     if d.{{ $f.StructField }} != nil {
-                        b.Set{{ $f.StructField }}(*d.{{ $f.StructField }}) {{/* todo - what about slice fields that have custom marshallers? */}}
+                        b.Set{{ $f.StructField }}(*d.{{ $f.StructField }})
                     }
                 {{ end -}}
             {{ end -}}
