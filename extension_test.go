@@ -1,11 +1,12 @@
 package elk
 
 import (
+	"github.com/masseelch/elk/openapi"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-func TestWithEasyJsonConfig(t *testing.T) {
+func TestExtensionOption(t *testing.T) {
 	c := EasyJsonConfig{
 		NoStdMarshalers:          false,
 		SnakeCase:                true,
@@ -14,7 +15,9 @@ func TestWithEasyJsonConfig(t *testing.T) {
 		DisallowUnknownFields:    false,
 		SkipMemberNameUnescaping: true,
 	}
-	ex, err := NewExtension(WithEasyJsonConfig(c))
+	spec, err := openapi.New()
+	ex, err := NewExtension(WithEasyJsonConfig(c), WithOpenAPISpec(spec))
 	require.NoError(t, err)
 	require.Equal(t, c, ex.easyjsonConfig)
+	require.Equal(t, spec, ex.openAPISpec)
 }

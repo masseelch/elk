@@ -9,18 +9,18 @@ type (
 	// SchemaAnnotation annotates an entity with metadata for templates.
 	SchemaAnnotation struct {
 		// CreateGroups holds the serializations groups to use on the creation handler.
-		CreateGroups groups `json:"CreateGroups,omitempty"`
+		CreateGroups groups `json:",omitempty"`
 		// ReadGroups holds the serializations groups to use on the read handler.
-		ReadGroups groups `json:"ReadGroups,omitempty"`
+		ReadGroups groups `json:",omitempty"`
 		// UpdateGroups holds the serializations groups to use on the update handler.
-		UpdateGroups groups `json:"UpdateGroups,omitempty"`
+		UpdateGroups groups `json:",omitempty"`
 		// ListGroups holds the serializations groups to use on the list handler.
-		ListGroups groups `json:"ListGroups,omitempty"`
+		ListGroups groups `json:",omitempty"`
 	}
 	// Annotation annotates fields and edges with metadata for templates.
 	Annotation struct {
 		// Groups holds the serialization groups to use on this field / edge.
-		Groups groups `json:"Groups,omitempty"`
+		Groups groups `json:",omitempty"`
 		// MaxDepth tells the generator the maximum depth of this field when there is a cycle possible.
 		MaxDepth uint
 	}
@@ -95,7 +95,6 @@ func (a *SchemaAnnotation) Decode(o interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	return json.Unmarshal(buf, a)
 }
 
