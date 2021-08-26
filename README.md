@@ -457,7 +457,7 @@ the [integration test setup](https://github.com/masseelch/elk/tree/master/intern
 
 - The generated code does not have very good automated tests yet.
 
-- Initial work to generate a fully working flutter frontend has been done.
+- ~~Initial work to generate a fully working flutter frontend has been done.~~ Aim is now to generate Swagger / OpenAPI spec and let the user use swagger codegen tooling to generate an API client.
 
 ## Contribution
 
