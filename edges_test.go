@@ -64,8 +64,8 @@ func TestEdgesToLoad(t *testing.T) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
 	g, err := entc.LoadGraph(
-		filepath.Join(wd, "internal", "integration", "pets", "ent", "schema"),
-		&gen.Config{Templates: HTTPTemplates},
+		filepath.Join(wd, "internal", "unit", "pets", "ent", "schema"),
+		&gen.Config{Templates: []*gen.Template{HTTPTemplate}},
 	)
 	require.NoError(t, err)
 
