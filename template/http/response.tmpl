@@ -33,7 +33,7 @@
         }
     {{ end }}
 
-    {{- range $n, $v := responseViews $ }}
+    {{- range $n, $v := views $ }}
         type (
             {{ $n }} struct {
                 {{- range $f := $v.Fields }}
@@ -41,7 +41,7 @@
                     {{- with tagLookup $f.StructTag "json" }} `json:"{{ . }}"{{ end }}`
                 {{- end }}
                 {{- range $e := $v.Edges }}
-                    {{ $e.StructField }} {{ if $e.Unique }}*{{ end }}{{ $e.ViewName }}{{ if not $e.Unique }}s{{ end }}
+                    {{ $e.StructField }} {{ if $e.Unique }}*{{ end }}{{ $e.Name }}{{ if not $e.Unique }}s{{ end }}
                     {{- with tagLookup $e.StructTag "json" }} `json:"{{ . }}"{{ end }}`
                 {{- end }}
             }
@@ -58,7 +58,7 @@
                     {{ $f.StructField }}: e.{{ $f.StructField }},
                 {{- end }}
                 {{- range $e := $v.Edges }}
-                    {{ $e.StructField }}: New{{ $e.ViewName }}{{ if not $e.Unique }}s{{ end }}(e.Edges.{{ $e.StructField }}),
+                    {{ $e.StructField }}: New{{ $e.Name }}{{ if not $e.Unique }}s{{ end }}(e.Edges.{{ $e.StructField }}),
                 {{- end }}
             }
         }

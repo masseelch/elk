@@ -32,14 +32,17 @@ func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 	return ex, nil
 }
 
+// Templates of the Extension.
 func (e *Extension) Templates() []*gen.Template {
 	return e.templates
 }
 
+// Hooks of the Extension.
 func (e *Extension) Hooks() []gen.Hook {
 	return e.hooks
 }
 
+// WithEasyJsonConfig sets a custom EasyJsonConfig.
 func WithEasyJsonConfig(c EasyJsonConfig) ExtensionOption {
 	return func(ex *Extension) error {
 		ex.easyjsonConfig = c

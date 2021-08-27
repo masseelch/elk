@@ -13,7 +13,7 @@
         func (h *{{ $n.Name }}Handler) List(w http.ResponseWriter, r *http.Request) {
             l := h.log.With(zap.String("method", "List"))
             q := h.client.{{ $n.Name }}.Query()
-            {{- with edgesToLoad $n "list" }}
+            {{- with edges $n "list" }}
                 // Eager load edges that are required on list operation.
                 q{{ .EntQuery }}
             {{- end }}
@@ -21,7 +21,7 @@
             {{- template "helper/http/pagination" $n -}}
 
             l.Info("{{ $n.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
-            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n ($n.Annotations.ElkSchema.ListGroups | stringSlice)).ViewName }}s(es), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.ElkSchema.ListGroups | stringSlice)).Name }}s(es), w)
         }
     {{ end }}
 {{ end }}

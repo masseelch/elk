@@ -18,7 +18,7 @@
                 // Create the query to fetch the {{ $e.Name | kebab }} attached to this {{ $n.Name | kebab }}
                 q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(id)).Query{{ $e.Name | pascal }}()
                 {{- if $e.Unique }}
-                    {{- with edgesToLoad $e.Type "read" }}
+                    {{- with edges $e.Type "read" }}
                         // Eager load edges that are required on read operation.
                         q{{ .EntQuery }}
                     {{- end }}
@@ -32,9 +32,9 @@
                     -}}
 
                     l.Info("{{ $e.Type.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $e.Type.ID.StructField }}))
-                    easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $e.Type ($e.Type.Annotations.ElkSchema.ReadGroups | stringSlice)).ViewName }}(e), w)
+                    easyjson.MarshalToHTTPResponseWriter(New{{ (view $e.Type ($e.Type.Annotations.ElkSchema.ReadGroups | stringSlice)).Name }}(e), w)
                 {{- else }}
-                    {{- with edgesToLoad $e.Type "list" }}
+                    {{- with edges $e.Type "list" }}
                         // Eager load edges that are required on list operation.
                         q{{ .EntQuery }}
                     {{- end }}
@@ -42,7 +42,7 @@
                     {{- template "helper/http/pagination" $e.Type -}}
 
                     l.Info("{{ $e.Type.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
-                    easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $e.Type ($e.Type.Annotations.Elk.ListGroups | stringSlice)).ViewName }}s(es), w)
+                    easyjson.MarshalToHTTPResponseWriter(New{{ (view $e.Type ($e.Type.Annotations.Elk.ListGroups | stringSlice)).Name }}s(es), w)
                 {{- end }}
             }
         {{ end }}

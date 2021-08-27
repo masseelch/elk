@@ -39,7 +39,7 @@
             // Reload entry.
             q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(e.{{ $n.ID.StructField }}))
 
-            {{- with edgesToLoad $n "create" }}
+            {{- with edges $n "create" }}
                 // Eager load edges that are required on create operation.
                 q{{ .EntQuery }}
             {{- end }}
@@ -53,7 +53,7 @@
             -}}
 
             l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
-            easyjson.MarshalToHTTPResponseWriter(New{{ (responseView $n ($n.Annotations.ElkSchema.CreateGroups | stringSlice)).ViewName }}(e), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.ElkSchema.CreateGroups | stringSlice)).Name }}(e), w)
         }
     {{ end }}
 {{ end }}

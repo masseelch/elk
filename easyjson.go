@@ -32,12 +32,12 @@ func GenerateEasyJSON(c EasyJsonConfig) gen.Hook {
 
 			// We want to render every response struct created with easyjson.
 			var ns []string
-			vs, err := responseViews(g)
+			vs, err := views(g)
 			if err != nil {
 				return err
 			}
 			for _, v := range vs {
-				n, err := v.ViewName()
+				n, err := v.Name()
 				if err != nil {
 					return err
 				}

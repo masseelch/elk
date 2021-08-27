@@ -3,24 +3,25 @@ package elk
 import (
 	"encoding/json"
 	"entgo.io/ent/schema"
+	"github.com/masseelch/elk/serialization"
 )
 
 type (
 	// SchemaAnnotation annotates an entity with metadata for templates.
 	SchemaAnnotation struct {
 		// CreateGroups holds the serializations groups to use on the creation handler.
-		CreateGroups groups `json:",omitempty"`
+		CreateGroups serialization.Groups `json:"CreateGroups,omitempty"`
 		// ReadGroups holds the serializations groups to use on the read handler.
-		ReadGroups groups `json:",omitempty"`
+		ReadGroups serialization.Groups `json:"ReadGroups,omitempty"`
 		// UpdateGroups holds the serializations groups to use on the update handler.
-		UpdateGroups groups `json:",omitempty"`
+		UpdateGroups serialization.Groups `json:"UpdateGroups,omitempty"`
 		// ListGroups holds the serializations groups to use on the list handler.
-		ListGroups groups `json:",omitempty"`
+		ListGroups serialization.Groups `json:"ListGroups,omitempty"`
 	}
 	// Annotation annotates fields and edges with metadata for templates.
 	Annotation struct {
 		// Groups holds the serialization groups to use on this field / edge.
-		Groups groups `json:",omitempty"`
+		Groups serialization.Groups `json:"Groups,omitempty"`
 		// MaxDepth tells the generator the maximum depth of this field when there is a cycle possible.
 		MaxDepth uint
 	}
@@ -95,7 +96,6 @@ func (a *SchemaAnnotation) Decode(o interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	return json.Unmarshal(buf, a)
 }
 
@@ -132,7 +132,6 @@ func (a *Annotation) Decode(o interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	return json.Unmarshal(buf, a)
 }
 
