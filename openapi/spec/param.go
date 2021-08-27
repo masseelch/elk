@@ -1,4 +1,4 @@
-package openapi
+package spec
 
 import (
 	"encoding/json"

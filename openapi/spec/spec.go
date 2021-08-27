@@ -1,14 +1,24 @@
-package openapi
+package spec
 
 import "net/url"
 
-// OpenAPI spec 3.0.x is used.
-const openApiVersion = "3.0.3"
+const (
+	// OpenAPI spec 3.0.x is used.
+	openApiVersion = "3.0.3"
+
+	JSON MediaType = "application/json"
+)
 
 type (
 	Spec struct {
-		Info  *Info
-		Paths []Path
+		Info       *Info
+		Tags       []Tag
+		Paths      []Path
+		Components Components
+	}
+	Tag struct {
+		Name        string
+		Description string
 	}
 	Info struct {
 		Title          string
@@ -64,6 +74,7 @@ type (
 		Content     Content
 	}
 	Content         map[MediaType]MediaTypeObject
+	MediaType       string
 	MediaTypeObject struct {
 		Schema  Schema
 		Example interface{}
@@ -74,13 +85,34 @@ type (
 		Headers     map[string]Parameter
 		Content     Content
 	}
-	Schema struct {
+	Components struct {
+		Schemas    map[string]Schema
+		Responses  map[string]Response
+		Parameters map[string]Parameter
+		// ... TODO
 	}
-	// SpecOption allows managing OpenAPI configuration using functional arguments.
-	SpecOption func(*Spec) error
+	Schema struct {
+		Fields map[string]Field
+		Edges  map[string]Edge
+	}
+	Field struct {
+		Required bool
+		Type     string
+		Format   string
+		Example  interface{}
+	}
+	Edge struct {
+	}
+	Property struct {
+		Type    string
+		Format  string
+		Example interface{}
+	}
+	// Option allows managing spec-configuration using functional arguments.
+	Option func(*Spec) error
 )
 
-func New(opts ...SpecOption) (*Spec, error) {
+func New(opts ...Option) (*Spec, error) {
 	oa := &Spec{
 		Info: &Info{
 			Title:       "Ent Schema API",
@@ -97,30 +129,54 @@ func New(opts ...SpecOption) (*Spec, error) {
 }
 
 // Title sets the title of the Info block.
-func Title(t string) SpecOption {
+func Title(v string) Option {
 	return func(spec *Spec) error {
-		spec.getInfo().Title = t
+		spec.getInfo().Title = v
 		return nil
 	}
 }
 
 // Description sets the title of the Info block.
-func Description(d string) SpecOption {
+func Description(v string) Option {
 	return func(spec *Spec) error {
-		spec.getInfo().Description = d
+		spec.getInfo().Description = v
 		return nil
 	}
 }
 
 // Version sets the title of the Info block.
-func Version(d string) SpecOption {
+func Version(v string) Option {
 	return func(spec *Spec) error {
-		spec.getInfo().Version = d
+		spec.getInfo().Version = v
+		return nil
+	}
+}
+
+// Tags sets the Tags block.
+func Tags(ts ...Tag) Option {
+	return func(spec *Spec) error {
+		spec.Tags = ts
 		return nil
 	}
 }
 
 // And so on ...
+
+func (spec *Spec) WarmUp() {
+	// Ensure a non nil Info block.
+	_ = spec.getInfo()
+	// Ensure non nil maps in Components block.
+	c := spec.Components
+	if c.Schemas == nil {
+		c.Schemas = make(map[string]Schema)
+	}
+	if c.Responses == nil {
+		c.Responses = make(map[string]Response)
+	}
+	if c.Parameters == nil {
+		c.Parameters = make(map[string]Parameter)
+	}
+}
 
 func (spec Spec) getInfo() *Info {
 	if spec.Info == nil {

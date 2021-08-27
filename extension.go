@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
 	"github.com/masseelch/elk/openapi"
+	"github.com/masseelch/elk/openapi/spec"
 )
 
 type (
@@ -14,7 +15,7 @@ type (
 		hooks          []gen.Hook
 		templates      []*gen.Template
 		// If non-nil the generator will generate an OpenAPI-Specification for the defined schemas.
-		openAPISpec *openapi.Spec
+		spec *spec.Spec
 	}
 	// ExtensionOption allows managing Extension configuration using functional arguments.
 	ExtensionOption func(*Extension) error
@@ -53,10 +54,11 @@ func WithEasyJsonConfig(c EasyJsonConfig) ExtensionOption {
 	}
 }
 
-func WithOpenAPISpec(spec *openapi.Spec) ExtensionOption {
+// WithOpenAPISpec enables the OpenAPI-Spec generator, which will merge into the given spec.
+func WithOpenAPISpec(spec *spec.Spec) ExtensionOption {
 	return func(ex *Extension) error {
-		ex.openAPISpec = spec
-		ex.hooks = append(ex.hooks, openapi.Hook(spec))
+		ex.spec = spec
+		ex.hooks = append(ex.hooks, openapi.Generator(spec))
 		return nil
 	}
 }

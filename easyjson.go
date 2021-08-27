@@ -29,7 +29,6 @@ func GenerateEasyJSON(c EasyJsonConfig) gen.Hook {
 			if err := next.Generate(g); err != nil {
 				return err
 			}
-
 			// We want to render every response struct created with easyjson.
 			var ns []string
 			vs, err := views(g)
@@ -52,7 +51,6 @@ func GenerateEasyJSON(c EasyJsonConfig) gen.Hook {
 			}
 			// Add the ErrResponse.
 			ns = append(ns, "ErrResponse")
-
 			// Run the easyjson generator.
 			return (&bootstrap.Generator{
 				PkgPath:                  filepath.Join(g.Package, "http"),
