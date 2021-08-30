@@ -6,7 +6,7 @@ require (
 	entgo.io/ent v0.9.2-0.20210822190728-d84ac191b1c7
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-chi/chi/v5 v5.0.3
+	github.com/go-chi/chi/v5 v5.0.4
 	github.com/google/uuid v1.3.0
 	github.com/mailru/easyjson v0.7.7
 	github.com/mattn/go-sqlite3 v1.14.8
