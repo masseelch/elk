@@ -8,34 +8,45 @@ import (
 )
 
 type (
-	View struct {
+	// A view is a subset of a Node. It may hold fewer Fields and Edges than the Node it is derived from. It has no
+	// knowledge of the serialization.Groups that led to its creation.
+	view struct {
 		Node   *gen.Type
 		Fields []*gen.Field
-		Edges  []*ViewEdge
+		Edges  []*viewEdge
 	}
-	ViewEdge struct {
+	// A viewEdge wraps an ent Edge and holds the name of the view to use when this viewEdge is serialized. A viewEdge
+	// is only valid in its holders context.
+	viewEdge struct {
 		*gen.Edge
 		Name string
+	}
+	// A mergedView is essentially the same as a view but has information about what serialization.Groups where used to
+	// create it.
+	mergedView struct {
+		view
+		// Groups holds all group-combinations this view represents.
+		Groups serialization.Collection
 	}
 )
 
 var (
-	// responseViewCache is used to reduce construction-time for a view.
+	// viewCache is used to reduce construction-time for a view.
 	// The key is a combination of the node and groups requested.
-	responseViewCache = make(map[string]*View)
+	viewCache = make(map[string]*view)
 )
 
-// views returns a map of all views occurring in the given graph. Key is the View's name.
-func views(g *gen.Graph) (map[string]*View, error) {
+// newViews returns a map of all views occurring in the given graph. Key is the view's name.
+func newViews(g *gen.Graph) (map[string]*mergedView, error) {
 	gss, err := groupCombinations(g)
 	if err != nil {
 		return nil, err
 	}
-	m := make(map[string]*View)
+	m := make(map[string]*mergedView)
 	for _, n := range g.Nodes {
 		for _, gs := range gss {
-			// Generate the view.
-			r, err := view(n, gs)
+			// Generate the newView.
+			r, err := newView(n, gs)
 			if err != nil {
 				return nil, err
 			}
@@ -43,14 +54,21 @@ func views(g *gen.Graph) (map[string]*View, error) {
 			if err != nil {
 				return nil, err
 			}
-			m[v] = r
+			if mv, ok := m[v]; ok && !mv.Groups.Contains(gs) {
+				mv.Groups = append(mv.Groups, gs)
+			} else {
+				m[v] = &mergedView{
+					view:   *r,
+					Groups: serialization.Collection{gs},
+				}
+			}
 		}
 	}
 	return m, nil
 }
 
 // Name returns a unique name for this view.
-func (v View) Name() (string, error) {
+func (v view) Name() (string, error) {
 	h := fnv.New32a()
 	if _, err := h.Write([]byte(v.Node.Name)); err != nil {
 		return "", err
@@ -68,23 +86,23 @@ func (v View) Name() (string, error) {
 	return fmt.Sprintf("%s%dView", v.Node.Name, h.Sum32()), nil
 }
 
-// view create a new View for the given type and serialization.Groups.
-func view(n *gen.Type, gs serialization.Groups) (*View, error) {
+// newView create a new view for the given type and serialization.Groups.
+func newView(n *gen.Type, gs serialization.Groups) (*view, error) {
 	var err error
 	h := hashNodeAndGroups(n, gs)
-	v, ok := responseViewCache[h]
+	v, ok := viewCache[h]
 	if !ok {
-		v, err = viewHelper(n, gs, true)
+		v, err = newViewHelper(n, gs, true)
 		if err != nil {
 			return nil, err
 		}
-		responseViewCache[h] = v
+		viewCache[h] = v
 	}
 	return v, nil
 }
 
-func viewHelper(n *gen.Type, gs serialization.Groups, loadEdges bool) (*View, error) {
-	v := &View{Node: n}
+func newViewHelper(n *gen.Type, gs serialization.Groups, loadEdges bool) (*view, error) {
+	v := &view{Node: n}
 	ok, err := fieldNeedsSerialization(n.ID, gs)
 	if err != nil {
 		return nil, err
@@ -107,9 +125,9 @@ func viewHelper(n *gen.Type, gs serialization.Groups, loadEdges bool) (*View, er
 			return nil, err
 		}
 		if ok {
-			edg := &ViewEdge{Edge: e}
+			edg := &viewEdge{Edge: e}
 			if loadEdges {
-				er, err := viewHelper(e.Type, gs, false)
+				er, err := newViewHelper(e.Type, gs, false)
 				if err != nil {
 					return nil, err
 				}

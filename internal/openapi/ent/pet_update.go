@@ -41,9 +41,23 @@ func (pu *PetUpdate) SetAge(i int) *PetUpdate {
 	return pu
 }
 
+// SetNillableAge sets the "age" field if the given value is not nil.
+func (pu *PetUpdate) SetNillableAge(i *int) *PetUpdate {
+	if i != nil {
+		pu.SetAge(*i)
+	}
+	return pu
+}
+
 // AddAge adds i to the "age" field.
 func (pu *PetUpdate) AddAge(i int) *PetUpdate {
 	pu.mutation.AddAge(i)
+	return pu
+}
+
+// ClearAge clears the value of the "age" field.
+func (pu *PetUpdate) ClearAge() *PetUpdate {
+	pu.mutation.ClearAge()
 	return pu
 }
 
@@ -242,6 +256,12 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: pet.FieldAge,
 		})
 	}
+	if pu.mutation.AgeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: pet.FieldAge,
+		})
+	}
 	if pu.mutation.CategoryCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -417,9 +437,23 @@ func (puo *PetUpdateOne) SetAge(i int) *PetUpdateOne {
 	return puo
 }
 
+// SetNillableAge sets the "age" field if the given value is not nil.
+func (puo *PetUpdateOne) SetNillableAge(i *int) *PetUpdateOne {
+	if i != nil {
+		puo.SetAge(*i)
+	}
+	return puo
+}
+
 // AddAge adds i to the "age" field.
 func (puo *PetUpdateOne) AddAge(i int) *PetUpdateOne {
 	puo.mutation.AddAge(i)
+	return puo
+}
+
+// ClearAge clears the value of the "age" field.
+func (puo *PetUpdateOne) ClearAge() *PetUpdateOne {
+	puo.mutation.ClearAge()
 	return puo
 }
 
@@ -639,6 +673,12 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
+			Column: pet.FieldAge,
+		})
+	}
+	if puo.mutation.AgeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
 			Column: pet.FieldAge,
 		})
 	}

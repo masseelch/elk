@@ -35,6 +35,10 @@
 
     {{- range $n, $v := views $ }}
         type (
+            // $n represents the data serialized for the following serialization group combinations:
+            {{- range $v.Groups }}
+                // {{ . }}
+            {{- end }}
             {{ $n }} struct {
                 {{- range $f := $v.Fields }}
                     {{ $f.StructField }} {{ if $f.NillableValue }}*{{ end }}{{ $f.Type }}

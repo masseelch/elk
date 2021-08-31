@@ -292,6 +292,20 @@ func AgeLTE(v int) predicate.Pet {
 	})
 }
 
+// AgeIsNil applies the IsNil predicate on the "age" field.
+func AgeIsNil() predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAge)))
+	})
+}
+
+// AgeNotNil applies the NotNil predicate on the "age" field.
+func AgeNotNil() predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAge)))
+	})
+}
+
 // HasCategory applies the HasEdge predicate on the "category" edge.
 func HasCategory() predicate.Pet {
 	return predicate.Pet(func(s *sql.Selector) {

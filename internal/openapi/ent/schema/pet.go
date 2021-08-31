@@ -18,7 +18,8 @@ func (Pet) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
 			Annotations(elk.Groups("pet")),
-		field.Int("age"),
+		field.Int("age").
+			Optional(),
 	}
 }
 

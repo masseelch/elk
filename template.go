@@ -16,8 +16,8 @@ var (
 		"edges":           edges,
 		"kebab":           strcase.KebabCase,
 		"needsValidation": needsValidation,
-		"view":            view,
-		"views":           views,
+		"view":            newView,
+		"views":           newViews,
 		"stringSlice":     stringSlice,
 		"xextend":         xextend,
 	}

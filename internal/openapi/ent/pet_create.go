@@ -33,6 +33,14 @@ func (pc *PetCreate) SetAge(i int) *PetCreate {
 	return pc
 }
 
+// SetNillableAge sets the "age" field if the given value is not nil.
+func (pc *PetCreate) SetNillableAge(i *int) *PetCreate {
+	if i != nil {
+		pc.SetAge(*i)
+	}
+	return pc
+}
+
 // AddCategoryIDs adds the "category" edge to the Category entity by IDs.
 func (pc *PetCreate) AddCategoryIDs(ids ...int) *PetCreate {
 	pc.mutation.AddCategoryIDs(ids...)
@@ -154,9 +162,6 @@ func (pc *PetCreate) ExecX(ctx context.Context) {
 func (pc *PetCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
-	}
-	if _, ok := pc.mutation.Age(); !ok {
-		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "age"`)}
 	}
 	return nil
 }
