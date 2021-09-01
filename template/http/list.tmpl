@@ -7,7 +7,7 @@
     {{ template "helper/http/import" $ }}
 
     {{ $pkg := base $.Config.Package }}
-    {{ range $n := $.Nodes }}
+    {{ range $n := filterNodes $ "list" }}
         // Read fetches the {{ $pkg }}.{{ $n.Name }} identified by a given url-parameter from the
         // database and returns it to the client.
         func (h *{{ $n.Name }}Handler) List(w http.ResponseWriter, r *http.Request) {

@@ -7,7 +7,7 @@
     {{ template "helper/http/import" $ }}
 
     {{ $pkg := base $.Config.Package }}
-    {{ range $n := $.Nodes }}
+    {{ range $n := filterNodes $ "update" }}
         // Update updates a given {{ $pkg }}.{{ $n.Name }} and saves the changes to the database.
         func (h {{ $n.Name }}Handler) Update(w http.ResponseWriter, r *http.Request) {
             l := h.log.With(zap.String("method", "Update"))

@@ -22,7 +22,7 @@ func newEasyJsonConfig() EasyJsonConfig {
 	}
 }
 
-func GenerateEasyJSON(c EasyJsonConfig) gen.Hook {
+func EasyJSONGenerator(c EasyJsonConfig) gen.Hook {
 	return func(next gen.Generator) gen.Generator {
 		return gen.GenerateFunc(func(g *gen.Graph) error {
 			// Let ent create all the files.

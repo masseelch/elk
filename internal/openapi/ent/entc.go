@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 package main
@@ -6,7 +7,7 @@ import (
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
 	"github.com/masseelch/elk"
-	"github.com/masseelch/elk/openapi/spec"
+	"github.com/masseelch/elk/spec"
 	"log"
 )
 

@@ -17,9 +17,15 @@ type Pet struct {
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
-			Annotations(elk.Groups("pet")),
+			Annotations(
+				elk.Groups("pet"),
+				elk.Example("Kuro"),
+			),
 		field.Int("age").
-			Optional(),
+			Optional().
+			Annotations(
+				elk.Example(0),
+			),
 	}
 }
 

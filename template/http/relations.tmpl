@@ -8,7 +8,7 @@
 
     {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
-        {{ range $e := $n.Edges }}
+        {{ range $e := filterEdges $n }}
             // {{ $e.Name | pascal }} fetches the {{ $pkg }}.{{ $e.Name }} attached to the {{ $pkg }}.{{ $n.Name }}
             // identified by a given url-parameter from the database and renders it to the client.
             func (h {{ $n.Name }}Handler) {{ $e.Name | pascal }}(w http.ResponseWriter, r *http.Request) {

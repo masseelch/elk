@@ -4,6 +4,7 @@ import (
 	"embed"
 	"entgo.io/ent/entc/gen"
 	"fmt"
+	"github.com/masseelch/elk/policy"
 	"github.com/stoewer/go-strcase"
 	"text/template"
 )
@@ -13,9 +14,13 @@ var (
 	templateDir embed.FS
 	// Funcs contains the extra template functions used by elk.
 	Funcs = template.FuncMap{
+		"contains":        contains,
 		"edges":           edges,
+		"filterEdges":     filterEdges,
+		"filterNodes":     filterNodes,
 		"kebab":           strcase.KebabCase,
 		"needsValidation": needsValidation,
+		"nodeOperations":  nodeOperations,
 		"view":            newView,
 		"views":           newViews,
 		"stringSlice":     stringSlice,
@@ -25,10 +30,129 @@ var (
 	HTTPTemplate = gen.MustParse(gen.NewTemplate("elk").Funcs(Funcs).ParseFS(templateDir, "template/http/*.tmpl"))
 )
 
+// filterNodes returns the nodes a handler for the given operation should be generated for.
+func filterNodes(g *gen.Graph, op string) ([]*gen.Type, error) {
+	c, err := config(g.Config)
+	if err != nil {
+		return nil, err
+	}
+	var filteredNodes []*gen.Type
+	for _, n := range g.Nodes {
+		var p policy.Policy
+		ant := &SchemaAnnotation{}
+		// If no policies are given follow the global policy.
+		if n.Annotations == nil || n.Annotations[ant.Name()] == nil {
+			p = c.HandlerPolicy
+		} else {
+			if err := ant.Decode(n.Annotations[ant.Name()]); err != nil {
+				return nil, err
+			}
+			switch op {
+			case createOperation:
+				p = ant.CreatePolicy
+			case readOperation:
+				p = ant.ReadPolicy
+			case updateOperation:
+				p = ant.UpdatePolicy
+			case deleteOperation:
+				p = ant.DeletePolicy
+			case listOperation:
+				p = ant.ListPolicy
+			}
+			// If the policy is policy.None follow the globally defined policy.
+			if p == policy.None {
+				p = c.HandlerPolicy
+			}
+		}
+		if p == policy.Expose {
+			filteredNodes = append(filteredNodes, n)
+		}
+	}
+	return filteredNodes, nil
+}
+
+// filterEdges returns the edges a read/list handler should be generated for.
+func filterEdges(n *gen.Type) ([]*gen.Edge, error) {
+	c, err := config(n.Config)
+	if err != nil {
+		return nil, err
+	}
+	var filteredEdges []*gen.Edge
+	for _, e := range n.Edges {
+		var p policy.Policy
+		ant := &Annotation{}
+		// If no policies are given follow the global policy.
+		if e.Annotations == nil || e.Annotations[ant.Name()] == nil {
+			p = c.HandlerPolicy
+		} else {
+			if err := ant.Decode(e.Annotations[ant.Name()]); err != nil {
+				return nil, err
+			}
+			p = ant.Expose
+			// If the policy is policy.None follow the globally defined policy.
+			if p == policy.None {
+				p = c.HandlerPolicy
+			}
+		}
+		if p == policy.Expose {
+			filteredEdges = append(filteredEdges, e)
+		}
+	}
+	return filteredEdges, nil
+}
+
+// nodeOperations returns the list of operations to expose for this node.
+func nodeOperations(n *gen.Type) ([]string, error) {
+	c, err := config(n.Config)
+	if err != nil {
+		return nil, err
+	}
+	ops := []string{createOperation, readOperation, updateOperation, deleteOperation, listOperation}
+	ant := &SchemaAnnotation{}
+	// If no policies are given follow the global policy.
+	if n.Annotations == nil || n.Annotations[ant.Name()] == nil {
+		if c.HandlerPolicy == policy.Expose {
+			return ops, nil
+		}
+		return nil, nil
+	} else {
+		if err := ant.Decode(n.Annotations[ant.Name()]); err != nil {
+			return nil, err
+		}
+		var ops []string
+		if ant.CreatePolicy == policy.Expose || (ant.CreatePolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+			ops = append(ops, createOperation)
+		}
+		if ant.ReadPolicy == policy.Expose || (ant.ReadPolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+			ops = append(ops, readOperation)
+		}
+		if ant.UpdatePolicy == policy.Expose || (ant.UpdatePolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+			ops = append(ops, updateOperation)
+		}
+		if ant.DeletePolicy == policy.Expose || (ant.DeletePolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+			ops = append(ops, deleteOperation)
+		}
+		if ant.ListPolicy == policy.Expose || (ant.ListPolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+			ops = append(ops, listOperation)
+		}
+		return ops, nil
+	}
+}
+
 // needsValidation returns if a type needs validation because there is some defined on one of its fields.
 func needsValidation(n *gen.Type) bool {
 	for _, f := range n.Fields {
 		if f.Validators > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// contains checks if a string slice contains the given value.
+func contains(xs []string, s string) bool {
+	for _, x := range xs {
+		if x == s {
 			return true
 		}
 	}

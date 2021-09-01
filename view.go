@@ -16,7 +16,7 @@ type (
 		Edges  []*viewEdge
 	}
 	// A viewEdge wraps an ent Edge and holds the name of the view to use when this viewEdge is serialized. A viewEdge
-	// is only valid in its holders context.
+	// is only valid in its views' context.
 	viewEdge struct {
 		*gen.Edge
 		Name string
@@ -38,9 +38,24 @@ var (
 
 // newViews returns a map of all views occurring in the given graph. Key is the view's name.
 func newViews(g *gen.Graph) (map[string]*mergedView, error) {
-	gss, err := groupCombinations(g)
-	if err != nil {
-		return nil, err
+	// c := &Config{}
+	// if g.Annotations == nil || g.Annotations[c.Name()] == nil {
+	// 	return nil, errElkExtensionNotFound
+	// }
+	// Collect all groups ever requested together.
+	gss := serialization.Collection{}
+	for _, n := range g.Nodes {
+		// For every operation extract the requested groups.
+		for _, a := range [...]string{createOperation, readOperation, updateOperation, listOperation} {
+			// TODO: Do not return views for operations excluded.
+			gs, err := groupsForOperation(n, a)
+			if err != nil {
+				return nil, err
+			}
+			if !gss.Contains(gs) {
+				gss = append(gss, gs)
+			}
+		}
 	}
 	m := make(map[string]*mergedView)
 	for _, n := range g.Nodes {
@@ -182,24 +197,6 @@ func edgeNeedsSerialization(e *gen.Edge, g serialization.Groups) (bool, error) {
 	}
 	// If there are groups given check if the groups match the requested ones.
 	return g.Match(gs), nil
-}
-
-// groupCombinations returns all groups ever requested together.
-func groupCombinations(g *gen.Graph) (serialization.Collection, error) {
-	gss := serialization.Collection{}
-	for _, n := range g.Nodes {
-		// For every action extract the requested groups.
-		for _, a := range [...]string{actionCreate, actionRead, actionUpdate, actionList} {
-			gs, err := groupsForAction(n, a)
-			if err != nil {
-				return nil, err
-			}
-			if !gss.Contains(gs) {
-				gss = append(gss, gs)
-			}
-		}
-	}
-	return gss, nil
 }
 
 // hashNodeAndGroups returns a unique Hash for a given node and groups.

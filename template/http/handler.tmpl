@@ -6,32 +6,44 @@
     {{ end }}
     {{ template "helper/http/import" $ }}
 
-    // handler has some convenience methods used on node-handlers.
-    type handler struct {}
-
-    // Bitmask to configure which routes to register.
-    type Routes uint32
-
-    func (rs Routes) has(r Routes) bool { return rs&r != 0 }
+    // Router returns a ready to use handler with all routes generated.
+    func Router(c *ent.Client, l *zap.Logger) chi.Router {
+        r := chi.NewRouter()
+        {{- range $n := $.Nodes }}
+            {{- $ops := nodeOperations $n }}
+            {{- $edgs := filterEdges $n }}
+            {{- $h := print $n.Receiver "Handler" }}
+            {{- if or $ops $edgs }}
+                {{ $n.Receiver }}Handler := New{{ $n.Name }}Handler(c, l)
+                r.Route("/{{ $n.Name | kebab | plural }}", func(r chi.Router) {
+                    {{- if contains $ops "create" }}
+                        r.Post("/", {{ $h }}.Create)
+                    {{- end }}
+                    {{- if contains $ops "read" }}
+                        r.Get("/{id}", {{ $h }}.Read)
+                    {{- end }}
+                    {{- if contains $ops "update" }}
+                        r.Patch("/{id}", {{ $h }}.Update)
+                    {{- end }}
+                    {{- if contains $ops "delete" }}
+                        r.Delete("/{id}", {{ $h }}.Delete)
+                    {{- end }}
+                    {{- if contains $ops "list" }}
+                        r.Get("/", {{ $h }}.List)
+                    {{- end }}
+                    {{- range $e := $edgs }}
+                        r.Get("/{id}/{{ $e.Name | kebab }}", {{ $h }}.{{ $e.Name | pascal }})
+                    {{- end }}
+                })
+            {{- end }}
+        {{- end }}
+        return r
+    }
 
     {{ $pkg := base $.Config.Package }}
-    {{ range $n := $.Nodes }}
-        const (
-            {{ $n.Name }}Create Routes = 1 << iota
-            {{ $n.Name }}Read
-            {{ $n.Name }}Update
-            {{ $n.Name }}Delete
-            {{ $n.Name }}List
-            {{ range $e := $n.Edges -}}
-                {{ $n.Name }}{{ $e.Name | pascal }}
-            {{ end -}}
-            {{ $n.Name }}Routes = 1<<iota - 1
-        )
-
+    {{- range $n := $.Nodes }}
         // {{ $n.Name }}Handler handles http crud operations on {{ $pkg }}.{{ $n.Name }}.
         type {{ $n.Name }}Handler struct {
-            handler
-
             client    *ent.Client
             log       *zap.Logger
         }
@@ -42,31 +54,7 @@
                 log:    l.With(zap.String("handler", "{{ $n.Name }}Handler")),
             }
         }
-
-        // RegisterHandlers registers the generated handlers on the given chi router.
-        func (h *{{ $n.Name }}Handler) Mount(r chi.Router, rs Routes) {
-            if rs.has({{ $n.Name }}Create) {
-                r.Post("/", h.Create)
-            }
-            if rs.has({{ $n.Name }}Read) {
-                r.Get("/{id}", h.Read)
-            }
-            if rs.has({{ $n.Name }}Update) {
-                r.Patch("/{id}", h.Update)
-            }
-            if rs.has({{ $n.Name }}Delete) {
-                r.Delete("/{id}", h.Delete)
-            }
-            if rs.has({{ $n.Name }}List) {
-                r.Get("/", h.List)
-            }
-            {{ range $e := $n.Edges -}}
-                if rs.has({{ $n.Name }}{{ $e.Name | pascal }}) {
-                    r.Get("/{id}/{{ $e.Name | kebab }}", h.{{ $e.Name | pascal }})
-                }
-            {{ end -}}
-        }
-    {{ end }}
+    {{- end }}
 
     func stripEntError(err error) string {
         return strings.TrimPrefix(err.Error(), "ent: ")

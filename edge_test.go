@@ -77,7 +77,7 @@ func TestEdges(t *testing.T) {
 			break
 		}
 	}
-	etls, err := edges(p, actionRead)
+	etls, err := edges(p, readOperation)
 	require.NoError(t, err)
 
 	require.Equal(
