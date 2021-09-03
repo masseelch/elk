@@ -45,10 +45,11 @@ type (
 	Parameter struct {
 		Name            string         `json:"name"`
 		In              ParameterPlace `json:"in"`
-		Description     string         `json:"description"`
-		Required        bool           `json:"required"`
-		Deprecated      bool           `json:"deprecated"`
-		AllowEmptyValue bool           `json:"allowEmptyValue"`
+		Description     string         `json:"description,omitempty"`
+		Required        bool           `json:"required,omitempty"`
+		Deprecated      bool           `json:"deprecated,omitempty"`
+		AllowEmptyValue bool           `json:"allowEmptyValue,omitempty"`
+		Schema          Type           `json:"schema"`
 	}
 	Operation struct {
 		Summary      string              `json:"summary,omitempty"`
@@ -72,8 +73,11 @@ type (
 	Content         map[MediaType]MediaTypeObject
 	MediaType       string
 	MediaTypeObject struct {
-		Ref    *Schema `json:"-"`
-		Schema Schema  `json:"schema"`
+		Unique      bool
+		Schema      *Schema
+		SchemaRef   *Schema
+		Response    *Response
+		ResponseRef *Response
 	}
 	Schema struct {
 		Name   string
@@ -93,17 +97,19 @@ type (
 	}
 	Edges map[string]Edge
 	Edge  struct {
-		*Schema
-		Unique bool
+		Schema Schema  `json:"schema"`
+		Ref    *Schema `json:"-"`
+		Unique bool    `json:"-"`
 	}
 	Response struct {
+		Name        string               `json:"-"`
 		Description string               `json:"description"`
 		Headers     map[string]Parameter `json:"headers,omitempty"`
-		Content     Content              `json:"content"`
+		Content     *Content             `json:"content,omitempty"`
 	}
 	Components struct {
 		Schemas    map[string]*Schema   `json:"schemas"`
-		Responses  map[string]Response  `json:"responses"`
+		Responses  map[string]*Response `json:"responses"`
 		Parameters map[string]Parameter `json:"parameters"`
 		// ... TODO
 	}

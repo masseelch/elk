@@ -12,7 +12,7 @@ import (
 
 func main() {
 	ex, err := elk.NewExtension(
-		elk.EnableSpecGenerator(nil),
+		elk.EnableSpecGenerator("openapi.json"),
 		elk.SpecTitle("My Pets API"),
 		elk.SpecDescription("Awesome, Mega Cool API to manage Ariel's Pet Leopards!"),
 		elk.SpecVersion("0.0.1"),

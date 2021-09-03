@@ -3,6 +3,7 @@ package spec
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 )
@@ -32,11 +33,27 @@ func (f Field) MarshalJSON() ([]byte, error) {
 }
 
 func (o MediaTypeObject) MarshalJSON() ([]byte, error) {
-	if o.Ref != nil {
-		return []byte(fmt.Sprintf(`{"schema":{"$ref":"#/components/schemas/%s"}}`, o.Ref.Name)), nil
+	if o.Schema != nil {
+		return json.Marshal(struct {
+			Schema *Schema `json:"schema"`
+		}{o.Schema})
 	}
-	type local MediaTypeObject
-	return json.Marshal(local(o))
+	if o.SchemaRef != nil {
+		ref := fmt.Sprintf(`{"$ref":"#/components/schemas/%s"}`, o.SchemaRef.Name)
+		if !o.Unique {
+			ref = fmt.Sprintf(`{"type":"array","items":%s}`, ref)
+		}
+		return []byte(fmt.Sprintf(`{"schema":%s}`, ref)), nil
+	}
+	if o.Response != nil {
+		return json.Marshal(struct {
+			Schema *Response `json:"schema"`
+		}{o.Response})
+	}
+	if o.ResponseRef != nil {
+		return []byte(fmt.Sprintf(`{"schema":{"$ref":"#/components/responses/%s"}}`, o.ResponseRef.Name)), nil
+	}
+	return nil, errors.New("invalid object")
 }
 
 func (fs Fields) required() []string {
@@ -87,9 +104,12 @@ func (s Schema) MarshalJSON() ([]byte, error) {
 }
 
 func (e Edge) MarshalJSON() ([]byte, error) {
-	ref := fmt.Sprintf(`{"$ref":"#/components/schemas/%s"}`, e.Schema.Name)
-	if e.Unique {
-		return []byte(ref), nil
+	if e.Ref != nil {
+		ref := fmt.Sprintf(`{"$ref":"#/components/schemas/%s"}`, e.Ref.Name)
+		if e.Unique {
+			return []byte(ref), nil
+		}
+		return []byte(fmt.Sprintf(`{"type":"array","items":%s}`, ref)), nil
 	}
-	return []byte(fmt.Sprintf(`{"type":"array","items":%s}`, ref)), nil
+	return json.Marshal(e.Schema)
 }

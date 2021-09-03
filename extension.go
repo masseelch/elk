@@ -7,7 +7,6 @@ import (
 	"errors"
 	"github.com/masseelch/elk/policy"
 	"github.com/masseelch/elk/spec"
-	"io"
 )
 
 type (
@@ -33,18 +32,13 @@ type (
 // NewExtension returns a new elk extension with default values.
 func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 	ex := &Extension{
-		templates:      []*gen.Template{HTTPTemplate},
-		easyjsonConfig: newEasyJsonConfig(),
-		config: &Config{
-			HandlerPolicy: policy.Expose,
-		},
+		config: &Config{HandlerPolicy: policy.Expose},
 	}
 	for _, opt := range opts {
 		if err := opt(ex); err != nil {
 			return nil, err
 		}
 	}
-	ex.hooks = append(ex.hooks, EasyJSONGenerator(ex.easyjsonConfig))
 	return ex, nil
 }
 
@@ -82,10 +76,23 @@ func WithEasyJsonConfig(c EasyJsonConfig) ExtensionOption {
 	}
 }
 
-// EnableSpecGenerator enables the OpenAPI-Spec generator. Data will be written to the given io.Writer.
-func EnableSpecGenerator(out io.Writer) ExtensionOption {
+// EnableSpecGenerator enables the OpenAPI-Spec generator. Data will be written to given filename.
+func EnableSpecGenerator(out string) ExtensionOption {
 	return func(ex *Extension) error {
+		if out == "" {
+			return errors.New("spec filename cannot be empty")
+		}
 		ex.hooks = append(ex.hooks, ex.SpecGenerator(out))
+		return nil
+	}
+}
+
+// EnableHandlerGenerator enables generation of http crud handlers.
+func EnableHandlerGenerator() ExtensionOption {
+	return func(ex *Extension) error {
+		ex.templates = []*gen.Template{HTTPTemplate}
+		ex.easyjsonConfig = newEasyJsonConfig()
+		ex.hooks = append(ex.hooks, EasyJSONGenerator(ex.easyjsonConfig))
 		return nil
 	}
 }

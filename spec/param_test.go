@@ -9,10 +9,10 @@ import (
 
 func TestParameterPlace_MarshalJSON(t *testing.T) {
 	for e, p := range map[string]ParameterPlace{
-		"query":  query,
-		"header": header,
-		"path":   path,
-		"cookie": cookie,
+		"query":  QueryParam,
+		"header": HeaderParam,
+		"path":   PathParam,
+		"cookie": CookieParam,
 	} {
 		j, err := json.Marshal(p)
 		require.NoError(t, err)
