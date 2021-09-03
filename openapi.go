@@ -14,10 +14,6 @@ import (
 )
 
 var (
-	// _base64    = &spec.Type{"string", "byte"}
-	// _uint8List = &spec.Type{"string", "binary"}
-	// _date      = &spec.Type{"string", "date"}
-	// _sensitive = &spec.Type{"string", "password"}
 	_int32    = &spec.Type{Type: "integer", Format: "int32"}
 	_int64    = &spec.Type{Type: "integer", Format: "int64"}
 	_float    = &spec.Type{Type: "number", Format: "float"}
@@ -302,14 +298,6 @@ func path(s *spec.Spec, root string) *spec.Path {
 func operationID(n *gen.Type, op string) string {
 	return op + n.Name
 }
-
-// // defaultString returns s if not "", d otherwise.
-// func defaultString(s, d string) string {
-// 	if s != "" {
-// 		return s
-// 	}
-// 	return d
-// }
 
 func dump(out io.Writer, spec *spec.Spec) error {
 	b, err := json.MarshalIndent(spec, "", "  ")
