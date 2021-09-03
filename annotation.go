@@ -27,6 +27,26 @@ type SchemaAnnotation struct {
 	UpdateGroups serialization.Groups
 	// ListGroups holds the serializations groups to use on the list handler.
 	ListGroups serialization.Groups
+	// // CreateSummary overrides default OpenAPI spec operation summary on create operation.
+	// CreateSummary string
+	// // CreateDescription overrides default OpenAPI spec operation description on create operation.
+	// CreateDescription string
+	// // ReadSummary overrides default OpenAPI spec operation summary on read operation.
+	// ReadSummary string
+	// // ReadDescription overrides default OpenAPI spec operation description on read operation.
+	// ReadDescription string
+	// // UpdateSummary overrides default OpenAPI spec operation summary on update operation.
+	// UpdateSummary string
+	// // UpdateDescription overrides default OpenAPI spec operation description on update operation.
+	// UpdateDescription string
+	// // DeleteSummary overrides default OpenAPI spec operation summary on delete operation.
+	// DeleteSummary string
+	// // DeleteDescription overrides default OpenAPI spec operation description on delete operation.
+	// DeleteDescription string
+	// // ListSummary overrides default OpenAPI spec operation summary on list operation.
+	// ListSummary string
+	// // ListDescription overrides default OpenAPI spec operation description on list operation.
+	// ListDescription string
 }
 
 // Name implements ent.Annotation interface.
@@ -74,6 +94,36 @@ func (a SchemaAnnotation) Merge(o schema.Annotation) schema.Annotation {
 	if ant.ListPolicy != policy.None {
 		a.ListPolicy = ant.ListPolicy
 	}
+	// if ant.CreateSummary != "" {
+	// 	a.CreateSummary = ant.CreateSummary
+	// }
+	// if ant.CreateDescription != "" {
+	// 	a.CreateDescription = ant.CreateDescription
+	// }
+	// if ant.ReadSummary != "" {
+	// 	a.ReadSummary = ant.ReadSummary
+	// }
+	// if ant.ReadDescription != "" {
+	// 	a.ReadDescription = ant.ReadDescription
+	// }
+	// if ant.UpdateSummary != "" {
+	// 	a.UpdateSummary = ant.UpdateSummary
+	// }
+	// if ant.UpdateDescription != "" {
+	// 	a.UpdateDescription = ant.UpdateDescription
+	// }
+	// if ant.DeleteSummary != "" {
+	// 	a.DeleteSummary = ant.DeleteSummary
+	// }
+	// if ant.DeleteDescription != "" {
+	// 	a.DeleteDescription = ant.DeleteDescription
+	// }
+	// if ant.ListSummary != "" {
+	// 	a.ListSummary = ant.ListSummary
+	// }
+	// if ant.ListDescription != "" {
+	// 	a.ListDescription = ant.ListDescription
+	// }
 	return a
 }
 
@@ -178,6 +228,46 @@ func Exclude(c ...PolicyConfig) SchemaAnnotation {
 	return s
 }
 
+// // CreateSummaryDescription adds OpenAPI spec operation summary and description to a create operation.
+// func CreateSummaryDescription(sum, desc string) SchemaAnnotation {
+// 	return SchemaAnnotation{
+// 		CreateSummary:     sum,
+// 		CreateDescription: desc,
+// 	}
+// }
+//
+// // ReadSummaryDescription adds OpenAPI spec operation summary and description to a read operation.
+// func ReadSummaryDescription(sum, desc string) SchemaAnnotation {
+// 	return SchemaAnnotation{
+// 		ReadSummary:     sum,
+// 		ReadDescription: desc,
+// 	}
+// }
+//
+// // UpdateSummaryDescription adds OpenAPI spec operation summary and description to an update operation.
+// func UpdateSummaryDescription(sum, desc string) SchemaAnnotation {
+// 	return SchemaAnnotation{
+// 		UpdateSummary:     sum,
+// 		UpdateDescription: desc,
+// 	}
+// }
+//
+// // DeleteSummaryDescription adds OpenAPI spec operation summary and description to a delete operation.
+// func DeleteSummaryDescription(sum, desc string) SchemaAnnotation {
+// 	return SchemaAnnotation{
+// 		DeleteSummary:     sum,
+// 		DeleteDescription: desc,
+// 	}
+// }
+//
+// // ListSummaryDescription adds OpenAPI spec operation summary and description to a list operation.
+// func ListSummaryDescription(sum, desc string) SchemaAnnotation {
+// 	return SchemaAnnotation{
+// 		ListSummary:     sum,
+// 		ListDescription: desc,
+// 	}
+// }
+
 // Annotation annotates fields and edges with metadata for templates.
 type Annotation struct {
 	// Groups holds the serialization groups to use on this field / edge.
@@ -186,8 +276,6 @@ type Annotation struct {
 	MaxDepth uint
 	// Expose defines if a read/list for this edge should be generated.
 	Expose policy.Policy
-	// OpenAPI spec tags on routes.
-	Tags []string
 	// OpenAPI spec example value on schema fields.
 	Example interface{}
 }
@@ -218,9 +306,6 @@ func (a Annotation) Merge(o schema.Annotation) schema.Annotation {
 	}
 	if ant.Expose != policy.None {
 		a.Expose = ant.Expose
-	}
-	if len(ant.Tags) > 0 {
-		a.Tags = ant.Tags
 	}
 	if ant.Example != nil {
 		a.Example = ant.Example
@@ -262,11 +347,6 @@ func ExposeEdge() Annotation {
 // ExcludeEdge returns a policy.Exclude annotation.
 func ExcludeEdge() Annotation {
 	return Annotation{Expose: policy.Exclude}
-}
-
-// Tags returns a tags annotation.
-func Tags(tags ...string) Annotation {
-	return Annotation{Tags: tags}
 }
 
 // Example returns an example annotation.

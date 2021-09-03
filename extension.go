@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
+	"errors"
 	"github.com/masseelch/elk/policy"
 	"github.com/masseelch/elk/spec"
+	"io"
 )
 
 type (
@@ -22,8 +24,7 @@ type (
 		hooks          []gen.Hook
 		templates      []*gen.Template
 		config         *Config
-		// If non-nil the generator generates an OpenAPI-Specification for the defined schemas.
-		spec *spec.Spec
+		specHooks      []Hook
 	}
 	// ExtensionOption allows managing Extension configuration using functional arguments.
 	ExtensionOption func(*Extension) error
@@ -81,14 +82,65 @@ func WithEasyJsonConfig(c EasyJsonConfig) ExtensionOption {
 	}
 }
 
-// WithOpenAPISpec enables the OpenAPI-Spec generator, which will merge into the given spec.
-func WithOpenAPISpec(spec *spec.Spec) ExtensionOption {
+// EnableSpecGenerator enables the OpenAPI-Spec generator. Data will be written to the given io.Writer.
+func EnableSpecGenerator(out io.Writer) ExtensionOption {
 	return func(ex *Extension) error {
-		ex.spec = spec
-		ex.hooks = append(ex.hooks, SpecGenerator(spec))
+		ex.hooks = append(ex.hooks, ex.SpecGenerator(out))
 		return nil
 	}
 }
+
+// SpecHook registers the given Hook on the SpecGenerator.
+func SpecHook(h Hook) ExtensionOption {
+	return func(ex *Extension) error {
+		if h == nil {
+			return errors.New("hook cannot be nil")
+		}
+		ex.specHooks = append(ex.specHooks, h)
+		return nil
+	}
+}
+
+// SpecTitle sets the title of the Info block.
+func SpecTitle(v string) ExtensionOption {
+	return SpecHook(func(next Generator) Generator {
+		return GenerateFunc(func(spec *spec.Spec) error {
+			if err := next.Generate(spec); err != nil {
+				return err
+			}
+			spec.Info.Title = v
+			return nil
+		})
+	})
+}
+
+// SpecDescription sets the title of the Info block.
+func SpecDescription(v string) ExtensionOption {
+	return SpecHook(func(next Generator) Generator {
+		return GenerateFunc(func(spec *spec.Spec) error {
+			if err := next.Generate(spec); err != nil {
+				return err
+			}
+			spec.Info.Description = v
+			return nil
+		})
+	})
+}
+
+// SpecVersion sets the version of the Info block.
+func SpecVersion(v string) ExtensionOption {
+	return SpecHook(func(next Generator) Generator {
+		return GenerateFunc(func(spec *spec.Spec) error {
+			if err := next.Generate(spec); err != nil {
+				return err
+			}
+			spec.Info.Version = v
+			return nil
+		})
+	})
+}
+
+// TODO: Rest of Info block ...
 
 // Name implements entc.Annotation interface.
 func (c Config) Name() string {

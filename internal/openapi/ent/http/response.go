@@ -36,6 +36,14 @@ func BadRequest(w http.ResponseWriter, msg interface{}) (int, error) {
 	}.MarshalToHTTPResponseWriter(w)
 }
 
+func Conflict(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusConflict,
+		Status: http.StatusText(http.StatusConflict),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
+
 func Forbidden(w http.ResponseWriter, msg interface{}) (int, error) {
 	return ErrResponse{
 		Code:   http.StatusForbidden,
@@ -56,14 +64,6 @@ func NotFound(w http.ResponseWriter, msg interface{}) (int, error) {
 	return ErrResponse{
 		Code:   http.StatusNotFound,
 		Status: http.StatusText(http.StatusNotFound),
-		Errors: msg,
-	}.MarshalToHTTPResponseWriter(w)
-}
-
-func Unauthorized(w http.ResponseWriter, msg interface{}) (int, error) {
-	return ErrResponse{
-		Code:   http.StatusUnauthorized,
-		Status: http.StatusText(http.StatusUnauthorized),
 		Errors: msg,
 	}.MarshalToHTTPResponseWriter(w)
 }

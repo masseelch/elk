@@ -47,7 +47,7 @@ func newViews(g *gen.Graph) (map[string]*mergedView, error) {
 	for _, n := range g.Nodes {
 		// For every operation extract the requested groups.
 		for _, a := range [...]string{createOperation, readOperation, updateOperation, listOperation} {
-			// TODO: Do not return views for operations excluded.
+			// TODO: Do not return views for excluded operations.
 			gs, err := groupsForOperation(n, a)
 			if err != nil {
 				return nil, err

@@ -1,7 +1,7 @@
 package elk
 
 import (
-	"github.com/masseelch/elk/openapi/spec"
+	"github.com/masseelch/elk/spec"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -16,7 +16,7 @@ func TestExtensionOption(t *testing.T) {
 		SkipMemberNameUnescaping: true,
 	}
 	spec, err := spec.New()
-	ex, err := NewExtension(WithEasyJsonConfig(c), WithOpenAPISpec(spec))
+	ex, err := NewExtension(WithEasyJsonConfig(c), WithOpenAPISpec(nil, spec))
 	require.NoError(t, err)
 	require.Equal(t, c, ex.easyjsonConfig)
 	// require.Equal(t, spec, ex.spec)

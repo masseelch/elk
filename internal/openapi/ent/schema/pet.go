@@ -24,7 +24,7 @@ func (Pet) Fields() []ent.Field {
 		field.Int("age").
 			Optional().
 			Annotations(
-				elk.Example(0),
+				elk.Example(1),
 			),
 	}
 }
