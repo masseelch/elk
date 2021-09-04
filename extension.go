@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/masseelch/elk/policy"
 	"github.com/masseelch/elk/spec"
+	"io"
 )
 
 type (
@@ -148,6 +149,23 @@ func SpecVersion(v string) ExtensionOption {
 }
 
 // TODO: Rest of Info block ...
+
+// SpecDump dumps the current specs content to the given io.Writer.
+func SpecDump(out io.Writer) ExtensionOption {
+	return SpecHook(func(next Generator) Generator {
+		return GenerateFunc(func(spec *spec.Spec) error {
+			if err := next.Generate(spec); err != nil {
+				return err
+			}
+			j, err := json.MarshalIndent(spec, "", "  ")
+			if err != nil {
+				return err
+			}
+			_, err = out.Write(j)
+			return err
+		})
+	})
+}
 
 // Name implements entc.Annotation interface.
 func (c Config) Name() string {

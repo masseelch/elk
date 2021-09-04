@@ -81,7 +81,11 @@ func (e *Extension) SpecGenerator(out string) gen.Hook {
 				return err
 			}
 			// Dump the spec.
-			return dump(out, s)
+			b, err := json.MarshalIndent(s, "", "  ")
+			if err != nil {
+				return err
+			}
+			return ioutil.WriteFile(out, b, 0664)
 		})
 	}
 }
@@ -621,13 +625,4 @@ func schemaAnnotation(n *gen.Type) (*SchemaAnnotation, error) {
 		}
 	}
 	return ant, nil
-}
-
-func dump(out string, spec *spec.Spec) error {
-	b, err := json.MarshalIndent(spec, "", "  ")
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(b))
-	return ioutil.WriteFile(out, b, 0664)
 }
