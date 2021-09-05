@@ -28,6 +28,8 @@ type (
 	}
 	// ExtensionOption allows managing Extension configuration using functional arguments.
 	ExtensionOption func(*Extension) error
+	// HandlerOption allows managing RestGenerator configuration using function arguments.
+	HandlerOption ExtensionOption
 )
 
 // NewExtension returns a new elk extension with default values.
@@ -69,8 +71,8 @@ func DefaultHandlerPolicy(p policy.Policy) ExtensionOption {
 	}
 }
 
-// WithEasyJsonConfig sets a custom EasyJsonConfig.
-func WithEasyJsonConfig(c EasyJsonConfig) ExtensionOption {
+// HandlerEasyJsonConfig sets a custom EasyJsonConfig.
+func HandlerEasyJsonConfig(c EasyJsonConfig) HandlerOption {
 	return func(ex *Extension) error {
 		ex.easyjsonConfig = c
 		return nil
@@ -92,11 +94,16 @@ func EnableSpecGenerator(out string, hooks ...Hook) ExtensionOption {
 }
 
 // EnableHandlerGenerator enables generation of http crud handlers.
-func EnableHandlerGenerator() ExtensionOption {
+func EnableHandlerGenerator(opts ...HandlerOption) ExtensionOption {
 	return func(ex *Extension) error {
 		ex.templates = []*gen.Template{HTTPTemplate}
 		ex.easyjsonConfig = newEasyJsonConfig()
 		ex.hooks = append(ex.hooks, EasyJSONGenerator(ex.easyjsonConfig))
+		for _, opt := range opts {
+			if err := opt(ex); err != nil {
+				return err
+			}
+		}
 		return nil
 	}
 }
