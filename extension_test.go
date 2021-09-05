@@ -1,23 +1,31 @@
 package elk
 
 import (
-	"github.com/masseelch/elk/spec"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestExtensionOption(t *testing.T) {
-	c := EasyJsonConfig{
-		NoStdMarshalers:          false,
-		SnakeCase:                true,
-		LowerCamelCase:           false,
-		OmitEmpty:                true,
-		DisallowUnknownFields:    false,
-		SkipMemberNameUnescaping: true,
-	}
-	spec, err := spec.New()
-	ex, err := NewExtension(WithEasyJsonConfig(c), WithOpenAPISpec(nil, spec))
+	ex, err := NewExtension()
+	require.EqualError(t, err,
+		`no generator enabled: enable one by providing either "EnableSpecGenerator()" or "EnableHandlerGenerator()" to "NewExtension()"`,
+	)
+	require.Nil(t, ex)
+
+	ex, err = NewExtension(EnableHandlerGenerator())
 	require.NoError(t, err)
-	require.Equal(t, c, ex.easyjsonConfig)
-	// require.Equal(t, spec, ex.spec)
+	require.Len(t, ex.hooks, 1)
+
+	ex, err = NewExtension(EnableSpecGenerator(""))
+	require.EqualError(t, err, "spec filename cannot be empty")
+	require.Nil(t, ex)
+
+	ex, err = NewExtension(EnableSpecGenerator("spec.json", SpecTitle("")))
+	require.NoError(t, err)
+	require.Len(t, ex.hooks, 1)
+	require.Len(t, ex.specHooks, 1)
+
+	ex, err = NewExtension(EnableHandlerGenerator(), EnableSpecGenerator("spec.json"))
+	require.NoError(t, err)
+	require.Len(t, ex.hooks, 2)
 }

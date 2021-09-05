@@ -42,6 +42,9 @@ func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 			return nil, err
 		}
 	}
+	if len(ex.hooks) == 0 {
+		return nil, errors.New(`no generator enabled: enable one by providing either "EnableSpecGenerator()" or "EnableHandlerGenerator()" to "NewExtension()"`)
+	}
 	return ex, nil
 }
 
