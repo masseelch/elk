@@ -138,10 +138,8 @@ func errResponses(s *spec.Spec) {
 			Headers:     nil, // TODO
 			Content: &spec.Content{
 				spec.JSON: spec.MediaTypeObject{
-					// TODO: There still is a bug where the example value in the response preview in swagger editor
-					// TODO: does always show "string" instead of an schema example.
 					Unique: true,
-					Schema: &spec.Schema{
+					Schema: spec.Schema{
 						Fields: map[string]*spec.Field{
 							"code": {
 								Type:    *_int32,
@@ -270,7 +268,7 @@ func requestBody(n *gen.Type, op string) (*spec.RequestBody, error) {
 	req.Content = spec.Content{
 		spec.JSON: spec.MediaTypeObject{
 			Unique: true,
-			Schema: &spec.Schema{
+			Schema: spec.Schema{
 				Name:   fmt.Sprintf("%s%sRequest", n.Name, strcase.UpperCamelCase(op)),
 				Fields: fs,
 			},
@@ -353,25 +351,21 @@ func createOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		Tags:        []string{n.Name},
 		OperationID: operationID(n, createOperation),
 		RequestBody: req,
-		Responses: map[string]spec.Response{
+		Responses: map[string]spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
-				Description: fmt.Sprintf("%s created", n.Name),
-				Headers:     nil, // TODO
-				Content: &spec.Content{
-					spec.JSON: spec.MediaTypeObject{
-						Unique:    true,
-						SchemaRef: s.Components.Schemas[rspName],
+				Response: spec.Response{
+					Description: fmt.Sprintf("%s created", n.Name),
+					Headers:     nil, // TODO
+					Content: &spec.Content{
+						spec.JSON: spec.MediaTypeObject{
+							Unique: true,
+							Ref:    s.Components.Schemas[rspName],
+						},
 					},
 				},
 			},
-			strconv.Itoa(http.StatusBadRequest): errRsp(
-				s, http.StatusBadRequest,
-				"invalid input, data invalid",
-			),
-			strconv.Itoa(http.StatusInternalServerError): errRsp(
-				s, http.StatusInternalServerError,
-				"an unexpected error occurred",
-			),
+			strconv.Itoa(http.StatusBadRequest):          {Ref: s.Components.Responses[strconv.Itoa(http.StatusBadRequest)]},
+			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
 	}, nil
 }
@@ -405,29 +399,22 @@ func readOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			Required:    true,
 			Schema:      *t,
 		}},
-		Responses: map[string]spec.Response{
+		Responses: map[string]spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
-				Description: fmt.Sprintf("%s with requested ID was found", n.Name),
-				Headers:     nil, // TODO
-				Content: &spec.Content{
-					spec.JSON: spec.MediaTypeObject{
-						Unique:    true,
-						SchemaRef: s.Components.Schemas[rspName],
+				Response: spec.Response{
+					Description: fmt.Sprintf("%s with requested ID was found", n.Name),
+					Headers:     nil, // TODO
+					Content: &spec.Content{
+						spec.JSON: spec.MediaTypeObject{
+							Unique: true,
+							Ref:    s.Components.Schemas[rspName],
+						},
 					},
 				},
 			},
-			strconv.Itoa(http.StatusBadRequest): errRsp(
-				s, http.StatusBadRequest,
-				"invalid input, data invalid",
-			),
-			strconv.Itoa(http.StatusNotFound): errRsp(
-				s, http.StatusNotFound,
-				fmt.Sprintf("%s with requested ID does not exist", n.Name),
-			),
-			strconv.Itoa(http.StatusInternalServerError): errRsp(
-				s, http.StatusInternalServerError,
-				"an unexpected error occurred",
-			),
+			strconv.Itoa(http.StatusBadRequest):          {Ref: s.Components.Responses[strconv.Itoa(http.StatusBadRequest)]},
+			strconv.Itoa(http.StatusNotFound):            {Ref: s.Components.Responses[strconv.Itoa(http.StatusNotFound)]},
+			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
 	}, nil
 }
@@ -466,29 +453,22 @@ func updateOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			Schema:      *t,
 		}},
 		RequestBody: req,
-		Responses: map[string]spec.Response{
+		Responses: map[string]spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
-				Description: fmt.Sprintf("%s updated", n.Name),
-				Headers:     nil, // TODO
-				Content: &spec.Content{
-					spec.JSON: spec.MediaTypeObject{
-						Unique:    true,
-						SchemaRef: s.Components.Schemas[rspName],
+				Response: spec.Response{
+					Description: fmt.Sprintf("%s updated", n.Name),
+					Headers:     nil, // TODO
+					Content: &spec.Content{
+						spec.JSON: spec.MediaTypeObject{
+							Unique: true,
+							Ref:    s.Components.Schemas[rspName],
+						},
 					},
 				},
 			},
-			strconv.Itoa(http.StatusBadRequest): errRsp(
-				s, http.StatusBadRequest,
-				"invalid input, data invalid",
-			),
-			strconv.Itoa(http.StatusNotFound): errRsp(
-				s, http.StatusNotFound,
-				fmt.Sprintf("%s with requested ID does not exist", n.Name),
-			),
-			strconv.Itoa(http.StatusInternalServerError): errRsp(
-				s, http.StatusInternalServerError,
-				"an unexpected error occurred",
-			),
+			strconv.Itoa(http.StatusBadRequest):          {Ref: s.Components.Responses[strconv.Itoa(http.StatusBadRequest)]},
+			strconv.Itoa(http.StatusNotFound):            {Ref: s.Components.Responses[strconv.Itoa(http.StatusNotFound)]},
+			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
 	}, nil
 }
@@ -510,23 +490,16 @@ func deleteOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			Required:    true,
 			Schema:      *t,
 		}},
-		Responses: map[string]spec.Response{
+		Responses: map[string]spec.OperationResponse{
 			strconv.Itoa(http.StatusNoContent): {
-				Description: fmt.Sprintf("%s with requested ID was deleted", n.Name),
-				Headers:     nil, // TODO
+				Response: spec.Response{
+					Description: fmt.Sprintf("%s with requested ID was deleted", n.Name),
+					Headers:     nil, // TODO
+				},
 			},
-			strconv.Itoa(http.StatusBadRequest): errRsp(
-				s, http.StatusBadRequest,
-				"invalid input, data invalid",
-			),
-			strconv.Itoa(http.StatusNotFound): errRsp(
-				s, http.StatusNotFound,
-				fmt.Sprintf("%s with requested ID does not exist", n.Name),
-			),
-			strconv.Itoa(http.StatusInternalServerError): errRsp(
-				s, http.StatusInternalServerError,
-				"an unexpected error occurred",
-			),
+			strconv.Itoa(http.StatusBadRequest):          {Ref: s.Components.Responses[strconv.Itoa(http.StatusBadRequest)]},
+			strconv.Itoa(http.StatusNotFound):            {Ref: s.Components.Responses[strconv.Itoa(http.StatusNotFound)]},
+			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
 	}, nil
 }
@@ -560,44 +533,23 @@ func listOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			Description: "item count to render per page",
 			Schema:      *_int32,
 		}},
-		Responses: map[string]spec.Response{
+		Responses: map[string]spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
-				Description: fmt.Sprintf("result %s list", n.Name),
-				Headers:     nil, // TODO
-				Content: &spec.Content{
-					spec.JSON: spec.MediaTypeObject{
-						SchemaRef: s.Components.Schemas[rspName],
+				Response: spec.Response{
+					Description: fmt.Sprintf("result %s list", n.Name),
+					Headers:     nil, // TODO
+					Content: &spec.Content{
+						spec.JSON: spec.MediaTypeObject{
+							Ref: s.Components.Schemas[rspName],
+						},
 					},
 				},
 			},
-			strconv.Itoa(http.StatusBadRequest): errRsp(
-				s, http.StatusBadRequest,
-				"invalid input, data invalid",
-			),
-			strconv.Itoa(http.StatusNotFound): errRsp(
-				s, http.StatusNotFound,
-				fmt.Sprintf("%s with requested ID does not exist", n.Name),
-			),
-			strconv.Itoa(http.StatusInternalServerError): errRsp(
-				s, http.StatusInternalServerError,
-				"an unexpected error occurred",
-			),
+			strconv.Itoa(http.StatusBadRequest):          {Ref: s.Components.Responses[strconv.Itoa(http.StatusBadRequest)]},
+			strconv.Itoa(http.StatusNotFound):            {Ref: s.Components.Responses[strconv.Itoa(http.StatusNotFound)]},
+			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
 	}, nil
-}
-
-// errRsp returns an error response (ref) for the given code with the given description.
-func errRsp(s *spec.Spec, code int, desc string) spec.Response {
-	return spec.Response{
-		Description: desc,
-		Headers:     nil, // TODO
-		Content: &spec.Content{
-			spec.JSON: spec.MediaTypeObject{
-				Unique:      true,
-				ResponseRef: s.Components.Responses[strconv.Itoa(code)],
-			},
-		},
-	}
 }
 
 // path returns the correct spec.Path for the given root. Creates and sets a fresh instance if non does yet exist.

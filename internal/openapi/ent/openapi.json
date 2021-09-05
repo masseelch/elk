@@ -53,34 +53,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Category with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -128,24 +107,10 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -182,34 +147,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Category with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -237,34 +181,13 @@
             "description": "Category with requested ID was deleted"
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Category with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -324,34 +247,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Category with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -399,34 +301,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Owner with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -479,24 +360,10 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -533,34 +400,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Owner with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -588,34 +434,13 @@
             "description": "Owner with requested ID was deleted"
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Owner with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -680,34 +505,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Owner with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -755,34 +559,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Pet with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -847,24 +630,10 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -901,34 +670,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Pet with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -956,34 +704,13 @@
             "description": "Pet with requested ID was deleted"
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Pet with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       },
@@ -1060,34 +787,13 @@
             }
           },
           "400": {
-            "description": "invalid input, data invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/400"
-                }
-              }
-            }
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "description": "Pet with requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/404"
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "description": "an unexpected error occurred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/responses/500"
-                }
-              }
-            }
+            "$ref": "#/components/responses/500"
           }
         }
       }

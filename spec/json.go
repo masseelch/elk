@@ -3,7 +3,6 @@ package spec
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"sort"
 )
@@ -33,27 +32,22 @@ func (f Field) MarshalJSON() ([]byte, error) {
 }
 
 func (o MediaTypeObject) MarshalJSON() ([]byte, error) {
-	if o.Schema != nil {
-		return json.Marshal(struct {
-			Schema *Schema `json:"schema"`
-		}{o.Schema})
-	}
-	if o.SchemaRef != nil {
-		ref := fmt.Sprintf(`{"$ref":"#/components/schemas/%s"}`, o.SchemaRef.Name)
+	if o.Ref != nil {
+		ref := fmt.Sprintf(`{"$ref":"#/components/schemas/%s"}`, o.Ref.Name)
 		if !o.Unique {
 			ref = fmt.Sprintf(`{"type":"array","items":%s}`, ref)
 		}
 		return []byte(fmt.Sprintf(`{"schema":%s}`, ref)), nil
 	}
-	if o.Response != nil {
-		return json.Marshal(struct {
-			Schema *Response `json:"schema"`
-		}{o.Response})
+	type local MediaTypeObject
+	return json.Marshal(local(o))
+}
+
+func (r OperationResponse) MarshalJSON() ([]byte, error) {
+	if r.Ref != nil {
+		return []byte(fmt.Sprintf(`{"$ref":"#/components/responses/%s"}`, r.Ref.Name)), nil
 	}
-	if o.ResponseRef != nil {
-		return []byte(fmt.Sprintf(`{"schema":{"$ref":"#/components/responses/%s"}}`, o.ResponseRef.Name)), nil
-	}
-	return nil, errors.New("invalid object")
+	return json.Marshal(r.Response)
 }
 
 func (fs Fields) required() []string {

@@ -52,15 +52,19 @@ type (
 		Schema          Type           `json:"schema"`
 	}
 	Operation struct {
-		Summary      string              `json:"summary,omitempty"`
-		Description  string              `json:"description,omitempty"`
-		Tags         []string            `json:"tags,omitempty"`
-		ExternalDocs *ExternalDocs       `json:"externalDocs,omitempty"`
-		OperationID  string              `json:"operationId"`
-		Parameters   []Parameter         `json:"parameters,omitempty"`
-		RequestBody  *RequestBody        `json:"requestBody,omitempty"`
-		Responses    map[string]Response `json:"responses"`
-		Deprecated   bool                `json:"deprecated,omitempty"`
+		Summary      string                       `json:"summary,omitempty"`
+		Description  string                       `json:"description,omitempty"`
+		Tags         []string                     `json:"tags,omitempty"`
+		ExternalDocs *ExternalDocs                `json:"externalDocs,omitempty"`
+		OperationID  string                       `json:"operationId"`
+		Parameters   []Parameter                  `json:"parameters,omitempty"`
+		RequestBody  *RequestBody                 `json:"requestBody,omitempty"`
+		Responses    map[string]OperationResponse `json:"responses"`
+		Deprecated   bool                         `json:"deprecated,omitempty"`
+	}
+	OperationResponse struct {
+		Ref      *Response
+		Response Response
 	}
 	ExternalDocs struct {
 		Description string `json:"description"`
@@ -73,11 +77,9 @@ type (
 	Content         map[MediaType]MediaTypeObject
 	MediaType       string
 	MediaTypeObject struct {
-		Unique      bool
-		Schema      *Schema
-		SchemaRef   *Schema
-		Response    *Response
-		ResponseRef *Response
+		Unique bool    `json:"-"`
+		Ref    *Schema `json:"-"`
+		Schema Schema  `json:"schema"`
 	}
 	Schema struct {
 		Name   string
