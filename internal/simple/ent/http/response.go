@@ -36,6 +36,14 @@ func BadRequest(w http.ResponseWriter, msg interface{}) (int, error) {
 	}.MarshalToHTTPResponseWriter(w)
 }
 
+func Conflict(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusConflict,
+		Status: http.StatusText(http.StatusConflict),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
+
 func Forbidden(w http.ResponseWriter, msg interface{}) (int, error) {
 	return ErrResponse{
 		Code:   http.StatusForbidden,
@@ -60,15 +68,10 @@ func NotFound(w http.ResponseWriter, msg interface{}) (int, error) {
 	}.MarshalToHTTPResponseWriter(w)
 }
 
-func Unauthorized(w http.ResponseWriter, msg interface{}) (int, error) {
-	return ErrResponse{
-		Code:   http.StatusUnauthorized,
-		Status: http.StatusText(http.StatusUnauthorized),
-		Errors: msg,
-	}.MarshalToHTTPResponseWriter(w)
-}
-
 type (
+	// $n represents the data serialized for the following serialization group combinations:
+	// []
+	// [owner pet pet:owner]
 	Category4094953247View struct {
 		ID   int    `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
@@ -98,6 +101,9 @@ func NewCategory4094953247Views(es []*ent.Category) Category4094953247Views {
 }
 
 type (
+	// $n represents the data serialized for the following serialization group combinations:
+	// []
+	// [owner pet pet:owner]
 	Owner139708381View struct {
 		ID   int    `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
@@ -129,6 +135,8 @@ func NewOwner139708381Views(es []*ent.Owner) Owner139708381Views {
 }
 
 type (
+	// $n represents the data serialized for the following serialization group combinations:
+	// [owner pet pet:owner]
 	Pet1876743790View struct {
 		ID      int                 `json:"id,omitempty"`
 		Name    string              `json:"name,omitempty"`
@@ -164,6 +172,8 @@ func NewPet1876743790Views(es []*ent.Pet) Pet1876743790Views {
 }
 
 type (
+	// $n represents the data serialized for the following serialization group combinations:
+	// []
 	Pet359800019View struct {
 		ID   int    `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`

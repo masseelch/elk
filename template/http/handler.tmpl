@@ -6,8 +6,8 @@
     {{ end }}
     {{ template "helper/http/import" $ }}
 
-    // Router returns a ready to use handler with all routes generated.
-    func Router(c *ent.Client, l *zap.Logger) chi.Router {
+    // NewHandler returns a ready to use handler with all generated endpoints mounted.
+    func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
         r := chi.NewRouter()
         {{- range $n := $.Nodes }}
             {{- $ops := nodeOperations $n }}
