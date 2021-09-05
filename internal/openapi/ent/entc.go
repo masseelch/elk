@@ -13,11 +13,13 @@ import (
 
 func main() {
 	ex, err := elk.NewExtension(
-		elk.EnableSpecGenerator("openapi.json"),
-		elk.SpecTitle("My Pets API"),
-		elk.SpecDescription("Awesome, Mega Cool API to manage Ariel's Pet Leopards!"),
-		elk.SpecVersion("0.0.1"),
-		elk.SpecDump(os.Stdout),
+		elk.EnableSpecGenerator(
+			"openapi.json",
+			elk.SpecTitle("My Pets API"),
+			elk.SpecDescription("Awesome, Mega Cool API to manage Ariel's Pet Leopards!"),
+			elk.SpecVersion("0.0.1"),
+			elk.SpecDump(os.Stdout),
+		),
 	)
 	if err != nil {
 		log.Fatalf("creating elk extension: %v", err)

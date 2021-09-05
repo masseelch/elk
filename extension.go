@@ -78,12 +78,15 @@ func WithEasyJsonConfig(c EasyJsonConfig) ExtensionOption {
 }
 
 // EnableSpecGenerator enables the OpenAPI-Spec generator. Data will be written to given filename.
-func EnableSpecGenerator(out string) ExtensionOption {
+func EnableSpecGenerator(out string, hooks ...Hook) ExtensionOption {
 	return func(ex *Extension) error {
 		if out == "" {
 			return errors.New("spec filename cannot be empty")
 		}
 		ex.hooks = append(ex.hooks, ex.SpecGenerator(out))
+		if len(hooks) > 0 {
+			ex.specHooks = append(ex.specHooks, hooks...)
+		}
 		return nil
 	}
 }
@@ -98,20 +101,9 @@ func EnableHandlerGenerator() ExtensionOption {
 	}
 }
 
-// SpecHook registers the given Hook on the SpecGenerator.
-func SpecHook(h Hook) ExtensionOption {
-	return func(ex *Extension) error {
-		if h == nil {
-			return errors.New("hook cannot be nil")
-		}
-		ex.specHooks = append(ex.specHooks, h)
-		return nil
-	}
-}
-
 // SpecTitle sets the title of the Info block.
-func SpecTitle(v string) ExtensionOption {
-	return SpecHook(func(next Generator) Generator {
+func SpecTitle(v string) Hook {
+	return func(next Generator) Generator {
 		return GenerateFunc(func(spec *spec.Spec) error {
 			if err := next.Generate(spec); err != nil {
 				return err
@@ -119,12 +111,12 @@ func SpecTitle(v string) ExtensionOption {
 			spec.Info.Title = v
 			return nil
 		})
-	})
+	}
 }
 
 // SpecDescription sets the title of the Info block.
-func SpecDescription(v string) ExtensionOption {
-	return SpecHook(func(next Generator) Generator {
+func SpecDescription(v string) Hook {
+	return func(next Generator) Generator {
 		return GenerateFunc(func(spec *spec.Spec) error {
 			if err := next.Generate(spec); err != nil {
 				return err
@@ -132,12 +124,12 @@ func SpecDescription(v string) ExtensionOption {
 			spec.Info.Description = v
 			return nil
 		})
-	})
+	}
 }
 
 // SpecVersion sets the version of the Info block.
-func SpecVersion(v string) ExtensionOption {
-	return SpecHook(func(next Generator) Generator {
+func SpecVersion(v string) Hook {
+	return func(next Generator) Generator {
 		return GenerateFunc(func(spec *spec.Spec) error {
 			if err := next.Generate(spec); err != nil {
 				return err
@@ -145,14 +137,14 @@ func SpecVersion(v string) ExtensionOption {
 			spec.Info.Version = v
 			return nil
 		})
-	})
+	}
 }
 
 // TODO: Rest of Info block ...
 
 // SpecDump dumps the current specs content to the given io.Writer.
-func SpecDump(out io.Writer) ExtensionOption {
-	return SpecHook(func(next Generator) Generator {
+func SpecDump(out io.Writer) Hook {
+	return func(next Generator) Generator {
 		return GenerateFunc(func(spec *spec.Spec) error {
 			if err := next.Generate(spec); err != nil {
 				return err
@@ -164,7 +156,7 @@ func SpecDump(out io.Writer) ExtensionOption {
 			_, err = out.Write(j)
 			return err
 		})
-	})
+	}
 }
 
 // Name implements entc.Annotation interface.
