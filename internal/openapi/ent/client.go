@@ -433,15 +433,15 @@ func (c *PetClient) GetX(ctx context.Context, id int) *Pet {
 	return obj
 }
 
-// QueryCategory queries the category edge of a Pet.
-func (c *PetClient) QueryCategory(pe *Pet) *CategoryQuery {
+// QueryCategories queries the categories edge of a Pet.
+func (c *PetClient) QueryCategories(pe *Pet) *CategoryQuery {
 	query := &CategoryQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pe.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, id),
 			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoriesTable, pet.CategoriesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
 		return fromV, nil

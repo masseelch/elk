@@ -25,7 +25,7 @@ func (Pet) Fields() []ent.Field {
 // Edges of the Pet.
 func (Pet) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("category", Category.Type).
+		edge.From("categories", Category.Type).
 			Ref("pets"),
 		edge.From("owner", Owner.Type).
 			Ref("pets").

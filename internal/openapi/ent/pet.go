@@ -28,8 +28,8 @@ type Pet struct {
 
 // PetEdges holds the relations/edges for other nodes in the graph.
 type PetEdges struct {
-	// Category holds the value of the category edge.
-	Category []*Category `json:"category,omitempty"`
+	// Categories holds the value of the categories edge.
+	Categories []*Category `json:"categories,omitempty"`
 	// Owner holds the value of the owner edge.
 	Owner *Owner `json:"owner,omitempty"`
 	// Friends holds the value of the friends edge.
@@ -39,13 +39,13 @@ type PetEdges struct {
 	loadedTypes [3]bool
 }
 
-// CategoryOrErr returns the Category value or an error if the edge
+// CategoriesOrErr returns the Categories value or an error if the edge
 // was not loaded in eager-loading.
-func (e PetEdges) CategoryOrErr() ([]*Category, error) {
+func (e PetEdges) CategoriesOrErr() ([]*Category, error) {
 	if e.loadedTypes[0] {
-		return e.Category, nil
+		return e.Categories, nil
 	}
-	return nil, &NotLoadedError{edge: "category"}
+	return nil, &NotLoadedError{edge: "categories"}
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
@@ -127,9 +127,9 @@ func (pe *Pet) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryCategory queries the "category" edge of the Pet entity.
-func (pe *Pet) QueryCategory() *CategoryQuery {
-	return (&PetClient{config: pe.config}).QueryCategory(pe)
+// QueryCategories queries the "categories" edge of the Pet entity.
+func (pe *Pet) QueryCategories() *CategoryQuery {
+	return (&PetClient{config: pe.config}).QueryCategories(pe)
 }
 
 // QueryOwner queries the "owner" edge of the Pet entity.

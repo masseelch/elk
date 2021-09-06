@@ -52,15 +52,15 @@ type (
 		Schema          Type           `json:"schema"`
 	}
 	Operation struct {
-		Summary      string                       `json:"summary,omitempty"`
-		Description  string                       `json:"description,omitempty"`
-		Tags         []string                     `json:"tags,omitempty"`
-		ExternalDocs *ExternalDocs                `json:"externalDocs,omitempty"`
-		OperationID  string                       `json:"operationId"`
-		Parameters   []Parameter                  `json:"parameters,omitempty"`
-		RequestBody  *RequestBody                 `json:"requestBody,omitempty"`
-		Responses    map[string]OperationResponse `json:"responses"`
-		Deprecated   bool                         `json:"deprecated,omitempty"`
+		Summary      string                        `json:"summary,omitempty"`
+		Description  string                        `json:"description,omitempty"`
+		Tags         []string                      `json:"tags,omitempty"`
+		ExternalDocs *ExternalDocs                 `json:"externalDocs,omitempty"`
+		OperationID  string                        `json:"operationId"`
+		Parameters   []*Parameter                  `json:"parameters,omitempty"`
+		RequestBody  *RequestBody                  `json:"requestBody,omitempty"`
+		Responses    map[string]*OperationResponse `json:"responses"`
+		Deprecated   bool                          `json:"deprecated,omitempty"`
 	}
 	OperationResponse struct {
 		Ref      *Response

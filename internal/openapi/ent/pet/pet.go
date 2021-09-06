@@ -11,19 +11,19 @@ const (
 	FieldName = "name"
 	// FieldAge holds the string denoting the age field in the database.
 	FieldAge = "age"
-	// EdgeCategory holds the string denoting the category edge name in mutations.
-	EdgeCategory = "category"
+	// EdgeCategories holds the string denoting the categories edge name in mutations.
+	EdgeCategories = "categories"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
 	EdgeOwner = "owner"
 	// EdgeFriends holds the string denoting the friends edge name in mutations.
 	EdgeFriends = "friends"
 	// Table holds the table name of the pet in the database.
 	Table = "pets"
-	// CategoryTable is the table that holds the category relation/edge. The primary key declared below.
-	CategoryTable = "category_pets"
-	// CategoryInverseTable is the table name for the Category entity.
+	// CategoriesTable is the table that holds the categories relation/edge. The primary key declared below.
+	CategoriesTable = "category_pets"
+	// CategoriesInverseTable is the table name for the Category entity.
 	// It exists in this package in order to avoid circular dependency with the "category" package.
-	CategoryInverseTable = "categories"
+	CategoriesInverseTable = "categories"
 	// OwnerTable is the table that holds the owner relation/edge.
 	OwnerTable = "pets"
 	// OwnerInverseTable is the table name for the Owner entity.
@@ -49,9 +49,9 @@ var ForeignKeys = []string{
 }
 
 var (
-	// CategoryPrimaryKey and CategoryColumn2 are the table columns denoting the
-	// primary key for the category relation (M2M).
-	CategoryPrimaryKey = []string{"category_id", "pet_id"}
+	// CategoriesPrimaryKey and CategoriesColumn2 are the table columns denoting the
+	// primary key for the categories relation (M2M).
+	CategoriesPrimaryKey = []string{"category_id", "pet_id"}
 	// FriendsPrimaryKey and FriendsColumn2 are the table columns denoting the
 	// primary key for the friends relation (M2M).
 	FriendsPrimaryKey = []string{"pet_id", "friend_id"}

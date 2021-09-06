@@ -41,14 +41,14 @@ func (pc *PetCreate) SetNillableAge(i *int) *PetCreate {
 	return pc
 }
 
-// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
 func (pc *PetCreate) AddCategoryIDs(ids ...int) *PetCreate {
 	pc.mutation.AddCategoryIDs(ids...)
 	return pc
 }
 
-// AddCategory adds the "category" edges to the Category entity.
-func (pc *PetCreate) AddCategory(c ...*Category) *PetCreate {
+// AddCategories adds the "categories" edges to the Category entity.
+func (pc *PetCreate) AddCategories(c ...*Category) *PetCreate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -206,12 +206,12 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 		})
 		_node.Age = value
 	}
-	if nodes := pc.mutation.CategoryIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
+			Table:   pet.CategoriesTable,
+			Columns: pet.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

@@ -7,8 +7,8 @@ import (
 	"github.com/go-openapi/inflect"
 	"github.com/masseelch/elk/spec"
 	"github.com/stoewer/go-strcase"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -38,8 +38,8 @@ var (
 		"float32":   _float,
 		"float64":   _double,
 	}
-	rules = inflect.NewDefaultRuleset()
 )
+var rules = inflect.NewDefaultRuleset()
 
 type (
 	// Generator is the interface that wraps the Generate method.
@@ -85,7 +85,7 @@ func (e *Extension) SpecGenerator(out string) gen.Hook {
 			if err != nil {
 				return err
 			}
-			return ioutil.WriteFile(out, b, 0664)
+			return os.WriteFile(out, b, 0664)
 		})
 	}
 }
@@ -323,6 +323,25 @@ func paths(g *gen.Graph, s *spec.Spec) error {
 				return err
 			}
 		}
+		// Sub-Resource operations.
+		es, err := filterEdges(n)
+		if err != nil {
+			return err
+		}
+		for _, e := range es {
+			p := path(s, root+"/{id}/"+strcase.KebabCase(e.Name))
+			if e.Unique {
+				p.Get, err = readEdgeOp(s, n, e)
+				if err != nil {
+					return err
+				}
+			} else {
+				p.Get, err = listEdgeOp(s, n, e)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
 	return nil
 }
@@ -346,12 +365,12 @@ func createOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		return nil, err
 	}
 	return &spec.Operation{
-		Summary:     fmt.Sprintf("Create a new %s", strcase.KebabCase(n.Name)),
-		Description: fmt.Sprintf("Creates a new %s and persists it to storage.", strcase.KebabCase(n.Name)),
+		Summary:     fmt.Sprintf("Create a new %s", n.Name),
+		Description: fmt.Sprintf("Creates a new %s and persists it to storage.", n.Name),
 		Tags:        []string{n.Name},
-		OperationID: operationID(n, createOperation),
+		OperationID: createOperation + n.Name,
 		RequestBody: req,
-		Responses: map[string]spec.OperationResponse{
+		Responses: map[string]*spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
 				Response: spec.Response{
 					Description: fmt.Sprintf("%s created", n.Name),
@@ -370,6 +389,7 @@ func createOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 	}, nil
 }
 
+// readOp returns a spec.Operation for a read operation on the given node.
 func readOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 	ant, err := schemaAnnotation(n)
 	if err != nil {
@@ -388,18 +408,18 @@ func readOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		return nil, fmt.Errorf("no OAS-type exists for %q", n.IDType.String())
 	}
 	return &spec.Operation{
-		Summary:     fmt.Sprintf("Find a %s by ID", strcase.KebabCase(n.Name)),
-		Description: fmt.Sprintf("Finds the %s with the requested ID and returns it.", strcase.KebabCase(n.Name)),
+		Summary:     fmt.Sprintf("Find a %s by ID", n.Name),
+		Description: fmt.Sprintf("Finds the %s with the requested ID and returns it.", n.Name),
 		Tags:        []string{n.Name},
-		OperationID: operationID(n, readOperation),
-		Parameters: []spec.Parameter{{
+		OperationID: readOperation + n.Name,
+		Parameters: []*spec.Parameter{{
 			Name:        "id",
 			In:          spec.PathParam,
-			Description: fmt.Sprintf("ID of the %s to return", n.Name),
+			Description: fmt.Sprintf("ID of the %s", n.Name),
 			Required:    true,
 			Schema:      *t,
 		}},
-		Responses: map[string]spec.OperationResponse{
+		Responses: map[string]*spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
 				Response: spec.Response{
 					Description: fmt.Sprintf("%s with requested ID was found", n.Name),
@@ -441,11 +461,11 @@ func updateOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		return nil, fmt.Errorf("no OAS-type exists for %q", n.IDType.String())
 	}
 	return &spec.Operation{
-		Summary:     fmt.Sprintf("Updates a %s", strcase.KebabCase(n.Name)),
-		Description: fmt.Sprintf("Updates a %s and persists changes to storage.", strcase.KebabCase(n.Name)),
+		Summary:     fmt.Sprintf("Updates a %s", n.Name),
+		Description: fmt.Sprintf("Updates a %s and persists changes to storage.", n.Name),
 		Tags:        []string{n.Name},
-		OperationID: operationID(n, updateOperation),
-		Parameters: []spec.Parameter{{
+		OperationID: updateOperation + n.Name,
+		Parameters: []*spec.Parameter{{
 			Name:        "id",
 			In:          spec.PathParam,
 			Description: fmt.Sprintf("ID of the %s to update", n.Name),
@@ -453,7 +473,7 @@ func updateOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			Schema:      *t,
 		}},
 		RequestBody: req,
-		Responses: map[string]spec.OperationResponse{
+		Responses: map[string]*spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
 				Response: spec.Response{
 					Description: fmt.Sprintf("%s updated", n.Name),
@@ -479,18 +499,18 @@ func deleteOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		return nil, fmt.Errorf("no OAS-type exists for %q", n.IDType.String())
 	}
 	return &spec.Operation{
-		Summary:     fmt.Sprintf("Deletes a %s by ID", strcase.KebabCase(n.Name)),
-		Description: fmt.Sprintf("Deletes the %s with the requested ID.", strcase.KebabCase(n.Name)),
+		Summary:     fmt.Sprintf("Deletes a %s by ID", n.Name),
+		Description: fmt.Sprintf("Deletes the %s with the requested ID.", n.Name),
 		Tags:        []string{n.Name},
-		OperationID: operationID(n, deleteOperation),
-		Parameters: []spec.Parameter{{
+		OperationID: deleteOperation + n.Name,
+		Parameters: []*spec.Parameter{{
 			Name:        "id",
 			In:          spec.PathParam,
 			Description: fmt.Sprintf("ID of the %s to delete", n.Name),
 			Required:    true,
 			Schema:      *t,
 		}},
-		Responses: map[string]spec.OperationResponse{
+		Responses: map[string]*spec.OperationResponse{
 			strconv.Itoa(http.StatusNoContent): {
 				Response: spec.Response{
 					Description: fmt.Sprintf("%s with requested ID was deleted", n.Name),
@@ -518,11 +538,11 @@ func listOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		return nil, err
 	}
 	return &spec.Operation{
-		Summary:     fmt.Sprintf("List %s", rules.Pluralize(strcase.KebabCase(n.Name))),
-		Description: fmt.Sprintf("List %s.", rules.Pluralize(strcase.KebabCase(n.Name))),
+		Summary:     fmt.Sprintf("List %s", rules.Pluralize(n.Name)),
+		Description: fmt.Sprintf("List %s.", rules.Pluralize(n.Name)),
 		Tags:        []string{n.Name},
-		OperationID: operationID(n, listOperation),
-		Parameters: []spec.Parameter{{
+		OperationID: listOperation + n.Name,
+		Parameters: []*spec.Parameter{{
 			Name:        "page",
 			In:          spec.QueryParam,
 			Description: "what page to render",
@@ -533,7 +553,7 @@ func listOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			Description: "item count to render per page",
 			Schema:      *_int32,
 		}},
-		Responses: map[string]spec.OperationResponse{
+		Responses: map[string]*spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
 				Response: spec.Response{
 					Description: fmt.Sprintf("result %s list", n.Name),
@@ -552,6 +572,45 @@ func listOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 	}, nil
 }
 
+func readEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error) {
+	op, err := readOp(s, e.Type)
+	if err != nil {
+		return nil, err
+	}
+	// Alter incorrect fields.
+	op.Summary = fmt.Sprintf("Find the attached %s", e.Type.Name)
+	op.Description = fmt.Sprintf("Find the attached %s of the %s with the given ID", e.Type.Name, n.Name)
+	op.Tags = []string{n.Name}
+	op.Parameters[0].Description = fmt.Sprintf("ID of the %s", n.Name)
+	op.OperationID = readOperation + n.Name + strcase.UpperCamelCase(e.Name)
+	op.Responses[strconv.Itoa(http.StatusOK)].Response.Description = fmt.Sprintf(
+		"%s attached to %s with requested ID was found", e.Type.Name, n.Name,
+	)
+	return op, nil
+}
+
+func listEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error) {
+	op, err := listOp(s, e.Type)
+	if err != nil {
+		return nil, err
+	}
+	rop, err := readOp(s, n)
+	if err != nil {
+		return nil, err
+	}
+	// Alter incorrect fields.
+	op.Summary = fmt.Sprintf("Find the attached %s", rules.Pluralize(e.Type.Name))
+	op.Description = fmt.Sprintf("Find the attached %s of the %s with the given ID", rules.Pluralize(e.Type.Name), n.Name)
+	op.Tags = []string{n.Name}
+	op.OperationID = listOperation + n.Name + strcase.UpperCamelCase(e.Name)
+	op.Parameters = append(op.Parameters, rop.Parameters...)
+	op.Parameters[0].Description = fmt.Sprintf("ID of the %s", n.Name)
+	op.Responses[strconv.Itoa(http.StatusOK)].Response.Description = fmt.Sprintf(
+		"%s attached to %s with requested ID was found", rules.Pluralize(e.Type.Name), n.Name,
+	)
+	return op, nil
+}
+
 // path returns the correct spec.Path for the given root. Creates and sets a fresh instance if non does yet exist.
 func path(s *spec.Spec, root string) *spec.Path {
 	if s.Paths == nil {
@@ -561,11 +620,6 @@ func path(s *spec.Spec, root string) *spec.Path {
 		s.Paths[root] = new(spec.Path)
 	}
 	return s.Paths[root]
-}
-
-// operationID generates a unique identifier for the given operation on the given node.
-func operationID(n *gen.Type, op string) string {
-	return op + n.Name
 }
 
 // schemaAnnotation returns the SchemaAnnotation of this node.

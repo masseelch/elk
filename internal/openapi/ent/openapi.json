@@ -12,8 +12,8 @@
   "paths": {
     "/categories": {
       "get": {
-        "summary": "List categories",
-        "description": "List categories.",
+        "summary": "List Categories",
+        "description": "List Categories.",
         "tags": [
           "Category"
         ],
@@ -64,8 +64,8 @@
         }
       },
       "post": {
-        "summary": "Create a new category",
-        "description": "Creates a new category and persists it to storage.",
+        "summary": "Create a new Category",
+        "description": "Creates a new Category and persists it to storage.",
         "tags": [
           "Category"
         ],
@@ -117,8 +117,8 @@
     },
     "/categories/{id}": {
       "get": {
-        "summary": "Find a category by ID",
-        "description": "Finds the category with the requested ID and returns it.",
+        "summary": "Find a Category by ID",
+        "description": "Finds the Category with the requested ID and returns it.",
         "tags": [
           "Category"
         ],
@@ -127,7 +127,7 @@
           {
             "name": "id",
             "in": "path",
-            "description": "ID of the Category to return",
+            "description": "ID of the Category",
             "required": true,
             "schema": {
               "type": "integer",
@@ -158,8 +158,8 @@
         }
       },
       "delete": {
-        "summary": "Deletes a category by ID",
-        "description": "Deletes the category with the requested ID.",
+        "summary": "Deletes a Category by ID",
+        "description": "Deletes the Category with the requested ID.",
         "tags": [
           "Category"
         ],
@@ -192,8 +192,8 @@
         }
       },
       "patch": {
-        "summary": "Updates a category",
-        "description": "Updates a category and persists changes to storage.",
+        "summary": "Updates a Category",
+        "description": "Updates a Category and persists changes to storage.",
         "tags": [
           "Category"
         ],
@@ -258,10 +258,74 @@
         }
       }
     },
+    "/categories/{id}/pets": {
+      "get": {
+        "summary": "Find the attached Pets",
+        "description": "Find the attached Pets of the Category with the given ID",
+        "tags": [
+          "Category"
+        ],
+        "operationId": "listCategoryPets",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "ID of the Category",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Category",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pets attached to Category with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pet359800019View"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/owners": {
       "get": {
-        "summary": "List owners",
-        "description": "List owners.",
+        "summary": "List Owners",
+        "description": "List Owners.",
         "tags": [
           "Owner"
         ],
@@ -312,8 +376,8 @@
         }
       },
       "post": {
-        "summary": "Create a new owner",
-        "description": "Creates a new owner and persists it to storage.",
+        "summary": "Create a new Owner",
+        "description": "Creates a new Owner and persists it to storage.",
         "tags": [
           "Owner"
         ],
@@ -370,8 +434,8 @@
     },
     "/owners/{id}": {
       "get": {
-        "summary": "Find a owner by ID",
-        "description": "Finds the owner with the requested ID and returns it.",
+        "summary": "Find a Owner by ID",
+        "description": "Finds the Owner with the requested ID and returns it.",
         "tags": [
           "Owner"
         ],
@@ -380,7 +444,7 @@
           {
             "name": "id",
             "in": "path",
-            "description": "ID of the Owner to return",
+            "description": "ID of the Owner",
             "required": true,
             "schema": {
               "type": "integer",
@@ -411,8 +475,8 @@
         }
       },
       "delete": {
-        "summary": "Deletes a owner by ID",
-        "description": "Deletes the owner with the requested ID.",
+        "summary": "Deletes a Owner by ID",
+        "description": "Deletes the Owner with the requested ID.",
         "tags": [
           "Owner"
         ],
@@ -445,8 +509,8 @@
         }
       },
       "patch": {
-        "summary": "Updates a owner",
-        "description": "Updates a owner and persists changes to storage.",
+        "summary": "Updates a Owner",
+        "description": "Updates a Owner and persists changes to storage.",
         "tags": [
           "Owner"
         ],
@@ -516,10 +580,74 @@
         }
       }
     },
+    "/owners/{id}/pets": {
+      "get": {
+        "summary": "Find the attached Pets",
+        "description": "Find the attached Pets of the Owner with the given ID",
+        "tags": [
+          "Owner"
+        ],
+        "operationId": "listOwnerPets",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "ID of the Owner",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Owner",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pets attached to Owner with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pet359800019View"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/pets": {
       "get": {
-        "summary": "List pets",
-        "description": "List pets.",
+        "summary": "List Pets",
+        "description": "List Pets.",
         "tags": [
           "Pet"
         ],
@@ -570,8 +698,8 @@
         }
       },
       "post": {
-        "summary": "Create a new pet",
-        "description": "Creates a new pet and persists it to storage.",
+        "summary": "Create a new Pet",
+        "description": "Creates a new Pet and persists it to storage.",
         "tags": [
           "Pet"
         ],
@@ -591,7 +719,7 @@
                     "format": "int32",
                     "example": 1
                   },
-                  "category": {
+                  "categories": {
                     "type": "array",
                     "items": {
                       "type": "integer",
@@ -640,8 +768,8 @@
     },
     "/pets/{id}": {
       "get": {
-        "summary": "Find a pet by ID",
-        "description": "Finds the pet with the requested ID and returns it.",
+        "summary": "Find a Pet by ID",
+        "description": "Finds the Pet with the requested ID and returns it.",
         "tags": [
           "Pet"
         ],
@@ -650,7 +778,7 @@
           {
             "name": "id",
             "in": "path",
-            "description": "ID of the Pet to return",
+            "description": "ID of the Pet",
             "required": true,
             "schema": {
               "type": "integer",
@@ -681,8 +809,8 @@
         }
       },
       "delete": {
-        "summary": "Deletes a pet by ID",
-        "description": "Deletes the pet with the requested ID.",
+        "summary": "Deletes a Pet by ID",
+        "description": "Deletes the Pet with the requested ID.",
         "tags": [
           "Pet"
         ],
@@ -715,8 +843,8 @@
         }
       },
       "patch": {
-        "summary": "Updates a pet",
-        "description": "Updates a pet and persists changes to storage.",
+        "summary": "Updates a Pet",
+        "description": "Updates a Pet and persists changes to storage.",
         "tags": [
           "Pet"
         ],
@@ -748,7 +876,7 @@
                     "format": "int32",
                     "example": 1
                   },
-                  "category": {
+                  "categories": {
                     "type": "array",
                     "items": {
                       "type": "integer",
@@ -782,6 +910,177 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Pet359800019View"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/pets/{id}/categories": {
+      "get": {
+        "summary": "Find the attached Categories",
+        "description": "Find the attached Categories of the Pet with the given ID",
+        "tags": [
+          "Pet"
+        ],
+        "operationId": "listPetCategories",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "ID of the Pet",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Pet",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categories attached to Pet with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category4094953247View"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/pets/{id}/friends": {
+      "get": {
+        "summary": "Find the attached Pets",
+        "description": "Find the attached Pets of the Pet with the given ID",
+        "tags": [
+          "Pet"
+        ],
+        "operationId": "listPetFriends",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "ID of the Pet",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Pet",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pets attached to Pet with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pet359800019View"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/pets/{id}/owner": {
+      "get": {
+        "summary": "Find the attached Owner",
+        "description": "Find the attached Owner of the Pet with the given ID",
+        "tags": [
+          "Pet"
+        ],
+        "operationId": "readPetOwner",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Pet",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owner attached to Pet with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Owner139708381View"
                 }
               }
             }
