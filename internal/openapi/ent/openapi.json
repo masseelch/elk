@@ -695,7 +695,12 @@
           "500": {
             "$ref": "#/components/responses/500"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKeySample": null
+          }
+        ]
       },
       "post": {
         "summary": "Create a new Pet",
@@ -763,7 +768,12 @@
           "500": {
             "$ref": "#/components/responses/500"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKeySample": null
+          }
+        ]
       }
     },
     "/pets/{id}": {
@@ -806,7 +816,12 @@
           "500": {
             "$ref": "#/components/responses/500"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKeySample": null
+          }
+        ]
       },
       "delete": {
         "summary": "Deletes a Pet by ID",
@@ -840,7 +855,12 @@
           "500": {
             "$ref": "#/components/responses/500"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKeySample": null
+          }
+        ]
       },
       "patch": {
         "summary": "Updates a Pet",
@@ -923,7 +943,12 @@
           "500": {
             "$ref": "#/components/responses/500"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKeySample": null
+          }
+        ]
       }
     },
     "/pets/{id}/categories": {
@@ -1318,7 +1343,19 @@
         }
       }
     },
-    "parameters": {}
+    "parameters": {},
+    "securitySchemes": {
+      "apiKeySample": {
+        "type": "apiKey",
+        "name": "X-API-KEY",
+        "in": "header"
+      }
+    }
   },
+  "security": [
+    {
+      "apiKeySample": []
+    }
+  ],
   "openapi": "3.0.3"
 }

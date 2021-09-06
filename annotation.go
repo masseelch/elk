@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/schema"
 	"github.com/masseelch/elk/policy"
 	"github.com/masseelch/elk/serialization"
+	"github.com/masseelch/elk/spec"
 )
 
 // SchemaAnnotation annotates an entity with metadata for templates.
@@ -27,6 +28,16 @@ type SchemaAnnotation struct {
 	UpdateGroups serialization.Groups
 	// ListGroups holds the serializations groups to use on the list handler.
 	ListGroups serialization.Groups
+	// ExposeSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	CreateSecurity spec.Security
+	// ExpoSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	ReadSecurity spec.Security
+	// ExposeSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	UpdateSecurity spec.Security
+	// ExposeSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	DeleteSecurity spec.Security
+	// ExpoSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	ListSecurity spec.Security
 }
 
 // Name implements ent.Annotation interface.
@@ -73,6 +84,21 @@ func (a SchemaAnnotation) Merge(o schema.Annotation) schema.Annotation {
 	}
 	if ant.ListPolicy != policy.None {
 		a.ListPolicy = ant.ListPolicy
+	}
+	if ant.CreateSecurity != nil {
+		a.CreateSecurity = ant.CreateSecurity
+	}
+	if ant.ReadSecurity != nil {
+		a.ReadSecurity = ant.ReadSecurity
+	}
+	if ant.UpdateSecurity != nil {
+		a.UpdateSecurity = ant.UpdateSecurity
+	}
+	if ant.DeleteSecurity != nil {
+		a.DeleteSecurity = ant.DeleteSecurity
+	}
+	if ant.ListSecurity != nil {
+		a.ListSecurity = ant.ListSecurity
 	}
 	return a
 }
@@ -178,6 +204,42 @@ func Exclude(c ...PolicyConfig) SchemaAnnotation {
 	return s
 }
 
+// SchemaSecurity sets the given security on all schema operations.
+func SchemaSecurity(s spec.Security) SchemaAnnotation {
+	return SchemaAnnotation{
+		CreateSecurity: s,
+		ReadSecurity:   s,
+		UpdateSecurity: s,
+		DeleteSecurity: s,
+		ListSecurity:   s,
+	}
+}
+
+// CreateSecurity returns a create-security schema-annotation.
+func CreateSecurity(s spec.Security) SchemaAnnotation {
+	return SchemaAnnotation{CreateSecurity: s}
+}
+
+// ReadSecurity returns a read-security schema-annotation.
+func ReadSecurity(s spec.Security) SchemaAnnotation {
+	return SchemaAnnotation{ReadSecurity: s}
+}
+
+// UpdateSecurity returns an update-security schema-annotation.
+func UpdateSecurity(s spec.Security) SchemaAnnotation {
+	return SchemaAnnotation{UpdateSecurity: s}
+}
+
+// DeleteSecurity returns a delete-security schema-annotation.
+func DeleteSecurity(s spec.Security) SchemaAnnotation {
+	return SchemaAnnotation{DeleteSecurity: s}
+}
+
+// ListSecurity returns a list-security schema-annotation.
+func ListSecurity(s spec.Security) SchemaAnnotation {
+	return SchemaAnnotation{ListSecurity: s}
+}
+
 // Annotation annotates fields and edges with metadata for templates.
 type Annotation struct {
 	// Groups holds the serialization groups to use on this field / edge.
@@ -188,6 +250,8 @@ type Annotation struct {
 	Expose policy.Policy
 	// OpenAPI spec example value on schema fields.
 	Example interface{}
+	// OpenAPI security object for the read/list operation on this edge.
+	Security spec.Security
 }
 
 // Name implements ent.Annotation interface.

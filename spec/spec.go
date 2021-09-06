@@ -9,10 +9,12 @@ const (
 
 type (
 	Spec struct {
-		Info       *Info            `json:"info"`
-		Tags       []Tag            `json:"tags,omitempty"`
-		Paths      map[string]*Path `json:"paths"`
-		Components Components       `json:"components"`
+		Info         *Info            `json:"info"`
+		Tags         []Tag            `json:"tags,omitempty"`
+		Paths        map[string]*Path `json:"paths"`
+		Components   Components       `json:"components"`
+		Security     Security         `json:"security,omitempty"`
+		ExternalDocs *ExternalDocs    `json:"externalDocs,omitempty"`
 	}
 	Tag struct {
 		Name        string `json:"name"`
@@ -61,7 +63,9 @@ type (
 		RequestBody  *RequestBody                  `json:"requestBody,omitempty"`
 		Responses    map[string]*OperationResponse `json:"responses"`
 		Deprecated   bool                          `json:"deprecated,omitempty"`
+		Security     Security                      `json:"security,omitempty"`
 	}
+	Security          []map[string][]string
 	OperationResponse struct {
 		Ref      *Response
 		Response Response
@@ -110,9 +114,31 @@ type (
 		Content     *Content             `json:"content,omitempty"`
 	}
 	Components struct {
-		Schemas    map[string]*Schema   `json:"schemas"`
-		Responses  map[string]*Response `json:"responses"`
-		Parameters map[string]Parameter `json:"parameters"`
-		// ... TODO
+		Schemas         map[string]*Schema        `json:"schemas"`
+		Responses       map[string]*Response      `json:"responses"`
+		Parameters      map[string]Parameter      `json:"parameters"`
+		SecuritySchemes map[string]SecurityScheme `json:"securitySchemes,omitempty"`
+	}
+	SecurityScheme struct {
+		Type             string      `json:"type"`
+		Description      string      `json:"description,omitempty"`
+		Name             string      `json:"name,omitempty"`
+		In               string      `json:"in,omitempty"`
+		Scheme           string      `json:"scheme,omitempty"`
+		BearerFormat     string      `json:"bearerFormat,omitempty"`
+		Flows            *OAuthFlows `json:"flows,omitempty"`
+		OpenIdConnectUrl string      `json:"openIdConnectUrl,omitempty"`
+	}
+	OAuthFlows struct {
+		Implicit          *OAuthFlow `json:"implicit,omitempty"`
+		Password          *OAuthFlow `json:"password,omitempty"`
+		ClientCredentials *OAuthFlow `json:"clientCredentials,omitempty"`
+		AuthorizationCode *OAuthFlow `json:"authorizationCode,omitempty"`
+	}
+	OAuthFlow struct {
+		AuthorizationUrl string            `json:"authorizationUrl,omitempty"`
+		TokenUrl         string            `json:"tokenUrl,omitempty"`
+		RefreshUrl       string            `json:"refreshUrl,omitempty"`
+		Scopes           map[string]string `json:"scopes,omitempty"`
 	}
 )

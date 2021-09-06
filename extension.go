@@ -152,6 +152,32 @@ func SpecVersion(v string) Hook {
 
 // TODO: Rest of Info block ...
 
+// SpecSecuritySchemes sets the security schemes of the Components block.
+func SpecSecuritySchemes(schemes map[string]spec.SecurityScheme) Hook {
+	return func(next Generator) Generator {
+		return GenerateFunc(func(spec *spec.Spec) error {
+			if err := next.Generate(spec); err != nil {
+				return err
+			}
+			spec.Components.SecuritySchemes = schemes
+			return nil
+		})
+	}
+}
+
+// SpecSecurity sets the global security Spec.
+func SpecSecurity(sec spec.Security) Hook {
+	return func(next Generator) Generator {
+		return GenerateFunc(func(spec *spec.Spec) error {
+			if err := next.Generate(spec); err != nil {
+				return err
+			}
+			spec.Security = sec
+			return nil
+		})
+	}
+}
+
 // SpecDump dumps the current specs content to the given io.Writer.
 func SpecDump(out io.Writer) Hook {
 	return func(next Generator) Generator {

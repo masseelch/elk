@@ -386,6 +386,7 @@ func createOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			strconv.Itoa(http.StatusBadRequest):          {Ref: s.Components.Responses[strconv.Itoa(http.StatusBadRequest)]},
 			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
+		Security: ant.CreateSecurity,
 	}, nil
 }
 
@@ -436,6 +437,7 @@ func readOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			strconv.Itoa(http.StatusNotFound):            {Ref: s.Components.Responses[strconv.Itoa(http.StatusNotFound)]},
 			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
+		Security: ant.ReadSecurity,
 	}, nil
 }
 
@@ -490,10 +492,15 @@ func updateOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			strconv.Itoa(http.StatusNotFound):            {Ref: s.Components.Responses[strconv.Itoa(http.StatusNotFound)]},
 			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
+		Security: ant.UpdateSecurity,
 	}, nil
 }
 
 func deleteOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
+	ant, err := schemaAnnotation(n)
+	if err != nil {
+		return nil, err
+	}
 	t, ok := oasTypes[n.IDType.String()]
 	if !ok {
 		return nil, fmt.Errorf("no OAS-type exists for %q", n.IDType.String())
@@ -521,6 +528,7 @@ func deleteOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			strconv.Itoa(http.StatusNotFound):            {Ref: s.Components.Responses[strconv.Itoa(http.StatusNotFound)]},
 			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
+		Security: ant.DeleteSecurity,
 	}, nil
 }
 
@@ -569,11 +577,16 @@ func listOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 			strconv.Itoa(http.StatusNotFound):            {Ref: s.Components.Responses[strconv.Itoa(http.StatusNotFound)]},
 			strconv.Itoa(http.StatusInternalServerError): {Ref: s.Components.Responses[strconv.Itoa(http.StatusInternalServerError)]},
 		},
+		Security: ant.ListSecurity,
 	}, nil
 }
 
 func readEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error) {
 	op, err := readOp(s, e.Type)
+	if err != nil {
+		return nil, err
+	}
+	ant, err := edgeAnnotation(e)
 	if err != nil {
 		return nil, err
 	}
@@ -586,6 +599,7 @@ func readEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error)
 	op.Responses[strconv.Itoa(http.StatusOK)].Response.Description = fmt.Sprintf(
 		"%s attached to %s with requested ID was found", e.Type.Name, n.Name,
 	)
+	op.Security = ant.Security
 	return op, nil
 }
 
@@ -595,6 +609,10 @@ func listEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error)
 		return nil, err
 	}
 	rop, err := readOp(s, n)
+	if err != nil {
+		return nil, err
+	}
+	ant, err := edgeAnnotation(e)
 	if err != nil {
 		return nil, err
 	}
@@ -608,6 +626,7 @@ func listEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error)
 	op.Responses[strconv.Itoa(http.StatusOK)].Response.Description = fmt.Sprintf(
 		"%s attached to %s with requested ID was found", rules.Pluralize(e.Type.Name), n.Name,
 	)
+	op.Security = ant.Security
 	return op, nil
 }
 
@@ -627,6 +646,17 @@ func schemaAnnotation(n *gen.Type) (*SchemaAnnotation, error) {
 	ant := &SchemaAnnotation{}
 	if n.Annotations != nil && n.Annotations[ant.Name()] != nil {
 		if err := ant.Decode(n.Annotations[ant.Name()]); err != nil {
+			return nil, err
+		}
+	}
+	return ant, nil
+}
+
+// edgeAnnotation returns the Annotation of this edge.
+func edgeAnnotation(e *gen.Edge) (*Annotation, error) {
+	ant := &Annotation{}
+	if e.Annotations != nil && e.Annotations[ant.Name()] != nil {
+		if err := ant.Decode(e.Annotations[ant.Name()]); err != nil {
 			return nil, err
 		}
 	}

@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/masseelch/elk"
+	"github.com/masseelch/elk/spec"
 )
 
 // Pet holds the schema definition for the Pet entity.
@@ -50,5 +51,6 @@ func (Pet) Edges() []ent.Edge {
 func (Pet) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		elk.ReadGroups("pet", "pet:owner", "owner"),
+		elk.SchemaSecurity(spec.Security{{"apiKeySample": {}}}),
 	}
 }
