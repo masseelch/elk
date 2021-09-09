@@ -10,15 +10,15 @@ import (
 
 // SchemaAnnotation annotates an entity with metadata for templates.
 type SchemaAnnotation struct {
-	// ExposeCreate defines if a creation handler should be generated.
+	// CreatePolicy defines if a creation handler should be generated.
 	CreatePolicy policy.Policy
-	// ExposeRead defines if a read handler should be generated.
+	// ReadPolicy defines if a read handler should be generated.
 	ReadPolicy policy.Policy
-	// ExposeUpdate defines if an update handler should be generated.
+	// UpdatePolicy defines if an update handler should be generated.
 	UpdatePolicy policy.Policy
-	// ExposeDelete defines if a delete handler should be generated.
+	// DeletePolicy defines if a delete handler should be generated.
 	DeletePolicy policy.Policy
-	// ExposeList defines if a list handler should be generated.
+	// ListPolicy defines if a list handler should be generated.
 	ListPolicy policy.Policy
 	// CreateGroups holds the serializations groups to use on the creation handler.
 	CreateGroups serialization.Groups
@@ -28,15 +28,15 @@ type SchemaAnnotation struct {
 	UpdateGroups serialization.Groups
 	// ListGroups holds the serializations groups to use on the list handler.
 	ListGroups serialization.Groups
-	// ExposeSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	// CreateSecurity sets the security property of the operation in the generated OpenAPI Spec.
 	CreateSecurity spec.Security
-	// ExpoSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	// ReadSecurity sets the security property of the operation in the generated OpenAPI Spec.
 	ReadSecurity spec.Security
-	// ExposeSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	// UpdateSecurity sets the security property of the operation in the generated OpenAPI Spec.
 	UpdateSecurity spec.Security
-	// ExposeSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	// DeleteSecurity sets the security property of the operation in the generated OpenAPI Spec.
 	DeleteSecurity spec.Security
-	// ExpoSecurity sets the security property of the operation in the generated OpenAPI Spec.
+	// ListSecurity sets the security property of the operation in the generated OpenAPI Spec.
 	ListSecurity spec.Security
 }
 
