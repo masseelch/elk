@@ -48,11 +48,11 @@
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found" "not-singular")
-                "Logs" (list (printf "zap.Int(\"%s\", e.%s)" $n.ID.Name $n.ID.StructField))
+                "Logs" (list (printf "zap.%s(\"%s\", %s)" (zapField $n.ID) $n.ID.Name ($n.ID.BasicType (print "e." $n.ID.StructField))))
                 "Default" (print "could not read " ($n.Name | kebab)) " after update"
             -}}
 
-            l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
+            l.Info("{{ $n.Name | kebab }} rendered", zap.{{ zapField $n.ID }}("{{ $n.ID.Name }}", {{ $n.ID.BasicType (print "e." $n.ID.StructField) }}))
             easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.ElkSchema.CreateGroups | stringSlice)).Name }}(e), w)
         }
     {{ end }}

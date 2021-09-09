@@ -25,6 +25,7 @@ var (
 		"views":           newViews,
 		"stringSlice":     stringSlice,
 		"xextend":         xextend,
+		"zapField":        zapField,
 	}
 	// HTTPTemplate holds all templates for generating http handlers.
 	HTTPTemplate = gen.MustParse(gen.NewTemplate("elk").Funcs(Funcs).ParseFS(templateDir, "template/http/*.tmpl"))
@@ -201,4 +202,15 @@ func xextend(v interface{}, kv ...interface{}) (interface{}, error) {
 	default:
 		return nil, fmt.Errorf("invalid type for xextend: %T", v)
 	}
+}
+
+// zapField returns the method-name to use for logging fields.
+func zapField(f *gen.Field) (string, error) {
+	switch {
+	case f.IsString():
+		return "String", nil
+	case f.IsInt():
+		return "Int", nil
+	}
+	return "", fmt.Errorf("elk: invalid ID-Type %q", f.Type.String())
 }
