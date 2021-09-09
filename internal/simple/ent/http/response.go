@@ -138,7 +138,7 @@ type (
 	// $n represents the data serialized for the following serialization group combinations:
 	// [owner pet pet:owner]
 	Pet1876743790View struct {
-		ID      int                 `json:"id,omitempty"`
+		ID      string              `json:"id,omitempty"`
 		Name    string              `json:"name,omitempty"`
 		Age     int                 `json:"age,omitempty"`
 		Owner   *Owner139708381View `json:"owner,omitempty"`
@@ -175,7 +175,7 @@ type (
 	// $n represents the data serialized for the following serialization group combinations:
 	// []
 	Pet359800019View struct {
-		ID   int    `json:"id,omitempty"`
+		ID   string `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 		Age  int    `json:"age,omitempty"`
 	}

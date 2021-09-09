@@ -154,12 +154,8 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
-		return
-	}
+	var err error
+	id := chi.URLParam(r, "id")
 	// Get the post data.
 	var d PetUpdateRequest
 	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
@@ -175,8 +171,8 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if d.Age != nil {
 		b.SetAge(*d.Age)
 	}
-	if d.Category != nil {
-		b.ClearCategory().AddCategoryIDs(d.Category...)
+	if d.Categories != nil {
+		b.ClearCategories().AddCategoryIDs(d.Categories...)
 	}
 	if d.Owner != nil {
 		b.SetOwnerID(*d.Owner)
@@ -191,14 +187,14 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.String("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-update-pet", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-update-pet", zap.Error(err), zap.String("id", id))
 			InternalServerError(w, nil)
 		}
 		return
@@ -210,18 +206,18 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.String("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-read-pet", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-read-pet", zap.Error(err), zap.String("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("pet rendered", zap.Int("id", e.ID))
+	l.Info("pet rendered", zap.String("id", e.ID))
 	easyjson.MarshalToHTTPResponseWriter(NewPet359800019View(e), w)
 }

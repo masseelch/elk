@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk"
 )
 
@@ -16,6 +17,10 @@ type Pet struct {
 // Fields of the Pet.
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			DefaultFunc(func() string {
+				return uuid.New().String()
+			}),
 		field.String("name").
 			Annotations(elk.Groups("pet")),
 		field.Int("age"),

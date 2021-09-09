@@ -27,14 +27,14 @@ func (cc *CategoryCreate) SetName(s string) *CategoryCreate {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (cc *CategoryCreate) AddPetIDs(ids ...int) *CategoryCreate {
+func (cc *CategoryCreate) AddPetIDs(ids ...string) *CategoryCreate {
 	cc.mutation.AddPetIDs(ids...)
 	return cc
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (cc *CategoryCreate) AddPets(p ...*Pet) *CategoryCreate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -158,7 +158,7 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},

@@ -57,7 +57,7 @@
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found" "not-singular")
-                "Logs" (list (printf "zap.Int(\"%s\", id)" $n.ID.Name))
+                "Logs" (list (printf "zap.%s(\"%s\", id)" (zapField $n.ID) $n.ID.Name))
                 "Default" (print "could not read " $n.Name | kebab) " after update"
             -}}
 

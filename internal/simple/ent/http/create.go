@@ -134,8 +134,8 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if d.Age != nil {
 		b.SetAge(*d.Age)
 	}
-	if d.Category != nil {
-		b.AddCategoryIDs(d.Category...)
+	if d.Categories != nil {
+		b.AddCategoryIDs(d.Categories...)
 	}
 	if d.Owner != nil {
 		b.SetOwnerID(*d.Owner)
@@ -159,18 +159,18 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Info(msg, zap.Error(err), zap.String("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Error(msg, zap.Error(err), zap.String("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read pet", zap.Error(err), zap.Int("id", e.ID))
+			l.Error("could not read pet", zap.Error(err), zap.String("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("pet rendered", zap.Int("id", e.ID))
+	l.Info("pet rendered", zap.String("id", e.ID))
 	easyjson.MarshalToHTTPResponseWriter(NewPet359800019View(e), w)
 }

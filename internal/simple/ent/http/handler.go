@@ -38,7 +38,7 @@ func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
 		r.Patch("/{id}", peHandler.Update)
 		r.Delete("/{id}", peHandler.Delete)
 		r.Get("/", peHandler.List)
-		r.Get("/{id}/category", peHandler.Category)
+		r.Get("/{id}/categories", peHandler.Categories)
 		r.Get("/{id}/owner", peHandler.Owner)
 		r.Get("/{id}/friends", peHandler.Friends)
 	})

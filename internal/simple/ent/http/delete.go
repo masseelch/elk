@@ -69,25 +69,21 @@ func (h OwnerHandler) Delete(w http.ResponseWriter, r *http.Request) {
 func (h PetHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Delete"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
-		return
-	}
+	var err error
+	id := chi.URLParam(r, "id")
 	err = h.client.Pet.DeleteOneID(id).Exec(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id))
 			NotFound(w, msg)
 		default:
-			l.Error("could-not-delete-pet", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-delete-pet", zap.Error(err), zap.String("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("pet deleted", zap.Int("id", id))
+	l.Info("pet deleted", zap.String("id", id))
 	w.WriteHeader(http.StatusNoContent)
 }

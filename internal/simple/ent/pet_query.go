@@ -28,10 +28,10 @@ type PetQuery struct {
 	fields     []string
 	predicates []predicate.Pet
 	// eager-loading edges.
-	withCategory *CategoryQuery
-	withOwner    *OwnerQuery
-	withFriends  *PetQuery
-	withFKs      bool
+	withCategories *CategoryQuery
+	withOwner      *OwnerQuery
+	withFriends    *PetQuery
+	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -68,8 +68,8 @@ func (pq *PetQuery) Order(o ...OrderFunc) *PetQuery {
 	return pq
 }
 
-// QueryCategory chains the current query on the "category" edge.
-func (pq *PetQuery) QueryCategory() *CategoryQuery {
+// QueryCategories chains the current query on the "categories" edge.
+func (pq *PetQuery) QueryCategories() *CategoryQuery {
 	query := &CategoryQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
@@ -82,7 +82,7 @@ func (pq *PetQuery) QueryCategory() *CategoryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, selector),
 			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoriesTable, pet.CategoriesPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -158,8 +158,8 @@ func (pq *PetQuery) FirstX(ctx context.Context) *Pet {
 
 // FirstID returns the first Pet ID from the query.
 // Returns a *NotFoundError when no Pet ID was found.
-func (pq *PetQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PetQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = pq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -171,7 +171,7 @@ func (pq *PetQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PetQuery) FirstIDX(ctx context.Context) int {
+func (pq *PetQuery) FirstIDX(ctx context.Context) string {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -209,8 +209,8 @@ func (pq *PetQuery) OnlyX(ctx context.Context) *Pet {
 // OnlyID is like Only, but returns the only Pet ID in the query.
 // Returns a *NotSingularError when exactly one Pet ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PetQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PetQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = pq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -226,7 +226,7 @@ func (pq *PetQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PetQuery) OnlyIDX(ctx context.Context) int {
+func (pq *PetQuery) OnlyIDX(ctx context.Context) string {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -252,8 +252,8 @@ func (pq *PetQuery) AllX(ctx context.Context) []*Pet {
 }
 
 // IDs executes the query and returns a list of Pet IDs.
-func (pq *PetQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (pq *PetQuery) IDs(ctx context.Context) ([]string, error) {
+	var ids []string
 	if err := pq.Select(pet.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -261,7 +261,7 @@ func (pq *PetQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PetQuery) IDsX(ctx context.Context) []int {
+func (pq *PetQuery) IDsX(ctx context.Context) []string {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -310,28 +310,28 @@ func (pq *PetQuery) Clone() *PetQuery {
 		return nil
 	}
 	return &PetQuery{
-		config:       pq.config,
-		limit:        pq.limit,
-		offset:       pq.offset,
-		order:        append([]OrderFunc{}, pq.order...),
-		predicates:   append([]predicate.Pet{}, pq.predicates...),
-		withCategory: pq.withCategory.Clone(),
-		withOwner:    pq.withOwner.Clone(),
-		withFriends:  pq.withFriends.Clone(),
+		config:         pq.config,
+		limit:          pq.limit,
+		offset:         pq.offset,
+		order:          append([]OrderFunc{}, pq.order...),
+		predicates:     append([]predicate.Pet{}, pq.predicates...),
+		withCategories: pq.withCategories.Clone(),
+		withOwner:      pq.withOwner.Clone(),
+		withFriends:    pq.withFriends.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
 	}
 }
 
-// WithCategory tells the query-builder to eager-load the nodes that are connected to
-// the "category" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PetQuery) WithCategory(opts ...func(*CategoryQuery)) *PetQuery {
+// WithCategories tells the query-builder to eager-load the nodes that are connected to
+// the "categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithCategories(opts ...func(*CategoryQuery)) *PetQuery {
 	query := &CategoryQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withCategory = query
+	pq.withCategories = query
 	return pq
 }
 
@@ -424,7 +424,7 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
 		loadedTypes = [3]bool{
-			pq.withCategory != nil,
+			pq.withCategories != nil,
 			pq.withOwner != nil,
 			pq.withFriends != nil,
 		}
@@ -455,13 +455,13 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		return nodes, nil
 	}
 
-	if query := pq.withCategory; query != nil {
+	if query := pq.withCategories; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		ids := make(map[int]*Pet, len(nodes))
+		ids := make(map[string]*Pet, len(nodes))
 		for _, node := range nodes {
 			ids[node.ID] = node
 			fks = append(fks, node.ID)
-			node.Edges.Category = []*Category{}
+			node.Edges.Categories = []*Category{}
 		}
 		var (
 			edgeids []int
@@ -470,17 +470,17 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		_spec := &sqlgraph.EdgeQuerySpec{
 			Edge: &sqlgraph.EdgeSpec{
 				Inverse: true,
-				Table:   pet.CategoryTable,
-				Columns: pet.CategoryPrimaryKey,
+				Table:   pet.CategoriesTable,
+				Columns: pet.CategoriesPrimaryKey,
 			},
 			Predicate: func(s *sql.Selector) {
-				s.Where(sql.InValues(pet.CategoryPrimaryKey[1], fks...))
+				s.Where(sql.InValues(pet.CategoriesPrimaryKey[1], fks...))
 			},
 			ScanValues: func() [2]interface{} {
-				return [2]interface{}{new(sql.NullInt64), new(sql.NullInt64)}
+				return [2]interface{}{new(sql.NullString), new(sql.NullInt64)}
 			},
 			Assign: func(out, in interface{}) error {
-				eout, ok := out.(*sql.NullInt64)
+				eout, ok := out.(*sql.NullString)
 				if !ok || eout == nil {
 					return fmt.Errorf("unexpected id value for edge-out")
 				}
@@ -488,7 +488,7 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 				if !ok || ein == nil {
 					return fmt.Errorf("unexpected id value for edge-in")
 				}
-				outValue := int(eout.Int64)
+				outValue := eout.String
 				inValue := int(ein.Int64)
 				node, ok := ids[outValue]
 				if !ok {
@@ -502,7 +502,7 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 			},
 		}
 		if err := sqlgraph.QueryEdges(ctx, pq.driver, _spec); err != nil {
-			return nil, fmt.Errorf(`query edges "category": %w`, err)
+			return nil, fmt.Errorf(`query edges "categories": %w`, err)
 		}
 		query.Where(category.IDIn(edgeids...))
 		neighbors, err := query.All(ctx)
@@ -512,10 +512,10 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		for _, n := range neighbors {
 			nodes, ok := edges[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected "category" node returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected "categories" node returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Category = append(nodes[i].Edges.Category, n)
+				nodes[i].Edges.Categories = append(nodes[i].Edges.Categories, n)
 			}
 		}
 	}
@@ -551,15 +551,15 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 
 	if query := pq.withFriends; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		ids := make(map[int]*Pet, len(nodes))
+		ids := make(map[string]*Pet, len(nodes))
 		for _, node := range nodes {
 			ids[node.ID] = node
 			fks = append(fks, node.ID)
 			node.Edges.Friends = []*Pet{}
 		}
 		var (
-			edgeids []int
-			edges   = make(map[int][]*Pet)
+			edgeids []string
+			edges   = make(map[string][]*Pet)
 		)
 		_spec := &sqlgraph.EdgeQuerySpec{
 			Edge: &sqlgraph.EdgeSpec{
@@ -571,19 +571,19 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 				s.Where(sql.InValues(pet.FriendsPrimaryKey[0], fks...))
 			},
 			ScanValues: func() [2]interface{} {
-				return [2]interface{}{new(sql.NullInt64), new(sql.NullInt64)}
+				return [2]interface{}{new(sql.NullString), new(sql.NullString)}
 			},
 			Assign: func(out, in interface{}) error {
-				eout, ok := out.(*sql.NullInt64)
+				eout, ok := out.(*sql.NullString)
 				if !ok || eout == nil {
 					return fmt.Errorf("unexpected id value for edge-out")
 				}
-				ein, ok := in.(*sql.NullInt64)
+				ein, ok := in.(*sql.NullString)
 				if !ok || ein == nil {
 					return fmt.Errorf("unexpected id value for edge-in")
 				}
-				outValue := int(eout.Int64)
-				inValue := int(ein.Int64)
+				outValue := eout.String
+				inValue := ein.String
 				node, ok := ids[outValue]
 				if !ok {
 					return fmt.Errorf("unexpected node id in edges: %v", outValue)
@@ -636,7 +636,7 @@ func (pq *PetQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   pet.Table,
 			Columns: pet.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: pet.FieldID,
 			},
 		},
