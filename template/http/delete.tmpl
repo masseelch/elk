@@ -18,11 +18,11 @@
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found")
-                "Logs" (list (printf "zap.Int(\"%s\", id)" $n.ID.Name))
+                "Logs" (list (printf "zap.%s(\"%s\", id)" (zapField $n.ID) $n.ID.Name))
                 "Default" (print "could not delete " $n.Name | kebab)
             -}}
 
-            l.Info("{{ $n.Name | kebab }} deleted", zap.Int("{{ $n.ID.Name }}", id))
+            l.Info("{{ $n.Name | kebab }} deleted", zap.{{ zapField $n.ID }}("{{ $n.ID.Name }}", id))
             w.WriteHeader(http.StatusNoContent)
         }
     {{ end }}

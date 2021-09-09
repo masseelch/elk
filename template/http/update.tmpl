@@ -41,7 +41,7 @@
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found" "not-singular")
-                "Logs" (list (printf "zap.Int(\"%s\", id)" $n.ID.Name))
+                "Logs" (list (printf "zap.%s(\"%s\", id)" (zapField $n.ID) $n.ID.Name))
                 "Default" (print "could not update " $n.Name | kebab)
             -}}
 
@@ -61,7 +61,7 @@
                 "Default" (print "could not read " $n.Name | kebab) " after update"
             -}}
 
-            l.Info("{{ $n.Name | kebab }} rendered", zap.Int("{{ $n.ID.Name }}", e.{{ $n.ID.StructField }}))
+            l.Info("{{ $n.Name | kebab }} rendered", zap.{{ zapField $n.ID }}("{{ $n.ID.Name }}", {{ $n.ID.BasicType (print "e." $n.ID.StructField) }}))
             easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.Elk.UpdateGroups | stringSlice)).Name }}(e), w)
         }
     {{ end }}
