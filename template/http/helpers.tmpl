@@ -52,6 +52,7 @@
             return
         }
     {{ else }}
+        var err error
         id := chi.URLParam(r, "id")
     {{ end -}}
 {{ end }}
