@@ -27,7 +27,7 @@ type (
 	}
 	// ExtensionOption allows managing Extension configuration using functional arguments.
 	ExtensionOption func(*Extension) error
-	// HandlerOption allows managing RestGenerator configuration using function arguments.
+	// HandlerOption allows managing RESTGenerator configuration using function arguments.
 	HandlerOption ExtensionOption
 )
 
@@ -81,8 +81,8 @@ func HandlerEasyJsonConfig(c EasyJsonConfig) HandlerOption {
 	}
 }
 
-// EnableSpecGenerator enables the OpenAPI-Spec generator. Data will be written to given filename.
-func EnableSpecGenerator(out string, hooks ...Hook) ExtensionOption {
+// GenerateSpec enables the OpenAPI-Spec generator. Data will be written to given filename.
+func GenerateSpec(out string, hooks ...Hook) ExtensionOption {
 	return func(ex *Extension) error {
 		if out == "" {
 			return errors.New("spec filename cannot be empty")
@@ -95,8 +95,8 @@ func EnableSpecGenerator(out string, hooks ...Hook) ExtensionOption {
 	}
 }
 
-// EnableHandlerGenerator enables generation of http crud handlers.
-func EnableHandlerGenerator(opts ...HandlerOption) ExtensionOption {
+// GenerateHandlers enables generation of http crud handlers.
+func GenerateHandlers(opts ...HandlerOption) ExtensionOption {
 	return func(ex *Extension) error {
 		ex.templates = []*gen.Template{HTTPTemplate}
 		ex.easyjsonConfig = newEasyJsonConfig()

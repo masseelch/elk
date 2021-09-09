@@ -43,6 +43,14 @@ func BadRequest(w http.ResponseWriter, msg interface{}) (int, error) {
 	}.MarshalToHTTPResponseWriter(w)
 }
 
+func Conflict(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusConflict,
+		Status: http.StatusText(http.StatusConflict),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
+
 func Forbidden(w http.ResponseWriter, msg interface{}) (int, error) {
 	return ErrResponse{
 		Code:   http.StatusForbidden,
@@ -67,17 +75,12 @@ func NotFound(w http.ResponseWriter, msg interface{}) (int, error) {
 	}.MarshalToHTTPResponseWriter(w)
 }
 
-func Unauthorized(w http.ResponseWriter, msg interface{}) (int, error) {
-	return ErrResponse{
-		Code:   http.StatusUnauthorized,
-		Status: http.StatusText(http.StatusUnauthorized),
-		Errors: msg,
-	}.MarshalToHTTPResponseWriter(w)
-}
-
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Badge2492344257View represents the data serialized for the following serialization group combinations:
 	// []
+	// [pet:list pet:read]
+	// [pet:read]
+	// [pet:list]
 	Badge2492344257View struct {
 		ID       int            `json:"id,omitempty"`
 		Color    badge.Color    `json:"color,omitempty"`
@@ -109,8 +112,9 @@ func NewBadge2492344257Views(es []*ent.Badge) Badge2492344257Views {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Pet3217017920View represents the data serialized for the following serialization group combinations:
 	// [pet:list pet:read]
+	// [pet:read]
 	Pet3217017920View struct {
 		ID         int                      `json:"id,omitempty"`
 		Height     int                      `json:"height,omitempty"`
@@ -168,7 +172,7 @@ func NewPet3217017920Views(es []*ent.Pet) Pet3217017920Views {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Pet340207500View represents the data serialized for the following serialization group combinations:
 	// []
 	Pet340207500View struct {
 		ID        int       `json:"id,omitempty"`
@@ -213,7 +217,7 @@ func NewPet340207500Views(es []*ent.Pet) Pet340207500Views {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Pet45794832View represents the data serialized for the following serialization group combinations:
 	// [pet:list]
 	Pet45794832View struct {
 		ID    int                  `json:"id,omitempty"`
@@ -250,8 +254,11 @@ func NewPet45794832Views(es []*ent.Pet) Pet45794832Views {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// PlayGroup3432834655View represents the data serialized for the following serialization group combinations:
 	// []
+	// [pet:list pet:read]
+	// [pet:read]
+	// [pet:list]
 	PlayGroup3432834655View struct {
 		ID          int               `json:"id,omitempty"`
 		Title       string            `json:"title,omitempty"`
@@ -285,8 +292,11 @@ func NewPlayGroup3432834655Views(es []*ent.PlayGroup) PlayGroup3432834655Views {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Toy36157710View represents the data serialized for the following serialization group combinations:
 	// []
+	// [pet:list pet:read]
+	// [pet:read]
+	// [pet:list]
 	Toy36157710View struct {
 		ID       int          `json:"id,omitempty"`
 		Color    toy.Color    `json:"color,omitempty"`

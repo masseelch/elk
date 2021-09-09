@@ -38,10 +38,6 @@ var (
 
 // newViews returns a map of all views occurring in the given graph. Key is the view's name.
 func newViews(g *gen.Graph) (map[string]*mergedView, error) {
-	// c := &Config{}
-	// if g.Annotations == nil || g.Annotations[c.Name()] == nil {
-	// 	return nil, errElkExtensionNotFound
-	// }
 	// Collect all groups ever requested together.
 	gss := serialization.Collection{}
 	for _, n := range g.Nodes {

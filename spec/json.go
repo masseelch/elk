@@ -7,15 +7,14 @@ import (
 	"sort"
 )
 
-type JSONSpec Spec
-
 func (spec Spec) MarshalJSON() ([]byte, error) {
+	type Local Spec
 	return json.Marshal(struct {
-		JSONSpec
+		Local
 		Version string `json:"openapi"`
 	}{
-		JSONSpec: JSONSpec(spec),
-		Version:  version,
+		Local:   Local(spec),
+		Version: version,
 	})
 }
 
