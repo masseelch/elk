@@ -698,7 +698,7 @@
         },
         "security": [
           {
-            "apiKeySample": null
+            "apiKeySample": []
           }
         ]
       },
@@ -771,7 +771,7 @@
         },
         "security": [
           {
-            "apiKeySample": null
+            "apiKeySample": []
           }
         ]
       }
@@ -819,7 +819,7 @@
         },
         "security": [
           {
-            "apiKeySample": null
+            "apiKeySample": []
           }
         ]
       },
@@ -858,7 +858,7 @@
         },
         "security": [
           {
-            "apiKeySample": null
+            "apiKeySample": []
           }
         ]
       },
@@ -946,7 +946,7 @@
         },
         "security": [
           {
-            "apiKeySample": null
+            "apiKeySample": []
           }
         ]
       }
