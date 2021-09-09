@@ -3,7 +3,6 @@ package elk
 import (
 	"encoding/json"
 	"entgo.io/ent/schema"
-	"github.com/masseelch/elk/policy"
 	"github.com/masseelch/elk/serialization"
 	"github.com/masseelch/elk/spec"
 )
@@ -11,15 +10,15 @@ import (
 // SchemaAnnotation annotates an entity with metadata for templates.
 type SchemaAnnotation struct {
 	// CreatePolicy defines if a creation handler should be generated.
-	CreatePolicy policy.Policy
+	CreatePolicy Policy
 	// ReadPolicy defines if a read handler should be generated.
-	ReadPolicy policy.Policy
+	ReadPolicy Policy
 	// UpdatePolicy defines if an update handler should be generated.
-	UpdatePolicy policy.Policy
+	UpdatePolicy Policy
 	// DeletePolicy defines if a delete handler should be generated.
-	DeletePolicy policy.Policy
+	DeletePolicy Policy
 	// ListPolicy defines if a list handler should be generated.
-	ListPolicy policy.Policy
+	ListPolicy Policy
 	// CreateGroups holds the serializations groups to use on the creation handler.
 	CreateGroups serialization.Groups
 	// ReadGroups holds the serializations groups to use on the read handler.
@@ -70,19 +69,19 @@ func (a SchemaAnnotation) Merge(o schema.Annotation) schema.Annotation {
 	if len(ant.ListGroups) > 0 {
 		a.ListGroups = ant.ListGroups
 	}
-	if ant.CreatePolicy != policy.None {
+	if ant.CreatePolicy != None {
 		a.CreatePolicy = ant.CreatePolicy
 	}
-	if ant.ReadPolicy != policy.None {
+	if ant.ReadPolicy != None {
 		a.ReadPolicy = ant.ReadPolicy
 	}
-	if ant.UpdatePolicy != policy.None {
+	if ant.UpdatePolicy != None {
 		a.UpdatePolicy = ant.UpdatePolicy
 	}
-	if ant.DeletePolicy != policy.None {
+	if ant.DeletePolicy != None {
 		a.DeletePolicy = ant.DeletePolicy
 	}
-	if ant.ListPolicy != policy.None {
+	if ant.ListPolicy != None {
 		a.ListPolicy = ant.ListPolicy
 	}
 	if ant.CreateSecurity != nil {
@@ -132,76 +131,40 @@ func ListGroups(gs ...string) SchemaAnnotation {
 	return SchemaAnnotation{ListGroups: gs}
 }
 
-type PolicyConfig uint
-
-const (
-	Create PolicyConfig = iota
-	Read
-	Update
-	Delete
-	List
-)
-
-// Expose enables all CRUD-operations on a schema.
-func Expose(c ...PolicyConfig) SchemaAnnotation {
-	// If no config is given set all to policy.Expose.
-	if len(c) == 0 {
-		return SchemaAnnotation{
-			CreatePolicy: policy.Expose,
-			ReadPolicy:   policy.Expose,
-			UpdatePolicy: policy.Expose,
-			DeletePolicy: policy.Expose,
-			ListPolicy:   policy.Expose,
-		}
-	}
-	// If a config is given only set those to policy.Expose that are requested.
-	s := SchemaAnnotation{}
-	for _, c := range c {
-		switch c {
-		case Create:
-			s.CreatePolicy = policy.Expose
-		case Read:
-			s.ReadPolicy = policy.Expose
-		case Update:
-			s.UpdatePolicy = policy.Expose
-		case Delete:
-			s.DeletePolicy = policy.Expose
-		case List:
-			s.ListPolicy = policy.Expose
-		}
-	}
-	return s
+// CreatePolicy returns a creation policy schema-annotation.
+func CreatePolicy(p Policy) SchemaAnnotation {
+	return SchemaAnnotation{CreatePolicy: p}
 }
 
-// Exclude disables all CRUD-operations on a schema.
-func Exclude(c ...PolicyConfig) SchemaAnnotation {
-	// If no config is given set all to policy.Expose.
-	if len(c) == 0 {
-		return SchemaAnnotation{
-			CreatePolicy: policy.Exclude,
-			ReadPolicy:   policy.Exclude,
-			UpdatePolicy: policy.Exclude,
-			DeletePolicy: policy.Exclude,
-			ListPolicy:   policy.Exclude,
-		}
+// ReadPolicy returns a read policy schema-annotation.
+func ReadPolicy(p Policy) SchemaAnnotation {
+	return SchemaAnnotation{ReadPolicy: p}
+}
+
+// UpdatePolicy returns an update policy schema-annotation.
+func UpdatePolicy(p Policy) SchemaAnnotation {
+	return SchemaAnnotation{UpdatePolicy: p}
+}
+
+// DeletePolicy returns a delete policy schema-annotation.
+func DeletePolicy(p Policy) SchemaAnnotation {
+	return SchemaAnnotation{DeletePolicy: p}
+}
+
+// ListPolicy returns a list policy schema-annotation.
+func ListPolicy(p Policy) SchemaAnnotation {
+	return SchemaAnnotation{ListPolicy: p}
+}
+
+// SchemaPolicy returns a schema-annotation with all operation-policies set to the given one.
+func SchemaPolicy(p Policy) SchemaAnnotation {
+	return SchemaAnnotation{
+		CreatePolicy: p,
+		ReadPolicy:   p,
+		UpdatePolicy: p,
+		DeletePolicy: p,
+		ListPolicy:   p,
 	}
-	// If a config is given only set those to policy.Expose that are requested.
-	s := SchemaAnnotation{}
-	for _, c := range c {
-		switch c {
-		case Create:
-			s.CreatePolicy = policy.Exclude
-		case Read:
-			s.ReadPolicy = policy.Exclude
-		case Update:
-			s.UpdatePolicy = policy.Exclude
-		case Delete:
-			s.DeletePolicy = policy.Exclude
-		case List:
-			s.ListPolicy = policy.Exclude
-		}
-	}
-	return s
 }
 
 // SchemaSecurity sets the given security on all schema operations.
@@ -247,7 +210,7 @@ type Annotation struct {
 	// MaxDepth tells the generator the maximum depth of this field when there is a cycle possible.
 	MaxDepth uint
 	// Expose defines if a read/list for this edge should be generated.
-	Expose policy.Policy
+	Expose Policy
 	// OpenAPI spec example value on schema fields.
 	Example interface{}
 	// OpenAPI security object for the read/list operation on this edge.
@@ -278,7 +241,7 @@ func (a Annotation) Merge(o schema.Annotation) schema.Annotation {
 	if ant.MaxDepth != 1 {
 		a.MaxDepth = ant.MaxDepth
 	}
-	if ant.Expose != policy.None {
+	if ant.Expose != None {
 		a.Expose = ant.Expose
 	}
 	if ant.Example != nil {
@@ -313,14 +276,14 @@ func MaxDepth(d uint) Annotation {
 	return Annotation{MaxDepth: d}
 }
 
-// ExposeEdge returns a policy.Expose annotation.
+// ExposeEdge returns a Expose annotation.
 func ExposeEdge() Annotation {
-	return Annotation{Expose: policy.Expose}
+	return Annotation{Expose: Expose}
 }
 
-// ExcludeEdge returns a policy.Exclude annotation.
+// ExcludeEdge returns a Exclude annotation.
 func ExcludeEdge() Annotation {
-	return Annotation{Expose: policy.Exclude}
+	return Annotation{Expose: Exclude}
 }
 
 // Example returns an example annotation.

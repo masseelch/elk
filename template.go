@@ -4,7 +4,6 @@ import (
 	"embed"
 	"entgo.io/ent/entc/gen"
 	"fmt"
-	"github.com/masseelch/elk/policy"
 	"github.com/stoewer/go-strcase"
 	"text/template"
 )
@@ -39,7 +38,7 @@ func filterNodes(g *gen.Graph, op string) ([]*gen.Type, error) {
 	}
 	var filteredNodes []*gen.Type
 	for _, n := range g.Nodes {
-		var p policy.Policy
+		var p Policy
 		ant := &SchemaAnnotation{}
 		// If no policies are given follow the global policy.
 		if n.Annotations == nil || n.Annotations[ant.Name()] == nil {
@@ -61,11 +60,11 @@ func filterNodes(g *gen.Graph, op string) ([]*gen.Type, error) {
 				p = ant.ListPolicy
 			}
 			// If the policy is policy.None follow the globally defined policy.
-			if p == policy.None {
+			if p == None {
 				p = c.HandlerPolicy
 			}
 		}
-		if p == policy.Expose {
+		if p == Expose {
 			filteredNodes = append(filteredNodes, n)
 		}
 	}
@@ -80,7 +79,7 @@ func filterEdges(n *gen.Type) ([]*gen.Edge, error) {
 	}
 	var filteredEdges []*gen.Edge
 	for _, e := range n.Edges {
-		var p policy.Policy
+		var p Policy
 		ant := &Annotation{}
 		// If no policies are given follow the global policy.
 		if e.Annotations == nil || e.Annotations[ant.Name()] == nil {
@@ -91,11 +90,11 @@ func filterEdges(n *gen.Type) ([]*gen.Edge, error) {
 			}
 			p = ant.Expose
 			// If the policy is policy.None follow the globally defined policy.
-			if p == policy.None {
+			if p == None {
 				p = c.HandlerPolicy
 			}
 		}
-		if p == policy.Expose {
+		if p == Expose {
 			filteredEdges = append(filteredEdges, e)
 		}
 	}
@@ -112,7 +111,7 @@ func nodeOperations(n *gen.Type) ([]string, error) {
 	ant := &SchemaAnnotation{}
 	// If no policies are given follow the global policy.
 	if n.Annotations == nil || n.Annotations[ant.Name()] == nil {
-		if c.HandlerPolicy == policy.Expose {
+		if c.HandlerPolicy == Expose {
 			return ops, nil
 		}
 		return nil, nil
@@ -121,19 +120,19 @@ func nodeOperations(n *gen.Type) ([]string, error) {
 			return nil, err
 		}
 		var ops []string
-		if ant.CreatePolicy == policy.Expose || (ant.CreatePolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+		if ant.CreatePolicy == Expose || (ant.CreatePolicy == None && c.HandlerPolicy == Expose) {
 			ops = append(ops, createOperation)
 		}
-		if ant.ReadPolicy == policy.Expose || (ant.ReadPolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+		if ant.ReadPolicy == Expose || (ant.ReadPolicy == None && c.HandlerPolicy == Expose) {
 			ops = append(ops, readOperation)
 		}
-		if ant.UpdatePolicy == policy.Expose || (ant.UpdatePolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+		if ant.UpdatePolicy == Expose || (ant.UpdatePolicy == None && c.HandlerPolicy == Expose) {
 			ops = append(ops, updateOperation)
 		}
-		if ant.DeletePolicy == policy.Expose || (ant.DeletePolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+		if ant.DeletePolicy == Expose || (ant.DeletePolicy == None && c.HandlerPolicy == Expose) {
 			ops = append(ops, deleteOperation)
 		}
-		if ant.ListPolicy == policy.Expose || (ant.ListPolicy == policy.None && c.HandlerPolicy == policy.Expose) {
+		if ant.ListPolicy == Expose || (ant.ListPolicy == None && c.HandlerPolicy == Expose) {
 			ops = append(ops, listOperation)
 		}
 		return ops, nil

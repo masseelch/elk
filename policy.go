@@ -1,5 +1,4 @@
-// Package policy provides one struct Policy to use on Annotations across generators.
-package policy
+package elk
 
 import "fmt"
 

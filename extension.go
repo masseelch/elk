@@ -5,7 +5,6 @@ import (
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
 	"errors"
-	"github.com/masseelch/elk/policy"
 	"github.com/masseelch/elk/spec"
 	"io"
 )
@@ -15,7 +14,7 @@ type (
 		// HandlerPolicy defines the default policy for handler generation.
 		// It is used if no policy is set on a (sub-)resource.
 		// Defaults to policy.Expose.
-		HandlerPolicy policy.Policy
+		HandlerPolicy Policy
 	}
 	// Extension implements entc.Extension interface for providing http handler code generation.
 	Extension struct {
@@ -35,7 +34,7 @@ type (
 // NewExtension returns a new elk extension with default values.
 func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 	ex := &Extension{
-		config: &Config{HandlerPolicy: policy.Expose},
+		config: &Config{HandlerPolicy: Expose},
 	}
 	for _, opt := range opts {
 		if err := opt(ex); err != nil {
@@ -64,7 +63,7 @@ func (e *Extension) Annotations() []entc.Annotation {
 }
 
 // DefaultHandlerPolicy sets the policy.Policy to use of none is given on a (sub-)schema.
-func DefaultHandlerPolicy(p policy.Policy) ExtensionOption {
+func DefaultHandlerPolicy(p Policy) ExtensionOption {
 	return func(ex *Extension) error {
 		if err := p.Validate(); err != nil {
 			return err
