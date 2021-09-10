@@ -12,9 +12,9 @@
         {{- range $n := $.Nodes }}
             {{- $ops := nodeOperations $n }}
             {{- $edgs := filterEdges $n }}
-            {{- $h := print $n.Receiver "Handler" }}
+            {{- $h := print $n.Label "Handler" }}
             {{- if or $ops $edgs }}
-                {{ $n.Receiver }}Handler := New{{ $n.Name }}Handler(c, l)
+                {{ $h }} := New{{ $n.Name }}Handler(c, l)
                 r.Route("/{{ $n.Name | kebab | plural }}", func(r chi.Router) {
                     {{- if contains $ops "create" }}
                         r.Post("/", {{ $h }}.Create)
