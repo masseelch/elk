@@ -4,7 +4,6 @@ import (
 	"hash/fnv"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 type (
@@ -77,9 +76,4 @@ func (c Collection) Contains(needle Groups) bool {
 		}
 	}
 	return false
-}
-
-// StructTag returns the struct tag representation of the Groups.
-func (gs Groups) StructTag() string {
-	return `groups:"` + strings.Join(gs, ",") + `"`
 }

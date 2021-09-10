@@ -388,7 +388,7 @@ func (c *PetClient) UpdateOne(pe *Pet) *PetUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PetClient) UpdateOneID(id int) *PetUpdateOne {
+func (c *PetClient) UpdateOneID(id string) *PetUpdateOne {
 	mutation := newPetMutation(c.config, OpUpdateOne, withPetID(id))
 	return &PetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -405,7 +405,7 @@ func (c *PetClient) DeleteOne(pe *Pet) *PetDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *PetClient) DeleteOneID(id int) *PetDeleteOne {
+func (c *PetClient) DeleteOneID(id string) *PetDeleteOne {
 	builder := c.Delete().Where(pet.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -420,12 +420,12 @@ func (c *PetClient) Query() *PetQuery {
 }
 
 // Get returns a Pet entity by its id.
-func (c *PetClient) Get(ctx context.Context, id int) (*Pet, error) {
+func (c *PetClient) Get(ctx context.Context, id string) (*Pet, error) {
 	return c.Query().Where(pet.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PetClient) GetX(ctx context.Context, id int) *Pet {
+func (c *PetClient) GetX(ctx context.Context, id string) *Pet {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -433,15 +433,15 @@ func (c *PetClient) GetX(ctx context.Context, id int) *Pet {
 	return obj
 }
 
-// QueryCategory queries the category edge of a Pet.
-func (c *PetClient) QueryCategory(pe *Pet) *CategoryQuery {
+// QueryCategories queries the categories edge of a Pet.
+func (c *PetClient) QueryCategories(pe *Pet) *CategoryQuery {
 	query := &CategoryQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pe.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(pet.Table, pet.FieldID, id),
 			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoryTable, pet.CategoryPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, pet.CategoriesTable, pet.CategoriesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
 		return fromV, nil

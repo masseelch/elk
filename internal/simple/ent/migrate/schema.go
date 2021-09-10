@@ -33,7 +33,7 @@ var (
 	}
 	// PetsColumns holds the columns for the "pets" table.
 	PetsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "age", Type: field.TypeInt},
 		{Name: "owner_pets", Type: field.TypeInt, Nullable: true},
@@ -55,7 +55,7 @@ var (
 	// CategoryPetsColumns holds the columns for the "category_pets" table.
 	CategoryPetsColumns = []*schema.Column{
 		{Name: "category_id", Type: field.TypeInt},
-		{Name: "pet_id", Type: field.TypeInt},
+		{Name: "pet_id", Type: field.TypeString},
 	}
 	// CategoryPetsTable holds the schema information for the "category_pets" table.
 	CategoryPetsTable = &schema.Table{
@@ -79,8 +79,8 @@ var (
 	}
 	// PetFriendsColumns holds the columns for the "pet_friends" table.
 	PetFriendsColumns = []*schema.Column{
-		{Name: "pet_id", Type: field.TypeInt},
-		{Name: "friend_id", Type: field.TypeInt},
+		{Name: "pet_id", Type: field.TypeString},
+		{Name: "friend_id", Type: field.TypeString},
 	}
 	// PetFriendsTable holds the schema information for the "pet_friends" table.
 	PetFriendsTable = &schema.Table{

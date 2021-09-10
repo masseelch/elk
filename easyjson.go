@@ -22,17 +22,16 @@ func newEasyJsonConfig() EasyJsonConfig {
 	}
 }
 
-func GenerateEasyJSON(c EasyJsonConfig) gen.Hook {
+func EasyJSONGenerator(c EasyJsonConfig) gen.Hook {
 	return func(next gen.Generator) gen.Generator {
 		return gen.GenerateFunc(func(g *gen.Graph) error {
 			// Let ent create all the files.
 			if err := next.Generate(g); err != nil {
 				return err
 			}
-
 			// We want to render every response struct created with easyjson.
 			var ns []string
-			vs, err := views(g)
+			vs, err := newViews(g)
 			if err != nil {
 				return err
 			}
@@ -52,7 +51,6 @@ func GenerateEasyJSON(c EasyJsonConfig) gen.Hook {
 			}
 			// Add the ErrResponse.
 			ns = append(ns, "ErrResponse")
-
 			// Run the easyjson generator.
 			return (&bootstrap.Generator{
 				PkgPath:                  filepath.Join(g.Package, "http"),

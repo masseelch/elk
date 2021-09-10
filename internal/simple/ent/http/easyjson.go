@@ -56,25 +56,25 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp(in *jlexer
 				}
 				*out.Age = int(in.Int())
 			}
-		case "category":
+		case "categories":
 			if in.IsNull() {
 				in.Skip()
-				out.Category = nil
+				out.Categories = nil
 			} else {
 				in.Delim('[')
-				if out.Category == nil {
+				if out.Categories == nil {
 					if !in.IsDelim(']') {
-						out.Category = make([]int, 0, 8)
+						out.Categories = make([]int, 0, 8)
 					} else {
-						out.Category = []int{}
+						out.Categories = []int{}
 					}
 				} else {
-					out.Category = (out.Category)[:0]
+					out.Categories = (out.Categories)[:0]
 				}
 				for !in.IsDelim(']') {
 					var v1 int
 					v1 = int(in.Int())
-					out.Category = append(out.Category, v1)
+					out.Categories = append(out.Categories, v1)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -97,16 +97,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp(in *jlexer
 				in.Delim('[')
 				if out.Friends == nil {
 					if !in.IsDelim(']') {
-						out.Friends = make([]int, 0, 8)
+						out.Friends = make([]string, 0, 4)
 					} else {
-						out.Friends = []int{}
+						out.Friends = []string{}
 					}
 				} else {
 					out.Friends = (out.Friends)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v2 int
-					v2 = int(in.Int())
+					var v2 string
+					v2 = string(in.String())
 					out.Friends = append(out.Friends, v2)
 					in.WantComma()
 				}
@@ -149,13 +149,13 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp(out *jwrit
 		}
 	}
 	{
-		const prefix string = ",\"category\":"
+		const prefix string = ",\"categories\":"
 		out.RawString(prefix)
-		if in.Category == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.Categories == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v3, v4 := range in.Category {
+			for v3, v4 := range in.Categories {
 				if v3 > 0 {
 					out.RawByte(',')
 				}
@@ -184,7 +184,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp(out *jwrit
 				if v5 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v6))
+				out.String(string(v6))
 			}
 			out.RawByte(']')
 		}
@@ -240,25 +240,25 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp1(in *jlexe
 				}
 				*out.Age = int(in.Int())
 			}
-		case "category":
+		case "categories":
 			if in.IsNull() {
 				in.Skip()
-				out.Category = nil
+				out.Categories = nil
 			} else {
 				in.Delim('[')
-				if out.Category == nil {
+				if out.Categories == nil {
 					if !in.IsDelim(']') {
-						out.Category = make([]int, 0, 8)
+						out.Categories = make([]int, 0, 8)
 					} else {
-						out.Category = []int{}
+						out.Categories = []int{}
 					}
 				} else {
-					out.Category = (out.Category)[:0]
+					out.Categories = (out.Categories)[:0]
 				}
 				for !in.IsDelim(']') {
 					var v7 int
 					v7 = int(in.Int())
-					out.Category = append(out.Category, v7)
+					out.Categories = append(out.Categories, v7)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -281,16 +281,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp1(in *jlexe
 				in.Delim('[')
 				if out.Friends == nil {
 					if !in.IsDelim(']') {
-						out.Friends = make([]int, 0, 8)
+						out.Friends = make([]string, 0, 4)
 					} else {
-						out.Friends = []int{}
+						out.Friends = []string{}
 					}
 				} else {
 					out.Friends = (out.Friends)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v8 int
-					v8 = int(in.Int())
+					var v8 string
+					v8 = string(in.String())
 					out.Friends = append(out.Friends, v8)
 					in.WantComma()
 				}
@@ -333,13 +333,13 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp1(out *jwri
 		}
 	}
 	{
-		const prefix string = ",\"category\":"
+		const prefix string = ",\"categories\":"
 		out.RawString(prefix)
-		if in.Category == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.Categories == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v9, v10 := range in.Category {
+			for v9, v10 := range in.Categories {
 				if v9 > 0 {
 					out.RawByte(',')
 				}
@@ -368,7 +368,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp1(out *jwri
 				if v11 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v12))
+				out.String(string(v12))
 			}
 			out.RawByte(']')
 		}
@@ -469,7 +469,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp3(in *jlexe
 		}
 		switch key {
 		case "id":
-			out.ID = int(in.Int())
+			out.ID = string(in.String())
 		case "name":
 			out.Name = string(in.String())
 		case "age":
@@ -492,11 +492,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp3(out *jwri
 	out.RawByte('{')
 	first := true
 	_ = first
-	if in.ID != 0 {
+	if in.ID != "" {
 		const prefix string = ",\"id\":"
 		first = false
 		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
+		out.String(string(in.ID))
 	}
 	if in.Name != "" {
 		const prefix string = ",\"name\":"
@@ -614,7 +614,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp5(in *jlexe
 		}
 		switch key {
 		case "id":
-			out.ID = int(in.Int())
+			out.ID = string(in.String())
 		case "name":
 			out.Name = string(in.String())
 		case "age":
@@ -649,11 +649,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp5(out *jwri
 	out.RawByte('{')
 	first := true
 	_ = first
-	if in.ID != 0 {
+	if in.ID != "" {
 		const prefix string = ",\"id\":"
 		first = false
 		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
+		out.String(string(in.ID))
 	}
 	if in.Name != "" {
 		const prefix string = ",\"name\":"
@@ -754,16 +754,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp6(in *jlexe
 				in.Delim('[')
 				if out.Pets == nil {
 					if !in.IsDelim(']') {
-						out.Pets = make([]int, 0, 8)
+						out.Pets = make([]string, 0, 4)
 					} else {
-						out.Pets = []int{}
+						out.Pets = []string{}
 					}
 				} else {
 					out.Pets = (out.Pets)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v19 int
-					v19 = int(in.Int())
+					var v19 string
+					v19 = string(in.String())
 					out.Pets = append(out.Pets, v19)
 					in.WantComma()
 				}
@@ -816,7 +816,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp6(out *jwri
 				if v20 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v21))
+				out.String(string(v21))
 			}
 			out.RawByte(']')
 		}
@@ -880,16 +880,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp7(in *jlexe
 				in.Delim('[')
 				if out.Pets == nil {
 					if !in.IsDelim(']') {
-						out.Pets = make([]int, 0, 8)
+						out.Pets = make([]string, 0, 4)
 					} else {
-						out.Pets = []int{}
+						out.Pets = []string{}
 					}
 				} else {
 					out.Pets = (out.Pets)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v22 int
-					v22 = int(in.Int())
+					var v22 string
+					v22 = string(in.String())
 					out.Pets = append(out.Pets, v22)
 					in.WantComma()
 				}
@@ -942,7 +942,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp7(out *jwri
 				if v23 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v24))
+				out.String(string(v24))
 			}
 			out.RawByte(']')
 		}
@@ -1223,16 +1223,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp11(in *jlex
 				in.Delim('[')
 				if out.Pets == nil {
 					if !in.IsDelim(']') {
-						out.Pets = make([]int, 0, 8)
+						out.Pets = make([]string, 0, 4)
 					} else {
-						out.Pets = []int{}
+						out.Pets = []string{}
 					}
 				} else {
 					out.Pets = (out.Pets)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v28 int
-					v28 = int(in.Int())
+					var v28 string
+					v28 = string(in.String())
 					out.Pets = append(out.Pets, v28)
 					in.WantComma()
 				}
@@ -1276,7 +1276,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp11(out *jwr
 				if v29 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v30))
+				out.String(string(v30))
 			}
 			out.RawByte(']')
 		}
@@ -1330,16 +1330,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp12(in *jlex
 				in.Delim('[')
 				if out.Pets == nil {
 					if !in.IsDelim(']') {
-						out.Pets = make([]int, 0, 8)
+						out.Pets = make([]string, 0, 4)
 					} else {
-						out.Pets = []int{}
+						out.Pets = []string{}
 					}
 				} else {
 					out.Pets = (out.Pets)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v31 int
-					v31 = int(in.Int())
+					var v31 string
+					v31 = string(in.String())
 					out.Pets = append(out.Pets, v31)
 					in.WantComma()
 				}
@@ -1383,7 +1383,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp12(out *jwr
 				if v32 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v33))
+				out.String(string(v33))
 			}
 			out.RawByte(']')
 		}

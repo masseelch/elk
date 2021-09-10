@@ -2,8 +2,19 @@
 
 package ent
 
+import (
+	"github.com/masseelch/elk/internal/simple/ent/pet"
+	"github.com/masseelch/elk/internal/simple/ent/schema"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	petFields := schema.Pet{}.Fields()
+	_ = petFields
+	// petDescID is the schema descriptor for id field.
+	petDescID := petFields[0].Descriptor()
+	// pet.DefaultID holds the default value on creation for the id field.
+	pet.DefaultID = petDescID.Default.(func() string)
 }

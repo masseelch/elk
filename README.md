@@ -1,9 +1,14 @@
 # elk
 
-This package aims to extend the [awesome entgo.io](https://github.com/ent/ent) code generator to generate a
-fully-functional HTTP API for your schema. `elk` strives to automate all the tedious work of setting up the basic CRUD
-endpoints for every entity you add to your graph, including logging, validation of the request body, eager loading
-relations and serializing, all while leaving reflection out of sight and maintaining type-safety.
+This package provides an extension to the [awesome entgo.io](https://github.com/ent/ent) code generator.
+
+`elk` can do two things for you:
+
+1. Generate a fully compliant, extendable [OpenAPI](https://spec.openapis.org/oas/v3.0.3.html)
+   specification file to enable you to make use of the [Swagger Tooling](https://swagger.io/tools/) to generate RESTful
+   server stubs and clients.
+2. Generate a ready-to-use and extendable server implementation of the OpenAPI specification. The code generated
+   by `elk` uses the Ent ORM while maintaining complete type-safety and leaving reflection out of sight.
 
 > :warning: **This is work in progress**: The API may change without further notice!
 
@@ -16,12 +21,11 @@ their [documentation](https://entgo.io/docs/getting-started).
 The first step is to add the `elk` package to your project:
 
 ```shell
-go get github.com/masseelch/elk
+go install github.com/masseelch/elk
 ```
 
-`elk` uses the
-Ent [extension API](https://github.com/ent/ent/blob/a19a89a141cf1a5e1b38c93d7898f218a1f86c94/entc/entc.go#L197) to
-integrate with Ent’s code-generation. This requires that we use the `entc` (ent codegen) package as
+`elk` uses the Ent [Extension API](https://entgo.io/docs/extensions) to integrate with Ent’s code-generation. This
+requires that we use the `entc` (ent codegen) package as
 described [here](https://entgo.io/docs/code-gen#use-entc-as-a-package). Follow the next four steps to enable it and to
 configure Ent to work with the `elk` extension:
 
@@ -41,7 +45,10 @@ import (
 )
 
 func main() {
-	ex, err := elk.NewExtension()
+	ex, err := elk.NewExtension(
+		elk.GenerateSpec("openapi.json"),
+		elk.GenerateHandlers(),
+	)
 	if err != nil {
 		log.Fatalf("creating elk extension: %v", err)
 	}
@@ -62,8 +69,8 @@ package ent
 
 ```
 
-3. `elk` uses some external packages in its generated code. Currently, you have to get those packages manually once when
-   setting up `elk`:
+3. _(Only required if server generation is enabled)_ `elk` uses some external packages in its generated code. Currently,
+   you have to get those packages manually once when setting up `elk`:
 
 ```shell
 go get github.com/mailru/easyjson github.com/go-chi/chi/v5 go.uber.org/zap
@@ -75,14 +82,16 @@ go get github.com/mailru/easyjson github.com/go-chi/chi/v5 go.uber.org/zap
 go generate ./...
 ```
 
-In addition to the files Ent would normally generate, another directory names `ent/http` was created. There files
-contain the code for the `elk`-generated HTTP CRUD handlers. An example of the generated code can be
-found [here](https://github.com/masseelch/elk/tree/master/internal/integration/pets/ent/http).
+In addition to the files Ent would normally generate, another directory named `ent/http` and a file named `openapi.json`
+was created. The `ent/http` directory contains the code for the `elk`-generated HTTP CRUD handlers while `openapi.json`
+contains the OpenAPI Specification. Feel free to have a look
+at [this example spec file](https://github.com/masseelch/elk/tree/master/internal/simple/ent/openapo.json)
+and [the implementing server code](https://github.com/masseelch/elk/tree/master/internal/simple/ent/http).
 
 ### Setting up a server
 
-This section guides you to a very simple setup for an `elk`-powered Ent. The following two files define two schemas Pet
-and User with a Many-To-One relation: A Pet belongs to a User, and a User can have multiple Pets.
+This section guides you to a very simple setup for an `elk`-powered Ent. The following two files define the two schemas
+Pet and User with a Many-To-One relation: A Pet belongs to a User, and a User can have multiple Pets.
 
 ***ent/schema/pet.go***
 
@@ -148,7 +157,7 @@ func (User) Edges() []ent.Edge {
 }
 ```
 
-To spin up a runnable server you can use the below `main` function:
+After regenerating the code you can spin up a runnable server with the below `main` function:
 
 ```go
 package main
@@ -177,18 +186,8 @@ func main() {
 	if err := c.Schema.Create(context.Background()); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
-	// Router and Logger.
-	r, l := chi.NewRouter(), zap.NewExample()
-	// Mount the generates handlers.
-	r.Route("/pets", func(r chi.Router) {
-		elk.NewPetHandler(c, l).Mount(r, elk.PetRoutes)
-	})
-	r.Route("/users", func(r chi.Router) {
-		// Only register the create and read endpoints.
-		elk.NewUserHandler(c, l).Mount(r, elk.UserCreate|elk.UserRead)
-	})
 	// Start listen to incoming requests.
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	if err := http.ListenAndServe(":8080", elk.NewHandler(chi.NewRouter(), zap.NewExample())); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -225,15 +224,15 @@ curl -X 'POST' -H 'Content-Type: application/json' -d '{"name":"Kuro","owner":1}
 }
 ```
 
-The response data on the create action does not include the User the new Pet belongs to. `elk` does not include edges in
-its output by default. You can configure `elk` to render edges using a feature called **serialization groups**.
+The response data on the creation operation does not include the User the new Pet belongs to. `elk` does not include
+edges in its output by default. You can configure `elk` to render edges using a feature called **serialization groups**.
 
 ## Serialization Groups
 
 `elk` by default includes every field of a schema in an endpoints output and excludes fields. This behaviour can be
 changed by using **serialization groups**. You can configure `elk` what **serialization groups** to request on what
 endpoint using a `elk.SchemaAnnotation`. With a `elk.Annotation` you configure what fields and edges to include. `elk`
-follows the following rules to determine if a field or edge is inlcuded or not:
+follows the following rules to determine if a field or edge is included or not:
 
 - If no groups are requested all fields are included and all edges are excluded
 - If a group x is requested all fields with no groups and fields with group x are included. Edges with x are eager
@@ -426,7 +425,7 @@ unique edge and `elk.SchemaAnnotation.ListGroups` for a non-unique edge.
 
 ## Pagination
 
-`elk` paginates list endpoints. This is valid for both resource and sub-resources routes.
+`elk` paginates all list endpoints. This is valid for both resource and sub-resources routes.
 
 ```shell
 curl 'localhost:8080/pets?page=2&itemsPerPage=1'
@@ -441,26 +440,85 @@ curl 'localhost:8080/pets?page=2&itemsPerPage=1'
 ]
 ```
 
+## Configuration
+
+`elk` lets you decide what endpoints you want it to generate by the use of **generation policies**. You can either
+expose all routes by default and hide some you are not interested in or exclude all routes by default and only expose
+those you want generated:
+
+***ent/entc.go***
+
+```go
+package main
+
+import (
+	"log"
+
+	"entgo.io/ent/entc"
+	"entgo.io/ent/entc/gen"
+	"github.com/masseelch/elk"
+	"github.com/masseelch/elk/policy"
+	"github.com/masseelch/elk/spec"
+)
+
+func main() {
+	ex, err := elk.NewExtension(
+		elk.GenerateSpec("openapi.json"),
+		elk.GenerateHandlers(),
+		// Exclude all routes by default.
+		elk.DefaultHandlerPolicy(elk.Exclude),
+	)
+	if err != nil {
+		log.Fatalf("creating elk extension: %v", err)
+	}
+	err = entc.Generate("./schema", &gen.Config{}, entc.Extensions(ex))
+	if err != nil {
+		log.Fatalf("running ent codegen: %v", err)
+	}
+}
+
+```
+
+***ent/schema/user.go***
+
+```go
+package schema
+
+import (
+	"entgo.io/ent"
+	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/field"
+	"github.com/masseelch/elk"
+)
+
+// User holds the schema definition for the User entity.
+type User struct {
+	ent.Schema
+}
+
+// Annotations of the User.
+func (User) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		// Generate creation and read endpoints.
+		elk.Expose(elk.Create, elk.Read),
+    }
+}
+```
+
 For more information about how to configure `elk` and what it can do have a look at
-the [integration test setup](https://github.com/masseelch/elk/tree/master/internal/integration/pets/ent).
+the [docs](https://pkg.go.dev/github.com/masseelch/elk) [integration test setup](https://github.com/masseelch/elk/tree/master/internal)
+.
 
 ## Known Issues and Outlook
 
 - `elk` does currently only work with JSON. It is relatively easy to support XML as well and there are plans to provide
   conditional XML / JSON parsing and rendering based on the `Content-Type` and `Accept` headers.
 
-- `elk`s generated bitmask to choose what handlers to mount is not typesafe yet. You can
-  call `elk.FooHandler(c, l).Mount(r, elk.BarRoutes)` without any compile time errors.
-
-- Customization of the generated handlers is not great yet. I'd like to provide something similar to Ent'
-  s [External Templates](https://entgo.io/docs/templates) in the future.
-
 - The generated code does not have very good automated tests yet.
-
-- ~~Initial work to generate a fully working flutter frontend has been done.~~ Aim is now to generate Swagger / OpenAPI spec and let the user use swagger codegen tooling to generate an API client.
 
 ## Contribution
 
-`elk` is in an early stage of development, we welcome any suggestion or feedback and if you are willing to help I'd be
-very glad. The [issues tab](https://github.com/masseelch/elk/issues) is a wonderful place for you to reach out for help,
-feedback, suggestions and contribution.
+`elk` has not reach its first release yet but the API can be considered somewhat stable. I welcome any suggestion or
+feedback and if you are willing to help I'd be very glad. The [issues tab](https://github.com/masseelch/elk/issues) is a
+wonderful place for you to reach out for help, feedback, suggestions and contribution.

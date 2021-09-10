@@ -61,7 +61,7 @@ func (w walk) cycleDepth() uint {
 	return c
 }
 
-// reachedMaxDepth returns if the walk has reached a depth greater then maxDepth.
+// reachedMaxDepth returns if the walk has reached a depth greater than maxDepth.
 func (w walk) reachedMaxDepth() bool {
 	return len(w) > maxDepth
 }
@@ -78,16 +78,16 @@ func (w *walk) pop() {
 	}
 }
 
-// edges returns the EdgesToLoad for the given node and action.
+// edges returns the EdgesToLoad for the given node and operation.
 func edges(n *gen.Type, a string) (Edges, error) {
-	g, err := groupsForAction(n, a)
+	g, err := groupsForOperation(n, a)
 	if err != nil {
 		return nil, err
 	}
 	return edgesHelper(n, walk{}, g)
 }
 
-// edgesHelper recursively collects the edges to load on this type for requested groups on the given action.
+// edgesHelper recursively collects the edges to load on this type for requested groups on the given operation.
 func edgesHelper(n *gen.Type, w walk, groupsToLoad []string) (Edges, error) {
 	// If we have reached maxDepth there most possibly is an unwanted circular reference.
 	if w.reachedMaxDepth() {
