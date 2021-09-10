@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	createOperation = "create"
-	readOperation   = "read"
-	updateOperation = "update"
-	deleteOperation = "delete"
-	listOperation   = "list"
+	opCreate = "create"
+	opRead   = "read"
+	opUpdate = "update"
+	opDelete = "delete"
+	opList   = "list"
 )
 
 // groupsForOperation returns the requested groups for a given type and operation.
@@ -27,13 +27,13 @@ func groupsForOperation(n *gen.Type, o string) (serialization.Groups, error) {
 		return nil, err
 	}
 	switch o {
-	case createOperation:
+	case opCreate:
 		return ant.CreateGroups, nil
-	case readOperation:
+	case opRead:
 		return ant.ReadGroups, nil
-	case updateOperation:
+	case opUpdate:
 		return ant.UpdateGroups, nil
-	case listOperation:
+	case opList:
 		return ant.ListGroups, nil
 	}
 	return nil, fmt.Errorf("unknown operation %q", o)

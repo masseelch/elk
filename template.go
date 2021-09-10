@@ -48,15 +48,15 @@ func filterNodes(g *gen.Graph, op string) ([]*gen.Type, error) {
 				return nil, err
 			}
 			switch op {
-			case createOperation:
+			case opCreate:
 				p = ant.CreatePolicy
-			case readOperation:
+			case opRead:
 				p = ant.ReadPolicy
-			case updateOperation:
+			case opUpdate:
 				p = ant.UpdatePolicy
-			case deleteOperation:
+			case opDelete:
 				p = ant.DeletePolicy
-			case listOperation:
+			case opList:
 				p = ant.ListPolicy
 			}
 			// If the policy is policy.None follow the globally defined policy.
@@ -107,7 +107,7 @@ func nodeOperations(n *gen.Type) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	ops := []string{createOperation, readOperation, updateOperation, deleteOperation, listOperation}
+	ops := []string{opCreate, opRead, opUpdate, opDelete, opList}
 	ant := &SchemaAnnotation{}
 	// If no policies are given follow the global policy.
 	if n.Annotations == nil || n.Annotations[ant.Name()] == nil {
@@ -121,19 +121,19 @@ func nodeOperations(n *gen.Type) ([]string, error) {
 		}
 		var ops []string
 		if ant.CreatePolicy == Expose || (ant.CreatePolicy == None && c.HandlerPolicy == Expose) {
-			ops = append(ops, createOperation)
+			ops = append(ops, opCreate)
 		}
 		if ant.ReadPolicy == Expose || (ant.ReadPolicy == None && c.HandlerPolicy == Expose) {
-			ops = append(ops, readOperation)
+			ops = append(ops, opRead)
 		}
 		if ant.UpdatePolicy == Expose || (ant.UpdatePolicy == None && c.HandlerPolicy == Expose) {
-			ops = append(ops, updateOperation)
+			ops = append(ops, opUpdate)
 		}
 		if ant.DeletePolicy == Expose || (ant.DeletePolicy == None && c.HandlerPolicy == Expose) {
-			ops = append(ops, deleteOperation)
+			ops = append(ops, opDelete)
 		}
 		if ant.ListPolicy == Expose || (ant.ListPolicy == None && c.HandlerPolicy == Expose) {
-			ops = append(ops, listOperation)
+			ops = append(ops, opList)
 		}
 		return ops, nil
 	}

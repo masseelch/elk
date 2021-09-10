@@ -42,7 +42,7 @@ func NewExtension(opts ...ExtensionOption) (*Extension, error) {
 		}
 	}
 	if len(ex.hooks) == 0 {
-		return nil, errors.New(`no generator enabled: enable one by providing either "EnableSpecGenerator()" or "EnableHandlerGenerator()" to "NewExtension()"`)
+		return nil, errors.New(`no generator enabled: enable one by providing either "GenerateSpec()" or "GenerateHandlers()" to "NewExtension()"`)
 	}
 	return ex, nil
 }
@@ -88,9 +88,7 @@ func GenerateSpec(out string, hooks ...Hook) ExtensionOption {
 			return errors.New("spec filename cannot be empty")
 		}
 		ex.hooks = append(ex.hooks, ex.SpecGenerator(out))
-		if len(hooks) > 0 {
-			ex.specHooks = append(ex.specHooks, hooks...)
-		}
+		ex.specHooks = append(ex.specHooks, hooks...)
 		return nil
 	}
 }

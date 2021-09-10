@@ -236,16 +236,16 @@ func exampleValue(f *gen.Field) (interface{}, error) {
 func requestBody(n *gen.Type, op string) (*spec.RequestBody, error) {
 	req := &spec.RequestBody{}
 	switch op {
-	case createOperation:
+	case opCreate:
 		req.Description = fmt.Sprintf("%s to create", n.Name)
-	case updateOperation:
+	case opUpdate:
 		req.Description = fmt.Sprintf("%s properties to update", n.Name)
 	default:
 		return nil, fmt.Errorf("requestBody: unsupported operation %q", op)
 	}
 	fs := make(spec.Fields)
 	for _, f := range n.Fields {
-		if op == createOperation || !f.Immutable {
+		if op == opCreate || !f.Immutable {
 			sf, err := newField(f)
 			if err != nil {
 				return nil, err
@@ -288,7 +288,7 @@ func paths(g *gen.Graph, s *spec.Spec) error {
 		// root for all operations on this node.
 		root := "/" + rules.Pluralize(strcase.KebabCase(n.Name))
 		// Create operation.
-		if contains(ops, createOperation) {
+		if contains(ops, opCreate) {
 			path(s, root).Post, err = createOp(s, n)
 			if err != nil {
 				return err
@@ -296,28 +296,28 @@ func paths(g *gen.Graph, s *spec.Spec) error {
 
 		}
 		// Read operation.
-		if contains(ops, readOperation) {
+		if contains(ops, opRead) {
 			path(s, root+"/{id}").Get, err = readOp(s, n)
 			if err != nil {
 				return err
 			}
 		}
 		// Update operation.
-		if contains(ops, updateOperation) {
+		if contains(ops, opUpdate) {
 			path(s, root+"/{id}").Patch, err = updateOp(s, n)
 			if err != nil {
 				return err
 			}
 		}
 		// Delete operation.
-		if contains(ops, deleteOperation) {
+		if contains(ops, opDelete) {
 			path(s, root+"/{id}").Delete, err = deleteOp(s, n)
 			if err != nil {
 				return err
 			}
 		}
 		// List operation.
-		if contains(ops, listOperation) {
+		if contains(ops, opList) {
 			path(s, root).Get, err = listOp(s, n)
 			if err != nil {
 				return err
@@ -352,7 +352,7 @@ func createOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := requestBody(n, createOperation)
+	req, err := requestBody(n, opCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -368,7 +368,7 @@ func createOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		Summary:     fmt.Sprintf("Create a new %s", n.Name),
 		Description: fmt.Sprintf("Creates a new %s and persists it to storage.", n.Name),
 		Tags:        []string{n.Name},
-		OperationID: createOperation + n.Name,
+		OperationID: opCreate + n.Name,
 		RequestBody: req,
 		Responses: map[string]*spec.OperationResponse{
 			strconv.Itoa(http.StatusOK): {
@@ -412,10 +412,10 @@ func readOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		Summary:     fmt.Sprintf("Find a %s by ID", n.Name),
 		Description: fmt.Sprintf("Finds the %s with the requested ID and returns it.", n.Name),
 		Tags:        []string{n.Name},
-		OperationID: readOperation + n.Name,
+		OperationID: opRead + n.Name,
 		Parameters: []*spec.Parameter{{
 			Name:        "id",
-			In:          spec.PathParam,
+			In:          spec.InPath,
 			Description: fmt.Sprintf("ID of the %s", n.Name),
 			Required:    true,
 			Schema:      *t,
@@ -446,7 +446,7 @@ func updateOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := requestBody(n, updateOperation)
+	req, err := requestBody(n, opUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -466,10 +466,10 @@ func updateOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		Summary:     fmt.Sprintf("Updates a %s", n.Name),
 		Description: fmt.Sprintf("Updates a %s and persists changes to storage.", n.Name),
 		Tags:        []string{n.Name},
-		OperationID: updateOperation + n.Name,
+		OperationID: opUpdate + n.Name,
 		Parameters: []*spec.Parameter{{
 			Name:        "id",
-			In:          spec.PathParam,
+			In:          spec.InPath,
 			Description: fmt.Sprintf("ID of the %s to update", n.Name),
 			Required:    true,
 			Schema:      *t,
@@ -509,10 +509,10 @@ func deleteOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		Summary:     fmt.Sprintf("Deletes a %s by ID", n.Name),
 		Description: fmt.Sprintf("Deletes the %s with the requested ID.", n.Name),
 		Tags:        []string{n.Name},
-		OperationID: deleteOperation + n.Name,
+		OperationID: opDelete + n.Name,
 		Parameters: []*spec.Parameter{{
 			Name:        "id",
-			In:          spec.PathParam,
+			In:          spec.InPath,
 			Description: fmt.Sprintf("ID of the %s to delete", n.Name),
 			Required:    true,
 			Schema:      *t,
@@ -549,15 +549,15 @@ func listOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 		Summary:     fmt.Sprintf("List %s", rules.Pluralize(n.Name)),
 		Description: fmt.Sprintf("List %s.", rules.Pluralize(n.Name)),
 		Tags:        []string{n.Name},
-		OperationID: listOperation + n.Name,
+		OperationID: opList + n.Name,
 		Parameters: []*spec.Parameter{{
 			Name:        "page",
-			In:          spec.QueryParam,
+			In:          spec.InQuery,
 			Description: "what page to render",
 			Schema:      *_int32,
 		}, {
 			Name:        "itemsPerPage",
-			In:          spec.QueryParam,
+			In:          spec.InQuery,
 			Description: "item count to render per page",
 			Schema:      *_int32,
 		}},
@@ -595,7 +595,7 @@ func readEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error)
 	op.Description = fmt.Sprintf("Find the attached %s of the %s with the given ID", e.Type.Name, n.Name)
 	op.Tags = []string{n.Name}
 	op.Parameters[0].Description = fmt.Sprintf("ID of the %s", n.Name)
-	op.OperationID = readOperation + n.Name + strcase.UpperCamelCase(e.Name)
+	op.OperationID = opRead + n.Name + strcase.UpperCamelCase(e.Name)
 	op.Responses[strconv.Itoa(http.StatusOK)].Response.Description = fmt.Sprintf(
 		"%s attached to %s with requested ID was found", e.Type.Name, n.Name,
 	)
@@ -620,7 +620,7 @@ func listEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error)
 	op.Summary = fmt.Sprintf("Find the attached %s", rules.Pluralize(e.Type.Name))
 	op.Description = fmt.Sprintf("Find the attached %s of the %s with the given ID", rules.Pluralize(e.Type.Name), n.Name)
 	op.Tags = []string{n.Name}
-	op.OperationID = listOperation + n.Name + strcase.UpperCamelCase(e.Name)
+	op.OperationID = opList + n.Name + strcase.UpperCamelCase(e.Name)
 	op.Parameters = append(op.Parameters, rop.Parameters...)
 	op.Parameters[0].Description = fmt.Sprintf("ID of the %s", n.Name)
 	op.Responses[strconv.Itoa(http.StatusOK)].Response.Description = fmt.Sprintf(

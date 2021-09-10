@@ -8,21 +8,21 @@ import (
 type ParameterPlace uint
 
 const (
-	QueryParam ParameterPlace = iota
-	HeaderParam
-	PathParam
-	CookieParam
+	InQuery ParameterPlace = iota
+	InHeader
+	InPath
+	InCookie
 )
 
 func (p ParameterPlace) MarshalJSON() ([]byte, error) {
 	switch p {
-	case QueryParam:
+	case InQuery:
 		return json.Marshal("query")
-	case HeaderParam:
+	case InHeader:
 		return json.Marshal("header")
-	case PathParam:
+	case InPath:
 		return json.Marshal("path")
-	case CookieParam:
+	case InCookie:
 		return json.Marshal("cookie")
 	default:
 		return nil, fmt.Errorf("cannot marshal %v to json", p)
@@ -35,14 +35,14 @@ func (p *ParameterPlace) UnmarshalJSON(d []byte) error {
 		return err
 	}
 	switch s {
-	case "QueryParam":
-		*p = QueryParam
-	case "HeaderParam":
-		*p = HeaderParam
-	case "PathParam":
-		*p = PathParam
-	case "CookieParam":
-		*p = CookieParam
+	case "InQuery":
+		*p = InQuery
+	case "InHeader":
+		*p = InHeader
+	case "InPath":
+		*p = InPath
+	case "InCookie":
+		*p = InCookie
 	default:
 		return fmt.Errorf("cannot unmarshal %v to ParameterPlace", p)
 	}

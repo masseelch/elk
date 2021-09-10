@@ -42,7 +42,7 @@ func newViews(g *gen.Graph) (map[string]*mergedView, error) {
 	gss := serialization.Collection{}
 	for _, n := range g.Nodes {
 		// For every operation extract the requested groups.
-		for _, a := range [...]string{createOperation, readOperation, updateOperation, listOperation} {
+		for _, a := range [...]string{opCreate, opRead, opUpdate, opList} {
 			// TODO: Do not return views for excluded operations.
 			gs, err := groupsForOperation(n, a)
 			if err != nil {

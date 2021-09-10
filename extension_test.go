@@ -8,24 +8,24 @@ import (
 func TestExtensionOption(t *testing.T) {
 	ex, err := NewExtension()
 	require.EqualError(t, err,
-		`no generator enabled: enable one by providing either "EnableSpecGenerator()" or "EnableHandlerGenerator()" to "NewExtension()"`,
+		`no generator enabled: enable one by providing either "GenerateSpec()" or "GenerateHandlers()" to "NewExtension()"`,
 	)
 	require.Nil(t, ex)
 
-	ex, err = NewExtension(EnableHandlerGenerator())
+	ex, err = NewExtension(GenerateHandlers())
 	require.NoError(t, err)
 	require.Len(t, ex.hooks, 1)
 
-	ex, err = NewExtension(EnableSpecGenerator(""))
+	ex, err = NewExtension(GenerateSpec(""))
 	require.EqualError(t, err, "spec filename cannot be empty")
 	require.Nil(t, ex)
 
-	ex, err = NewExtension(EnableSpecGenerator("spec.json", SpecTitle("")))
+	ex, err = NewExtension(GenerateSpec("spec.json", SpecTitle("")))
 	require.NoError(t, err)
 	require.Len(t, ex.hooks, 1)
 	require.Len(t, ex.specHooks, 1)
 
-	ex, err = NewExtension(EnableHandlerGenerator(), EnableSpecGenerator("spec.json"))
+	ex, err = NewExtension(GenerateHandlers(), GenerateSpec("spec.json"))
 	require.NoError(t, err)
 	require.Len(t, ex.hooks, 2)
 }

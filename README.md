@@ -46,8 +46,8 @@ import (
 
 func main() {
 	ex, err := elk.NewExtension(
-		elk.EnableSpecGenerator("openapi.json"),
-		elk.EnableHandlerGenerator(),
+		elk.GenerateSpec("openapi.json"),
+		elk.GenerateHandlers(),
 	)
 	if err != nil {
 		log.Fatalf("creating elk extension: %v", err)
@@ -463,10 +463,10 @@ import (
 
 func main() {
 	ex, err := elk.NewExtension(
-		elk.EnableSpecGenerator("openapi.json"),
-		elk.EnableHandlerGenerator(),
+		elk.GenerateSpec("openapi.json"),
+		elk.GenerateHandlers(),
 		// Exclude all routes by default.
-		elk.DefaultHandlerPolicy(policy.Exclude),
+		elk.DefaultHandlerPolicy(elk.Exclude),
 	)
 	if err != nil {
 		log.Fatalf("creating elk extension: %v", err)

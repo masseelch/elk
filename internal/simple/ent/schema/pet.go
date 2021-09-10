@@ -18,9 +18,7 @@ type Pet struct {
 func (Pet) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
-			DefaultFunc(func() string {
-				return uuid.New().String()
-			}),
+			DefaultFunc(uuid.NewString),
 		field.String("name").
 			Annotations(elk.Groups("pet")),
 		field.Int("age"),

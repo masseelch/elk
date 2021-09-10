@@ -77,19 +77,3 @@ func (c Collection) Contains(needle Groups) bool {
 	}
 	return false
 }
-
-// // Hash returns a hash value for a Collection.
-// func (c Collection) Hash() string {
-// 	var hs []uint32
-// 	for _, gs := range c {
-// 		hs = append(hs, gs.Hash())
-// 	}
-// 	sort.Slice(hs, func(i, j int) bool {
-// 		return hs[i] < hs[j]
-// 	})
-// 	r := make([]string, len(hs))
-// 	for i, h := range hs {
-// 		r[i] = strconv.FormatUint(uint64(h), 10)
-// 	}
-// 	return strings.Join(r, "-")
-// }

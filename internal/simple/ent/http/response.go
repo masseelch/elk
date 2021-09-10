@@ -69,7 +69,7 @@ func NotFound(w http.ResponseWriter, msg interface{}) (int, error) {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Category4094953247View represents the data serialized for the following serialization group combinations:
 	// []
 	// [owner pet pet:owner]
 	Category4094953247View struct {
@@ -101,7 +101,7 @@ func NewCategory4094953247Views(es []*ent.Category) Category4094953247Views {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Owner139708381View represents the data serialized for the following serialization group combinations:
 	// []
 	// [owner pet pet:owner]
 	Owner139708381View struct {
@@ -135,7 +135,7 @@ func NewOwner139708381Views(es []*ent.Owner) Owner139708381Views {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Pet1876743790View represents the data serialized for the following serialization group combinations:
 	// [owner pet pet:owner]
 	Pet1876743790View struct {
 		ID      string              `json:"id,omitempty"`
@@ -172,7 +172,7 @@ func NewPet1876743790Views(es []*ent.Pet) Pet1876743790Views {
 }
 
 type (
-	// $n represents the data serialized for the following serialization group combinations:
+	// Pet359800019View represents the data serialized for the following serialization group combinations:
 	// []
 	Pet359800019View struct {
 		ID   string `json:"id,omitempty"`
