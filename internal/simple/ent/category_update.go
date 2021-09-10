@@ -34,14 +34,14 @@ func (cu *CategoryUpdate) SetName(s string) *CategoryUpdate {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (cu *CategoryUpdate) AddPetIDs(ids ...int) *CategoryUpdate {
+func (cu *CategoryUpdate) AddPetIDs(ids ...string) *CategoryUpdate {
 	cu.mutation.AddPetIDs(ids...)
 	return cu
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (cu *CategoryUpdate) AddPets(p ...*Pet) *CategoryUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -60,14 +60,14 @@ func (cu *CategoryUpdate) ClearPets() *CategoryUpdate {
 }
 
 // RemovePetIDs removes the "pets" edge to Pet entities by IDs.
-func (cu *CategoryUpdate) RemovePetIDs(ids ...int) *CategoryUpdate {
+func (cu *CategoryUpdate) RemovePetIDs(ids ...string) *CategoryUpdate {
 	cu.mutation.RemovePetIDs(ids...)
 	return cu
 }
 
 // RemovePets removes "pets" edges to Pet entities.
 func (cu *CategoryUpdate) RemovePets(p ...*Pet) *CategoryUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -162,7 +162,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -178,7 +178,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -197,7 +197,7 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -233,14 +233,14 @@ func (cuo *CategoryUpdateOne) SetName(s string) *CategoryUpdateOne {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (cuo *CategoryUpdateOne) AddPetIDs(ids ...int) *CategoryUpdateOne {
+func (cuo *CategoryUpdateOne) AddPetIDs(ids ...string) *CategoryUpdateOne {
 	cuo.mutation.AddPetIDs(ids...)
 	return cuo
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (cuo *CategoryUpdateOne) AddPets(p ...*Pet) *CategoryUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -259,14 +259,14 @@ func (cuo *CategoryUpdateOne) ClearPets() *CategoryUpdateOne {
 }
 
 // RemovePetIDs removes the "pets" edge to Pet entities by IDs.
-func (cuo *CategoryUpdateOne) RemovePetIDs(ids ...int) *CategoryUpdateOne {
+func (cuo *CategoryUpdateOne) RemovePetIDs(ids ...string) *CategoryUpdateOne {
 	cuo.mutation.RemovePetIDs(ids...)
 	return cuo
 }
 
 // RemovePets removes "pets" edges to Pet entities.
 func (cuo *CategoryUpdateOne) RemovePets(p ...*Pet) *CategoryUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -385,7 +385,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -401,7 +401,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -420,7 +420,7 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},

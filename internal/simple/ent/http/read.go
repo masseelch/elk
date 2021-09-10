@@ -88,12 +88,8 @@ func (h *OwnerHandler) Read(w http.ResponseWriter, r *http.Request) {
 func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
-		return
-	}
+	var err error
+	id := chi.URLParam(r, "id")
 	// Create the query to fetch the Pet
 	q := h.client.Pet.Query().Where(pet.ID(id))
 	// Eager load edges that are required on read operation.
@@ -109,18 +105,18 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.String("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read pet", zap.Error(err), zap.Int("id", id))
+			l.Error("could not read pet", zap.Error(err), zap.String("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("pet rendered", zap.Int("id", id))
+	l.Info("pet rendered", zap.String("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewPet1876743790View(e), w)
 }

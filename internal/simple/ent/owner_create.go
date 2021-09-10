@@ -33,14 +33,14 @@ func (oc *OwnerCreate) SetAge(i int) *OwnerCreate {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (oc *OwnerCreate) AddPetIDs(ids ...int) *OwnerCreate {
+func (oc *OwnerCreate) AddPetIDs(ids ...string) *OwnerCreate {
 	oc.mutation.AddPetIDs(ids...)
 	return oc
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (oc *OwnerCreate) AddPets(p ...*Pet) *OwnerCreate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -175,7 +175,7 @@ func (oc *OwnerCreate) createSpec() (*Owner, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},

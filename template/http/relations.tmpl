@@ -8,7 +8,7 @@
 
     {{ $pkg := base $.Config.Package }}
     {{ range $n := $.Nodes }}
-        {{ range $e := $n.Edges }}
+        {{ range $e := filterEdges $n }}
             // {{ $e.Name | pascal }} fetches the {{ $pkg }}.{{ $e.Name }} attached to the {{ $pkg }}.{{ $n.Name }}
             // identified by a given url-parameter from the database and renders it to the client.
             func (h {{ $n.Name }}Handler) {{ $e.Name | pascal }}(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +31,7 @@
                         "Default" (print "could not read " $n.Name | kebab)
                     -}}
 
-                    l.Info("{{ $e.Type.Name | kebab }} rendered", zap.{{ zapField $n.ID }}("{{ $n.ID.Name }}", {{ $e.Type.ID.BasicType (print "e." $e.Type.ID.StructField) }}))
+                    l.Info("{{ $e.Type.Name | kebab }} rendered", zap.{{ zapField $e.Type.ID }}("{{ $n.ID.Name }}", {{ $e.Type.ID.BasicType (print "e." $e.Type.ID.StructField) }}))
                     easyjson.MarshalToHTTPResponseWriter(New{{ (view $e.Type ($e.Type.Annotations.ElkSchema.ReadGroups | stringSlice)).Name }}(e), w)
                 {{- else }}
                     {{- with edges $e.Type "list" }}

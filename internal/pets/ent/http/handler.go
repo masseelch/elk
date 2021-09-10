@@ -10,28 +10,58 @@ import (
 	"go.uber.org/zap"
 )
 
-// handler has some convenience methods used on node-handlers.
-type handler struct{}
-
-// Bitmask to configure which routes to register.
-type Routes uint32
-
-func (rs Routes) has(r Routes) bool { return rs&r != 0 }
-
-const (
-	BadgeCreate Routes = 1 << iota
-	BadgeRead
-	BadgeUpdate
-	BadgeDelete
-	BadgeList
-	BadgeWearer
-	BadgeRoutes = 1<<iota - 1
-)
+// NewHandler returns a ready to use handler with all generated endpoints mounted.
+func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
+	r := chi.NewRouter()
+	bHandler := NewBadgeHandler(c, l)
+	r.Route("/badges", func(r chi.Router) {
+		r.Post("/", bHandler.Create)
+		r.Get("/{id}", bHandler.Read)
+		r.Patch("/{id}", bHandler.Update)
+		r.Delete("/{id}", bHandler.Delete)
+		r.Get("/", bHandler.List)
+		r.Get("/{id}/wearer", bHandler.Wearer)
+	})
+	peHandler := NewPetHandler(c, l)
+	r.Route("/pets", func(r chi.Router) {
+		r.Post("/", peHandler.Create)
+		r.Get("/{id}", peHandler.Read)
+		r.Patch("/{id}", peHandler.Update)
+		r.Delete("/{id}", peHandler.Delete)
+		r.Get("/", peHandler.List)
+		r.Get("/{id}/badge", peHandler.Badge)
+		r.Get("/{id}/protege", peHandler.Protege)
+		r.Get("/{id}/mentor", peHandler.Mentor)
+		r.Get("/{id}/spouse", peHandler.Spouse)
+		r.Get("/{id}/toys", peHandler.Toys)
+		r.Get("/{id}/parent", peHandler.Parent)
+		r.Get("/{id}/children", peHandler.Children)
+		r.Get("/{id}/play-groups", peHandler.PlayGroups)
+		r.Get("/{id}/friends", peHandler.Friends)
+	})
+	pgHandler := NewPlayGroupHandler(c, l)
+	r.Route("/play-groups", func(r chi.Router) {
+		r.Post("/", pgHandler.Create)
+		r.Get("/{id}", pgHandler.Read)
+		r.Patch("/{id}", pgHandler.Update)
+		r.Delete("/{id}", pgHandler.Delete)
+		r.Get("/", pgHandler.List)
+		r.Get("/{id}/participants", pgHandler.Participants)
+	})
+	tHandler := NewToyHandler(c, l)
+	r.Route("/toys", func(r chi.Router) {
+		r.Post("/", tHandler.Create)
+		r.Get("/{id}", tHandler.Read)
+		r.Patch("/{id}", tHandler.Update)
+		r.Delete("/{id}", tHandler.Delete)
+		r.Get("/", tHandler.List)
+		r.Get("/{id}/owner", tHandler.Owner)
+	})
+	return r
+}
 
 // BadgeHandler handles http crud operations on ent.Badge.
 type BadgeHandler struct {
-	handler
-
 	client *ent.Client
 	log    *zap.Logger
 }
@@ -43,50 +73,8 @@ func NewBadgeHandler(c *ent.Client, l *zap.Logger) *BadgeHandler {
 	}
 }
 
-// RegisterHandlers registers the generated handlers on the given chi router.
-func (h *BadgeHandler) Mount(r chi.Router, rs Routes) {
-	if rs.has(BadgeCreate) {
-		r.Post("/", h.Create)
-	}
-	if rs.has(BadgeRead) {
-		r.Get("/{id}", h.Read)
-	}
-	if rs.has(BadgeUpdate) {
-		r.Patch("/{id}", h.Update)
-	}
-	if rs.has(BadgeDelete) {
-		r.Delete("/{id}", h.Delete)
-	}
-	if rs.has(BadgeList) {
-		r.Get("/", h.List)
-	}
-	if rs.has(BadgeWearer) {
-		r.Get("/{id}/wearer", h.Wearer)
-	}
-}
-
-const (
-	PetCreate Routes = 1 << iota
-	PetRead
-	PetUpdate
-	PetDelete
-	PetList
-	PetBadge
-	PetProtege
-	PetMentor
-	PetSpouse
-	PetToys
-	PetParent
-	PetChildren
-	PetPlayGroups
-	PetFriends
-	PetRoutes = 1<<iota - 1
-)
-
 // PetHandler handles http crud operations on ent.Pet.
 type PetHandler struct {
-	handler
-
 	client *ent.Client
 	log    *zap.Logger
 }
@@ -98,66 +86,8 @@ func NewPetHandler(c *ent.Client, l *zap.Logger) *PetHandler {
 	}
 }
 
-// RegisterHandlers registers the generated handlers on the given chi router.
-func (h *PetHandler) Mount(r chi.Router, rs Routes) {
-	if rs.has(PetCreate) {
-		r.Post("/", h.Create)
-	}
-	if rs.has(PetRead) {
-		r.Get("/{id}", h.Read)
-	}
-	if rs.has(PetUpdate) {
-		r.Patch("/{id}", h.Update)
-	}
-	if rs.has(PetDelete) {
-		r.Delete("/{id}", h.Delete)
-	}
-	if rs.has(PetList) {
-		r.Get("/", h.List)
-	}
-	if rs.has(PetBadge) {
-		r.Get("/{id}/badge", h.Badge)
-	}
-	if rs.has(PetProtege) {
-		r.Get("/{id}/protege", h.Protege)
-	}
-	if rs.has(PetMentor) {
-		r.Get("/{id}/mentor", h.Mentor)
-	}
-	if rs.has(PetSpouse) {
-		r.Get("/{id}/spouse", h.Spouse)
-	}
-	if rs.has(PetToys) {
-		r.Get("/{id}/toys", h.Toys)
-	}
-	if rs.has(PetParent) {
-		r.Get("/{id}/parent", h.Parent)
-	}
-	if rs.has(PetChildren) {
-		r.Get("/{id}/children", h.Children)
-	}
-	if rs.has(PetPlayGroups) {
-		r.Get("/{id}/play-groups", h.PlayGroups)
-	}
-	if rs.has(PetFriends) {
-		r.Get("/{id}/friends", h.Friends)
-	}
-}
-
-const (
-	PlayGroupCreate Routes = 1 << iota
-	PlayGroupRead
-	PlayGroupUpdate
-	PlayGroupDelete
-	PlayGroupList
-	PlayGroupParticipants
-	PlayGroupRoutes = 1<<iota - 1
-)
-
 // PlayGroupHandler handles http crud operations on ent.PlayGroup.
 type PlayGroupHandler struct {
-	handler
-
 	client *ent.Client
 	log    *zap.Logger
 }
@@ -169,42 +99,8 @@ func NewPlayGroupHandler(c *ent.Client, l *zap.Logger) *PlayGroupHandler {
 	}
 }
 
-// RegisterHandlers registers the generated handlers on the given chi router.
-func (h *PlayGroupHandler) Mount(r chi.Router, rs Routes) {
-	if rs.has(PlayGroupCreate) {
-		r.Post("/", h.Create)
-	}
-	if rs.has(PlayGroupRead) {
-		r.Get("/{id}", h.Read)
-	}
-	if rs.has(PlayGroupUpdate) {
-		r.Patch("/{id}", h.Update)
-	}
-	if rs.has(PlayGroupDelete) {
-		r.Delete("/{id}", h.Delete)
-	}
-	if rs.has(PlayGroupList) {
-		r.Get("/", h.List)
-	}
-	if rs.has(PlayGroupParticipants) {
-		r.Get("/{id}/participants", h.Participants)
-	}
-}
-
-const (
-	ToyCreate Routes = 1 << iota
-	ToyRead
-	ToyUpdate
-	ToyDelete
-	ToyList
-	ToyOwner
-	ToyRoutes = 1<<iota - 1
-)
-
 // ToyHandler handles http crud operations on ent.Toy.
 type ToyHandler struct {
-	handler
-
 	client *ent.Client
 	log    *zap.Logger
 }
@@ -213,28 +109,6 @@ func NewToyHandler(c *ent.Client, l *zap.Logger) *ToyHandler {
 	return &ToyHandler{
 		client: c,
 		log:    l.With(zap.String("handler", "ToyHandler")),
-	}
-}
-
-// RegisterHandlers registers the generated handlers on the given chi router.
-func (h *ToyHandler) Mount(r chi.Router, rs Routes) {
-	if rs.has(ToyCreate) {
-		r.Post("/", h.Create)
-	}
-	if rs.has(ToyRead) {
-		r.Get("/{id}", h.Read)
-	}
-	if rs.has(ToyUpdate) {
-		r.Patch("/{id}", h.Update)
-	}
-	if rs.has(ToyDelete) {
-		r.Delete("/{id}", h.Delete)
-	}
-	if rs.has(ToyList) {
-		r.Get("/", h.List)
-	}
-	if rs.has(ToyOwner) {
-		r.Get("/{id}/owner", h.Owner)
 	}
 }
 

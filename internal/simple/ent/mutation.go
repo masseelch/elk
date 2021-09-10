@@ -37,8 +37,8 @@ type CategoryMutation struct {
 	id            *int
 	name          *string
 	clearedFields map[string]struct{}
-	pets          map[int]struct{}
-	removedpets   map[int]struct{}
+	pets          map[string]struct{}
+	removedpets   map[string]struct{}
 	clearedpets   bool
 	done          bool
 	oldValue      func(context.Context) (*Category, error)
@@ -161,9 +161,9 @@ func (m *CategoryMutation) ResetName() {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by ids.
-func (m *CategoryMutation) AddPetIDs(ids ...int) {
+func (m *CategoryMutation) AddPetIDs(ids ...string) {
 	if m.pets == nil {
-		m.pets = make(map[int]struct{})
+		m.pets = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.pets[ids[i]] = struct{}{}
@@ -181,9 +181,9 @@ func (m *CategoryMutation) PetsCleared() bool {
 }
 
 // RemovePetIDs removes the "pets" edge to the Pet entity by IDs.
-func (m *CategoryMutation) RemovePetIDs(ids ...int) {
+func (m *CategoryMutation) RemovePetIDs(ids ...string) {
 	if m.removedpets == nil {
-		m.removedpets = make(map[int]struct{})
+		m.removedpets = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.pets, ids[i])
@@ -192,7 +192,7 @@ func (m *CategoryMutation) RemovePetIDs(ids ...int) {
 }
 
 // RemovedPets returns the removed IDs of the "pets" edge to the Pet entity.
-func (m *CategoryMutation) RemovedPetsIDs() (ids []int) {
+func (m *CategoryMutation) RemovedPetsIDs() (ids []string) {
 	for id := range m.removedpets {
 		ids = append(ids, id)
 	}
@@ -200,7 +200,7 @@ func (m *CategoryMutation) RemovedPetsIDs() (ids []int) {
 }
 
 // PetsIDs returns the "pets" edge IDs in the mutation.
-func (m *CategoryMutation) PetsIDs() (ids []int) {
+func (m *CategoryMutation) PetsIDs() (ids []string) {
 	for id := range m.pets {
 		ids = append(ids, id)
 	}
@@ -424,8 +424,8 @@ type OwnerMutation struct {
 	age           *int
 	addage        *int
 	clearedFields map[string]struct{}
-	pets          map[int]struct{}
-	removedpets   map[int]struct{}
+	pets          map[string]struct{}
+	removedpets   map[string]struct{}
 	clearedpets   bool
 	done          bool
 	oldValue      func(context.Context) (*Owner, error)
@@ -604,9 +604,9 @@ func (m *OwnerMutation) ResetAge() {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by ids.
-func (m *OwnerMutation) AddPetIDs(ids ...int) {
+func (m *OwnerMutation) AddPetIDs(ids ...string) {
 	if m.pets == nil {
-		m.pets = make(map[int]struct{})
+		m.pets = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.pets[ids[i]] = struct{}{}
@@ -624,9 +624,9 @@ func (m *OwnerMutation) PetsCleared() bool {
 }
 
 // RemovePetIDs removes the "pets" edge to the Pet entity by IDs.
-func (m *OwnerMutation) RemovePetIDs(ids ...int) {
+func (m *OwnerMutation) RemovePetIDs(ids ...string) {
 	if m.removedpets == nil {
-		m.removedpets = make(map[int]struct{})
+		m.removedpets = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.pets, ids[i])
@@ -635,7 +635,7 @@ func (m *OwnerMutation) RemovePetIDs(ids ...int) {
 }
 
 // RemovedPets returns the removed IDs of the "pets" edge to the Pet entity.
-func (m *OwnerMutation) RemovedPetsIDs() (ids []int) {
+func (m *OwnerMutation) RemovedPetsIDs() (ids []string) {
 	for id := range m.removedpets {
 		ids = append(ids, id)
 	}
@@ -643,7 +643,7 @@ func (m *OwnerMutation) RemovedPetsIDs() (ids []int) {
 }
 
 // PetsIDs returns the "pets" edge IDs in the mutation.
-func (m *OwnerMutation) PetsIDs() (ids []int) {
+func (m *OwnerMutation) PetsIDs() (ids []string) {
 	for id := range m.pets {
 		ids = append(ids, id)
 	}
@@ -892,24 +892,24 @@ func (m *OwnerMutation) ResetEdge(name string) error {
 // PetMutation represents an operation that mutates the Pet nodes in the graph.
 type PetMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	name            *string
-	age             *int
-	addage          *int
-	clearedFields   map[string]struct{}
-	category        map[int]struct{}
-	removedcategory map[int]struct{}
-	clearedcategory bool
-	owner           *int
-	clearedowner    bool
-	friends         map[int]struct{}
-	removedfriends  map[int]struct{}
-	clearedfriends  bool
-	done            bool
-	oldValue        func(context.Context) (*Pet, error)
-	predicates      []predicate.Pet
+	op                Op
+	typ               string
+	id                *string
+	name              *string
+	age               *int
+	addage            *int
+	clearedFields     map[string]struct{}
+	categories        map[int]struct{}
+	removedcategories map[int]struct{}
+	clearedcategories bool
+	owner             *int
+	clearedowner      bool
+	friends           map[string]struct{}
+	removedfriends    map[string]struct{}
+	clearedfriends    bool
+	done              bool
+	oldValue          func(context.Context) (*Pet, error)
+	predicates        []predicate.Pet
 }
 
 var _ ent.Mutation = (*PetMutation)(nil)
@@ -932,7 +932,7 @@ func newPetMutation(c config, op Op, opts ...petOption) *PetMutation {
 }
 
 // withPetID sets the ID field of the mutation.
-func withPetID(id int) petOption {
+func withPetID(id string) petOption {
 	return func(m *PetMutation) {
 		var (
 			err   error
@@ -982,9 +982,15 @@ func (m PetMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Pet entities.
+func (m *PetMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PetMutation) ID() (id int, exists bool) {
+func (m *PetMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1083,58 +1089,58 @@ func (m *PetMutation) ResetAge() {
 	m.addage = nil
 }
 
-// AddCategoryIDs adds the "category" edge to the Category entity by ids.
+// AddCategoryIDs adds the "categories" edge to the Category entity by ids.
 func (m *PetMutation) AddCategoryIDs(ids ...int) {
-	if m.category == nil {
-		m.category = make(map[int]struct{})
+	if m.categories == nil {
+		m.categories = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.category[ids[i]] = struct{}{}
+		m.categories[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCategory clears the "category" edge to the Category entity.
-func (m *PetMutation) ClearCategory() {
-	m.clearedcategory = true
+// ClearCategories clears the "categories" edge to the Category entity.
+func (m *PetMutation) ClearCategories() {
+	m.clearedcategories = true
 }
 
-// CategoryCleared reports if the "category" edge to the Category entity was cleared.
-func (m *PetMutation) CategoryCleared() bool {
-	return m.clearedcategory
+// CategoriesCleared reports if the "categories" edge to the Category entity was cleared.
+func (m *PetMutation) CategoriesCleared() bool {
+	return m.clearedcategories
 }
 
-// RemoveCategoryIDs removes the "category" edge to the Category entity by IDs.
+// RemoveCategoryIDs removes the "categories" edge to the Category entity by IDs.
 func (m *PetMutation) RemoveCategoryIDs(ids ...int) {
-	if m.removedcategory == nil {
-		m.removedcategory = make(map[int]struct{})
+	if m.removedcategories == nil {
+		m.removedcategories = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.category, ids[i])
-		m.removedcategory[ids[i]] = struct{}{}
+		delete(m.categories, ids[i])
+		m.removedcategories[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCategory returns the removed IDs of the "category" edge to the Category entity.
-func (m *PetMutation) RemovedCategoryIDs() (ids []int) {
-	for id := range m.removedcategory {
+// RemovedCategories returns the removed IDs of the "categories" edge to the Category entity.
+func (m *PetMutation) RemovedCategoriesIDs() (ids []int) {
+	for id := range m.removedcategories {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CategoryIDs returns the "category" edge IDs in the mutation.
-func (m *PetMutation) CategoryIDs() (ids []int) {
-	for id := range m.category {
+// CategoriesIDs returns the "categories" edge IDs in the mutation.
+func (m *PetMutation) CategoriesIDs() (ids []int) {
+	for id := range m.categories {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCategory resets all changes to the "category" edge.
-func (m *PetMutation) ResetCategory() {
-	m.category = nil
-	m.clearedcategory = false
-	m.removedcategory = nil
+// ResetCategories resets all changes to the "categories" edge.
+func (m *PetMutation) ResetCategories() {
+	m.categories = nil
+	m.clearedcategories = false
+	m.removedcategories = nil
 }
 
 // SetOwnerID sets the "owner" edge to the Owner entity by id.
@@ -1177,9 +1183,9 @@ func (m *PetMutation) ResetOwner() {
 }
 
 // AddFriendIDs adds the "friends" edge to the Pet entity by ids.
-func (m *PetMutation) AddFriendIDs(ids ...int) {
+func (m *PetMutation) AddFriendIDs(ids ...string) {
 	if m.friends == nil {
-		m.friends = make(map[int]struct{})
+		m.friends = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.friends[ids[i]] = struct{}{}
@@ -1197,9 +1203,9 @@ func (m *PetMutation) FriendsCleared() bool {
 }
 
 // RemoveFriendIDs removes the "friends" edge to the Pet entity by IDs.
-func (m *PetMutation) RemoveFriendIDs(ids ...int) {
+func (m *PetMutation) RemoveFriendIDs(ids ...string) {
 	if m.removedfriends == nil {
-		m.removedfriends = make(map[int]struct{})
+		m.removedfriends = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.friends, ids[i])
@@ -1208,7 +1214,7 @@ func (m *PetMutation) RemoveFriendIDs(ids ...int) {
 }
 
 // RemovedFriends returns the removed IDs of the "friends" edge to the Pet entity.
-func (m *PetMutation) RemovedFriendsIDs() (ids []int) {
+func (m *PetMutation) RemovedFriendsIDs() (ids []string) {
 	for id := range m.removedfriends {
 		ids = append(ids, id)
 	}
@@ -1216,7 +1222,7 @@ func (m *PetMutation) RemovedFriendsIDs() (ids []int) {
 }
 
 // FriendsIDs returns the "friends" edge IDs in the mutation.
-func (m *PetMutation) FriendsIDs() (ids []int) {
+func (m *PetMutation) FriendsIDs() (ids []string) {
 	for id := range m.friends {
 		ids = append(ids, id)
 	}
@@ -1381,8 +1387,8 @@ func (m *PetMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PetMutation) AddedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.category != nil {
-		edges = append(edges, pet.EdgeCategory)
+	if m.categories != nil {
+		edges = append(edges, pet.EdgeCategories)
 	}
 	if m.owner != nil {
 		edges = append(edges, pet.EdgeOwner)
@@ -1397,9 +1403,9 @@ func (m *PetMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PetMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case pet.EdgeCategory:
-		ids := make([]ent.Value, 0, len(m.category))
-		for id := range m.category {
+	case pet.EdgeCategories:
+		ids := make([]ent.Value, 0, len(m.categories))
+		for id := range m.categories {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1420,8 +1426,8 @@ func (m *PetMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PetMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.removedcategory != nil {
-		edges = append(edges, pet.EdgeCategory)
+	if m.removedcategories != nil {
+		edges = append(edges, pet.EdgeCategories)
 	}
 	if m.removedfriends != nil {
 		edges = append(edges, pet.EdgeFriends)
@@ -1433,9 +1439,9 @@ func (m *PetMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PetMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case pet.EdgeCategory:
-		ids := make([]ent.Value, 0, len(m.removedcategory))
-		for id := range m.removedcategory {
+	case pet.EdgeCategories:
+		ids := make([]ent.Value, 0, len(m.removedcategories))
+		for id := range m.removedcategories {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1452,8 +1458,8 @@ func (m *PetMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PetMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.clearedcategory {
-		edges = append(edges, pet.EdgeCategory)
+	if m.clearedcategories {
+		edges = append(edges, pet.EdgeCategories)
 	}
 	if m.clearedowner {
 		edges = append(edges, pet.EdgeOwner)
@@ -1468,8 +1474,8 @@ func (m *PetMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PetMutation) EdgeCleared(name string) bool {
 	switch name {
-	case pet.EdgeCategory:
-		return m.clearedcategory
+	case pet.EdgeCategories:
+		return m.clearedcategories
 	case pet.EdgeOwner:
 		return m.clearedowner
 	case pet.EdgeFriends:
@@ -1493,8 +1499,8 @@ func (m *PetMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PetMutation) ResetEdge(name string) error {
 	switch name {
-	case pet.EdgeCategory:
-		m.ResetCategory()
+	case pet.EdgeCategories:
+		m.ResetCategories()
 		return nil
 	case pet.EdgeOwner:
 		m.ResetOwner()

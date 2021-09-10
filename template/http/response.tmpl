@@ -23,7 +23,7 @@
         return w.Write(d)
     }
 
-    {{ range (list "BadRequest" "Forbidden" "InternalServerError" "NotFound" "Unauthorized") }}
+    {{ range (list "BadRequest" "Conflict" "Forbidden" "InternalServerError" "NotFound") }}
         func {{ . }}(w http.ResponseWriter, msg interface{}) (int, error) {
             return ErrResponse{
                 Code: http.Status{{ . }},
@@ -35,6 +35,10 @@
 
     {{- range $n, $v := views $ }}
         type (
+            // {{ $n }} represents the data serialized for the following serialization group combinations:
+            {{- range $v.Groups }}
+                // {{ . }}
+            {{- end }}
             {{ $n }} struct {
                 {{- range $f := $v.Fields }}
                     {{ $f.StructField }} {{ if $f.NillableValue }}*{{ end }}{{ $f.Type }}

@@ -114,17 +114,6 @@ func testMount() []*test {
 		require.NotEqual(t, http.StatusNotFound, deps.rec.Result().StatusCode)
 		// TODO: logs
 	}
-	checkNotRegistered := func(t *testing.T, tt *test, deps *deps, d interface{}) {
-		rsp := deps.rec.Result()
-		require.Equal(t, http.StatusNotFound, rsp.StatusCode)
-		b := bodyBytes(t, rsp)
-		require.Equal(t, "404 page not found\n", string(b))
-		// TODO: logs
-	}
-	checkMethodNotAllowed := func(t *testing.T, tt *test, deps *deps, d interface{}) {
-		require.Equal(t, http.StatusMethodNotAllowed, deps.rec.Result().StatusCode)
-		// TODO: logs
-	}
 	return []*test{
 		// all routes registered
 		{
@@ -175,58 +164,6 @@ func testMount() []*test {
 			name:  name("registered pet friends list"),
 			req:   defaultReqFn(http.MethodGet, "/pets/1/friends", nil, nil),
 			check: checkRegistered,
-		},
-		// no routes registered
-		{
-			name:  name("not registered badge create"),
-			req:   defaultReqFn(http.MethodGet, "/badges", nil, nil),
-			check: checkNotRegistered,
-		}, {
-			name:  name("not registered badge read"),
-			req:   defaultReqFn(http.MethodGet, "/badges/1", nil, nil),
-			check: checkNotRegistered,
-		}, {
-			name:  name("not registered badge update"),
-			req:   defaultReqFn(http.MethodPatch, "/badges/1", nil, nil),
-			check: checkNotRegistered,
-		}, {
-			name:  name("not registered badge delete"),
-			req:   defaultReqFn(http.MethodDelete, "/badges/1", nil, nil),
-			check: checkNotRegistered,
-		}, {
-			name:  name("not registered badge list"),
-			req:   defaultReqFn(http.MethodGet, "/badges", nil, nil),
-			check: checkNotRegistered,
-		}, {
-			name:  name("not registered badge wearer read"),
-			req:   defaultReqFn(http.MethodGet, "/badges/wearer", nil, nil),
-			check: checkNotRegistered,
-		},
-		// some routes registered
-		{
-			name:  name("registered play-group read"),
-			req:   defaultReqFn(http.MethodGet, "/play-groups/1", nil, nil),
-			check: checkRegistered,
-		}, {
-			name:  name("registered play-group list"),
-			req:   defaultReqFn(http.MethodGet, "/play-groups", nil, nil),
-			check: checkRegistered,
-		}, {
-			name:  name("not registered play-group create"),
-			req:   defaultReqFn(http.MethodPost, "/play-groups", nil, nil),
-			check: checkMethodNotAllowed,
-		}, {
-			name:  name("not registered play-group update"),
-			req:   defaultReqFn(http.MethodPatch, "/play-groups/1", nil, nil),
-			check: checkMethodNotAllowed,
-		}, {
-			name:  name("not registered play-group delete"),
-			req:   defaultReqFn(http.MethodDelete, "/play-groups/1", nil, nil),
-			check: checkMethodNotAllowed,
-		}, {
-			name:  name("not registered play-group participants list"),
-			req:   defaultReqFn(http.MethodGet, "/play-groups/1/participants", nil, nil),
-			check: checkNotRegistered,
 		},
 	}
 }
@@ -389,18 +326,7 @@ func setup(t *testing.T) *deps {
 		zapcore.AddSync(logs),
 		zap.DebugLevel,
 	))
-	// handlers
-	r := chi.NewRouter()
-	r.Route("/pets", func(r chi.Router) {
-		elkhttp.NewPetHandler(c, l).Mount(r, elkhttp.PetRoutes)
-	})
-	r.Route("/toys", func(r chi.Router) {
-		elkhttp.NewToyHandler(c, l).Mount(r, elkhttp.ToyRoutes)
-	})
-	r.Route("/play-groups", func(r chi.Router) {
-		elkhttp.NewToyHandler(c, l).Mount(r, elkhttp.PlayGroupList|elkhttp.PlayGroupRead)
-	})
-	return &deps{c, logs, r, httptest.NewRecorder()}
+	return &deps{c, logs, elkhttp.NewHandler(c, l), httptest.NewRecorder()}
 }
 
 func mustEncode(t *testing.T, d interface{}) []byte {

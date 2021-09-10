@@ -47,14 +47,14 @@ func (pu *PetUpdate) AddAge(i int) *PetUpdate {
 	return pu
 }
 
-// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
 func (pu *PetUpdate) AddCategoryIDs(ids ...int) *PetUpdate {
 	pu.mutation.AddCategoryIDs(ids...)
 	return pu
 }
 
-// AddCategory adds the "category" edges to the Category entity.
-func (pu *PetUpdate) AddCategory(c ...*Category) *PetUpdate {
+// AddCategories adds the "categories" edges to the Category entity.
+func (pu *PetUpdate) AddCategories(c ...*Category) *PetUpdate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -82,14 +82,14 @@ func (pu *PetUpdate) SetOwner(o *Owner) *PetUpdate {
 }
 
 // AddFriendIDs adds the "friends" edge to the Pet entity by IDs.
-func (pu *PetUpdate) AddFriendIDs(ids ...int) *PetUpdate {
+func (pu *PetUpdate) AddFriendIDs(ids ...string) *PetUpdate {
 	pu.mutation.AddFriendIDs(ids...)
 	return pu
 }
 
 // AddFriends adds the "friends" edges to the Pet entity.
 func (pu *PetUpdate) AddFriends(p ...*Pet) *PetUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -101,20 +101,20 @@ func (pu *PetUpdate) Mutation() *PetMutation {
 	return pu.mutation
 }
 
-// ClearCategory clears all "category" edges to the Category entity.
-func (pu *PetUpdate) ClearCategory() *PetUpdate {
-	pu.mutation.ClearCategory()
+// ClearCategories clears all "categories" edges to the Category entity.
+func (pu *PetUpdate) ClearCategories() *PetUpdate {
+	pu.mutation.ClearCategories()
 	return pu
 }
 
-// RemoveCategoryIDs removes the "category" edge to Category entities by IDs.
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
 func (pu *PetUpdate) RemoveCategoryIDs(ids ...int) *PetUpdate {
 	pu.mutation.RemoveCategoryIDs(ids...)
 	return pu
 }
 
-// RemoveCategory removes "category" edges to Category entities.
-func (pu *PetUpdate) RemoveCategory(c ...*Category) *PetUpdate {
+// RemoveCategories removes "categories" edges to Category entities.
+func (pu *PetUpdate) RemoveCategories(c ...*Category) *PetUpdate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -135,14 +135,14 @@ func (pu *PetUpdate) ClearFriends() *PetUpdate {
 }
 
 // RemoveFriendIDs removes the "friends" edge to Pet entities by IDs.
-func (pu *PetUpdate) RemoveFriendIDs(ids ...int) *PetUpdate {
+func (pu *PetUpdate) RemoveFriendIDs(ids ...string) *PetUpdate {
 	pu.mutation.RemoveFriendIDs(ids...)
 	return pu
 }
 
 // RemoveFriends removes "friends" edges to Pet entities.
 func (pu *PetUpdate) RemoveFriends(p ...*Pet) *PetUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -209,7 +209,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   pet.Table,
 			Columns: pet.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: pet.FieldID,
 			},
 		},
@@ -242,12 +242,12 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: pet.FieldAge,
 		})
 	}
-	if pu.mutation.CategoryCleared() {
+	if pu.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
+			Table:   pet.CategoriesTable,
+			Columns: pet.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -258,12 +258,12 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.RemovedCategoryIDs(); len(nodes) > 0 && !pu.mutation.CategoryCleared() {
+	if nodes := pu.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !pu.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
+			Table:   pet.CategoriesTable,
+			Columns: pet.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -277,12 +277,12 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.CategoryIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
+			Table:   pet.CategoriesTable,
+			Columns: pet.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -340,7 +340,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    true,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -356,7 +356,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    true,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -375,7 +375,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    true,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -423,14 +423,14 @@ func (puo *PetUpdateOne) AddAge(i int) *PetUpdateOne {
 	return puo
 }
 
-// AddCategoryIDs adds the "category" edge to the Category entity by IDs.
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
 func (puo *PetUpdateOne) AddCategoryIDs(ids ...int) *PetUpdateOne {
 	puo.mutation.AddCategoryIDs(ids...)
 	return puo
 }
 
-// AddCategory adds the "category" edges to the Category entity.
-func (puo *PetUpdateOne) AddCategory(c ...*Category) *PetUpdateOne {
+// AddCategories adds the "categories" edges to the Category entity.
+func (puo *PetUpdateOne) AddCategories(c ...*Category) *PetUpdateOne {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -458,14 +458,14 @@ func (puo *PetUpdateOne) SetOwner(o *Owner) *PetUpdateOne {
 }
 
 // AddFriendIDs adds the "friends" edge to the Pet entity by IDs.
-func (puo *PetUpdateOne) AddFriendIDs(ids ...int) *PetUpdateOne {
+func (puo *PetUpdateOne) AddFriendIDs(ids ...string) *PetUpdateOne {
 	puo.mutation.AddFriendIDs(ids...)
 	return puo
 }
 
 // AddFriends adds the "friends" edges to the Pet entity.
 func (puo *PetUpdateOne) AddFriends(p ...*Pet) *PetUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -477,20 +477,20 @@ func (puo *PetUpdateOne) Mutation() *PetMutation {
 	return puo.mutation
 }
 
-// ClearCategory clears all "category" edges to the Category entity.
-func (puo *PetUpdateOne) ClearCategory() *PetUpdateOne {
-	puo.mutation.ClearCategory()
+// ClearCategories clears all "categories" edges to the Category entity.
+func (puo *PetUpdateOne) ClearCategories() *PetUpdateOne {
+	puo.mutation.ClearCategories()
 	return puo
 }
 
-// RemoveCategoryIDs removes the "category" edge to Category entities by IDs.
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
 func (puo *PetUpdateOne) RemoveCategoryIDs(ids ...int) *PetUpdateOne {
 	puo.mutation.RemoveCategoryIDs(ids...)
 	return puo
 }
 
-// RemoveCategory removes "category" edges to Category entities.
-func (puo *PetUpdateOne) RemoveCategory(c ...*Category) *PetUpdateOne {
+// RemoveCategories removes "categories" edges to Category entities.
+func (puo *PetUpdateOne) RemoveCategories(c ...*Category) *PetUpdateOne {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -511,14 +511,14 @@ func (puo *PetUpdateOne) ClearFriends() *PetUpdateOne {
 }
 
 // RemoveFriendIDs removes the "friends" edge to Pet entities by IDs.
-func (puo *PetUpdateOne) RemoveFriendIDs(ids ...int) *PetUpdateOne {
+func (puo *PetUpdateOne) RemoveFriendIDs(ids ...string) *PetUpdateOne {
 	puo.mutation.RemoveFriendIDs(ids...)
 	return puo
 }
 
 // RemoveFriends removes "friends" edges to Pet entities.
 func (puo *PetUpdateOne) RemoveFriends(p ...*Pet) *PetUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -592,7 +592,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Table:   pet.Table,
 			Columns: pet.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: pet.FieldID,
 			},
 		},
@@ -642,12 +642,12 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Column: pet.FieldAge,
 		})
 	}
-	if puo.mutation.CategoryCleared() {
+	if puo.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
+			Table:   pet.CategoriesTable,
+			Columns: pet.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -658,12 +658,12 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.RemovedCategoryIDs(); len(nodes) > 0 && !puo.mutation.CategoryCleared() {
+	if nodes := puo.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !puo.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
+			Table:   pet.CategoriesTable,
+			Columns: pet.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -677,12 +677,12 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.CategoryIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   pet.CategoryTable,
-			Columns: pet.CategoryPrimaryKey,
+			Table:   pet.CategoriesTable,
+			Columns: pet.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -740,7 +740,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    true,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -756,7 +756,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    true,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -775,7 +775,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    true,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},

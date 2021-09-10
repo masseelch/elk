@@ -47,14 +47,14 @@ func (ou *OwnerUpdate) AddAge(i int) *OwnerUpdate {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (ou *OwnerUpdate) AddPetIDs(ids ...int) *OwnerUpdate {
+func (ou *OwnerUpdate) AddPetIDs(ids ...string) *OwnerUpdate {
 	ou.mutation.AddPetIDs(ids...)
 	return ou
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (ou *OwnerUpdate) AddPets(p ...*Pet) *OwnerUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -73,14 +73,14 @@ func (ou *OwnerUpdate) ClearPets() *OwnerUpdate {
 }
 
 // RemovePetIDs removes the "pets" edge to Pet entities by IDs.
-func (ou *OwnerUpdate) RemovePetIDs(ids ...int) *OwnerUpdate {
+func (ou *OwnerUpdate) RemovePetIDs(ids ...string) *OwnerUpdate {
 	ou.mutation.RemovePetIDs(ids...)
 	return ou
 }
 
 // RemovePets removes "pets" edges to Pet entities.
 func (ou *OwnerUpdate) RemovePets(p ...*Pet) *OwnerUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -189,7 +189,7 @@ func (ou *OwnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -205,7 +205,7 @@ func (ou *OwnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -224,7 +224,7 @@ func (ou *OwnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -273,14 +273,14 @@ func (ouo *OwnerUpdateOne) AddAge(i int) *OwnerUpdateOne {
 }
 
 // AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (ouo *OwnerUpdateOne) AddPetIDs(ids ...int) *OwnerUpdateOne {
+func (ouo *OwnerUpdateOne) AddPetIDs(ids ...string) *OwnerUpdateOne {
 	ouo.mutation.AddPetIDs(ids...)
 	return ouo
 }
 
 // AddPets adds the "pets" edges to the Pet entity.
 func (ouo *OwnerUpdateOne) AddPets(p ...*Pet) *OwnerUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -299,14 +299,14 @@ func (ouo *OwnerUpdateOne) ClearPets() *OwnerUpdateOne {
 }
 
 // RemovePetIDs removes the "pets" edge to Pet entities by IDs.
-func (ouo *OwnerUpdateOne) RemovePetIDs(ids ...int) *OwnerUpdateOne {
+func (ouo *OwnerUpdateOne) RemovePetIDs(ids ...string) *OwnerUpdateOne {
 	ouo.mutation.RemovePetIDs(ids...)
 	return ouo
 }
 
 // RemovePets removes "pets" edges to Pet entities.
 func (ouo *OwnerUpdateOne) RemovePets(p ...*Pet) *OwnerUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -439,7 +439,7 @@ func (ouo *OwnerUpdateOne) sqlSave(ctx context.Context) (_node *Owner, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -455,7 +455,7 @@ func (ouo *OwnerUpdateOne) sqlSave(ctx context.Context) (_node *Owner, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
@@ -474,7 +474,7 @@ func (ouo *OwnerUpdateOne) sqlSave(ctx context.Context) (_node *Owner, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: pet.FieldID,
 				},
 			},
