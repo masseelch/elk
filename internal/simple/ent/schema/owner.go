@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk"
 )
 
@@ -15,6 +16,8 @@ type Owner struct {
 // Fields of the Owner.
 func (Owner) Fields() []ent.Field {
 	return []ent.Field{
+		field.UUID("id", uuid.UUID{}).
+			Default(uuid.New),
 		field.String("name").
 			Annotations(
 				elk.Groups("owner"),

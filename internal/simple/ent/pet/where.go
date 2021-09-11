@@ -292,6 +292,34 @@ func AgeLTE(v int) predicate.Pet {
 	})
 }
 
+// HasCollar applies the HasEdge predicate on the "collar" edge.
+func HasCollar() predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CollarTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, CollarTable, CollarColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCollarWith applies the HasEdge predicate on the "collar" edge with a given conditions (other predicates).
+func HasCollarWith(preds ...predicate.Collar) predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CollarInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, CollarTable, CollarColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasCategories applies the HasEdge predicate on the "categories" edge.
 func HasCategories() predicate.Pet {
 	return predicate.Pet(func(s *sql.Selector) {

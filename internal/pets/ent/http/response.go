@@ -8,13 +8,12 @@ import (
 	time "time"
 
 	"github.com/google/uuid"
+	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
 	badge "github.com/masseelch/elk/internal/pets/ent/badge"
 	pet "github.com/masseelch/elk/internal/pets/ent/pet"
 	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
 	toy "github.com/masseelch/elk/internal/pets/ent/toy"
-
-	"github.com/mailru/easyjson"
 )
 
 // Basic HTTP Error Response
@@ -82,7 +81,7 @@ type (
 	// [pet:read]
 	// [pet:list]
 	Badge2492344257View struct {
-		ID       int            `json:"id,omitempty"`
+		ID       uint32         `json:"id,omitempty"`
 		Color    badge.Color    `json:"color,omitempty"`
 		Material badge.Material `json:"material,omitempty"`
 	}
@@ -298,7 +297,7 @@ type (
 	// [pet:read]
 	// [pet:list]
 	Toy36157710View struct {
-		ID       int          `json:"id,omitempty"`
+		ID       uuid.UUID    `json:"id,omitempty"`
 		Color    toy.Color    `json:"color,omitempty"`
 		Material toy.Material `json:"material,omitempty"`
 		Title    string       `json:"title,omitempty"`

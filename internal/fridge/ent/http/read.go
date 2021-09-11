@@ -23,7 +23,7 @@ func (h *CompartmentHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Create the query to fetch the Compartment
@@ -57,7 +57,7 @@ func (h *ContentHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Create the query to fetch the Content
@@ -91,7 +91,7 @@ func (h *FridgeHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Create the query to fetch the Fridge

@@ -8,6 +8,7 @@ import (
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/simple/ent"
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	collar "github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"go.uber.org/zap"
@@ -47,6 +48,56 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Uint64("id", e.ID))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Uint64("id", e.ID))
+			BadRequest(w, msg)
+		default:
+			l.Error("could not read category", zap.Error(err), zap.Uint64("id", e.ID))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	l.Info("category rendered", zap.Uint64("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewCategory4094953247View(e), w)
+}
+
+// Create creates a new ent.Collar and stores it in the database.
+func (h CollarHandler) Create(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Create"))
+	// Get the post data.
+	var d CollarCreateRequest
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
+		l.Error("error decoding json", zap.Error(err))
+		BadRequest(w, "invalid json string")
+		return
+	}
+	// Save the data.
+	b := h.client.Collar.Create()
+	if d.Color != nil {
+		b.SetColor(*d.Color)
+	}
+	if d.Pet != nil {
+		b.SetPetID(*d.Pet)
+	}
+	e, err := b.Save(r.Context())
+	if err != nil {
+		switch {
+		default:
+			l.Error("could not create collar", zap.Error(err))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	// Reload entry.
+	q := h.client.Collar.Query().Where(collar.ID(e.ID))
+	e, err = q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
@@ -54,13 +105,13 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read category", zap.Error(err), zap.Int("id", e.ID))
+			l.Error("could not read collar", zap.Error(err), zap.Int("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("category rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewCategory4094953247View(e), w)
+	l.Info("collar rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880View(e), w)
 }
 
 // Create creates a new ent.Owner and stores it in the database.
@@ -100,19 +151,19 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Info(msg, zap.Error(err), zap.String("id", e.ID.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Error(msg, zap.Error(err), zap.String("id", e.ID.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read owner", zap.Error(err), zap.Int("id", e.ID))
+			l.Error("could not read owner", zap.Error(err), zap.String("id", e.ID.String()))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("owner rendered", zap.Int("id", e.ID))
+	l.Info("owner rendered", zap.String("id", e.ID.String()))
 	easyjson.MarshalToHTTPResponseWriter(NewOwner139708381View(e), w)
 }
 
@@ -133,6 +184,9 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if d.Age != nil {
 		b.SetAge(*d.Age)
+	}
+	if d.Collar != nil {
+		b.SetCollarID(*d.Collar)
 	}
 	if d.Categories != nil {
 		b.AddCategoryIDs(d.Categories...)

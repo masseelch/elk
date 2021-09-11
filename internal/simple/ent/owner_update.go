@@ -147,7 +147,7 @@ func (ou *OwnerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   owner.Table,
 			Columns: owner.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: owner.FieldID,
 			},
 		},
@@ -380,7 +380,7 @@ func (ouo *OwnerUpdateOne) sqlSave(ctx context.Context) (_node *Owner, err error
 			Table:   owner.Table,
 			Columns: owner.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: owner.FieldID,
 			},
 		},

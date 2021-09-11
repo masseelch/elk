@@ -2,9 +2,9 @@
 
 {{ define "helper/http/import" }}
     import (
-        {{ range $n := $.Nodes }}
-            {{ template "import/types" $n }}
-        {{ end }}
+        {{- range imports $ }}
+            "{{ . }}"
+        {{- end }}
         "github.com/go-chi/chi/v5"
         "github.com/mailru/easyjson"
     )

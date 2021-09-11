@@ -25,6 +25,7 @@ var (
 		"time.Time": _dateTime,
 		"enum":      _string,
 		"string":    _string,
+		"uuid.UUID": _string,
 		"int":       _int32,
 		"int8":      _int32,
 		"int16":     _int32,
@@ -203,9 +204,9 @@ func viewSchemas(g *gen.Graph, s *spec.Spec) error {
 
 // newField constructs a spec.Field out of a gen.Field.
 func newField(f *gen.Field) (*spec.Field, error) {
-	t, ok := oasTypes[f.Type.String()]
-	if !ok {
-		return nil, fmt.Errorf("no OAS-type exists for %q", f.Type.String())
+	t, err := oasType(f)
+	if err != nil {
+		return nil, err
 	}
 	e, err := exampleValue(f)
 	if err != nil {
@@ -221,15 +222,19 @@ func newField(f *gen.Field) (*spec.Field, error) {
 
 // exampleValue returns the user defined example value for this field.
 func exampleValue(f *gen.Field) (interface{}, error) {
-	var e interface{}
 	a := Annotation{}
 	if f.Annotations != nil && f.Annotations[a.Name()] != nil {
 		if err := a.Decode(f.Annotations[a.Name()]); err != nil {
 			return nil, err
 		}
-		e = a.Example
+		if a.Example != nil {
+			return a.Example, nil
+		}
 	}
-	return e, nil
+	if f.IsEnum() {
+		return f.EnumValues()[0], nil
+	}
+	return nil, nil
 }
 
 // requestBody returns the request-body to use for the given node and operation.
@@ -254,9 +259,9 @@ func requestBody(n *gen.Type, op string) (*spec.RequestBody, error) {
 		}
 	}
 	for _, e := range n.Edges {
-		t, ok := oasTypes[e.Type.IDType.String()]
-		if !ok {
-			return nil, fmt.Errorf("no OAS-type exists for %q", e.Type.IDType.String())
+		t, err := oasType(e.Type.ID)
+		if err != nil {
+			return nil, err
 		}
 		fs[e.Name] = &spec.Field{
 			Unique:   e.Unique,
@@ -404,9 +409,9 @@ func readOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 	if err != nil {
 		return nil, err
 	}
-	t, ok := oasTypes[n.IDType.String()]
-	if !ok {
-		return nil, fmt.Errorf("no OAS-type exists for %q", n.IDType.String())
+	t, err := oasType(n.ID)
+	if err != nil {
+		return nil, err
 	}
 	return &spec.Operation{
 		Summary:     fmt.Sprintf("Find a %s by ID", n.Name),
@@ -458,9 +463,9 @@ func updateOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 	if err != nil {
 		return nil, err
 	}
-	t, ok := oasTypes[n.IDType.String()]
-	if !ok {
-		return nil, fmt.Errorf("no OAS-type exists for %q", n.IDType.String())
+	t, err := oasType(n.ID)
+	if err != nil {
+		return nil, err
 	}
 	return &spec.Operation{
 		Summary:     fmt.Sprintf("Updates a %s", n.Name),
@@ -501,9 +506,9 @@ func deleteOp(s *spec.Spec, n *gen.Type) (*spec.Operation, error) {
 	if err != nil {
 		return nil, err
 	}
-	t, ok := oasTypes[n.IDType.String()]
-	if !ok {
-		return nil, fmt.Errorf("no OAS-type exists for %q", n.IDType.String())
+	t, err := oasType(n.ID)
+	if err != nil {
+		return nil, err
 	}
 	return &spec.Operation{
 		Summary:     fmt.Sprintf("Deletes a %s by ID", n.Name),
@@ -661,4 +666,16 @@ func edgeAnnotation(e *gen.Edge) (*Annotation, error) {
 		}
 	}
 	return ant, nil
+}
+
+// oasType returns the spec.Type to use for the given field.
+func oasType(f *gen.Field) (*spec.Type, error) {
+	if f.IsEnum() {
+		return _string, nil
+	}
+	t, ok := oasTypes[f.Type.String()]
+	if !ok {
+		return nil, fmt.Errorf("no OAS-type exists for %q", f.Type.String())
+	}
+	return t, nil
 }

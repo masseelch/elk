@@ -27,11 +27,11 @@
                     {{-
                         template "helper/http/error-handling" dict
                         "Errors" (list "not-found" "not-singular")
-                        "Logs" (list (printf "zap.%s(\"%s\", id)" (zapField $n.ID) $n.ID.Name))
+                        "Logs" (list (zapField $n.ID "id"))
                         "Default" (print "could not read " $n.Name | kebab)
                     -}}
 
-                    l.Info("{{ $e.Type.Name | kebab }} rendered", zap.{{ zapField $e.Type.ID }}("{{ $n.ID.Name }}", {{ $e.Type.ID.BasicType (print "e." $e.Type.ID.StructField) }}))
+                    l.Info("{{ $e.Type.Name | kebab }} rendered", {{ zapField $e.Type.ID (print "e." $n.ID.StructField) }})
                     easyjson.MarshalToHTTPResponseWriter(New{{ (view $e.Type ($e.Type.Annotations.ElkSchema.ReadGroups | stringSlice)).Name }}(e), w)
                 {{- else }}
                     {{- with edges $e.Type "list" }}

@@ -22,7 +22,7 @@ func (h CompartmentHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Get the post data.
@@ -81,7 +81,7 @@ func (h CompartmentHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	l.Info("compartment rendered", zap.Int("id", e.ID))
+	l.Info("compartment rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewCompartment1151786357View(e), w)
 }
 
@@ -92,7 +92,7 @@ func (h ContentHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Get the post data.
@@ -148,7 +148,7 @@ func (h ContentHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	l.Info("content rendered", zap.Int("id", e.ID))
+	l.Info("content rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewContent3310419308View(e), w)
 }
 
@@ -159,7 +159,7 @@ func (h FridgeHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Get the post data.
@@ -214,6 +214,6 @@ func (h FridgeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	l.Info("fridge rendered", zap.Int("id", e.ID))
+	l.Info("fridge rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewFridge2716213877View(e), w)
 }

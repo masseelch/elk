@@ -89,7 +89,7 @@ func (pc *PetCreate) SetChip(u uuid.UUID) *PetCreate {
 }
 
 // SetBadgeID sets the "badge" edge to the Badge entity by ID.
-func (pc *PetCreate) SetBadgeID(id int) *PetCreate {
+func (pc *PetCreate) SetBadgeID(id uint32) *PetCreate {
 	pc.mutation.SetBadgeID(id)
 	return pc
 }
@@ -157,14 +157,14 @@ func (pc *PetCreate) SetSpouse(p *Pet) *PetCreate {
 }
 
 // AddToyIDs adds the "toys" edge to the Toy entity by IDs.
-func (pc *PetCreate) AddToyIDs(ids ...int) *PetCreate {
+func (pc *PetCreate) AddToyIDs(ids ...uuid.UUID) *PetCreate {
 	pc.mutation.AddToyIDs(ids...)
 	return pc
 }
 
 // AddToys adds the "toys" edges to the Toy entity.
 func (pc *PetCreate) AddToys(t ...*Toy) *PetCreate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -452,7 +452,7 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint32,
 					Column: badge.FieldID,
 				},
 			},
@@ -530,7 +530,7 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: toy.FieldID,
 				},
 			},

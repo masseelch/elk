@@ -4,6 +4,8 @@ package toy
 
 import (
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -58,6 +60,11 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
+)
 
 // Color defines the type for the "color" enum field.
 type Color string

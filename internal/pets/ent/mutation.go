@@ -38,7 +38,7 @@ type BadgeMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uint32
 	color         *badge.Color
 	material      *badge.Material
 	clearedFields map[string]struct{}
@@ -69,7 +69,7 @@ func newBadgeMutation(c config, op Op, opts ...badgeOption) *BadgeMutation {
 }
 
 // withBadgeID sets the ID field of the mutation.
-func withBadgeID(id int) badgeOption {
+func withBadgeID(id uint32) badgeOption {
 	return func(m *BadgeMutation) {
 		var (
 			err   error
@@ -119,9 +119,15 @@ func (m BadgeMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Badge entities.
+func (m *BadgeMutation) SetID(id uint32) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *BadgeMutation) ID() (id int, exists bool) {
+func (m *BadgeMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -465,7 +471,7 @@ type PetMutation struct {
 	sex                *pet.Sex
 	chip               *uuid.UUID
 	clearedFields      map[string]struct{}
-	badge              *int
+	badge              *uint32
 	clearedbadge       bool
 	protege            *int
 	clearedprotege     bool
@@ -473,8 +479,8 @@ type PetMutation struct {
 	clearedmentor      bool
 	spouse             *int
 	clearedspouse      bool
-	toys               map[int]struct{}
-	removedtoys        map[int]struct{}
+	toys               map[uuid.UUID]struct{}
+	removedtoys        map[uuid.UUID]struct{}
 	clearedtoys        bool
 	parent             *int
 	clearedparent      bool
@@ -940,7 +946,7 @@ func (m *PetMutation) ResetChip() {
 }
 
 // SetBadgeID sets the "badge" edge to the Badge entity by id.
-func (m *PetMutation) SetBadgeID(id int) {
+func (m *PetMutation) SetBadgeID(id uint32) {
 	m.badge = &id
 }
 
@@ -955,7 +961,7 @@ func (m *PetMutation) BadgeCleared() bool {
 }
 
 // BadgeID returns the "badge" edge ID in the mutation.
-func (m *PetMutation) BadgeID() (id int, exists bool) {
+func (m *PetMutation) BadgeID() (id uint32, exists bool) {
 	if m.badge != nil {
 		return *m.badge, true
 	}
@@ -965,7 +971,7 @@ func (m *PetMutation) BadgeID() (id int, exists bool) {
 // BadgeIDs returns the "badge" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // BadgeID instead. It exists only for internal usage by the builders.
-func (m *PetMutation) BadgeIDs() (ids []int) {
+func (m *PetMutation) BadgeIDs() (ids []uint32) {
 	if id := m.badge; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1096,9 +1102,9 @@ func (m *PetMutation) ResetSpouse() {
 }
 
 // AddToyIDs adds the "toys" edge to the Toy entity by ids.
-func (m *PetMutation) AddToyIDs(ids ...int) {
+func (m *PetMutation) AddToyIDs(ids ...uuid.UUID) {
 	if m.toys == nil {
-		m.toys = make(map[int]struct{})
+		m.toys = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.toys[ids[i]] = struct{}{}
@@ -1116,9 +1122,9 @@ func (m *PetMutation) ToysCleared() bool {
 }
 
 // RemoveToyIDs removes the "toys" edge to the Toy entity by IDs.
-func (m *PetMutation) RemoveToyIDs(ids ...int) {
+func (m *PetMutation) RemoveToyIDs(ids ...uuid.UUID) {
 	if m.removedtoys == nil {
-		m.removedtoys = make(map[int]struct{})
+		m.removedtoys = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		delete(m.toys, ids[i])
@@ -1127,7 +1133,7 @@ func (m *PetMutation) RemoveToyIDs(ids ...int) {
 }
 
 // RemovedToys returns the removed IDs of the "toys" edge to the Toy entity.
-func (m *PetMutation) RemovedToysIDs() (ids []int) {
+func (m *PetMutation) RemovedToysIDs() (ids []uuid.UUID) {
 	for id := range m.removedtoys {
 		ids = append(ids, id)
 	}
@@ -1135,7 +1141,7 @@ func (m *PetMutation) RemovedToysIDs() (ids []int) {
 }
 
 // ToysIDs returns the "toys" edge IDs in the mutation.
-func (m *PetMutation) ToysIDs() (ids []int) {
+func (m *PetMutation) ToysIDs() (ids []uuid.UUID) {
 	for id := range m.toys {
 		ids = append(ids, id)
 	}
@@ -2405,7 +2411,7 @@ type ToyMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uuid.UUID
 	color         *toy.Color
 	material      *toy.Material
 	title         *string
@@ -2437,7 +2443,7 @@ func newToyMutation(c config, op Op, opts ...toyOption) *ToyMutation {
 }
 
 // withToyID sets the ID field of the mutation.
-func withToyID(id int) toyOption {
+func withToyID(id uuid.UUID) toyOption {
 	return func(m *ToyMutation) {
 		var (
 			err   error
@@ -2487,9 +2493,15 @@ func (m ToyMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Toy entities.
+func (m *ToyMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ToyMutation) ID() (id int, exists bool) {
+func (m *ToyMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}

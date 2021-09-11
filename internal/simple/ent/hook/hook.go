@@ -22,6 +22,19 @@ func (f CategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return f(ctx, mv)
 }
 
+// The CollarFunc type is an adapter to allow the use of ordinary
+// function as Collar mutator.
+type CollarFunc func(context.Context, *ent.CollarMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CollarFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CollarMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CollarMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The OwnerFunc type is an adapter to allow the use of ordinary
 // function as Owner mutator.
 type OwnerFunc func(context.Context, *ent.OwnerMutation) (ent.Value, error)

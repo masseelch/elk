@@ -9,7 +9,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"github.com/masseelch/elk/internal/simple/ent/predicate"
@@ -47,15 +49,34 @@ func (pu *PetUpdate) AddAge(i int) *PetUpdate {
 	return pu
 }
 
+// SetCollarID sets the "collar" edge to the Collar entity by ID.
+func (pu *PetUpdate) SetCollarID(id int) *PetUpdate {
+	pu.mutation.SetCollarID(id)
+	return pu
+}
+
+// SetNillableCollarID sets the "collar" edge to the Collar entity by ID if the given value is not nil.
+func (pu *PetUpdate) SetNillableCollarID(id *int) *PetUpdate {
+	if id != nil {
+		pu = pu.SetCollarID(*id)
+	}
+	return pu
+}
+
+// SetCollar sets the "collar" edge to the Collar entity.
+func (pu *PetUpdate) SetCollar(c *Collar) *PetUpdate {
+	return pu.SetCollarID(c.ID)
+}
+
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
-func (pu *PetUpdate) AddCategoryIDs(ids ...int) *PetUpdate {
+func (pu *PetUpdate) AddCategoryIDs(ids ...uint64) *PetUpdate {
 	pu.mutation.AddCategoryIDs(ids...)
 	return pu
 }
 
 // AddCategories adds the "categories" edges to the Category entity.
 func (pu *PetUpdate) AddCategories(c ...*Category) *PetUpdate {
-	ids := make([]int, len(c))
+	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -63,13 +84,13 @@ func (pu *PetUpdate) AddCategories(c ...*Category) *PetUpdate {
 }
 
 // SetOwnerID sets the "owner" edge to the Owner entity by ID.
-func (pu *PetUpdate) SetOwnerID(id int) *PetUpdate {
+func (pu *PetUpdate) SetOwnerID(id uuid.UUID) *PetUpdate {
 	pu.mutation.SetOwnerID(id)
 	return pu
 }
 
 // SetNillableOwnerID sets the "owner" edge to the Owner entity by ID if the given value is not nil.
-func (pu *PetUpdate) SetNillableOwnerID(id *int) *PetUpdate {
+func (pu *PetUpdate) SetNillableOwnerID(id *uuid.UUID) *PetUpdate {
 	if id != nil {
 		pu = pu.SetOwnerID(*id)
 	}
@@ -101,6 +122,12 @@ func (pu *PetUpdate) Mutation() *PetMutation {
 	return pu.mutation
 }
 
+// ClearCollar clears the "collar" edge to the Collar entity.
+func (pu *PetUpdate) ClearCollar() *PetUpdate {
+	pu.mutation.ClearCollar()
+	return pu
+}
+
 // ClearCategories clears all "categories" edges to the Category entity.
 func (pu *PetUpdate) ClearCategories() *PetUpdate {
 	pu.mutation.ClearCategories()
@@ -108,14 +135,14 @@ func (pu *PetUpdate) ClearCategories() *PetUpdate {
 }
 
 // RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
-func (pu *PetUpdate) RemoveCategoryIDs(ids ...int) *PetUpdate {
+func (pu *PetUpdate) RemoveCategoryIDs(ids ...uint64) *PetUpdate {
 	pu.mutation.RemoveCategoryIDs(ids...)
 	return pu
 }
 
 // RemoveCategories removes "categories" edges to Category entities.
 func (pu *PetUpdate) RemoveCategories(c ...*Category) *PetUpdate {
-	ids := make([]int, len(c))
+	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -242,6 +269,41 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: pet.FieldAge,
 		})
 	}
+	if pu.mutation.CollarCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   pet.CollarTable,
+			Columns: []string{pet.CollarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: collar.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.CollarIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   pet.CollarTable,
+			Columns: []string{pet.CollarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: collar.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if pu.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -251,7 +313,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint64,
 					Column: category.FieldID,
 				},
 			},
@@ -267,7 +329,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint64,
 					Column: category.FieldID,
 				},
 			},
@@ -286,7 +348,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint64,
 					Column: category.FieldID,
 				},
 			},
@@ -305,7 +367,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: owner.FieldID,
 				},
 			},
@@ -321,7 +383,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: owner.FieldID,
 				},
 			},
@@ -423,15 +485,34 @@ func (puo *PetUpdateOne) AddAge(i int) *PetUpdateOne {
 	return puo
 }
 
+// SetCollarID sets the "collar" edge to the Collar entity by ID.
+func (puo *PetUpdateOne) SetCollarID(id int) *PetUpdateOne {
+	puo.mutation.SetCollarID(id)
+	return puo
+}
+
+// SetNillableCollarID sets the "collar" edge to the Collar entity by ID if the given value is not nil.
+func (puo *PetUpdateOne) SetNillableCollarID(id *int) *PetUpdateOne {
+	if id != nil {
+		puo = puo.SetCollarID(*id)
+	}
+	return puo
+}
+
+// SetCollar sets the "collar" edge to the Collar entity.
+func (puo *PetUpdateOne) SetCollar(c *Collar) *PetUpdateOne {
+	return puo.SetCollarID(c.ID)
+}
+
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
-func (puo *PetUpdateOne) AddCategoryIDs(ids ...int) *PetUpdateOne {
+func (puo *PetUpdateOne) AddCategoryIDs(ids ...uint64) *PetUpdateOne {
 	puo.mutation.AddCategoryIDs(ids...)
 	return puo
 }
 
 // AddCategories adds the "categories" edges to the Category entity.
 func (puo *PetUpdateOne) AddCategories(c ...*Category) *PetUpdateOne {
-	ids := make([]int, len(c))
+	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -439,13 +520,13 @@ func (puo *PetUpdateOne) AddCategories(c ...*Category) *PetUpdateOne {
 }
 
 // SetOwnerID sets the "owner" edge to the Owner entity by ID.
-func (puo *PetUpdateOne) SetOwnerID(id int) *PetUpdateOne {
+func (puo *PetUpdateOne) SetOwnerID(id uuid.UUID) *PetUpdateOne {
 	puo.mutation.SetOwnerID(id)
 	return puo
 }
 
 // SetNillableOwnerID sets the "owner" edge to the Owner entity by ID if the given value is not nil.
-func (puo *PetUpdateOne) SetNillableOwnerID(id *int) *PetUpdateOne {
+func (puo *PetUpdateOne) SetNillableOwnerID(id *uuid.UUID) *PetUpdateOne {
 	if id != nil {
 		puo = puo.SetOwnerID(*id)
 	}
@@ -477,6 +558,12 @@ func (puo *PetUpdateOne) Mutation() *PetMutation {
 	return puo.mutation
 }
 
+// ClearCollar clears the "collar" edge to the Collar entity.
+func (puo *PetUpdateOne) ClearCollar() *PetUpdateOne {
+	puo.mutation.ClearCollar()
+	return puo
+}
+
 // ClearCategories clears all "categories" edges to the Category entity.
 func (puo *PetUpdateOne) ClearCategories() *PetUpdateOne {
 	puo.mutation.ClearCategories()
@@ -484,14 +571,14 @@ func (puo *PetUpdateOne) ClearCategories() *PetUpdateOne {
 }
 
 // RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
-func (puo *PetUpdateOne) RemoveCategoryIDs(ids ...int) *PetUpdateOne {
+func (puo *PetUpdateOne) RemoveCategoryIDs(ids ...uint64) *PetUpdateOne {
 	puo.mutation.RemoveCategoryIDs(ids...)
 	return puo
 }
 
 // RemoveCategories removes "categories" edges to Category entities.
 func (puo *PetUpdateOne) RemoveCategories(c ...*Category) *PetUpdateOne {
-	ids := make([]int, len(c))
+	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -642,6 +729,41 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Column: pet.FieldAge,
 		})
 	}
+	if puo.mutation.CollarCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   pet.CollarTable,
+			Columns: []string{pet.CollarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: collar.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.CollarIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   pet.CollarTable,
+			Columns: []string{pet.CollarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: collar.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if puo.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -651,7 +773,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint64,
 					Column: category.FieldID,
 				},
 			},
@@ -667,7 +789,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint64,
 					Column: category.FieldID,
 				},
 			},
@@ -686,7 +808,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint64,
 					Column: category.FieldID,
 				},
 			},
@@ -705,7 +827,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: owner.FieldID,
 				},
 			},
@@ -721,7 +843,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: owner.FieldID,
 				},
 			},

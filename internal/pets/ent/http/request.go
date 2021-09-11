@@ -28,44 +28,44 @@ type BadgeUpdateRequest struct {
 
 // Payload of a ent.Pet create request.
 type PetCreateRequest struct {
-	Height     *int       `json:"height"`
-	Weight     *float64   `json:"weight"`
-	Castrated  *bool      `json:"castrated"`
-	Name       *string    `json:"name"`
-	Birthday   *time.Time `json:"birthday"`
-	Nicknames  *[]string  `json:"nicknames"`
-	Sex        *pet.Sex   `json:"sex"`
-	Chip       *uuid.UUID `json:"chip"`
-	Badge      *int       `json:"badge"`
-	Protege    *int       `json:"protege"`
-	Mentor     *int       `json:"mentor"`
-	Spouse     *int       `json:"spouse"`
-	Toys       []int      `json:"toys"`
-	Parent     *int       `json:"parent"`
-	Children   []int      `json:"children"`
-	PlayGroups []int      `json:"play_groups"`
-	Friends    []int      `json:"friends"`
+	Height     *int        `json:"height"`
+	Weight     *float64    `json:"weight"`
+	Castrated  *bool       `json:"castrated"`
+	Name       *string     `json:"name"`
+	Birthday   *time.Time  `json:"birthday"`
+	Nicknames  *[]string   `json:"nicknames"`
+	Sex        *pet.Sex    `json:"sex"`
+	Chip       *uuid.UUID  `json:"chip"`
+	Badge      *uint32     `json:"badge"`
+	Protege    *int        `json:"protege"`
+	Mentor     *int        `json:"mentor"`
+	Spouse     *int        `json:"spouse"`
+	Toys       []uuid.UUID `json:"toys"`
+	Parent     *int        `json:"parent"`
+	Children   []int       `json:"children"`
+	PlayGroups []int       `json:"play_groups"`
+	Friends    []int       `json:"friends"`
 }
 
 // Payload of a ent.Pet update request.
 type PetUpdateRequest struct {
-	Height     *int       `json:"height"`
-	Weight     *float64   `json:"weight"`
-	Castrated  *bool      `json:"castrated"`
-	Name       *string    `json:"name"`
-	Birthday   *time.Time `json:"birthday"`
-	Nicknames  *[]string  `json:"nicknames"`
-	Sex        *pet.Sex   `json:"sex"`
-	Chip       *uuid.UUID `json:"chip"`
-	Badge      *int       `json:"badge"`
-	Protege    *int       `json:"protege"`
-	Mentor     *int       `json:"mentor"`
-	Spouse     *int       `json:"spouse"`
-	Toys       []int      `json:"toys"`
-	Parent     *int       `json:"parent"`
-	Children   []int      `json:"children"`
-	PlayGroups []int      `json:"play_groups"`
-	Friends    []int      `json:"friends"`
+	Height     *int        `json:"height"`
+	Weight     *float64    `json:"weight"`
+	Castrated  *bool       `json:"castrated"`
+	Name       *string     `json:"name"`
+	Birthday   *time.Time  `json:"birthday"`
+	Nicknames  *[]string   `json:"nicknames"`
+	Sex        *pet.Sex    `json:"sex"`
+	Chip       *uuid.UUID  `json:"chip"`
+	Badge      *uint32     `json:"badge"`
+	Protege    *int        `json:"protege"`
+	Mentor     *int        `json:"mentor"`
+	Spouse     *int        `json:"spouse"`
+	Toys       []uuid.UUID `json:"toys"`
+	Parent     *int        `json:"parent"`
+	Children   []int       `json:"children"`
+	PlayGroups []int       `json:"play_groups"`
+	Friends    []int       `json:"friends"`
 }
 
 // Payload of a ent.PlayGroup create request.

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/pets/ent/pet"
 	"github.com/masseelch/elk/internal/pets/ent/predicate"
 	"github.com/masseelch/elk/internal/pets/ent/toy"
@@ -110,8 +111,8 @@ func (tq *ToyQuery) FirstX(ctx context.Context) *Toy {
 
 // FirstID returns the first Toy ID from the query.
 // Returns a *NotFoundError when no Toy ID was found.
-func (tq *ToyQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tq *ToyQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = tq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +124,7 @@ func (tq *ToyQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tq *ToyQuery) FirstIDX(ctx context.Context) int {
+func (tq *ToyQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := tq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +162,8 @@ func (tq *ToyQuery) OnlyX(ctx context.Context) *Toy {
 // OnlyID is like Only, but returns the only Toy ID in the query.
 // Returns a *NotSingularError when exactly one Toy ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (tq *ToyQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tq *ToyQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = tq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +179,7 @@ func (tq *ToyQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tq *ToyQuery) OnlyIDX(ctx context.Context) int {
+func (tq *ToyQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := tq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +205,8 @@ func (tq *ToyQuery) AllX(ctx context.Context) []*Toy {
 }
 
 // IDs executes the query and returns a list of Toy IDs.
-func (tq *ToyQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (tq *ToyQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := tq.Select(toy.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +214,7 @@ func (tq *ToyQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tq *ToyQuery) IDsX(ctx context.Context) []int {
+func (tq *ToyQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := tq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -432,7 +433,7 @@ func (tq *ToyQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   toy.Table,
 			Columns: toy.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: toy.FieldID,
 			},
 		},

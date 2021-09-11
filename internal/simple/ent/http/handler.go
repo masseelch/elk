@@ -22,6 +22,15 @@ func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
 		r.Get("/", categoryHandler.List)
 		r.Get("/{id}/pets", categoryHandler.Pets)
 	})
+	collarHandler := NewCollarHandler(c, l)
+	r.Route("/collars", func(r chi.Router) {
+		r.Post("/", collarHandler.Create)
+		r.Get("/{id}", collarHandler.Read)
+		r.Patch("/{id}", collarHandler.Update)
+		r.Delete("/{id}", collarHandler.Delete)
+		r.Get("/", collarHandler.List)
+		r.Get("/{id}/pet", collarHandler.Pet)
+	})
 	ownerHandler := NewOwnerHandler(c, l)
 	r.Route("/owners", func(r chi.Router) {
 		r.Post("/", ownerHandler.Create)
@@ -38,6 +47,7 @@ func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
 		r.Patch("/{id}", petHandler.Update)
 		r.Delete("/{id}", petHandler.Delete)
 		r.Get("/", petHandler.List)
+		r.Get("/{id}/collar", petHandler.Collar)
 		r.Get("/{id}/categories", petHandler.Categories)
 		r.Get("/{id}/owner", petHandler.Owner)
 		r.Get("/{id}/friends", petHandler.Friends)
@@ -55,6 +65,19 @@ func NewCategoryHandler(c *ent.Client, l *zap.Logger) *CategoryHandler {
 	return &CategoryHandler{
 		client: c,
 		log:    l.With(zap.String("handler", "CategoryHandler")),
+	}
+}
+
+// CollarHandler handles http crud operations on ent.Collar.
+type CollarHandler struct {
+	client *ent.Client
+	log    *zap.Logger
+}
+
+func NewCollarHandler(c *ent.Client, l *zap.Logger) *CollarHandler {
+	return &CollarHandler{
+		client: c,
+		log:    l.With(zap.String("handler", "CollarHandler")),
 	}
 }
 

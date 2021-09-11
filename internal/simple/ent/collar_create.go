@@ -9,54 +9,52 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 )
 
-// CategoryCreate is the builder for creating a Category entity.
-type CategoryCreate struct {
+// CollarCreate is the builder for creating a Collar entity.
+type CollarCreate struct {
 	config
-	mutation *CategoryMutation
+	mutation *CollarMutation
 	hooks    []Hook
 }
 
-// SetName sets the "name" field.
-func (cc *CategoryCreate) SetName(s string) *CategoryCreate {
-	cc.mutation.SetName(s)
+// SetColor sets the "color" field.
+func (cc *CollarCreate) SetColor(c collar.Color) *CollarCreate {
+	cc.mutation.SetColor(c)
 	return cc
 }
 
-// SetID sets the "id" field.
-func (cc *CategoryCreate) SetID(u uint64) *CategoryCreate {
-	cc.mutation.SetID(u)
+// SetPetID sets the "pet" edge to the Pet entity by ID.
+func (cc *CollarCreate) SetPetID(id string) *CollarCreate {
+	cc.mutation.SetPetID(id)
 	return cc
 }
 
-// AddPetIDs adds the "pets" edge to the Pet entity by IDs.
-func (cc *CategoryCreate) AddPetIDs(ids ...string) *CategoryCreate {
-	cc.mutation.AddPetIDs(ids...)
-	return cc
-}
-
-// AddPets adds the "pets" edges to the Pet entity.
-func (cc *CategoryCreate) AddPets(p ...*Pet) *CategoryCreate {
-	ids := make([]string, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
+// SetNillablePetID sets the "pet" edge to the Pet entity by ID if the given value is not nil.
+func (cc *CollarCreate) SetNillablePetID(id *string) *CollarCreate {
+	if id != nil {
+		cc = cc.SetPetID(*id)
 	}
-	return cc.AddPetIDs(ids...)
+	return cc
 }
 
-// Mutation returns the CategoryMutation object of the builder.
-func (cc *CategoryCreate) Mutation() *CategoryMutation {
+// SetPet sets the "pet" edge to the Pet entity.
+func (cc *CollarCreate) SetPet(p *Pet) *CollarCreate {
+	return cc.SetPetID(p.ID)
+}
+
+// Mutation returns the CollarMutation object of the builder.
+func (cc *CollarCreate) Mutation() *CollarMutation {
 	return cc.mutation
 }
 
-// Save creates the Category in the database.
-func (cc *CategoryCreate) Save(ctx context.Context) (*Category, error) {
+// Save creates the Collar in the database.
+func (cc *CollarCreate) Save(ctx context.Context) (*Collar, error) {
 	var (
 		err  error
-		node *Category
+		node *Collar
 	)
 	if len(cc.hooks) == 0 {
 		if err = cc.check(); err != nil {
@@ -65,7 +63,7 @@ func (cc *CategoryCreate) Save(ctx context.Context) (*Category, error) {
 		node, err = cc.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CategoryMutation)
+			mutation, ok := m.(*CollarMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
@@ -94,7 +92,7 @@ func (cc *CategoryCreate) Save(ctx context.Context) (*Category, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (cc *CategoryCreate) SaveX(ctx context.Context) *Category {
+func (cc *CollarCreate) SaveX(ctx context.Context) *Collar {
 	v, err := cc.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -103,27 +101,32 @@ func (cc *CategoryCreate) SaveX(ctx context.Context) *Category {
 }
 
 // Exec executes the query.
-func (cc *CategoryCreate) Exec(ctx context.Context) error {
+func (cc *CollarCreate) Exec(ctx context.Context) error {
 	_, err := cc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cc *CategoryCreate) ExecX(ctx context.Context) {
+func (cc *CollarCreate) ExecX(ctx context.Context) {
 	if err := cc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (cc *CategoryCreate) check() error {
-	if _, ok := cc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+func (cc *CollarCreate) check() error {
+	if _, ok := cc.mutation.Color(); !ok {
+		return &ValidationError{Name: "color", err: errors.New(`ent: missing required field "color"`)}
+	}
+	if v, ok := cc.mutation.Color(); ok {
+		if err := collar.ColorValidator(v); err != nil {
+			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "color": %w`, err)}
+		}
 	}
 	return nil
 }
 
-func (cc *CategoryCreate) sqlSave(ctx context.Context) (*Category, error) {
+func (cc *CollarCreate) sqlSave(ctx context.Context) (*Collar, error) {
 	_node, _spec := cc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -131,42 +134,36 @@ func (cc *CategoryCreate) sqlSave(ctx context.Context) (*Category, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	return _node, nil
 }
 
-func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
+func (cc *CollarCreate) createSpec() (*Collar, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Category{config: cc.config}
+		_node = &Collar{config: cc.config}
 		_spec = &sqlgraph.CreateSpec{
-			Table: category.Table,
+			Table: collar.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: category.FieldID,
+				Type:   field.TypeInt,
+				Column: collar.FieldID,
 			},
 		}
 	)
-	if id, ok := cc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
-	if value, ok := cc.mutation.Name(); ok {
+	if value, ok := cc.mutation.Color(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeEnum,
 			Value:  value,
-			Column: category.FieldName,
+			Column: collar.FieldColor,
 		})
-		_node.Name = value
+		_node.Color = value
 	}
-	if nodes := cc.mutation.PetsIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.PetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   category.PetsTable,
-			Columns: category.PetsPrimaryKey,
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   collar.PetTable,
+			Columns: []string{collar.PetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -178,27 +175,28 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.pet_collar = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
 
-// CategoryCreateBulk is the builder for creating many Category entities in bulk.
-type CategoryCreateBulk struct {
+// CollarCreateBulk is the builder for creating many Collar entities in bulk.
+type CollarCreateBulk struct {
 	config
-	builders []*CategoryCreate
+	builders []*CollarCreate
 }
 
-// Save creates the Category entities in the database.
-func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
+// Save creates the Collar entities in the database.
+func (ccb *CollarCreateBulk) Save(ctx context.Context) ([]*Collar, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
-	nodes := make([]*Category, len(ccb.builders))
+	nodes := make([]*Collar, len(ccb.builders))
 	mutators := make([]Mutator, len(ccb.builders))
 	for i := range ccb.builders {
 		func(i int, root context.Context) {
 			builder := ccb.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*CategoryMutation)
+				mutation, ok := m.(*CollarMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -224,9 +222,9 @@ func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+				if specs[i].ID.Value != nil {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = int(id)
 				}
 				return nodes[i], nil
 			})
@@ -245,7 +243,7 @@ func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ccb *CategoryCreateBulk) SaveX(ctx context.Context) []*Category {
+func (ccb *CollarCreateBulk) SaveX(ctx context.Context) []*Collar {
 	v, err := ccb.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -254,13 +252,13 @@ func (ccb *CategoryCreateBulk) SaveX(ctx context.Context) []*Category {
 }
 
 // Exec executes the query.
-func (ccb *CategoryCreateBulk) Exec(ctx context.Context) error {
+func (ccb *CollarCreateBulk) Exec(ctx context.Context) error {
 	_, err := ccb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ccb *CategoryCreateBulk) ExecX(ctx context.Context) {
+func (ccb *CollarCreateBulk) ExecX(ctx context.Context) {
 	if err := ccb.Exec(ctx); err != nil {
 		panic(err)
 	}

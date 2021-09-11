@@ -2,6 +2,10 @@
 
 package owner
 
+import (
+	"github.com/google/uuid"
+)
+
 const (
 	// Label holds the string label denoting the owner type in the database.
 	Label = "owner"
@@ -40,3 +44,8 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
+)

@@ -10,7 +10,7 @@ import (
 var (
 	// BadgesColumns holds the columns for the "badges" table.
 	BadgesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "color", Type: field.TypeEnum, Enums: []string{"red", "orange", "yellow", "green", "blue", "indigo", "violet", "purple", "pink", "silver", "gold", "beige", "brown", "grey", "black", "white"}},
 		{Name: "material", Type: field.TypeEnum, Enums: []string{"leather", "plastic", "fabric"}},
 		{Name: "pet_badge", Type: field.TypeInt, Unique: true, Nullable: true},
@@ -85,7 +85,7 @@ var (
 	}
 	// ToysColumns holds the columns for the "toys" table.
 	ToysColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "color", Type: field.TypeEnum, Enums: []string{"red", "orange", "yellow", "green", "blue", "indigo", "violet", "purple", "pink", "silver", "gold", "beige", "brown", "grey", "black", "white"}},
 		{Name: "material", Type: field.TypeEnum, Enums: []string{"leather", "plastic", "fabric"}},
 		{Name: "title", Type: field.TypeString},

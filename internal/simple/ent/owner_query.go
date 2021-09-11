@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"github.com/masseelch/elk/internal/simple/ent/predicate"
@@ -110,8 +111,8 @@ func (oq *OwnerQuery) FirstX(ctx context.Context) *Owner {
 
 // FirstID returns the first Owner ID from the query.
 // Returns a *NotFoundError when no Owner ID was found.
-func (oq *OwnerQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (oq *OwnerQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = oq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +124,7 @@ func (oq *OwnerQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (oq *OwnerQuery) FirstIDX(ctx context.Context) int {
+func (oq *OwnerQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := oq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +162,8 @@ func (oq *OwnerQuery) OnlyX(ctx context.Context) *Owner {
 // OnlyID is like Only, but returns the only Owner ID in the query.
 // Returns a *NotSingularError when exactly one Owner ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (oq *OwnerQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (oq *OwnerQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = oq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +179,7 @@ func (oq *OwnerQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (oq *OwnerQuery) OnlyIDX(ctx context.Context) int {
+func (oq *OwnerQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := oq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +205,8 @@ func (oq *OwnerQuery) AllX(ctx context.Context) []*Owner {
 }
 
 // IDs executes the query and returns a list of Owner IDs.
-func (oq *OwnerQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (oq *OwnerQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := oq.Select(owner.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +214,7 @@ func (oq *OwnerQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (oq *OwnerQuery) IDsX(ctx context.Context) []int {
+func (oq *OwnerQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := oq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -376,7 +377,7 @@ func (oq *OwnerQuery) sqlAll(ctx context.Context) ([]*Owner, error) {
 
 	if query := oq.withPets; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*Owner)
+		nodeids := make(map[uuid.UUID]*Owner)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -425,7 +426,7 @@ func (oq *OwnerQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   owner.Table,
 			Columns: owner.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: owner.FieldID,
 			},
 		},

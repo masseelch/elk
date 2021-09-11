@@ -14,6 +14,7 @@ type Category struct {
 // Fields of the Category.
 func (Category) Fields() []ent.Field {
 	return []ent.Field{
+		field.Uint64("id"),
 		field.String("name"),
 	}
 }

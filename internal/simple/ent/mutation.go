@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"github.com/masseelch/elk/internal/simple/ent/predicate"
@@ -25,6 +27,7 @@ const (
 
 	// Node types.
 	TypeCategory = "Category"
+	TypeCollar   = "Collar"
 	TypeOwner    = "Owner"
 	TypePet      = "Pet"
 )
@@ -34,7 +37,7 @@ type CategoryMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uint64
 	name          *string
 	clearedFields map[string]struct{}
 	pets          map[string]struct{}
@@ -65,7 +68,7 @@ func newCategoryMutation(c config, op Op, opts ...categoryOption) *CategoryMutat
 }
 
 // withCategoryID sets the ID field of the mutation.
-func withCategoryID(id int) categoryOption {
+func withCategoryID(id uint64) categoryOption {
 	return func(m *CategoryMutation) {
 		var (
 			err   error
@@ -115,9 +118,15 @@ func (m CategoryMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Category entities.
+func (m *CategoryMutation) SetID(id uint64) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *CategoryMutation) ID() (id int, exists bool) {
+func (m *CategoryMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -414,12 +423,373 @@ func (m *CategoryMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Category edge %s", name)
 }
 
+// CollarMutation represents an operation that mutates the Collar nodes in the graph.
+type CollarMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	color         *collar.Color
+	clearedFields map[string]struct{}
+	pet           *string
+	clearedpet    bool
+	done          bool
+	oldValue      func(context.Context) (*Collar, error)
+	predicates    []predicate.Collar
+}
+
+var _ ent.Mutation = (*CollarMutation)(nil)
+
+// collarOption allows management of the mutation configuration using functional options.
+type collarOption func(*CollarMutation)
+
+// newCollarMutation creates new mutation for the Collar entity.
+func newCollarMutation(c config, op Op, opts ...collarOption) *CollarMutation {
+	m := &CollarMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCollar,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCollarID sets the ID field of the mutation.
+func withCollarID(id int) collarOption {
+	return func(m *CollarMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Collar
+		)
+		m.oldValue = func(ctx context.Context) (*Collar, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Collar.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCollar sets the old Collar of the mutation.
+func withCollar(node *Collar) collarOption {
+	return func(m *CollarMutation) {
+		m.oldValue = func(context.Context) (*Collar, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CollarMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CollarMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CollarMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetColor sets the "color" field.
+func (m *CollarMutation) SetColor(c collar.Color) {
+	m.color = &c
+}
+
+// Color returns the value of the "color" field in the mutation.
+func (m *CollarMutation) Color() (r collar.Color, exists bool) {
+	v := m.color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldColor returns the old "color" field's value of the Collar entity.
+// If the Collar object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CollarMutation) OldColor(ctx context.Context) (v collar.Color, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldColor: %w", err)
+	}
+	return oldValue.Color, nil
+}
+
+// ResetColor resets all changes to the "color" field.
+func (m *CollarMutation) ResetColor() {
+	m.color = nil
+}
+
+// SetPetID sets the "pet" edge to the Pet entity by id.
+func (m *CollarMutation) SetPetID(id string) {
+	m.pet = &id
+}
+
+// ClearPet clears the "pet" edge to the Pet entity.
+func (m *CollarMutation) ClearPet() {
+	m.clearedpet = true
+}
+
+// PetCleared reports if the "pet" edge to the Pet entity was cleared.
+func (m *CollarMutation) PetCleared() bool {
+	return m.clearedpet
+}
+
+// PetID returns the "pet" edge ID in the mutation.
+func (m *CollarMutation) PetID() (id string, exists bool) {
+	if m.pet != nil {
+		return *m.pet, true
+	}
+	return
+}
+
+// PetIDs returns the "pet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PetID instead. It exists only for internal usage by the builders.
+func (m *CollarMutation) PetIDs() (ids []string) {
+	if id := m.pet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPet resets all changes to the "pet" edge.
+func (m *CollarMutation) ResetPet() {
+	m.pet = nil
+	m.clearedpet = false
+}
+
+// Where appends a list predicates to the CollarMutation builder.
+func (m *CollarMutation) Where(ps ...predicate.Collar) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *CollarMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Collar).
+func (m *CollarMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CollarMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.color != nil {
+		fields = append(fields, collar.FieldColor)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CollarMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case collar.FieldColor:
+		return m.Color()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CollarMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case collar.FieldColor:
+		return m.OldColor(ctx)
+	}
+	return nil, fmt.Errorf("unknown Collar field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CollarMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case collar.FieldColor:
+		v, ok := value.(collar.Color)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetColor(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Collar field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CollarMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CollarMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CollarMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Collar numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CollarMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CollarMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CollarMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Collar nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CollarMutation) ResetField(name string) error {
+	switch name {
+	case collar.FieldColor:
+		m.ResetColor()
+		return nil
+	}
+	return fmt.Errorf("unknown Collar field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CollarMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.pet != nil {
+		edges = append(edges, collar.EdgePet)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CollarMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case collar.EdgePet:
+		if id := m.pet; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CollarMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CollarMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CollarMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedpet {
+		edges = append(edges, collar.EdgePet)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CollarMutation) EdgeCleared(name string) bool {
+	switch name {
+	case collar.EdgePet:
+		return m.clearedpet
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CollarMutation) ClearEdge(name string) error {
+	switch name {
+	case collar.EdgePet:
+		m.ClearPet()
+		return nil
+	}
+	return fmt.Errorf("unknown Collar unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CollarMutation) ResetEdge(name string) error {
+	switch name {
+	case collar.EdgePet:
+		m.ResetPet()
+		return nil
+	}
+	return fmt.Errorf("unknown Collar edge %s", name)
+}
+
 // OwnerMutation represents an operation that mutates the Owner nodes in the graph.
 type OwnerMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uuid.UUID
 	name          *string
 	age           *int
 	addage        *int
@@ -452,7 +822,7 @@ func newOwnerMutation(c config, op Op, opts ...ownerOption) *OwnerMutation {
 }
 
 // withOwnerID sets the ID field of the mutation.
-func withOwnerID(id int) ownerOption {
+func withOwnerID(id uuid.UUID) ownerOption {
 	return func(m *OwnerMutation) {
 		var (
 			err   error
@@ -502,9 +872,15 @@ func (m OwnerMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Owner entities.
+func (m *OwnerMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *OwnerMutation) ID() (id int, exists bool) {
+func (m *OwnerMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -899,10 +1275,12 @@ type PetMutation struct {
 	age               *int
 	addage            *int
 	clearedFields     map[string]struct{}
-	categories        map[int]struct{}
-	removedcategories map[int]struct{}
+	collar            *int
+	clearedcollar     bool
+	categories        map[uint64]struct{}
+	removedcategories map[uint64]struct{}
 	clearedcategories bool
-	owner             *int
+	owner             *uuid.UUID
 	clearedowner      bool
 	friends           map[string]struct{}
 	removedfriends    map[string]struct{}
@@ -1089,10 +1467,49 @@ func (m *PetMutation) ResetAge() {
 	m.addage = nil
 }
 
+// SetCollarID sets the "collar" edge to the Collar entity by id.
+func (m *PetMutation) SetCollarID(id int) {
+	m.collar = &id
+}
+
+// ClearCollar clears the "collar" edge to the Collar entity.
+func (m *PetMutation) ClearCollar() {
+	m.clearedcollar = true
+}
+
+// CollarCleared reports if the "collar" edge to the Collar entity was cleared.
+func (m *PetMutation) CollarCleared() bool {
+	return m.clearedcollar
+}
+
+// CollarID returns the "collar" edge ID in the mutation.
+func (m *PetMutation) CollarID() (id int, exists bool) {
+	if m.collar != nil {
+		return *m.collar, true
+	}
+	return
+}
+
+// CollarIDs returns the "collar" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CollarID instead. It exists only for internal usage by the builders.
+func (m *PetMutation) CollarIDs() (ids []int) {
+	if id := m.collar; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCollar resets all changes to the "collar" edge.
+func (m *PetMutation) ResetCollar() {
+	m.collar = nil
+	m.clearedcollar = false
+}
+
 // AddCategoryIDs adds the "categories" edge to the Category entity by ids.
-func (m *PetMutation) AddCategoryIDs(ids ...int) {
+func (m *PetMutation) AddCategoryIDs(ids ...uint64) {
 	if m.categories == nil {
-		m.categories = make(map[int]struct{})
+		m.categories = make(map[uint64]struct{})
 	}
 	for i := range ids {
 		m.categories[ids[i]] = struct{}{}
@@ -1110,9 +1527,9 @@ func (m *PetMutation) CategoriesCleared() bool {
 }
 
 // RemoveCategoryIDs removes the "categories" edge to the Category entity by IDs.
-func (m *PetMutation) RemoveCategoryIDs(ids ...int) {
+func (m *PetMutation) RemoveCategoryIDs(ids ...uint64) {
 	if m.removedcategories == nil {
-		m.removedcategories = make(map[int]struct{})
+		m.removedcategories = make(map[uint64]struct{})
 	}
 	for i := range ids {
 		delete(m.categories, ids[i])
@@ -1121,7 +1538,7 @@ func (m *PetMutation) RemoveCategoryIDs(ids ...int) {
 }
 
 // RemovedCategories returns the removed IDs of the "categories" edge to the Category entity.
-func (m *PetMutation) RemovedCategoriesIDs() (ids []int) {
+func (m *PetMutation) RemovedCategoriesIDs() (ids []uint64) {
 	for id := range m.removedcategories {
 		ids = append(ids, id)
 	}
@@ -1129,7 +1546,7 @@ func (m *PetMutation) RemovedCategoriesIDs() (ids []int) {
 }
 
 // CategoriesIDs returns the "categories" edge IDs in the mutation.
-func (m *PetMutation) CategoriesIDs() (ids []int) {
+func (m *PetMutation) CategoriesIDs() (ids []uint64) {
 	for id := range m.categories {
 		ids = append(ids, id)
 	}
@@ -1144,7 +1561,7 @@ func (m *PetMutation) ResetCategories() {
 }
 
 // SetOwnerID sets the "owner" edge to the Owner entity by id.
-func (m *PetMutation) SetOwnerID(id int) {
+func (m *PetMutation) SetOwnerID(id uuid.UUID) {
 	m.owner = &id
 }
 
@@ -1159,7 +1576,7 @@ func (m *PetMutation) OwnerCleared() bool {
 }
 
 // OwnerID returns the "owner" edge ID in the mutation.
-func (m *PetMutation) OwnerID() (id int, exists bool) {
+func (m *PetMutation) OwnerID() (id uuid.UUID, exists bool) {
 	if m.owner != nil {
 		return *m.owner, true
 	}
@@ -1169,7 +1586,7 @@ func (m *PetMutation) OwnerID() (id int, exists bool) {
 // OwnerIDs returns the "owner" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // OwnerID instead. It exists only for internal usage by the builders.
-func (m *PetMutation) OwnerIDs() (ids []int) {
+func (m *PetMutation) OwnerIDs() (ids []uuid.UUID) {
 	if id := m.owner; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1386,7 +1803,10 @@ func (m *PetMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PetMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
+	if m.collar != nil {
+		edges = append(edges, pet.EdgeCollar)
+	}
 	if m.categories != nil {
 		edges = append(edges, pet.EdgeCategories)
 	}
@@ -1403,6 +1823,10 @@ func (m *PetMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PetMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case pet.EdgeCollar:
+		if id := m.collar; id != nil {
+			return []ent.Value{*id}
+		}
 	case pet.EdgeCategories:
 		ids := make([]ent.Value, 0, len(m.categories))
 		for id := range m.categories {
@@ -1425,7 +1849,7 @@ func (m *PetMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PetMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedcategories != nil {
 		edges = append(edges, pet.EdgeCategories)
 	}
@@ -1457,7 +1881,10 @@ func (m *PetMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PetMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
+	if m.clearedcollar {
+		edges = append(edges, pet.EdgeCollar)
+	}
 	if m.clearedcategories {
 		edges = append(edges, pet.EdgeCategories)
 	}
@@ -1474,6 +1901,8 @@ func (m *PetMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PetMutation) EdgeCleared(name string) bool {
 	switch name {
+	case pet.EdgeCollar:
+		return m.clearedcollar
 	case pet.EdgeCategories:
 		return m.clearedcategories
 	case pet.EdgeOwner:
@@ -1488,6 +1917,9 @@ func (m *PetMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *PetMutation) ClearEdge(name string) error {
 	switch name {
+	case pet.EdgeCollar:
+		m.ClearCollar()
+		return nil
 	case pet.EdgeOwner:
 		m.ClearOwner()
 		return nil
@@ -1499,6 +1931,9 @@ func (m *PetMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PetMutation) ResetEdge(name string) error {
 	switch name {
+	case pet.EdgeCollar:
+		m.ResetCollar()
+		return nil
 	case pet.EdgeCategories:
 		m.ResetCategories()
 		return nil

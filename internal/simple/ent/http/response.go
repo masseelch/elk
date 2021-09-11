@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/simple/ent"
+	collar "github.com/masseelch/elk/internal/simple/ent/collar"
 )
 
 // Basic HTTP Error Response
@@ -73,7 +75,7 @@ type (
 	// []
 	// [owner pet pet:owner]
 	Category4094953247View struct {
-		ID   int    `json:"id,omitempty"`
+		ID   uint64 `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 	}
 	Category4094953247Views []*Category4094953247View
@@ -101,13 +103,45 @@ func NewCategory4094953247Views(es []*ent.Category) Category4094953247Views {
 }
 
 type (
+	// Collar1522160880View represents the data serialized for the following serialization group combinations:
+	// []
+	// [owner pet pet:owner]
+	Collar1522160880View struct {
+		ID    int          `json:"id,omitempty"`
+		Color collar.Color `json:"color,omitempty"`
+	}
+	Collar1522160880Views []*Collar1522160880View
+)
+
+func NewCollar1522160880View(e *ent.Collar) *Collar1522160880View {
+	if e == nil {
+		return nil
+	}
+	return &Collar1522160880View{
+		ID:    e.ID,
+		Color: e.Color,
+	}
+}
+
+func NewCollar1522160880Views(es []*ent.Collar) Collar1522160880Views {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(Collar1522160880Views, len(es))
+	for i, e := range es {
+		r[i] = NewCollar1522160880View(e)
+	}
+	return r
+}
+
+type (
 	// Owner139708381View represents the data serialized for the following serialization group combinations:
 	// []
 	// [owner pet pet:owner]
 	Owner139708381View struct {
-		ID   int    `json:"id,omitempty"`
-		Name string `json:"name,omitempty"`
-		Age  int    `json:"age,omitempty"`
+		ID   uuid.UUID `json:"id,omitempty"`
+		Name string    `json:"name,omitempty"`
+		Age  int       `json:"age,omitempty"`
 	}
 	Owner139708381Views []*Owner139708381View
 )

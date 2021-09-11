@@ -357,7 +357,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp3(in *jlexer.
 		}
 		switch key {
 		case "id":
-			out.ID = int(in.Int())
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.ID).UnmarshalText(data))
+			}
 		case "color":
 			out.Color = toy.Color(in.String())
 		case "material":
@@ -382,11 +384,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp3(out *jwrite
 	out.RawByte('{')
 	first := true
 	_ = first
-	if in.ID != 0 {
+	if true {
 		const prefix string = ",\"id\":"
 		first = false
 		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
+		out.RawText((in.ID).MarshalText())
 	}
 	if in.Color != "" {
 		const prefix string = ",\"color\":"
@@ -1007,9 +1009,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(in *jlexer.
 				out.Badge = nil
 			} else {
 				if out.Badge == nil {
-					out.Badge = new(int)
+					out.Badge = new(uint32)
 				}
-				*out.Badge = int(in.Int())
+				*out.Badge = uint32(in.Uint32())
 			}
 		case "protege":
 			if in.IsNull() {
@@ -1049,16 +1051,18 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(in *jlexer.
 				in.Delim('[')
 				if out.Toys == nil {
 					if !in.IsDelim(']') {
-						out.Toys = make([]int, 0, 8)
+						out.Toys = make([]uuid.UUID, 0, 4)
 					} else {
-						out.Toys = []int{}
+						out.Toys = []uuid.UUID{}
 					}
 				} else {
 					out.Toys = (out.Toys)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v14 int
-					v14 = int(in.Int())
+					var v14 uuid.UUID
+					if data := in.UnsafeBytes(); in.Ok() {
+						in.AddError((v14).UnmarshalText(data))
+					}
 					out.Toys = append(out.Toys, v14)
 					in.WantComma()
 				}
@@ -1250,7 +1254,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp8(out *jwrite
 		if in.Badge == nil {
 			out.RawString("null")
 		} else {
-			out.Int(int(*in.Badge))
+			out.Uint32(uint32(*in.Badge))
 		}
 	}
 	{
@@ -1291,7 +1295,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp8(out *jwrite
 				if v20 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v21))
+				out.RawText((v21).MarshalText())
 			}
 			out.RawByte(']')
 		}
@@ -1495,9 +1499,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp9(in *jlexer.
 				out.Badge = nil
 			} else {
 				if out.Badge == nil {
-					out.Badge = new(int)
+					out.Badge = new(uint32)
 				}
-				*out.Badge = int(in.Int())
+				*out.Badge = uint32(in.Uint32())
 			}
 		case "protege":
 			if in.IsNull() {
@@ -1537,16 +1541,18 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp9(in *jlexer.
 				in.Delim('[')
 				if out.Toys == nil {
 					if !in.IsDelim(']') {
-						out.Toys = make([]int, 0, 8)
+						out.Toys = make([]uuid.UUID, 0, 4)
 					} else {
-						out.Toys = []int{}
+						out.Toys = []uuid.UUID{}
 					}
 				} else {
 					out.Toys = (out.Toys)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v29 int
-					v29 = int(in.Int())
+					var v29 uuid.UUID
+					if data := in.UnsafeBytes(); in.Ok() {
+						in.AddError((v29).UnmarshalText(data))
+					}
 					out.Toys = append(out.Toys, v29)
 					in.WantComma()
 				}
@@ -1738,7 +1744,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp9(out *jwrite
 		if in.Badge == nil {
 			out.RawString("null")
 		} else {
-			out.Int(int(*in.Badge))
+			out.Uint32(uint32(*in.Badge))
 		}
 	}
 	{
@@ -1779,7 +1785,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp9(out *jwrite
 				if v35 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v36))
+				out.RawText((v36).MarshalText())
 			}
 			out.RawByte(']')
 		}
@@ -3028,7 +3034,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp20(in *jlexer
 		}
 		switch key {
 		case "id":
-			out.ID = int(in.Int())
+			out.ID = uint32(in.Uint32())
 		case "color":
 			out.Color = badge.Color(in.String())
 		case "material":
@@ -3055,7 +3061,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp20(out *jwrit
 		const prefix string = ",\"id\":"
 		first = false
 		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
+		out.Uint32(uint32(in.ID))
 	}
 	if in.Color != "" {
 		const prefix string = ",\"color\":"

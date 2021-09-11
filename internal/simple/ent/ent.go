@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 )
@@ -32,6 +33,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		category.Table: category.ValidColumn,
+		collar.Table:   collar.ValidColumn,
 		owner.Table:    owner.ValidColumn,
 		pet.Table:      pet.ValidColumn,
 	}

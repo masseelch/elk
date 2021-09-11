@@ -156,7 +156,7 @@ func (tu *ToyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   toy.Table,
 			Columns: toy.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: toy.FieldID,
 			},
 		},
@@ -379,7 +379,7 @@ func (tuo *ToyUpdateOne) sqlSave(ctx context.Context) (_node *Toy, err error) {
 			Table:   toy.Table,
 			Columns: toy.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: toy.FieldID,
 			},
 		},

@@ -9,6 +9,9 @@ import (
 // Category is the predicate function for category builders.
 type Category func(*sql.Selector)
 
+// Collar is the predicate function for collar builders.
+type Collar func(*sql.Selector)
+
 // Owner is the predicate function for owner builders.
 type Owner func(*sql.Selector)
 

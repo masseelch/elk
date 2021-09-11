@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -12,60 +11,61 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"github.com/masseelch/elk/internal/simple/ent/predicate"
 )
 
-// CategoryQuery is the builder for querying Category entities.
-type CategoryQuery struct {
+// CollarQuery is the builder for querying Collar entities.
+type CollarQuery struct {
 	config
 	limit      *int
 	offset     *int
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
-	predicates []predicate.Category
+	predicates []predicate.Collar
 	// eager-loading edges.
-	withPets *PetQuery
+	withPet *PetQuery
+	withFKs bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the CategoryQuery builder.
-func (cq *CategoryQuery) Where(ps ...predicate.Category) *CategoryQuery {
+// Where adds a new predicate for the CollarQuery builder.
+func (cq *CollarQuery) Where(ps ...predicate.Collar) *CollarQuery {
 	cq.predicates = append(cq.predicates, ps...)
 	return cq
 }
 
 // Limit adds a limit step to the query.
-func (cq *CategoryQuery) Limit(limit int) *CategoryQuery {
+func (cq *CollarQuery) Limit(limit int) *CollarQuery {
 	cq.limit = &limit
 	return cq
 }
 
 // Offset adds an offset step to the query.
-func (cq *CategoryQuery) Offset(offset int) *CategoryQuery {
+func (cq *CollarQuery) Offset(offset int) *CollarQuery {
 	cq.offset = &offset
 	return cq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (cq *CategoryQuery) Unique(unique bool) *CategoryQuery {
+func (cq *CollarQuery) Unique(unique bool) *CollarQuery {
 	cq.unique = &unique
 	return cq
 }
 
 // Order adds an order step to the query.
-func (cq *CategoryQuery) Order(o ...OrderFunc) *CategoryQuery {
+func (cq *CollarQuery) Order(o ...OrderFunc) *CollarQuery {
 	cq.order = append(cq.order, o...)
 	return cq
 }
 
-// QueryPets chains the current query on the "pets" edge.
-func (cq *CategoryQuery) QueryPets() *PetQuery {
+// QueryPet chains the current query on the "pet" edge.
+func (cq *CollarQuery) QueryPet() *PetQuery {
 	query := &PetQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -76,9 +76,9 @@ func (cq *CategoryQuery) QueryPets() *PetQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(category.Table, category.FieldID, selector),
+			sqlgraph.From(collar.Table, collar.FieldID, selector),
 			sqlgraph.To(pet.Table, pet.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, category.PetsTable, category.PetsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2O, true, collar.PetTable, collar.PetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -86,21 +86,21 @@ func (cq *CategoryQuery) QueryPets() *PetQuery {
 	return query
 }
 
-// First returns the first Category entity from the query.
-// Returns a *NotFoundError when no Category was found.
-func (cq *CategoryQuery) First(ctx context.Context) (*Category, error) {
+// First returns the first Collar entity from the query.
+// Returns a *NotFoundError when no Collar was found.
+func (cq *CollarQuery) First(ctx context.Context) (*Collar, error) {
 	nodes, err := cq.Limit(1).All(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{category.Label}
+		return nil, &NotFoundError{collar.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (cq *CategoryQuery) FirstX(ctx context.Context) *Category {
+func (cq *CollarQuery) FirstX(ctx context.Context) *Collar {
 	node, err := cq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -108,22 +108,22 @@ func (cq *CategoryQuery) FirstX(ctx context.Context) *Category {
 	return node
 }
 
-// FirstID returns the first Category ID from the query.
-// Returns a *NotFoundError when no Category ID was found.
-func (cq *CategoryQuery) FirstID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+// FirstID returns the first Collar ID from the query.
+// Returns a *NotFoundError when no Collar ID was found.
+func (cq *CollarQuery) FirstID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = cq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *CategoryQuery) FirstIDX(ctx context.Context) uint64 {
+func (cq *CollarQuery) FirstIDX(ctx context.Context) int {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -131,10 +131,10 @@ func (cq *CategoryQuery) FirstIDX(ctx context.Context) uint64 {
 	return id
 }
 
-// Only returns a single Category entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Category entity is not found.
-// Returns a *NotFoundError when no Category entities are found.
-func (cq *CategoryQuery) Only(ctx context.Context) (*Category, error) {
+// Only returns a single Collar entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when exactly one Collar entity is not found.
+// Returns a *NotFoundError when no Collar entities are found.
+func (cq *CollarQuery) Only(ctx context.Context) (*Collar, error) {
 	nodes, err := cq.Limit(2).All(ctx)
 	if err != nil {
 		return nil, err
@@ -143,14 +143,14 @@ func (cq *CategoryQuery) Only(ctx context.Context) (*Category, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{category.Label}
+		return nil, &NotFoundError{collar.Label}
 	default:
-		return nil, &NotSingularError{category.Label}
+		return nil, &NotSingularError{collar.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (cq *CategoryQuery) OnlyX(ctx context.Context) *Category {
+func (cq *CollarQuery) OnlyX(ctx context.Context) *Collar {
 	node, err := cq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -158,11 +158,11 @@ func (cq *CategoryQuery) OnlyX(ctx context.Context) *Category {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Category ID in the query.
-// Returns a *NotSingularError when exactly one Category ID is not found.
+// OnlyID is like Only, but returns the only Collar ID in the query.
+// Returns a *NotSingularError when exactly one Collar ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *CategoryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
-	var ids []uint64
+func (cq *CollarQuery) OnlyID(ctx context.Context) (id int, err error) {
+	var ids []int
 	if ids, err = cq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -170,15 +170,15 @@ func (cq *CategoryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = &NotSingularError{category.Label}
+		err = &NotSingularError{collar.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *CategoryQuery) OnlyIDX(ctx context.Context) uint64 {
+func (cq *CollarQuery) OnlyIDX(ctx context.Context) int {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -186,8 +186,8 @@ func (cq *CategoryQuery) OnlyIDX(ctx context.Context) uint64 {
 	return id
 }
 
-// All executes the query and returns a list of Categories.
-func (cq *CategoryQuery) All(ctx context.Context) ([]*Category, error) {
+// All executes the query and returns a list of Collars.
+func (cq *CollarQuery) All(ctx context.Context) ([]*Collar, error) {
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -195,7 +195,7 @@ func (cq *CategoryQuery) All(ctx context.Context) ([]*Category, error) {
 }
 
 // AllX is like All, but panics if an error occurs.
-func (cq *CategoryQuery) AllX(ctx context.Context) []*Category {
+func (cq *CollarQuery) AllX(ctx context.Context) []*Collar {
 	nodes, err := cq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -203,17 +203,17 @@ func (cq *CategoryQuery) AllX(ctx context.Context) []*Category {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Category IDs.
-func (cq *CategoryQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
-	if err := cq.Select(category.FieldID).Scan(ctx, &ids); err != nil {
+// IDs executes the query and returns a list of Collar IDs.
+func (cq *CollarQuery) IDs(ctx context.Context) ([]int, error) {
+	var ids []int
+	if err := cq.Select(collar.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *CategoryQuery) IDsX(ctx context.Context) []uint64 {
+func (cq *CollarQuery) IDsX(ctx context.Context) []int {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -222,7 +222,7 @@ func (cq *CategoryQuery) IDsX(ctx context.Context) []uint64 {
 }
 
 // Count returns the count of the given query.
-func (cq *CategoryQuery) Count(ctx context.Context) (int, error) {
+func (cq *CollarQuery) Count(ctx context.Context) (int, error) {
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -230,7 +230,7 @@ func (cq *CategoryQuery) Count(ctx context.Context) (int, error) {
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (cq *CategoryQuery) CountX(ctx context.Context) int {
+func (cq *CollarQuery) CountX(ctx context.Context) int {
 	count, err := cq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -239,7 +239,7 @@ func (cq *CategoryQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (cq *CategoryQuery) Exist(ctx context.Context) (bool, error) {
+func (cq *CollarQuery) Exist(ctx context.Context) (bool, error) {
 	if err := cq.prepareQuery(ctx); err != nil {
 		return false, err
 	}
@@ -247,7 +247,7 @@ func (cq *CategoryQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (cq *CategoryQuery) ExistX(ctx context.Context) bool {
+func (cq *CollarQuery) ExistX(ctx context.Context) bool {
 	exist, err := cq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -255,33 +255,33 @@ func (cq *CategoryQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the CategoryQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the CollarQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (cq *CategoryQuery) Clone() *CategoryQuery {
+func (cq *CollarQuery) Clone() *CollarQuery {
 	if cq == nil {
 		return nil
 	}
-	return &CategoryQuery{
+	return &CollarQuery{
 		config:     cq.config,
 		limit:      cq.limit,
 		offset:     cq.offset,
 		order:      append([]OrderFunc{}, cq.order...),
-		predicates: append([]predicate.Category{}, cq.predicates...),
-		withPets:   cq.withPets.Clone(),
+		predicates: append([]predicate.Collar{}, cq.predicates...),
+		withPet:    cq.withPet.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
 }
 
-// WithPets tells the query-builder to eager-load the nodes that are connected to
-// the "pets" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CategoryQuery) WithPets(opts ...func(*PetQuery)) *CategoryQuery {
+// WithPet tells the query-builder to eager-load the nodes that are connected to
+// the "pet" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CollarQuery) WithPet(opts ...func(*PetQuery)) *CollarQuery {
 	query := &PetQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withPets = query
+	cq.withPet = query
 	return cq
 }
 
@@ -291,17 +291,17 @@ func (cq *CategoryQuery) WithPets(opts ...func(*PetQuery)) *CategoryQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Color collar.Color `json:"color,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Category.Query().
-//		GroupBy(category.FieldName).
+//	client.Collar.Query().
+//		GroupBy(collar.FieldColor).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
-func (cq *CategoryQuery) GroupBy(field string, fields ...string) *CategoryGroupBy {
-	group := &CategoryGroupBy{config: cq.config}
+func (cq *CollarQuery) GroupBy(field string, fields ...string) *CollarGroupBy {
+	group := &CollarGroupBy{config: cq.config}
 	group.fields = append([]string{field}, fields...)
 	group.path = func(ctx context.Context) (prev *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -318,21 +318,21 @@ func (cq *CategoryQuery) GroupBy(field string, fields ...string) *CategoryGroupB
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Color collar.Color `json:"color,omitempty"`
 //	}
 //
-//	client.Category.Query().
-//		Select(category.FieldName).
+//	client.Collar.Query().
+//		Select(collar.FieldColor).
 //		Scan(ctx, &v)
 //
-func (cq *CategoryQuery) Select(fields ...string) *CategorySelect {
+func (cq *CollarQuery) Select(fields ...string) *CollarSelect {
 	cq.fields = append(cq.fields, fields...)
-	return &CategorySelect{CategoryQuery: cq}
+	return &CollarSelect{CollarQuery: cq}
 }
 
-func (cq *CategoryQuery) prepareQuery(ctx context.Context) error {
+func (cq *CollarQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range cq.fields {
-		if !category.ValidColumn(f) {
+		if !collar.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -346,16 +346,23 @@ func (cq *CategoryQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (cq *CategoryQuery) sqlAll(ctx context.Context) ([]*Category, error) {
+func (cq *CollarQuery) sqlAll(ctx context.Context) ([]*Collar, error) {
 	var (
-		nodes       = []*Category{}
+		nodes       = []*Collar{}
+		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
 		loadedTypes = [1]bool{
-			cq.withPets != nil,
+			cq.withPet != nil,
 		}
 	)
+	if cq.withPet != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, collar.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
-		node := &Category{config: cq.config}
+		node := &Collar{config: cq.config}
 		nodes = append(nodes, node)
 		return node.scanValues(columns)
 	}
@@ -374,67 +381,31 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context) ([]*Category, error) {
 		return nodes, nil
 	}
 
-	if query := cq.withPets; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		ids := make(map[uint64]*Category, len(nodes))
-		for _, node := range nodes {
-			ids[node.ID] = node
-			fks = append(fks, node.ID)
-			node.Edges.Pets = []*Pet{}
+	if query := cq.withPet; query != nil {
+		ids := make([]string, 0, len(nodes))
+		nodeids := make(map[string][]*Collar)
+		for i := range nodes {
+			if nodes[i].pet_collar == nil {
+				continue
+			}
+			fk := *nodes[i].pet_collar
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		var (
-			edgeids []string
-			edges   = make(map[string][]*Category)
-		)
-		_spec := &sqlgraph.EdgeQuerySpec{
-			Edge: &sqlgraph.EdgeSpec{
-				Inverse: false,
-				Table:   category.PetsTable,
-				Columns: category.PetsPrimaryKey,
-			},
-			Predicate: func(s *sql.Selector) {
-				s.Where(sql.InValues(category.PetsPrimaryKey[0], fks...))
-			},
-			ScanValues: func() [2]interface{} {
-				return [2]interface{}{new(sql.NullInt64), new(sql.NullString)}
-			},
-			Assign: func(out, in interface{}) error {
-				eout, ok := out.(*sql.NullInt64)
-				if !ok || eout == nil {
-					return fmt.Errorf("unexpected id value for edge-out")
-				}
-				ein, ok := in.(*sql.NullString)
-				if !ok || ein == nil {
-					return fmt.Errorf("unexpected id value for edge-in")
-				}
-				outValue := uint64(eout.Int64)
-				inValue := ein.String
-				node, ok := ids[outValue]
-				if !ok {
-					return fmt.Errorf("unexpected node id in edges: %v", outValue)
-				}
-				if _, ok := edges[inValue]; !ok {
-					edgeids = append(edgeids, inValue)
-				}
-				edges[inValue] = append(edges[inValue], node)
-				return nil
-			},
-		}
-		if err := sqlgraph.QueryEdges(ctx, cq.driver, _spec); err != nil {
-			return nil, fmt.Errorf(`query edges "pets": %w`, err)
-		}
-		query.Where(pet.IDIn(edgeids...))
+		query.Where(pet.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			nodes, ok := edges[n.ID]
+			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected "pets" node returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_collar" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Pets = append(nodes[i].Edges.Pets, n)
+				nodes[i].Edges.Pet = n
 			}
 		}
 	}
@@ -442,12 +413,12 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context) ([]*Category, error) {
 	return nodes, nil
 }
 
-func (cq *CategoryQuery) sqlCount(ctx context.Context) (int, error) {
+func (cq *CollarQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
 	return sqlgraph.CountNodes(ctx, cq.driver, _spec)
 }
 
-func (cq *CategoryQuery) sqlExist(ctx context.Context) (bool, error) {
+func (cq *CollarQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := cq.sqlCount(ctx)
 	if err != nil {
 		return false, fmt.Errorf("ent: check existence: %w", err)
@@ -455,14 +426,14 @@ func (cq *CategoryQuery) sqlExist(ctx context.Context) (bool, error) {
 	return n > 0, nil
 }
 
-func (cq *CategoryQuery) querySpec() *sqlgraph.QuerySpec {
+func (cq *CollarQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   category.Table,
-			Columns: category.Columns,
+			Table:   collar.Table,
+			Columns: collar.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: category.FieldID,
+				Type:   field.TypeInt,
+				Column: collar.FieldID,
 			},
 		},
 		From:   cq.sql,
@@ -473,9 +444,9 @@ func (cq *CategoryQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := cq.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, category.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, collar.FieldID)
 		for i := range fields {
-			if fields[i] != category.FieldID {
+			if fields[i] != collar.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -503,12 +474,12 @@ func (cq *CategoryQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (cq *CategoryQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (cq *CollarQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(cq.driver.Dialect())
-	t1 := builder.Table(category.Table)
+	t1 := builder.Table(collar.Table)
 	columns := cq.fields
 	if len(columns) == 0 {
-		columns = category.Columns
+		columns = collar.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if cq.sql != nil {
@@ -532,8 +503,8 @@ func (cq *CategoryQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// CategoryGroupBy is the group-by builder for Category entities.
-type CategoryGroupBy struct {
+// CollarGroupBy is the group-by builder for Collar entities.
+type CollarGroupBy struct {
 	config
 	fields []string
 	fns    []AggregateFunc
@@ -543,13 +514,13 @@ type CategoryGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (cgb *CategoryGroupBy) Aggregate(fns ...AggregateFunc) *CategoryGroupBy {
+func (cgb *CollarGroupBy) Aggregate(fns ...AggregateFunc) *CollarGroupBy {
 	cgb.fns = append(cgb.fns, fns...)
 	return cgb
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (cgb *CategoryGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (cgb *CollarGroupBy) Scan(ctx context.Context, v interface{}) error {
 	query, err := cgb.path(ctx)
 	if err != nil {
 		return err
@@ -559,7 +530,7 @@ func (cgb *CategoryGroupBy) Scan(ctx context.Context, v interface{}) error {
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (cgb *CategoryGroupBy) ScanX(ctx context.Context, v interface{}) {
+func (cgb *CollarGroupBy) ScanX(ctx context.Context, v interface{}) {
 	if err := cgb.Scan(ctx, v); err != nil {
 		panic(err)
 	}
@@ -567,9 +538,9 @@ func (cgb *CategoryGroupBy) ScanX(ctx context.Context, v interface{}) {
 
 // Strings returns list of strings from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *CategoryGroupBy) Strings(ctx context.Context) ([]string, error) {
+func (cgb *CollarGroupBy) Strings(ctx context.Context) ([]string, error) {
 	if len(cgb.fields) > 1 {
-		return nil, errors.New("ent: CategoryGroupBy.Strings is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: CollarGroupBy.Strings is not achievable when grouping more than 1 field")
 	}
 	var v []string
 	if err := cgb.Scan(ctx, &v); err != nil {
@@ -579,7 +550,7 @@ func (cgb *CategoryGroupBy) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (cgb *CategoryGroupBy) StringsX(ctx context.Context) []string {
+func (cgb *CollarGroupBy) StringsX(ctx context.Context) []string {
 	v, err := cgb.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -589,7 +560,7 @@ func (cgb *CategoryGroupBy) StringsX(ctx context.Context) []string {
 
 // String returns a single string from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *CategoryGroupBy) String(ctx context.Context) (_ string, err error) {
+func (cgb *CollarGroupBy) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = cgb.Strings(ctx); err != nil {
 		return
@@ -598,15 +569,15 @@ func (cgb *CategoryGroupBy) String(ctx context.Context) (_ string, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = fmt.Errorf("ent: CategoryGroupBy.Strings returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CollarGroupBy.Strings returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // StringX is like String, but panics if an error occurs.
-func (cgb *CategoryGroupBy) StringX(ctx context.Context) string {
+func (cgb *CollarGroupBy) StringX(ctx context.Context) string {
 	v, err := cgb.String(ctx)
 	if err != nil {
 		panic(err)
@@ -616,9 +587,9 @@ func (cgb *CategoryGroupBy) StringX(ctx context.Context) string {
 
 // Ints returns list of ints from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *CategoryGroupBy) Ints(ctx context.Context) ([]int, error) {
+func (cgb *CollarGroupBy) Ints(ctx context.Context) ([]int, error) {
 	if len(cgb.fields) > 1 {
-		return nil, errors.New("ent: CategoryGroupBy.Ints is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: CollarGroupBy.Ints is not achievable when grouping more than 1 field")
 	}
 	var v []int
 	if err := cgb.Scan(ctx, &v); err != nil {
@@ -628,7 +599,7 @@ func (cgb *CategoryGroupBy) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (cgb *CategoryGroupBy) IntsX(ctx context.Context) []int {
+func (cgb *CollarGroupBy) IntsX(ctx context.Context) []int {
 	v, err := cgb.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -638,7 +609,7 @@ func (cgb *CategoryGroupBy) IntsX(ctx context.Context) []int {
 
 // Int returns a single int from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *CategoryGroupBy) Int(ctx context.Context) (_ int, err error) {
+func (cgb *CollarGroupBy) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = cgb.Ints(ctx); err != nil {
 		return
@@ -647,15 +618,15 @@ func (cgb *CategoryGroupBy) Int(ctx context.Context) (_ int, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = fmt.Errorf("ent: CategoryGroupBy.Ints returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CollarGroupBy.Ints returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // IntX is like Int, but panics if an error occurs.
-func (cgb *CategoryGroupBy) IntX(ctx context.Context) int {
+func (cgb *CollarGroupBy) IntX(ctx context.Context) int {
 	v, err := cgb.Int(ctx)
 	if err != nil {
 		panic(err)
@@ -665,9 +636,9 @@ func (cgb *CategoryGroupBy) IntX(ctx context.Context) int {
 
 // Float64s returns list of float64s from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *CategoryGroupBy) Float64s(ctx context.Context) ([]float64, error) {
+func (cgb *CollarGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 	if len(cgb.fields) > 1 {
-		return nil, errors.New("ent: CategoryGroupBy.Float64s is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: CollarGroupBy.Float64s is not achievable when grouping more than 1 field")
 	}
 	var v []float64
 	if err := cgb.Scan(ctx, &v); err != nil {
@@ -677,7 +648,7 @@ func (cgb *CategoryGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (cgb *CategoryGroupBy) Float64sX(ctx context.Context) []float64 {
+func (cgb *CollarGroupBy) Float64sX(ctx context.Context) []float64 {
 	v, err := cgb.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -687,7 +658,7 @@ func (cgb *CategoryGroupBy) Float64sX(ctx context.Context) []float64 {
 
 // Float64 returns a single float64 from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *CategoryGroupBy) Float64(ctx context.Context) (_ float64, err error) {
+func (cgb *CollarGroupBy) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = cgb.Float64s(ctx); err != nil {
 		return
@@ -696,15 +667,15 @@ func (cgb *CategoryGroupBy) Float64(ctx context.Context) (_ float64, err error) 
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = fmt.Errorf("ent: CategoryGroupBy.Float64s returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CollarGroupBy.Float64s returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // Float64X is like Float64, but panics if an error occurs.
-func (cgb *CategoryGroupBy) Float64X(ctx context.Context) float64 {
+func (cgb *CollarGroupBy) Float64X(ctx context.Context) float64 {
 	v, err := cgb.Float64(ctx)
 	if err != nil {
 		panic(err)
@@ -714,9 +685,9 @@ func (cgb *CategoryGroupBy) Float64X(ctx context.Context) float64 {
 
 // Bools returns list of bools from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *CategoryGroupBy) Bools(ctx context.Context) ([]bool, error) {
+func (cgb *CollarGroupBy) Bools(ctx context.Context) ([]bool, error) {
 	if len(cgb.fields) > 1 {
-		return nil, errors.New("ent: CategoryGroupBy.Bools is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: CollarGroupBy.Bools is not achievable when grouping more than 1 field")
 	}
 	var v []bool
 	if err := cgb.Scan(ctx, &v); err != nil {
@@ -726,7 +697,7 @@ func (cgb *CategoryGroupBy) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (cgb *CategoryGroupBy) BoolsX(ctx context.Context) []bool {
+func (cgb *CollarGroupBy) BoolsX(ctx context.Context) []bool {
 	v, err := cgb.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -736,7 +707,7 @@ func (cgb *CategoryGroupBy) BoolsX(ctx context.Context) []bool {
 
 // Bool returns a single bool from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *CategoryGroupBy) Bool(ctx context.Context) (_ bool, err error) {
+func (cgb *CollarGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = cgb.Bools(ctx); err != nil {
 		return
@@ -745,15 +716,15 @@ func (cgb *CategoryGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = fmt.Errorf("ent: CategoryGroupBy.Bools returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CollarGroupBy.Bools returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // BoolX is like Bool, but panics if an error occurs.
-func (cgb *CategoryGroupBy) BoolX(ctx context.Context) bool {
+func (cgb *CollarGroupBy) BoolX(ctx context.Context) bool {
 	v, err := cgb.Bool(ctx)
 	if err != nil {
 		panic(err)
@@ -761,9 +732,9 @@ func (cgb *CategoryGroupBy) BoolX(ctx context.Context) bool {
 	return v
 }
 
-func (cgb *CategoryGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (cgb *CollarGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	for _, f := range cgb.fields {
-		if !category.ValidColumn(f) {
+		if !collar.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
 		}
 	}
@@ -780,7 +751,7 @@ func (cgb *CategoryGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	return sql.ScanSlice(rows, v)
 }
 
-func (cgb *CategoryGroupBy) sqlQuery() *sql.Selector {
+func (cgb *CollarGroupBy) sqlQuery() *sql.Selector {
 	selector := cgb.sql.Select()
 	aggregation := make([]string, 0, len(cgb.fns))
 	for _, fn := range cgb.fns {
@@ -801,33 +772,33 @@ func (cgb *CategoryGroupBy) sqlQuery() *sql.Selector {
 	return selector.GroupBy(selector.Columns(cgb.fields...)...)
 }
 
-// CategorySelect is the builder for selecting fields of Category entities.
-type CategorySelect struct {
-	*CategoryQuery
+// CollarSelect is the builder for selecting fields of Collar entities.
+type CollarSelect struct {
+	*CollarQuery
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (cs *CategorySelect) Scan(ctx context.Context, v interface{}) error {
+func (cs *CollarSelect) Scan(ctx context.Context, v interface{}) error {
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cs.sql = cs.CategoryQuery.sqlQuery(ctx)
+	cs.sql = cs.CollarQuery.sqlQuery(ctx)
 	return cs.sqlScan(ctx, v)
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (cs *CategorySelect) ScanX(ctx context.Context, v interface{}) {
+func (cs *CollarSelect) ScanX(ctx context.Context, v interface{}) {
 	if err := cs.Scan(ctx, v); err != nil {
 		panic(err)
 	}
 }
 
 // Strings returns list of strings from a selector. It is only allowed when selecting one field.
-func (cs *CategorySelect) Strings(ctx context.Context) ([]string, error) {
+func (cs *CollarSelect) Strings(ctx context.Context) ([]string, error) {
 	if len(cs.fields) > 1 {
-		return nil, errors.New("ent: CategorySelect.Strings is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: CollarSelect.Strings is not achievable when selecting more than 1 field")
 	}
 	var v []string
 	if err := cs.Scan(ctx, &v); err != nil {
@@ -837,7 +808,7 @@ func (cs *CategorySelect) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (cs *CategorySelect) StringsX(ctx context.Context) []string {
+func (cs *CollarSelect) StringsX(ctx context.Context) []string {
 	v, err := cs.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -846,7 +817,7 @@ func (cs *CategorySelect) StringsX(ctx context.Context) []string {
 }
 
 // String returns a single string from a selector. It is only allowed when selecting one field.
-func (cs *CategorySelect) String(ctx context.Context) (_ string, err error) {
+func (cs *CollarSelect) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = cs.Strings(ctx); err != nil {
 		return
@@ -855,15 +826,15 @@ func (cs *CategorySelect) String(ctx context.Context) (_ string, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = fmt.Errorf("ent: CategorySelect.Strings returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CollarSelect.Strings returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // StringX is like String, but panics if an error occurs.
-func (cs *CategorySelect) StringX(ctx context.Context) string {
+func (cs *CollarSelect) StringX(ctx context.Context) string {
 	v, err := cs.String(ctx)
 	if err != nil {
 		panic(err)
@@ -872,9 +843,9 @@ func (cs *CategorySelect) StringX(ctx context.Context) string {
 }
 
 // Ints returns list of ints from a selector. It is only allowed when selecting one field.
-func (cs *CategorySelect) Ints(ctx context.Context) ([]int, error) {
+func (cs *CollarSelect) Ints(ctx context.Context) ([]int, error) {
 	if len(cs.fields) > 1 {
-		return nil, errors.New("ent: CategorySelect.Ints is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: CollarSelect.Ints is not achievable when selecting more than 1 field")
 	}
 	var v []int
 	if err := cs.Scan(ctx, &v); err != nil {
@@ -884,7 +855,7 @@ func (cs *CategorySelect) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (cs *CategorySelect) IntsX(ctx context.Context) []int {
+func (cs *CollarSelect) IntsX(ctx context.Context) []int {
 	v, err := cs.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -893,7 +864,7 @@ func (cs *CategorySelect) IntsX(ctx context.Context) []int {
 }
 
 // Int returns a single int from a selector. It is only allowed when selecting one field.
-func (cs *CategorySelect) Int(ctx context.Context) (_ int, err error) {
+func (cs *CollarSelect) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = cs.Ints(ctx); err != nil {
 		return
@@ -902,15 +873,15 @@ func (cs *CategorySelect) Int(ctx context.Context) (_ int, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = fmt.Errorf("ent: CategorySelect.Ints returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CollarSelect.Ints returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // IntX is like Int, but panics if an error occurs.
-func (cs *CategorySelect) IntX(ctx context.Context) int {
+func (cs *CollarSelect) IntX(ctx context.Context) int {
 	v, err := cs.Int(ctx)
 	if err != nil {
 		panic(err)
@@ -919,9 +890,9 @@ func (cs *CategorySelect) IntX(ctx context.Context) int {
 }
 
 // Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
-func (cs *CategorySelect) Float64s(ctx context.Context) ([]float64, error) {
+func (cs *CollarSelect) Float64s(ctx context.Context) ([]float64, error) {
 	if len(cs.fields) > 1 {
-		return nil, errors.New("ent: CategorySelect.Float64s is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: CollarSelect.Float64s is not achievable when selecting more than 1 field")
 	}
 	var v []float64
 	if err := cs.Scan(ctx, &v); err != nil {
@@ -931,7 +902,7 @@ func (cs *CategorySelect) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (cs *CategorySelect) Float64sX(ctx context.Context) []float64 {
+func (cs *CollarSelect) Float64sX(ctx context.Context) []float64 {
 	v, err := cs.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -940,7 +911,7 @@ func (cs *CategorySelect) Float64sX(ctx context.Context) []float64 {
 }
 
 // Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
-func (cs *CategorySelect) Float64(ctx context.Context) (_ float64, err error) {
+func (cs *CollarSelect) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = cs.Float64s(ctx); err != nil {
 		return
@@ -949,15 +920,15 @@ func (cs *CategorySelect) Float64(ctx context.Context) (_ float64, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = fmt.Errorf("ent: CategorySelect.Float64s returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CollarSelect.Float64s returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // Float64X is like Float64, but panics if an error occurs.
-func (cs *CategorySelect) Float64X(ctx context.Context) float64 {
+func (cs *CollarSelect) Float64X(ctx context.Context) float64 {
 	v, err := cs.Float64(ctx)
 	if err != nil {
 		panic(err)
@@ -966,9 +937,9 @@ func (cs *CategorySelect) Float64X(ctx context.Context) float64 {
 }
 
 // Bools returns list of bools from a selector. It is only allowed when selecting one field.
-func (cs *CategorySelect) Bools(ctx context.Context) ([]bool, error) {
+func (cs *CollarSelect) Bools(ctx context.Context) ([]bool, error) {
 	if len(cs.fields) > 1 {
-		return nil, errors.New("ent: CategorySelect.Bools is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: CollarSelect.Bools is not achievable when selecting more than 1 field")
 	}
 	var v []bool
 	if err := cs.Scan(ctx, &v); err != nil {
@@ -978,7 +949,7 @@ func (cs *CategorySelect) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (cs *CategorySelect) BoolsX(ctx context.Context) []bool {
+func (cs *CollarSelect) BoolsX(ctx context.Context) []bool {
 	v, err := cs.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -987,7 +958,7 @@ func (cs *CategorySelect) BoolsX(ctx context.Context) []bool {
 }
 
 // Bool returns a single bool from a selector. It is only allowed when selecting one field.
-func (cs *CategorySelect) Bool(ctx context.Context) (_ bool, err error) {
+func (cs *CollarSelect) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = cs.Bools(ctx); err != nil {
 		return
@@ -996,15 +967,15 @@ func (cs *CategorySelect) Bool(ctx context.Context) (_ bool, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{category.Label}
+		err = &NotFoundError{collar.Label}
 	default:
-		err = fmt.Errorf("ent: CategorySelect.Bools returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CollarSelect.Bools returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // BoolX is like Bool, but panics if an error occurs.
-func (cs *CategorySelect) BoolX(ctx context.Context) bool {
+func (cs *CollarSelect) BoolX(ctx context.Context) bool {
 	v, err := cs.Bool(ctx)
 	if err != nil {
 		panic(err)
@@ -1012,7 +983,7 @@ func (cs *CategorySelect) BoolX(ctx context.Context) bool {
 	return v
 }
 
-func (cs *CategorySelect) sqlScan(ctx context.Context, v interface{}) error {
+func (cs *CollarSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
 	query, args := cs.sql.Query()
 	if err := cs.driver.Query(ctx, query, args, rows); err != nil {

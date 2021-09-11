@@ -129,7 +129,7 @@ func (pu *PetUpdate) SetChip(u uuid.UUID) *PetUpdate {
 }
 
 // SetBadgeID sets the "badge" edge to the Badge entity by ID.
-func (pu *PetUpdate) SetBadgeID(id int) *PetUpdate {
+func (pu *PetUpdate) SetBadgeID(id uint32) *PetUpdate {
 	pu.mutation.SetBadgeID(id)
 	return pu
 }
@@ -197,14 +197,14 @@ func (pu *PetUpdate) SetSpouse(p *Pet) *PetUpdate {
 }
 
 // AddToyIDs adds the "toys" edge to the Toy entity by IDs.
-func (pu *PetUpdate) AddToyIDs(ids ...int) *PetUpdate {
+func (pu *PetUpdate) AddToyIDs(ids ...uuid.UUID) *PetUpdate {
 	pu.mutation.AddToyIDs(ids...)
 	return pu
 }
 
 // AddToys adds the "toys" edges to the Toy entity.
 func (pu *PetUpdate) AddToys(t ...*Toy) *PetUpdate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -311,14 +311,14 @@ func (pu *PetUpdate) ClearToys() *PetUpdate {
 }
 
 // RemoveToyIDs removes the "toys" edge to Toy entities by IDs.
-func (pu *PetUpdate) RemoveToyIDs(ids ...int) *PetUpdate {
+func (pu *PetUpdate) RemoveToyIDs(ids ...uuid.UUID) *PetUpdate {
 	pu.mutation.RemoveToyIDs(ids...)
 	return pu
 }
 
 // RemoveToys removes "toys" edges to Toy entities.
 func (pu *PetUpdate) RemoveToys(t ...*Toy) *PetUpdate {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -597,7 +597,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint32,
 					Column: badge.FieldID,
 				},
 			},
@@ -613,7 +613,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint32,
 					Column: badge.FieldID,
 				},
 			},
@@ -737,7 +737,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: toy.FieldID,
 				},
 			},
@@ -753,7 +753,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: toy.FieldID,
 				},
 			},
@@ -772,7 +772,7 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: toy.FieldID,
 				},
 			},
@@ -1095,7 +1095,7 @@ func (puo *PetUpdateOne) SetChip(u uuid.UUID) *PetUpdateOne {
 }
 
 // SetBadgeID sets the "badge" edge to the Badge entity by ID.
-func (puo *PetUpdateOne) SetBadgeID(id int) *PetUpdateOne {
+func (puo *PetUpdateOne) SetBadgeID(id uint32) *PetUpdateOne {
 	puo.mutation.SetBadgeID(id)
 	return puo
 }
@@ -1163,14 +1163,14 @@ func (puo *PetUpdateOne) SetSpouse(p *Pet) *PetUpdateOne {
 }
 
 // AddToyIDs adds the "toys" edge to the Toy entity by IDs.
-func (puo *PetUpdateOne) AddToyIDs(ids ...int) *PetUpdateOne {
+func (puo *PetUpdateOne) AddToyIDs(ids ...uuid.UUID) *PetUpdateOne {
 	puo.mutation.AddToyIDs(ids...)
 	return puo
 }
 
 // AddToys adds the "toys" edges to the Toy entity.
 func (puo *PetUpdateOne) AddToys(t ...*Toy) *PetUpdateOne {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -1277,14 +1277,14 @@ func (puo *PetUpdateOne) ClearToys() *PetUpdateOne {
 }
 
 // RemoveToyIDs removes the "toys" edge to Toy entities by IDs.
-func (puo *PetUpdateOne) RemoveToyIDs(ids ...int) *PetUpdateOne {
+func (puo *PetUpdateOne) RemoveToyIDs(ids ...uuid.UUID) *PetUpdateOne {
 	puo.mutation.RemoveToyIDs(ids...)
 	return puo
 }
 
 // RemoveToys removes "toys" edges to Toy entities.
 func (puo *PetUpdateOne) RemoveToys(t ...*Toy) *PetUpdateOne {
-	ids := make([]int, len(t))
+	ids := make([]uuid.UUID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -1587,7 +1587,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint32,
 					Column: badge.FieldID,
 				},
 			},
@@ -1603,7 +1603,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint32,
 					Column: badge.FieldID,
 				},
 			},
@@ -1727,7 +1727,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: toy.FieldID,
 				},
 			},
@@ -1743,7 +1743,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: toy.FieldID,
 				},
 			},
@@ -1762,7 +1762,7 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: toy.FieldID,
 				},
 			},

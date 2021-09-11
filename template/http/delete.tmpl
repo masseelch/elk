@@ -15,14 +15,15 @@
 
             err = h.client.{{ $n.Name }}.DeleteOneID({{ if $n.ID.HasGoType }}{{ $n.ID.Type }}(id){{ else }}id{{ end }}).Exec(r.Context())
 
+            {{- $zapID := zapField $n.ID "id" }}
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found")
-                "Logs" (list (printf "zap.%s(\"%s\", id)" (zapField $n.ID) $n.ID.Name))
+                "Logs" (list $zapID)
                 "Default" (print "could not delete " $n.Name | kebab)
             -}}
 
-            l.Info("{{ $n.Name | kebab }} deleted", zap.{{ zapField $n.ID }}("{{ $n.ID.Name }}", id))
+            l.Info("{{ $n.Name | kebab }} deleted", {{ $zapID }})
             w.WriteHeader(http.StatusNoContent)
         }
     {{ end }}

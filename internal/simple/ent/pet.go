@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 )
@@ -23,11 +25,13 @@ type Pet struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PetQuery when eager-loading is set.
 	Edges      PetEdges `json:"edges"`
-	owner_pets *int
+	owner_pets *uuid.UUID
 }
 
 // PetEdges holds the relations/edges for other nodes in the graph.
 type PetEdges struct {
+	// Collar holds the value of the collar edge.
+	Collar *Collar `json:"collar,omitempty"`
 	// Categories holds the value of the categories edge.
 	Categories []*Category `json:"categories,omitempty"`
 	// Owner holds the value of the owner edge.
@@ -36,13 +40,27 @@ type PetEdges struct {
 	Friends []*Pet `json:"friends,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
+}
+
+// CollarOrErr returns the Collar value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PetEdges) CollarOrErr() (*Collar, error) {
+	if e.loadedTypes[0] {
+		if e.Collar == nil {
+			// The edge collar was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: collar.Label}
+		}
+		return e.Collar, nil
+	}
+	return nil, &NotLoadedError{edge: "collar"}
 }
 
 // CategoriesOrErr returns the Categories value or an error if the edge
 // was not loaded in eager-loading.
 func (e PetEdges) CategoriesOrErr() ([]*Category, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Categories, nil
 	}
 	return nil, &NotLoadedError{edge: "categories"}
@@ -51,7 +69,7 @@ func (e PetEdges) CategoriesOrErr() ([]*Category, error) {
 // OwnerOrErr returns the Owner value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PetEdges) OwnerOrErr() (*Owner, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Owner == nil {
 			// The edge owner was loaded in eager-loading,
 			// but was not found.
@@ -65,7 +83,7 @@ func (e PetEdges) OwnerOrErr() (*Owner, error) {
 // FriendsOrErr returns the Friends value or an error if the edge
 // was not loaded in eager-loading.
 func (e PetEdges) FriendsOrErr() ([]*Pet, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Friends, nil
 	}
 	return nil, &NotLoadedError{edge: "friends"}
@@ -81,7 +99,7 @@ func (*Pet) scanValues(columns []string) ([]interface{}, error) {
 		case pet.FieldID, pet.FieldName:
 			values[i] = new(sql.NullString)
 		case pet.ForeignKeys[0]: // owner_pets
-			values[i] = new(sql.NullInt64)
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Pet", columns[i])
 		}
@@ -116,15 +134,20 @@ func (pe *Pet) assignValues(columns []string, values []interface{}) error {
 				pe.Age = int(value.Int64)
 			}
 		case pet.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field owner_pets", value)
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field owner_pets", values[i])
 			} else if value.Valid {
-				pe.owner_pets = new(int)
-				*pe.owner_pets = int(value.Int64)
+				pe.owner_pets = new(uuid.UUID)
+				*pe.owner_pets = *value.S.(*uuid.UUID)
 			}
 		}
 	}
 	return nil
+}
+
+// QueryCollar queries the "collar" edge of the Pet entity.
+func (pe *Pet) QueryCollar() *CollarQuery {
+	return (&PetClient{config: pe.config}).QueryCollar(pe)
 }
 
 // QueryCategories queries the "categories" edge of the Pet entity.

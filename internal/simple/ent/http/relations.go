@@ -7,9 +7,11 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/simple/ent"
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	collar "github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"go.uber.org/zap"
@@ -20,12 +22,13 @@ import (
 func (h CategoryHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Pets"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id64, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
 		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
+	id := uint64(id64)
 	// Create the query to fetch the pets attached to this category
 	q := h.client.Category.Query().Where(category.ID(id)).QueryPets()
 	page := 1
@@ -56,15 +59,57 @@ func (h CategoryHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	easyjson.MarshalToHTTPResponseWriter(NewPet359800019Views(es), w)
 }
 
+// Pet fetches the ent.pet attached to the ent.Collar
+// identified by a given url-parameter from the database and renders it to the client.
+func (h CollarHandler) Pet(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Pet"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		BadRequest(w, "id must be an integer")
+		return
+	}
+	// Create the query to fetch the pet attached to this collar
+	q := h.client.Collar.Query().Where(collar.ID(id)).QueryPet()
+	// Eager load edges that are required on read operation.
+	q.WithOwner().WithFriends(func(q *ent.PetQuery) {
+		q.WithOwner().WithFriends(func(q *ent.PetQuery) {
+			q.WithOwner().WithFriends(func(q *ent.PetQuery) {
+				q.WithOwner()
+			})
+		})
+	})
+	e, err := q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			BadRequest(w, msg)
+		default:
+			l.Error("could-not-read-collar", zap.Error(err), zap.Int("id", id))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	l.Info("pet rendered", zap.String("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewPet1876743790View(e), w)
+}
+
 // Pets fetches the ent.pets attached to the ent.Owner
 // identified by a given url-parameter from the database and renders it to the client.
 func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Pets"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be a valid UUID")
 		return
 	}
 	// Create the query to fetch the pets attached to this owner
@@ -95,6 +140,36 @@ func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
 	easyjson.MarshalToHTTPResponseWriter(NewPet359800019Views(es), w)
+}
+
+// Collar fetches the ent.collar attached to the ent.Pet
+// identified by a given url-parameter from the database and renders it to the client.
+func (h PetHandler) Collar(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Collar"))
+	// ID is URL parameter.
+	var err error
+	id := chi.URLParam(r, "id")
+	// Create the query to fetch the collar attached to this pet
+	q := h.client.Pet.Query().Where(pet.ID(id)).QueryCollar()
+	e, err := q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.String("id", id))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.String("id", id))
+			BadRequest(w, msg)
+		default:
+			l.Error("could-not-read-pet", zap.Error(err), zap.String("id", id))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	l.Info("collar rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880View(e), w)
 }
 
 // Categories fetches the ent.categories attached to the ent.Pet
@@ -160,7 +235,7 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	l.Info("owner rendered", zap.Int("id", e.ID))
+	l.Info("owner rendered", zap.String("id", e.ID.String()))
 	easyjson.MarshalToHTTPResponseWriter(NewOwner139708381View(e), w)
 }
 

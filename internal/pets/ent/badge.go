@@ -15,7 +15,7 @@ import (
 type Badge struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uint32 `json:"id,omitempty"`
 	// Color holds the value of the "color" field.
 	Color badge.Color `json:"color,omitempty"`
 	// Material holds the value of the "material" field.
@@ -80,7 +80,7 @@ func (b *Badge) assignValues(columns []string, values []interface{}) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			b.ID = int(value.Int64)
+			b.ID = uint32(value.Int64)
 		case badge.FieldColor:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field color", values[i])

@@ -52,19 +52,19 @@ func (h BadgeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Info(msg, zap.Error(err), zap.Uint32("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Error(msg, zap.Error(err), zap.Uint32("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read badge", zap.Error(err), zap.Int("id", e.ID))
+			l.Error("could not read badge", zap.Error(err), zap.Uint32("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("badge rendered", zap.Int("id", e.ID))
+	l.Info("badge rendered", zap.Uint32("id", e.ID))
 	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257View(e), w)
 }
 
@@ -1338,18 +1338,18 @@ func (h ToyHandler) Create(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Info(msg, zap.Error(err), zap.String("id", e.ID.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Error(msg, zap.Error(err), zap.String("id", e.ID.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read toy", zap.Error(err), zap.Int("id", e.ID))
+			l.Error("could not read toy", zap.Error(err), zap.String("id", e.ID.String()))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("toy rendered", zap.Int("id", e.ID))
+	l.Info("toy rendered", zap.String("id", e.ID.String()))
 	easyjson.MarshalToHTTPResponseWriter(NewToy36157710View(e), w)
 }

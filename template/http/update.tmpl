@@ -38,17 +38,18 @@
             // Store in database.
             e, err := b.Save(r.Context())
 
+            {{- $zapID := zapField $n.ID "id" }}
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found" "not-singular")
-                "Logs" (list (printf "zap.%s(\"%s\", id)" (zapField $n.ID) $n.ID.Name))
+                "Logs" (list $zapID)
                 "Default" (print "could not update " $n.Name | kebab)
             -}}
 
             // Reload entry.
             q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(e.{{ $n.ID.StructField }}))
 
-            {{- with edges $n "create" }}
+            {{- with edges $n "update" }}
                 // Eager load edges that are required on update operation.
                 q{{ .EntQuery }}
             {{- end }}
@@ -57,11 +58,11 @@
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found" "not-singular")
-                "Logs" (list (printf "zap.%s(\"%s\", id)" (zapField $n.ID) $n.ID.Name))
+                "Logs" (list $zapID)
                 "Default" (print "could not read " $n.Name | kebab) " after update"
             -}}
 
-            l.Info("{{ $n.Name | kebab }} rendered", zap.{{ zapField $n.ID }}("{{ $n.ID.Name }}", {{ $n.ID.BasicType (print "e." $n.ID.StructField) }}))
+            l.Info("{{ $n.Name | kebab }} rendered", {{ $zapID }})
             easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.Elk.UpdateGroups | stringSlice)).Name }}(e), w)
         }
     {{ end }}

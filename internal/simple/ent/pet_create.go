@@ -9,7 +9,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 )
@@ -47,15 +49,34 @@ func (pc *PetCreate) SetNillableID(s *string) *PetCreate {
 	return pc
 }
 
+// SetCollarID sets the "collar" edge to the Collar entity by ID.
+func (pc *PetCreate) SetCollarID(id int) *PetCreate {
+	pc.mutation.SetCollarID(id)
+	return pc
+}
+
+// SetNillableCollarID sets the "collar" edge to the Collar entity by ID if the given value is not nil.
+func (pc *PetCreate) SetNillableCollarID(id *int) *PetCreate {
+	if id != nil {
+		pc = pc.SetCollarID(*id)
+	}
+	return pc
+}
+
+// SetCollar sets the "collar" edge to the Collar entity.
+func (pc *PetCreate) SetCollar(c *Collar) *PetCreate {
+	return pc.SetCollarID(c.ID)
+}
+
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
-func (pc *PetCreate) AddCategoryIDs(ids ...int) *PetCreate {
+func (pc *PetCreate) AddCategoryIDs(ids ...uint64) *PetCreate {
 	pc.mutation.AddCategoryIDs(ids...)
 	return pc
 }
 
 // AddCategories adds the "categories" edges to the Category entity.
 func (pc *PetCreate) AddCategories(c ...*Category) *PetCreate {
-	ids := make([]int, len(c))
+	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -63,13 +84,13 @@ func (pc *PetCreate) AddCategories(c ...*Category) *PetCreate {
 }
 
 // SetOwnerID sets the "owner" edge to the Owner entity by ID.
-func (pc *PetCreate) SetOwnerID(id int) *PetCreate {
+func (pc *PetCreate) SetOwnerID(id uuid.UUID) *PetCreate {
 	pc.mutation.SetOwnerID(id)
 	return pc
 }
 
 // SetNillableOwnerID sets the "owner" edge to the Owner entity by ID if the given value is not nil.
-func (pc *PetCreate) SetNillableOwnerID(id *int) *PetCreate {
+func (pc *PetCreate) SetNillableOwnerID(id *uuid.UUID) *PetCreate {
 	if id != nil {
 		pc = pc.SetOwnerID(*id)
 	}
@@ -229,6 +250,25 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 		})
 		_node.Age = value
 	}
+	if nodes := pc.mutation.CollarIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   pet.CollarTable,
+			Columns: []string{pet.CollarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: collar.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := pc.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -238,7 +278,7 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUint64,
 					Column: category.FieldID,
 				},
 			},
@@ -257,7 +297,7 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: owner.FieldID,
 				},
 			},

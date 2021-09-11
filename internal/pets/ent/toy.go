@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/pets/ent/pet"
 	"github.com/masseelch/elk/internal/pets/ent/toy"
 )
@@ -15,7 +16,7 @@ import (
 type Toy struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// Color holds the value of the "color" field.
 	Color toy.Color `json:"color,omitempty"`
 	// Material holds the value of the "material" field.
@@ -56,10 +57,10 @@ func (*Toy) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case toy.FieldID:
-			values[i] = new(sql.NullInt64)
 		case toy.FieldColor, toy.FieldMaterial, toy.FieldTitle:
 			values[i] = new(sql.NullString)
+		case toy.FieldID:
+			values[i] = new(uuid.UUID)
 		case toy.ForeignKeys[0]: // pet_toys
 			values[i] = new(sql.NullInt64)
 		default:
@@ -78,11 +79,11 @@ func (t *Toy) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case toy.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				t.ID = *value
 			}
-			t.ID = int(value.Int64)
 		case toy.FieldColor:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field color", values[i])

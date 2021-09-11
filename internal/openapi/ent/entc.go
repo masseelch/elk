@@ -9,7 +9,6 @@ import (
 	"github.com/masseelch/elk"
 	"github.com/masseelch/elk/spec"
 	"log"
-	"os"
 )
 
 func main() {
@@ -29,7 +28,6 @@ func main() {
 			elk.SpecSecurity([]map[string][]string{
 				{"apiKeySample": {}},
 			}),
-			elk.SpecDump(os.Stdout),
 		),
 	)
 	if err != nil {

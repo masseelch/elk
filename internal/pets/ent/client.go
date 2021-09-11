@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/pets/ent/migrate"
 
 	"github.com/masseelch/elk/internal/pets/ent/badge"
@@ -183,7 +184,7 @@ func (c *BadgeClient) UpdateOne(b *Badge) *BadgeUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *BadgeClient) UpdateOneID(id int) *BadgeUpdateOne {
+func (c *BadgeClient) UpdateOneID(id uint32) *BadgeUpdateOne {
 	mutation := newBadgeMutation(c.config, OpUpdateOne, withBadgeID(id))
 	return &BadgeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -200,7 +201,7 @@ func (c *BadgeClient) DeleteOne(b *Badge) *BadgeDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *BadgeClient) DeleteOneID(id int) *BadgeDeleteOne {
+func (c *BadgeClient) DeleteOneID(id uint32) *BadgeDeleteOne {
 	builder := c.Delete().Where(badge.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -215,12 +216,12 @@ func (c *BadgeClient) Query() *BadgeQuery {
 }
 
 // Get returns a Badge entity by its id.
-func (c *BadgeClient) Get(ctx context.Context, id int) (*Badge, error) {
+func (c *BadgeClient) Get(ctx context.Context, id uint32) (*Badge, error) {
 	return c.Query().Where(badge.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *BadgeClient) GetX(ctx context.Context, id int) *Badge {
+func (c *BadgeClient) GetX(ctx context.Context, id uint32) *Badge {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -629,7 +630,7 @@ func (c *ToyClient) UpdateOne(t *Toy) *ToyUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ToyClient) UpdateOneID(id int) *ToyUpdateOne {
+func (c *ToyClient) UpdateOneID(id uuid.UUID) *ToyUpdateOne {
 	mutation := newToyMutation(c.config, OpUpdateOne, withToyID(id))
 	return &ToyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -646,7 +647,7 @@ func (c *ToyClient) DeleteOne(t *Toy) *ToyDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *ToyClient) DeleteOneID(id int) *ToyDeleteOne {
+func (c *ToyClient) DeleteOneID(id uuid.UUID) *ToyDeleteOne {
 	builder := c.Delete().Where(toy.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -661,12 +662,12 @@ func (c *ToyClient) Query() *ToyQuery {
 }
 
 // Get returns a Toy entity by its id.
-func (c *ToyClient) Get(ctx context.Context, id int) (*Toy, error) {
+func (c *ToyClient) Get(ctx context.Context, id uuid.UUID) (*Toy, error) {
 	return c.Query().Where(toy.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ToyClient) GetX(ctx context.Context, id int) *Toy {
+func (c *ToyClient) GetX(ctx context.Context, id uuid.UUID) *Toy {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

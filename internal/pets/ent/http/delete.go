@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/pets/ent"
 	"go.uber.org/zap"
 )
@@ -15,26 +16,27 @@ import (
 func (h BadgeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Delete"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id64, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
 		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
+	id := uint32(id64)
 	err = h.client.Badge.DeleteOneID(id).Exec(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Uint32("id", id))
 			NotFound(w, msg)
 		default:
-			l.Error("could-not-delete-badge", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-delete-badge", zap.Error(err), zap.Uint32("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("badge deleted", zap.Int("id", id))
+	l.Info("badge deleted", zap.Uint32("id", id))
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -45,7 +47,7 @@ func (h PetHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	err = h.client.Pet.DeleteOneID(id).Exec(r.Context())
@@ -72,7 +74,7 @@ func (h PlayGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	err = h.client.PlayGroup.DeleteOneID(id).Exec(r.Context())
@@ -96,25 +98,25 @@ func (h PlayGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 func (h ToyHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Delete"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be a valid UUID")
 		return
 	}
-	err = h.client.Toy.DeleteOneID(id).Exec(r.Context())
+	err = h.client.Toy.DeleteOneID(uuid.UUID(id)).Exec(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id.String()))
 			NotFound(w, msg)
 		default:
-			l.Error("could-not-delete-toy", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-delete-toy", zap.Error(err), zap.String("id", id.String()))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("toy deleted", zap.Int("id", id))
+	l.Info("toy deleted", zap.String("id", id.String()))
 	w.WriteHeader(http.StatusNoContent)
 }

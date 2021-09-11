@@ -11,6 +11,8 @@ const (
 	FieldName = "name"
 	// FieldAge holds the string denoting the age field in the database.
 	FieldAge = "age"
+	// EdgeCollar holds the string denoting the collar edge name in mutations.
+	EdgeCollar = "collar"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
@@ -19,6 +21,13 @@ const (
 	EdgeFriends = "friends"
 	// Table holds the table name of the pet in the database.
 	Table = "pets"
+	// CollarTable is the table that holds the collar relation/edge.
+	CollarTable = "collars"
+	// CollarInverseTable is the table name for the Collar entity.
+	// It exists in this package in order to avoid circular dependency with the "collar" package.
+	CollarInverseTable = "collars"
+	// CollarColumn is the table column denoting the collar relation/edge.
+	CollarColumn = "pet_collar"
 	// CategoriesTable is the table that holds the categories relation/edge. The primary key declared below.
 	CategoriesTable = "category_pets"
 	// CategoriesInverseTable is the table name for the Category entity.

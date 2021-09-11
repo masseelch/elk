@@ -9,25 +9,25 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/predicate"
 )
 
-// CategoryDelete is the builder for deleting a Category entity.
-type CategoryDelete struct {
+// CollarDelete is the builder for deleting a Collar entity.
+type CollarDelete struct {
 	config
 	hooks    []Hook
-	mutation *CategoryMutation
+	mutation *CollarMutation
 }
 
-// Where appends a list predicates to the CategoryDelete builder.
-func (cd *CategoryDelete) Where(ps ...predicate.Category) *CategoryDelete {
+// Where appends a list predicates to the CollarDelete builder.
+func (cd *CollarDelete) Where(ps ...predicate.Collar) *CollarDelete {
 	cd.mutation.Where(ps...)
 	return cd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (cd *CategoryDelete) Exec(ctx context.Context) (int, error) {
+func (cd *CollarDelete) Exec(ctx context.Context) (int, error) {
 	var (
 		err      error
 		affected int
@@ -36,7 +36,7 @@ func (cd *CategoryDelete) Exec(ctx context.Context) (int, error) {
 		affected, err = cd.sqlExec(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CategoryMutation)
+			mutation, ok := m.(*CollarMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
@@ -59,7 +59,7 @@ func (cd *CategoryDelete) Exec(ctx context.Context) (int, error) {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cd *CategoryDelete) ExecX(ctx context.Context) int {
+func (cd *CollarDelete) ExecX(ctx context.Context) int {
 	n, err := cd.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -67,13 +67,13 @@ func (cd *CategoryDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (cd *CategoryDelete) sqlExec(ctx context.Context) (int, error) {
+func (cd *CollarDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := &sqlgraph.DeleteSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table: category.Table,
+			Table: collar.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: category.FieldID,
+				Type:   field.TypeInt,
+				Column: collar.FieldID,
 			},
 		},
 	}
@@ -87,25 +87,25 @@ func (cd *CategoryDelete) sqlExec(ctx context.Context) (int, error) {
 	return sqlgraph.DeleteNodes(ctx, cd.driver, _spec)
 }
 
-// CategoryDeleteOne is the builder for deleting a single Category entity.
-type CategoryDeleteOne struct {
-	cd *CategoryDelete
+// CollarDeleteOne is the builder for deleting a single Collar entity.
+type CollarDeleteOne struct {
+	cd *CollarDelete
 }
 
 // Exec executes the deletion query.
-func (cdo *CategoryDeleteOne) Exec(ctx context.Context) error {
+func (cdo *CollarDeleteOne) Exec(ctx context.Context) error {
 	n, err := cdo.cd.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{category.Label}
+		return &NotFoundError{collar.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cdo *CategoryDeleteOne) ExecX(ctx context.Context) {
+func (cdo *CollarDeleteOne) ExecX(ctx context.Context) {
 	cdo.cd.ExecX(ctx)
 }

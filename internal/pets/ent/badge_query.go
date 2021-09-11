@@ -110,8 +110,8 @@ func (bq *BadgeQuery) FirstX(ctx context.Context) *Badge {
 
 // FirstID returns the first Badge ID from the query.
 // Returns a *NotFoundError when no Badge ID was found.
-func (bq *BadgeQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (bq *BadgeQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = bq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +123,7 @@ func (bq *BadgeQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (bq *BadgeQuery) FirstIDX(ctx context.Context) int {
+func (bq *BadgeQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := bq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +161,8 @@ func (bq *BadgeQuery) OnlyX(ctx context.Context) *Badge {
 // OnlyID is like Only, but returns the only Badge ID in the query.
 // Returns a *NotSingularError when exactly one Badge ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (bq *BadgeQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (bq *BadgeQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = bq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +178,7 @@ func (bq *BadgeQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (bq *BadgeQuery) OnlyIDX(ctx context.Context) int {
+func (bq *BadgeQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := bq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +204,8 @@ func (bq *BadgeQuery) AllX(ctx context.Context) []*Badge {
 }
 
 // IDs executes the query and returns a list of Badge IDs.
-func (bq *BadgeQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (bq *BadgeQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := bq.Select(badge.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +213,7 @@ func (bq *BadgeQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (bq *BadgeQuery) IDsX(ctx context.Context) []int {
+func (bq *BadgeQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := bq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -432,7 +432,7 @@ func (bq *BadgeQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   badge.Table,
 			Columns: badge.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: badge.FieldID,
 			},
 		},

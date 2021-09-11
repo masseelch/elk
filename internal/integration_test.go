@@ -59,32 +59,41 @@ func testInvalidJson(t *testing.T) []*test {
 }
 
 func testMalformedId(t *testing.T) []*test {
-	const path = "/pets/invalid"
 	name := prefixNameFn("malformed id _ ")
-	check := defaultCheckFn(http.StatusBadRequest, mustEncode(t, elkhttp.ErrResponse{
-		Code:   http.StatusBadRequest,
-		Status: http.StatusText(http.StatusBadRequest),
-		Errors: "id must be an integer greater zero",
-	}), nil)
+	check := func(err string) checkFn {
+		return defaultCheckFn(http.StatusBadRequest, mustEncode(t, elkhttp.ErrResponse{
+			Code:   http.StatusBadRequest,
+			Status: http.StatusText(http.StatusBadRequest),
+			Errors: err,
+		}), nil)
+	}
 	return []*test{
 		{
-			name:  name("read"),
-			req:   defaultReqFn(http.MethodGet, path, nil, nil),
-			check: check,
+			name:  name("integer id _ read"),
+			req:   defaultReqFn(http.MethodGet, "/pets/invalid", nil, nil),
+			check: check("id must be an integer"),
 		}, {
-			name:  name("update"),
-			req:   defaultReqFn(http.MethodPatch, path, nil, nil),
-			check: check,
+			name:  name("integer id _ update"),
+			req:   defaultReqFn(http.MethodPatch, "/pets/invalid", nil, nil),
+			check: check("id must be an integer"),
 		}, {
-			name:  name("delete"),
-			req:   defaultReqFn(http.MethodDelete, path, nil, nil),
-			check: check,
+			name:  name("integer id _ delete"),
+			req:   defaultReqFn(http.MethodDelete, "/pets/invalid", nil, nil),
+			check: check("id must be an integer"),
+		}, {
+			name:  name("uuid id _ read"),
+			req:   defaultReqFn(http.MethodGet, "/toys/invalid", nil, nil),
+			check: check("id must be a valid UUID"),
+		}, {
+			name:  name("uint64 id _ read"),
+			req:   defaultReqFn(http.MethodPatch, "/badges/invalid", nil, nil),
+			check: check("id must be an integer greater zero"),
 		},
 	} // TODO: logs
 }
 
 func testNotFound(t *testing.T) []*test {
-	const path = "/toys/10000"
+	const path = "/toys/31e19ad2-babd-4a8e-9a39-9a51b1d7af5d"
 	name := prefixNameFn("not found _ ")
 	check := defaultCheckFn(http.StatusNotFound, mustEncode(t, elkhttp.ErrResponse{
 		Code:   http.StatusNotFound,

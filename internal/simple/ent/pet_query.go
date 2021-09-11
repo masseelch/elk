@@ -12,7 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"github.com/masseelch/elk/internal/simple/ent/predicate"
@@ -28,6 +30,7 @@ type PetQuery struct {
 	fields     []string
 	predicates []predicate.Pet
 	// eager-loading edges.
+	withCollar     *CollarQuery
 	withCategories *CategoryQuery
 	withOwner      *OwnerQuery
 	withFriends    *PetQuery
@@ -66,6 +69,28 @@ func (pq *PetQuery) Unique(unique bool) *PetQuery {
 func (pq *PetQuery) Order(o ...OrderFunc) *PetQuery {
 	pq.order = append(pq.order, o...)
 	return pq
+}
+
+// QueryCollar chains the current query on the "collar" edge.
+func (pq *PetQuery) QueryCollar() *CollarQuery {
+	query := &CollarQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, selector),
+			sqlgraph.To(collar.Table, collar.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, pet.CollarTable, pet.CollarColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryCategories chains the current query on the "categories" edge.
@@ -315,6 +340,7 @@ func (pq *PetQuery) Clone() *PetQuery {
 		offset:         pq.offset,
 		order:          append([]OrderFunc{}, pq.order...),
 		predicates:     append([]predicate.Pet{}, pq.predicates...),
+		withCollar:     pq.withCollar.Clone(),
 		withCategories: pq.withCategories.Clone(),
 		withOwner:      pq.withOwner.Clone(),
 		withFriends:    pq.withFriends.Clone(),
@@ -322,6 +348,17 @@ func (pq *PetQuery) Clone() *PetQuery {
 		sql:  pq.sql.Clone(),
 		path: pq.path,
 	}
+}
+
+// WithCollar tells the query-builder to eager-load the nodes that are connected to
+// the "collar" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PetQuery) WithCollar(opts ...func(*CollarQuery)) *PetQuery {
+	query := &CollarQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withCollar = query
+	return pq
 }
 
 // WithCategories tells the query-builder to eager-load the nodes that are connected to
@@ -423,7 +460,8 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		nodes       = []*Pet{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
+			pq.withCollar != nil,
 			pq.withCategories != nil,
 			pq.withOwner != nil,
 			pq.withFriends != nil,
@@ -455,6 +493,34 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 		return nodes, nil
 	}
 
+	if query := pq.withCollar; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[string]*Pet)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.withFKs = true
+		query.Where(predicate.Collar(func(s *sql.Selector) {
+			s.Where(sql.InValues(pet.CollarColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.pet_collar
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "pet_collar" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "pet_collar" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Collar = n
+		}
+	}
+
 	if query := pq.withCategories; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		ids := make(map[string]*Pet, len(nodes))
@@ -464,8 +530,8 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 			node.Edges.Categories = []*Category{}
 		}
 		var (
-			edgeids []int
-			edges   = make(map[int][]*Pet)
+			edgeids []uint64
+			edges   = make(map[uint64][]*Pet)
 		)
 		_spec := &sqlgraph.EdgeQuerySpec{
 			Edge: &sqlgraph.EdgeSpec{
@@ -489,7 +555,7 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 					return fmt.Errorf("unexpected id value for edge-in")
 				}
 				outValue := eout.String
-				inValue := int(ein.Int64)
+				inValue := uint64(ein.Int64)
 				node, ok := ids[outValue]
 				if !ok {
 					return fmt.Errorf("unexpected node id in edges: %v", outValue)
@@ -521,8 +587,8 @@ func (pq *PetQuery) sqlAll(ctx context.Context) ([]*Pet, error) {
 	}
 
 	if query := pq.withOwner; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Pet)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Pet)
 		for i := range nodes {
 			if nodes[i].owner_pets == nil {
 				continue

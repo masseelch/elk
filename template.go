@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/entc/gen"
 	"fmt"
 	"github.com/stoewer/go-strcase"
+	"strings"
 	"text/template"
 )
 
@@ -17,6 +18,7 @@ var (
 		"edges":           edges,
 		"filterEdges":     filterEdges,
 		"filterNodes":     filterNodes,
+		"imports":         imports,
 		"kebab":           strcase.KebabCase,
 		"needsValidation": needsValidation,
 		"nodeOperations":  nodeOperations,
@@ -203,13 +205,35 @@ func xextend(v interface{}, kv ...interface{}) (interface{}, error) {
 	}
 }
 
-// zapField returns the method-name to use for logging fields.
-func zapField(f *gen.Field) (string, error) {
+// zapField returns an expression to log the given field to zap.
+func zapField(f *gen.Field, ident string) (string, error) {
 	switch {
 	case f.IsString():
-		return "String", nil
-	case f.IsInt():
-		return "Int", nil
+		return fmt.Sprintf(`zap.String("%s", %s)`, f.Name, f.BasicType(ident)), nil
+	case f.IsUUID(), f.Type.Stringer():
+		return fmt.Sprintf(`zap.String("%s", %s.String())`, f.Name, ident), nil
+	case f.Type.Numeric():
+		return fmt.Sprintf(`zap.%s("%s", %s)`, strings.Title(f.Type.String()), f.Name, ident), nil
 	}
 	return "", fmt.Errorf("elk: invalid ID-Type %q", f.Type.String())
+}
+
+func imports(g *gen.Graph) []string {
+	m := make(map[string]struct{})
+	for _, n := range g.Nodes {
+		fs := n.Fields
+		if n.ID.UserDefined {
+			fs = append(fs, n.ID)
+			for _, f := range fs {
+				if f.Type.PkgPath != "" {
+					m[f.Type.PkgPath] = struct{}{}
+				}
+			}
+		}
+	}
+	i := make([]string, 0, len(m))
+	for k := range m {
+		i = append(i, k)
+	}
+	return i
 }

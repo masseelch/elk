@@ -7,9 +7,11 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/simple/ent"
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	collar "github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"go.uber.org/zap"
@@ -19,12 +21,13 @@ import (
 func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id64, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
 		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
+	id := uint64(id64)
 	// Get the post data.
 	var d CategoryUpdateRequest
 	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
@@ -46,6 +49,73 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Uint64("id", id))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Uint64("id", id))
+			BadRequest(w, msg)
+		default:
+			l.Error("could-not-update-category", zap.Error(err), zap.Uint64("id", id))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	// Reload entry.
+	q := h.client.Category.Query().Where(category.ID(e.ID))
+	e, err = q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Uint64("id", id))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Uint64("id", id))
+			BadRequest(w, msg)
+		default:
+			l.Error("could-not-read-category", zap.Error(err), zap.Uint64("id", id))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	l.Info("category rendered", zap.Uint64("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewCategory4094953247View(e), w)
+}
+
+// Update updates a given ent.Collar and saves the changes to the database.
+func (h CollarHandler) Update(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Update"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		BadRequest(w, "id must be an integer")
+		return
+	}
+	// Get the post data.
+	var d CollarUpdateRequest
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
+		l.Error("error decoding json", zap.Error(err))
+		BadRequest(w, "invalid json string")
+		return
+	}
+	// Save the data.
+	b := h.client.Collar.UpdateOneID(id)
+	if d.Color != nil {
+		b.SetColor(*d.Color)
+	}
+	if d.Pet != nil {
+		b.SetPetID(*d.Pet)
+
+	}
+	// Store in database.
+	e, err := b.Save(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
@@ -53,13 +123,13 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 			l.Error(msg, zap.Error(err), zap.Int("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-update-category", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-update-collar", zap.Error(err), zap.Int("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
 	// Reload entry.
-	q := h.client.Category.Query().Where(category.ID(e.ID))
+	q := h.client.Collar.Query().Where(collar.ID(e.ID))
 	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
@@ -72,23 +142,23 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 			l.Error(msg, zap.Error(err), zap.Int("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-read-category", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-read-collar", zap.Error(err), zap.Int("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("category rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewCategory4094953247View(e), w)
+	l.Info("collar rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880View(e), w)
 }
 
 // Update updates a given ent.Owner and saves the changes to the database.
 func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be a valid UUID")
 		return
 	}
 	// Get the post data.
@@ -99,7 +169,7 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Save the data.
-	b := h.client.Owner.UpdateOneID(id)
+	b := h.client.Owner.UpdateOneID(uuid.UUID(id))
 	if d.Name != nil {
 		b.SetName(*d.Name)
 	}
@@ -115,14 +185,14 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.String("id", id.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-update-owner", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-update-owner", zap.Error(err), zap.String("id", id.String()))
 			InternalServerError(w, nil)
 		}
 		return
@@ -134,19 +204,19 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.String("id", id.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-read-owner", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-read-owner", zap.Error(err), zap.String("id", id.String()))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("owner rendered", zap.Int("id", e.ID))
+	l.Info("owner rendered", zap.String("id", id.String()))
 	easyjson.MarshalToHTTPResponseWriter(NewOwner139708381View(e), w)
 }
 
@@ -170,6 +240,10 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	if d.Age != nil {
 		b.SetAge(*d.Age)
+	}
+	if d.Collar != nil {
+		b.SetCollarID(*d.Collar)
+
 	}
 	if d.Categories != nil {
 		b.ClearCategories().AddCategoryIDs(d.Categories...)
@@ -218,6 +292,6 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	l.Info("pet rendered", zap.String("id", e.ID))
+	l.Info("pet rendered", zap.String("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewPet359800019View(e), w)
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
 	badge "github.com/masseelch/elk/internal/pets/ent/badge"
@@ -21,12 +22,13 @@ import (
 func (h BadgeHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id64, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
 		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
+	id := uint32(id64)
 	// Get the post data.
 	var d BadgeUpdateRequest
 	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
@@ -52,14 +54,14 @@ func (h BadgeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Uint32("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.Uint32("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-update-badge", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-update-badge", zap.Error(err), zap.Uint32("id", id))
 			InternalServerError(w, nil)
 		}
 		return
@@ -71,19 +73,19 @@ func (h BadgeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Uint32("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.Uint32("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-read-badge", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-read-badge", zap.Error(err), zap.Uint32("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("badge rendered", zap.Int("id", e.ID))
+	l.Info("badge rendered", zap.Uint32("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257View(e), w)
 }
 
@@ -94,7 +96,7 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Get the post data.
@@ -215,1052 +217,6 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	// Reload entry.
 	q := h.client.Pet.Query().Where(pet.ID(e.ID))
-	// Eager load edges that are required on update operation.
-	q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-		q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-			q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			})
-		}).WithToys().WithParent(func(q *ent.PetQuery) {
-			q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			})
-		}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-			q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithPlayGroups()
-			})
-		})
-	}).WithSpouse(func(q *ent.PetQuery) {
-		q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-			q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			})
-		}).WithToys().WithParent(func(q *ent.PetQuery) {
-			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			})
-		}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithPlayGroups()
-			})
-		})
-	}).WithToys().WithParent(func(q *ent.PetQuery) {
-		q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-			q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			})
-		}).WithSpouse(func(q *ent.PetQuery) {
-			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			})
-		}).WithToys().WithParent(func(q *ent.PetQuery) {
-			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				})
-			}).WithSpouse(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				})
-			}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithToys().WithPlayGroups()
-				})
-			})
-		}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithSpouse(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithToys().WithPlayGroups()
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithToys().WithPlayGroups()
-				}).WithPlayGroups()
-			})
-		})
-	}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-		q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-			q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithPlayGroups()
-			})
-		}).WithSpouse(func(q *ent.PetQuery) {
-			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-				q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithPlayGroups()
-			})
-		}).WithToys().WithParent(func(q *ent.PetQuery) {
-			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithSpouse(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					})
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				})
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						})
-					}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					})
-				}).WithToys().WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithToys().WithPlayGroups()
-				})
-			}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithToys().WithPlayGroups()
-				}).WithPlayGroups()
-			})
-		}).WithPlayGroups().WithFriends(func(q *ent.PetQuery) {
-			q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-				q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithPlayGroups()
-			}).WithSpouse(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithPlayGroups()
-			}).WithToys().WithParent(func(q *ent.PetQuery) {
-				q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-					q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithSpouse(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithToys().WithParent(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithPlayGroups()
-					}).WithToys().WithParent(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithPlayGroups()
-				}).WithToys().WithParent(func(q *ent.PetQuery) {
-					q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-						q.WithBadge().WithSpouse(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithSpouse(func(q *ent.PetQuery) {
-						q.WithBadge().WithProtege(func(q *ent.PetQuery) {
-							q.WithBadge().WithToys().WithPlayGroups()
-						}).WithToys().WithPlayGroups()
-					}).WithToys().WithPlayGroups()
-				}).WithPlayGroups()
-			}).WithPlayGroups()
-		})
-	})
 	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
@@ -1278,7 +234,7 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	l.Info("pet rendered", zap.Int("id", e.ID))
+	l.Info("pet rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewPet340207500View(e), w)
 }
 
@@ -1289,7 +245,7 @@ func (h PlayGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Get the post data.
@@ -1350,7 +306,7 @@ func (h PlayGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	l.Info("play-group rendered", zap.Int("id", e.ID))
+	l.Info("play-group rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewPlayGroup3432834655View(e), w)
 }
 
@@ -1358,10 +314,10 @@ func (h PlayGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h ToyHandler) Update(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Update"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be a valid UUID")
 		return
 	}
 	// Get the post data.
@@ -1372,7 +328,7 @@ func (h ToyHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Save the data.
-	b := h.client.Toy.UpdateOneID(id)
+	b := h.client.Toy.UpdateOneID(uuid.UUID(id))
 	if d.Color != nil {
 		b.SetColor(*d.Color)
 	}
@@ -1392,14 +348,14 @@ func (h ToyHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.String("id", id.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-update-toy", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-update-toy", zap.Error(err), zap.String("id", id.String()))
 			InternalServerError(w, nil)
 		}
 		return
@@ -1411,18 +367,18 @@ func (h ToyHandler) Update(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.String("id", id.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could-not-read-toy", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-read-toy", zap.Error(err), zap.String("id", id.String()))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("toy rendered", zap.Int("id", e.ID))
+	l.Info("toy rendered", zap.String("id", id.String()))
 	easyjson.MarshalToHTTPResponseWriter(NewToy36157710View(e), w)
 }

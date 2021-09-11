@@ -4,9 +4,11 @@ package http
 
 import (
 	json "encoding/json"
+	uuid "github.com/google/uuid"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	collar "github.com/masseelch/elk/internal/simple/ent/collar"
 )
 
 // suppress unused package warning
@@ -56,6 +58,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp(in *jlexer
 				}
 				*out.Age = int(in.Int())
 			}
+		case "collar":
+			if in.IsNull() {
+				in.Skip()
+				out.Collar = nil
+			} else {
+				if out.Collar == nil {
+					out.Collar = new(int)
+				}
+				*out.Collar = int(in.Int())
+			}
 		case "categories":
 			if in.IsNull() {
 				in.Skip()
@@ -64,16 +76,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp(in *jlexer
 				in.Delim('[')
 				if out.Categories == nil {
 					if !in.IsDelim(']') {
-						out.Categories = make([]int, 0, 8)
+						out.Categories = make([]uint64, 0, 8)
 					} else {
-						out.Categories = []int{}
+						out.Categories = []uint64{}
 					}
 				} else {
 					out.Categories = (out.Categories)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v1 int
-					v1 = int(in.Int())
+					var v1 uint64
+					v1 = uint64(in.Uint64())
 					out.Categories = append(out.Categories, v1)
 					in.WantComma()
 				}
@@ -85,9 +97,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp(in *jlexer
 				out.Owner = nil
 			} else {
 				if out.Owner == nil {
-					out.Owner = new(int)
+					out.Owner = new(uuid.UUID)
 				}
-				*out.Owner = int(in.Int())
+				if data := in.UnsafeBytes(); in.Ok() {
+					in.AddError((*out.Owner).UnmarshalText(data))
+				}
 			}
 		case "friends":
 			if in.IsNull() {
@@ -149,6 +163,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp(out *jwrit
 		}
 	}
 	{
+		const prefix string = ",\"collar\":"
+		out.RawString(prefix)
+		if in.Collar == nil {
+			out.RawString("null")
+		} else {
+			out.Int(int(*in.Collar))
+		}
+	}
+	{
 		const prefix string = ",\"categories\":"
 		out.RawString(prefix)
 		if in.Categories == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
@@ -159,7 +182,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp(out *jwrit
 				if v3 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v4))
+				out.Uint64(uint64(v4))
 			}
 			out.RawByte(']')
 		}
@@ -170,7 +193,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp(out *jwrit
 		if in.Owner == nil {
 			out.RawString("null")
 		} else {
-			out.Int(int(*in.Owner))
+			out.RawText((*in.Owner).MarshalText())
 		}
 	}
 	{
@@ -240,6 +263,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp1(in *jlexe
 				}
 				*out.Age = int(in.Int())
 			}
+		case "collar":
+			if in.IsNull() {
+				in.Skip()
+				out.Collar = nil
+			} else {
+				if out.Collar == nil {
+					out.Collar = new(int)
+				}
+				*out.Collar = int(in.Int())
+			}
 		case "categories":
 			if in.IsNull() {
 				in.Skip()
@@ -248,16 +281,16 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp1(in *jlexe
 				in.Delim('[')
 				if out.Categories == nil {
 					if !in.IsDelim(']') {
-						out.Categories = make([]int, 0, 8)
+						out.Categories = make([]uint64, 0, 8)
 					} else {
-						out.Categories = []int{}
+						out.Categories = []uint64{}
 					}
 				} else {
 					out.Categories = (out.Categories)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v7 int
-					v7 = int(in.Int())
+					var v7 uint64
+					v7 = uint64(in.Uint64())
 					out.Categories = append(out.Categories, v7)
 					in.WantComma()
 				}
@@ -269,9 +302,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp1(in *jlexe
 				out.Owner = nil
 			} else {
 				if out.Owner == nil {
-					out.Owner = new(int)
+					out.Owner = new(uuid.UUID)
 				}
-				*out.Owner = int(in.Int())
+				if data := in.UnsafeBytes(); in.Ok() {
+					in.AddError((*out.Owner).UnmarshalText(data))
+				}
 			}
 		case "friends":
 			if in.IsNull() {
@@ -333,6 +368,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp1(out *jwri
 		}
 	}
 	{
+		const prefix string = ",\"collar\":"
+		out.RawString(prefix)
+		if in.Collar == nil {
+			out.RawString("null")
+		} else {
+			out.Int(int(*in.Collar))
+		}
+	}
+	{
 		const prefix string = ",\"categories\":"
 		out.RawString(prefix)
 		if in.Categories == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
@@ -343,7 +387,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp1(out *jwri
 				if v9 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v10))
+				out.Uint64(uint64(v10))
 			}
 			out.RawByte(']')
 		}
@@ -354,7 +398,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp1(out *jwri
 		if in.Owner == nil {
 			out.RawString("null")
 		} else {
-			out.Int(int(*in.Owner))
+			out.RawText((*in.Owner).MarshalText())
 		}
 	}
 	{
@@ -1043,7 +1087,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp9(in *jlexe
 		}
 		switch key {
 		case "id":
-			out.ID = int(in.Int())
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.ID).UnmarshalText(data))
+			}
 		case "name":
 			out.Name = string(in.String())
 		case "age":
@@ -1066,11 +1112,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp9(out *jwri
 	out.RawByte('{')
 	first := true
 	_ = first
-	if in.ID != 0 {
+	if true {
 		const prefix string = ",\"id\":"
 		first = false
 		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
+		out.RawText((in.ID).MarshalText())
 	}
 	if in.Name != "" {
 		const prefix string = ",\"name\":"
@@ -1186,7 +1232,7 @@ func (v ErrResponse) MarshalEasyJSON(w *jwriter.Writer) {
 func (v *ErrResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp10(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp11(in *jlexer.Lexer, out *CategoryUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp11(in *jlexer.Lexer, out *CollarUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1205,38 +1251,25 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp11(in *jlex
 			continue
 		}
 		switch key {
-		case "name":
+		case "color":
 			if in.IsNull() {
 				in.Skip()
-				out.Name = nil
+				out.Color = nil
 			} else {
-				if out.Name == nil {
-					out.Name = new(string)
+				if out.Color == nil {
+					out.Color = new(collar.Color)
 				}
-				*out.Name = string(in.String())
+				*out.Color = collar.Color(in.String())
 			}
-		case "pets":
+		case "pet":
 			if in.IsNull() {
 				in.Skip()
-				out.Pets = nil
+				out.Pet = nil
 			} else {
-				in.Delim('[')
-				if out.Pets == nil {
-					if !in.IsDelim(']') {
-						out.Pets = make([]string, 0, 4)
-					} else {
-						out.Pets = []string{}
-					}
-				} else {
-					out.Pets = (out.Pets)[:0]
+				if out.Pet == nil {
+					out.Pet = new(string)
 				}
-				for !in.IsDelim(']') {
-					var v28 string
-					v28 = string(in.String())
-					out.Pets = append(out.Pets, v28)
-					in.WantComma()
-				}
-				in.Delim(']')
+				*out.Pet = string(in.String())
 			}
 		default:
 			in.AddError(&jlexer.LexerError{
@@ -1252,48 +1285,261 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp11(in *jlex
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp11(out *jwriter.Writer, in CategoryUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp11(out *jwriter.Writer, in CollarUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"name\":"
+		const prefix string = ",\"color\":"
 		out.RawString(prefix[1:])
-		if in.Name == nil {
+		if in.Color == nil {
 			out.RawString("null")
 		} else {
-			out.String(string(*in.Name))
+			out.String(string(*in.Color))
 		}
 	}
 	{
-		const prefix string = ",\"pets\":"
+		const prefix string = ",\"pet\":"
 		out.RawString(prefix)
-		if in.Pets == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.Pet == nil {
 			out.RawString("null")
 		} else {
-			out.RawByte('[')
-			for v29, v30 := range in.Pets {
-				if v29 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v30))
-			}
-			out.RawByte(']')
+			out.String(string(*in.Pet))
 		}
 	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v CategoryUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
+func (v CollarUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp11(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *CategoryUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *CollarUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp11(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp12(in *jlexer.Lexer, out *CategoryCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp12(in *jlexer.Lexer, out *CollarCreateRequest) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "color":
+			if in.IsNull() {
+				in.Skip()
+				out.Color = nil
+			} else {
+				if out.Color == nil {
+					out.Color = new(collar.Color)
+				}
+				*out.Color = collar.Color(in.String())
+			}
+		case "pet":
+			if in.IsNull() {
+				in.Skip()
+				out.Pet = nil
+			} else {
+				if out.Pet == nil {
+					out.Pet = new(string)
+				}
+				*out.Pet = string(in.String())
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp12(out *jwriter.Writer, in CollarCreateRequest) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"color\":"
+		out.RawString(prefix[1:])
+		if in.Color == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Color))
+		}
+	}
+	{
+		const prefix string = ",\"pet\":"
+		out.RawString(prefix)
+		if in.Pet == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Pet))
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v CollarCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp12(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *CollarCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp12(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp13(in *jlexer.Lexer, out *Collar1522160880Views) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(Collar1522160880Views, 0, 8)
+			} else {
+				*out = Collar1522160880Views{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v28 *Collar1522160880View
+			if in.IsNull() {
+				in.Skip()
+				v28 = nil
+			} else {
+				if v28 == nil {
+					v28 = new(Collar1522160880View)
+				}
+				(*v28).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v28)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp13(out *jwriter.Writer, in Collar1522160880Views) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v29, v30 := range in {
+			if v29 > 0 {
+				out.RawByte(',')
+			}
+			if v30 == nil {
+				out.RawString("null")
+			} else {
+				(*v30).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Collar1522160880Views) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp13(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Collar1522160880Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp13(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp14(in *jlexer.Lexer, out *Collar1522160880View) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "color":
+			out.Color = collar.Color(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp14(out *jwriter.Writer, in Collar1522160880View) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Collar1522160880View) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp14(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Collar1522160880View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp14(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp15(in *jlexer.Lexer, out *CategoryUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1359,7 +1605,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp12(in *jlex
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp12(out *jwriter.Writer, in CategoryCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp15(out *jwriter.Writer, in CategoryUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1392,15 +1638,122 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp12(out *jwr
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
+func (v CategoryUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp15(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *CategoryUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp15(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp16(in *jlexer.Lexer, out *CategoryCreateRequest) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "name":
+			if in.IsNull() {
+				in.Skip()
+				out.Name = nil
+			} else {
+				if out.Name == nil {
+					out.Name = new(string)
+				}
+				*out.Name = string(in.String())
+			}
+		case "pets":
+			if in.IsNull() {
+				in.Skip()
+				out.Pets = nil
+			} else {
+				in.Delim('[')
+				if out.Pets == nil {
+					if !in.IsDelim(']') {
+						out.Pets = make([]string, 0, 4)
+					} else {
+						out.Pets = []string{}
+					}
+				} else {
+					out.Pets = (out.Pets)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v34 string
+					v34 = string(in.String())
+					out.Pets = append(out.Pets, v34)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp16(out *jwriter.Writer, in CategoryCreateRequest) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"name\":"
+		out.RawString(prefix[1:])
+		if in.Name == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Name))
+		}
+	}
+	{
+		const prefix string = ",\"pets\":"
+		out.RawString(prefix)
+		if in.Pets == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v35, v36 := range in.Pets {
+				if v35 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v36))
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
 func (v CategoryCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp12(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp16(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *CategoryCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp12(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp16(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp13(in *jlexer.Lexer, out *Category4094953247Views) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp17(in *jlexer.Lexer, out *Category4094953247Views) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -1417,17 +1770,17 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp13(in *jlex
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v34 *Category4094953247View
+			var v37 *Category4094953247View
 			if in.IsNull() {
 				in.Skip()
-				v34 = nil
+				v37 = nil
 			} else {
-				if v34 == nil {
-					v34 = new(Category4094953247View)
+				if v37 == nil {
+					v37 = new(Category4094953247View)
 				}
-				(*v34).UnmarshalEasyJSON(in)
+				(*v37).UnmarshalEasyJSON(in)
 			}
-			*out = append(*out, v34)
+			*out = append(*out, v37)
 			in.WantComma()
 		}
 		in.Delim(']')
@@ -1436,19 +1789,19 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp13(in *jlex
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp13(out *jwriter.Writer, in Category4094953247Views) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp17(out *jwriter.Writer, in Category4094953247Views) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v35, v36 := range in {
-			if v35 > 0 {
+		for v38, v39 := range in {
+			if v38 > 0 {
 				out.RawByte(',')
 			}
-			if v36 == nil {
+			if v39 == nil {
 				out.RawString("null")
 			} else {
-				(*v36).MarshalEasyJSON(out)
+				(*v39).MarshalEasyJSON(out)
 			}
 		}
 		out.RawByte(']')
@@ -1457,14 +1810,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp13(out *jwr
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Category4094953247Views) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp13(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp17(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Category4094953247Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp13(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp17(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp14(in *jlexer.Lexer, out *Category4094953247View) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp18(in *jlexer.Lexer, out *Category4094953247View) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1484,7 +1837,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp14(in *jlex
 		}
 		switch key {
 		case "id":
-			out.ID = int(in.Int())
+			out.ID = uint64(in.Uint64())
 		case "name":
 			out.Name = string(in.String())
 		default:
@@ -1501,7 +1854,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp14(in *jlex
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp14(out *jwriter.Writer, in Category4094953247View) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp18(out *jwriter.Writer, in Category4094953247View) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1509,7 +1862,7 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp14(out *jwr
 		const prefix string = ",\"id\":"
 		first = false
 		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
+		out.Uint64(uint64(in.ID))
 	}
 	if in.Name != "" {
 		const prefix string = ",\"name\":"
@@ -1526,10 +1879,10 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp14(out *jwr
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Category4094953247View) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp14(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalSimpleEntHttp18(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Category4094953247View) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp14(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalSimpleEntHttp18(l, v)
 }

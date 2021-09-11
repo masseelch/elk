@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"github.com/google/uuid"
+	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"github.com/masseelch/elk/internal/simple/ent/schema"
 )
@@ -11,6 +13,12 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	ownerFields := schema.Owner{}.Fields()
+	_ = ownerFields
+	// ownerDescID is the schema descriptor for id field.
+	ownerDescID := ownerFields[0].Descriptor()
+	// owner.DefaultID holds the default value on creation for the id field.
+	owner.DefaultID = ownerDescID.Default.(func() uuid.UUID)
 	petFields := schema.Pet{}.Fields()
 	_ = petFields
 	// petDescID is the schema descriptor for id field.

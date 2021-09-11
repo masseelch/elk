@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/pets/ent/pet"
 	"github.com/masseelch/elk/internal/pets/ent/schema"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -30,4 +31,10 @@ func init() {
 	petDescChip := petFields[7].Descriptor()
 	// pet.DefaultChip holds the default value on creation for the chip field.
 	pet.DefaultChip = petDescChip.Default.(func() uuid.UUID)
+	toyFields := schema.Toy{}.Fields()
+	_ = toyFields
+	// toyDescID is the schema descriptor for id field.
+	toyDescID := toyFields[0].Descriptor()
+	// toy.DefaultID holds the default value on creation for the id field.
+	toy.DefaultID = toyDescID.Default.(func() uuid.UUID)
 }

@@ -45,14 +45,15 @@
             {{- end }}
             e, err = q.Only(r.Context())
 
+            {{- $zapID := zapField $n.ID (print "e." $n.ID.StructField) }}
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found" "not-singular")
-                "Logs" (list (printf "zap.%s(\"%s\", %s)" (zapField $n.ID) $n.ID.Name ($n.ID.BasicType (print "e." $n.ID.StructField))))
+                "Logs" (list $zapID)
                 "Default" (print "could not read " ($n.Name | kebab)) " after update"
             -}}
 
-            l.Info("{{ $n.Name | kebab }} rendered", zap.{{ zapField $n.ID }}("{{ $n.ID.Name }}", {{ $n.ID.BasicType (print "e." $n.ID.StructField) }}))
+            l.Info("{{ $n.Name | kebab }} rendered", {{ $zapID }})
             easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.ElkSchema.CreateGroups | stringSlice)).Name }}(e), w)
         }
     {{ end }}

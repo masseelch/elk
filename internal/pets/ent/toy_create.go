@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/pets/ent/pet"
 	"github.com/masseelch/elk/internal/pets/ent/toy"
 )
@@ -35,6 +36,12 @@ func (tc *ToyCreate) SetMaterial(t toy.Material) *ToyCreate {
 // SetTitle sets the "title" field.
 func (tc *ToyCreate) SetTitle(s string) *ToyCreate {
 	tc.mutation.SetTitle(s)
+	return tc
+}
+
+// SetID sets the "id" field.
+func (tc *ToyCreate) SetID(u uuid.UUID) *ToyCreate {
+	tc.mutation.SetID(u)
 	return tc
 }
 
@@ -68,6 +75,7 @@ func (tc *ToyCreate) Save(ctx context.Context) (*Toy, error) {
 		err  error
 		node *Toy
 	)
+	tc.defaults()
 	if len(tc.hooks) == 0 {
 		if err = tc.check(); err != nil {
 			return nil, err
@@ -125,6 +133,14 @@ func (tc *ToyCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (tc *ToyCreate) defaults() {
+	if _, ok := tc.mutation.ID(); !ok {
+		v := toy.DefaultID()
+		tc.mutation.SetID(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (tc *ToyCreate) check() error {
 	if _, ok := tc.mutation.Color(); !ok {
@@ -157,8 +173,9 @@ func (tc *ToyCreate) sqlSave(ctx context.Context) (*Toy, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		_node.ID = _spec.ID.Value.(uuid.UUID)
+	}
 	return _node, nil
 }
 
@@ -168,11 +185,15 @@ func (tc *ToyCreate) createSpec() (*Toy, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: toy.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: toy.FieldID,
 			},
 		}
 	)
+	if id, ok := tc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := tc.mutation.Color(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -234,6 +255,7 @@ func (tcb *ToyCreateBulk) Save(ctx context.Context) ([]*Toy, error) {
 	for i := range tcb.builders {
 		func(i int, root context.Context) {
 			builder := tcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ToyMutation)
 				if !ok {
@@ -261,10 +283,6 @@ func (tcb *ToyCreateBulk) Save(ctx context.Context) ([]*Toy, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

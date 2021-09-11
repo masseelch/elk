@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/masseelch/elk/internal/simple/ent/migrate"
 
 	"github.com/masseelch/elk/internal/simple/ent/category"
+	"github.com/masseelch/elk/internal/simple/ent/collar"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 
@@ -25,6 +27,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
+	// Collar is the client for interacting with the Collar builders.
+	Collar *CollarClient
 	// Owner is the client for interacting with the Owner builders.
 	Owner *OwnerClient
 	// Pet is the client for interacting with the Pet builders.
@@ -43,6 +47,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Category = NewCategoryClient(c.config)
+	c.Collar = NewCollarClient(c.config)
 	c.Owner = NewOwnerClient(c.config)
 	c.Pet = NewPetClient(c.config)
 }
@@ -79,6 +84,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:      ctx,
 		config:   cfg,
 		Category: NewCategoryClient(cfg),
+		Collar:   NewCollarClient(cfg),
 		Owner:    NewOwnerClient(cfg),
 		Pet:      NewPetClient(cfg),
 	}, nil
@@ -100,6 +106,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:   cfg,
 		Category: NewCategoryClient(cfg),
+		Collar:   NewCollarClient(cfg),
 		Owner:    NewOwnerClient(cfg),
 		Pet:      NewPetClient(cfg),
 	}, nil
@@ -132,6 +139,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Category.Use(hooks...)
+	c.Collar.Use(hooks...)
 	c.Owner.Use(hooks...)
 	c.Pet.Use(hooks...)
 }
@@ -176,7 +184,7 @@ func (c *CategoryClient) UpdateOne(ca *Category) *CategoryUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *CategoryClient) UpdateOneID(id int) *CategoryUpdateOne {
+func (c *CategoryClient) UpdateOneID(id uint64) *CategoryUpdateOne {
 	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategoryID(id))
 	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -193,7 +201,7 @@ func (c *CategoryClient) DeleteOne(ca *Category) *CategoryDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *CategoryClient) DeleteOneID(id int) *CategoryDeleteOne {
+func (c *CategoryClient) DeleteOneID(id uint64) *CategoryDeleteOne {
 	builder := c.Delete().Where(category.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -208,12 +216,12 @@ func (c *CategoryClient) Query() *CategoryQuery {
 }
 
 // Get returns a Category entity by its id.
-func (c *CategoryClient) Get(ctx context.Context, id int) (*Category, error) {
+func (c *CategoryClient) Get(ctx context.Context, id uint64) (*Category, error) {
 	return c.Query().Where(category.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *CategoryClient) GetX(ctx context.Context, id int) *Category {
+func (c *CategoryClient) GetX(ctx context.Context, id uint64) *Category {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -240,6 +248,112 @@ func (c *CategoryClient) QueryPets(ca *Category) *PetQuery {
 // Hooks returns the client hooks.
 func (c *CategoryClient) Hooks() []Hook {
 	return c.hooks.Category
+}
+
+// CollarClient is a client for the Collar schema.
+type CollarClient struct {
+	config
+}
+
+// NewCollarClient returns a client for the Collar from the given config.
+func NewCollarClient(c config) *CollarClient {
+	return &CollarClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `collar.Hooks(f(g(h())))`.
+func (c *CollarClient) Use(hooks ...Hook) {
+	c.hooks.Collar = append(c.hooks.Collar, hooks...)
+}
+
+// Create returns a create builder for Collar.
+func (c *CollarClient) Create() *CollarCreate {
+	mutation := newCollarMutation(c.config, OpCreate)
+	return &CollarCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Collar entities.
+func (c *CollarClient) CreateBulk(builders ...*CollarCreate) *CollarCreateBulk {
+	return &CollarCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Collar.
+func (c *CollarClient) Update() *CollarUpdate {
+	mutation := newCollarMutation(c.config, OpUpdate)
+	return &CollarUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CollarClient) UpdateOne(co *Collar) *CollarUpdateOne {
+	mutation := newCollarMutation(c.config, OpUpdateOne, withCollar(co))
+	return &CollarUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CollarClient) UpdateOneID(id int) *CollarUpdateOne {
+	mutation := newCollarMutation(c.config, OpUpdateOne, withCollarID(id))
+	return &CollarUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Collar.
+func (c *CollarClient) Delete() *CollarDelete {
+	mutation := newCollarMutation(c.config, OpDelete)
+	return &CollarDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *CollarClient) DeleteOne(co *Collar) *CollarDeleteOne {
+	return c.DeleteOneID(co.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *CollarClient) DeleteOneID(id int) *CollarDeleteOne {
+	builder := c.Delete().Where(collar.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CollarDeleteOne{builder}
+}
+
+// Query returns a query builder for Collar.
+func (c *CollarClient) Query() *CollarQuery {
+	return &CollarQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Collar entity by its id.
+func (c *CollarClient) Get(ctx context.Context, id int) (*Collar, error) {
+	return c.Query().Where(collar.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CollarClient) GetX(ctx context.Context, id int) *Collar {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPet queries the pet edge of a Collar.
+func (c *CollarClient) QueryPet(co *Collar) *PetQuery {
+	query := &PetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(collar.Table, collar.FieldID, id),
+			sqlgraph.To(pet.Table, pet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, collar.PetTable, collar.PetColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CollarClient) Hooks() []Hook {
+	return c.hooks.Collar
 }
 
 // OwnerClient is a client for the Owner schema.
@@ -282,7 +396,7 @@ func (c *OwnerClient) UpdateOne(o *Owner) *OwnerUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *OwnerClient) UpdateOneID(id int) *OwnerUpdateOne {
+func (c *OwnerClient) UpdateOneID(id uuid.UUID) *OwnerUpdateOne {
 	mutation := newOwnerMutation(c.config, OpUpdateOne, withOwnerID(id))
 	return &OwnerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -299,7 +413,7 @@ func (c *OwnerClient) DeleteOne(o *Owner) *OwnerDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *OwnerClient) DeleteOneID(id int) *OwnerDeleteOne {
+func (c *OwnerClient) DeleteOneID(id uuid.UUID) *OwnerDeleteOne {
 	builder := c.Delete().Where(owner.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -314,12 +428,12 @@ func (c *OwnerClient) Query() *OwnerQuery {
 }
 
 // Get returns a Owner entity by its id.
-func (c *OwnerClient) Get(ctx context.Context, id int) (*Owner, error) {
+func (c *OwnerClient) Get(ctx context.Context, id uuid.UUID) (*Owner, error) {
 	return c.Query().Where(owner.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *OwnerClient) GetX(ctx context.Context, id int) *Owner {
+func (c *OwnerClient) GetX(ctx context.Context, id uuid.UUID) *Owner {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -431,6 +545,22 @@ func (c *PetClient) GetX(ctx context.Context, id string) *Pet {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryCollar queries the collar edge of a Pet.
+func (c *PetClient) QueryCollar(pe *Pet) *CollarQuery {
+	query := &CollarQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(pet.Table, pet.FieldID, id),
+			sqlgraph.To(collar.Table, collar.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, pet.CollarTable, pet.CollarColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryCategories queries the categories edge of a Pet.

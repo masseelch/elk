@@ -150,7 +150,7 @@ func (bu *BadgeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   badge.Table,
 			Columns: badge.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: badge.FieldID,
 			},
 		},
@@ -360,7 +360,7 @@ func (buo *BadgeUpdateOne) sqlSave(ctx context.Context) (_node *Badge, err error
 			Table:   badge.Table,
 			Columns: badge.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: badge.FieldID,
 			},
 		},

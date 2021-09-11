@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
 	badge "github.com/masseelch/elk/internal/pets/ent/badge"
@@ -21,12 +22,13 @@ import (
 func (h *BadgeHandler) Read(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id64, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
 		BadRequest(w, "id must be an integer greater zero")
 		return
 	}
+	id := uint32(id64)
 	// Create the query to fetch the Badge
 	q := h.client.Badge.Query().Where(badge.ID(id))
 	e, err := q.Only(r.Context())
@@ -34,19 +36,19 @@ func (h *BadgeHandler) Read(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Uint32("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.Uint32("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read badge", zap.Error(err), zap.Int("id", id))
+			l.Error("could not read badge", zap.Error(err), zap.Uint32("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("badge rendered", zap.Int("id", id))
+	l.Info("badge rendered", zap.Uint32("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257View(e), w)
 }
 
@@ -58,7 +60,7 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Create the query to fetch the Pet
@@ -1138,7 +1140,7 @@ func (h *PlayGroupHandler) Read(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be an integer")
 		return
 	}
 	// Create the query to fetch the PlayGroup
@@ -1169,31 +1171,31 @@ func (h *PlayGroupHandler) Read(w http.ResponseWriter, r *http.Request) {
 func (h *ToyHandler) Read(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Read"))
 	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer greater zero")
+		BadRequest(w, "id must be a valid UUID")
 		return
 	}
 	// Create the query to fetch the Toy
-	q := h.client.Toy.Query().Where(toy.ID(id))
+	q := h.client.Toy.Query().Where(toy.ID(uuid.UUID(id)))
 	e, err := q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.String("id", id.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.String("id", id.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read toy", zap.Error(err), zap.Int("id", id))
+			l.Error("could not read toy", zap.Error(err), zap.String("id", id.String()))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("toy rendered", zap.Int("id", id))
+	l.Info("toy rendered", zap.String("id", id.String()))
 	easyjson.MarshalToHTTPResponseWriter(NewToy36157710View(e), w)
 }
