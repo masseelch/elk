@@ -28,26 +28,6 @@ var (
 			},
 		},
 	}
-	// ContentsColumns holds the columns for the "contents" table.
-	ContentsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString},
-		{Name: "compartment_contents", Type: field.TypeInt, Nullable: true},
-	}
-	// ContentsTable holds the schema information for the "contents" table.
-	ContentsTable = &schema.Table{
-		Name:       "contents",
-		Columns:    ContentsColumns,
-		PrimaryKey: []*schema.Column{ContentsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "contents_compartments_contents",
-				Columns:    []*schema.Column{ContentsColumns[2]},
-				RefColumns: []*schema.Column{CompartmentsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
 	// FridgesColumns holds the columns for the "fridges" table.
 	FridgesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -59,15 +39,35 @@ var (
 		Columns:    FridgesColumns,
 		PrimaryKey: []*schema.Column{FridgesColumns[0]},
 	}
+	// ItemsColumns holds the columns for the "items" table.
+	ItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "compartment_contents", Type: field.TypeInt, Nullable: true},
+	}
+	// ItemsTable holds the schema information for the "items" table.
+	ItemsTable = &schema.Table{
+		Name:       "items",
+		Columns:    ItemsColumns,
+		PrimaryKey: []*schema.Column{ItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "items_compartments_contents",
+				Columns:    []*schema.Column{ItemsColumns[2]},
+				RefColumns: []*schema.Column{CompartmentsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CompartmentsTable,
-		ContentsTable,
 		FridgesTable,
+		ItemsTable,
 	}
 )
 
 func init() {
 	CompartmentsTable.ForeignKeys[0].RefTable = FridgesTable
-	ContentsTable.ForeignKeys[0].RefTable = CompartmentsTable
+	ItemsTable.ForeignKeys[0].RefTable = CompartmentsTable
 }

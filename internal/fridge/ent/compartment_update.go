@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
 	"github.com/masseelch/elk/internal/fridge/ent/fridge"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 	"github.com/masseelch/elk/internal/fridge/ent/predicate"
 )
 
@@ -53,17 +53,17 @@ func (cu *CompartmentUpdate) SetFridge(f *Fridge) *CompartmentUpdate {
 	return cu.SetFridgeID(f.ID)
 }
 
-// AddContentIDs adds the "contents" edge to the Content entity by IDs.
+// AddContentIDs adds the "contents" edge to the Item entity by IDs.
 func (cu *CompartmentUpdate) AddContentIDs(ids ...int) *CompartmentUpdate {
 	cu.mutation.AddContentIDs(ids...)
 	return cu
 }
 
-// AddContents adds the "contents" edges to the Content entity.
-func (cu *CompartmentUpdate) AddContents(c ...*Content) *CompartmentUpdate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddContents adds the "contents" edges to the Item entity.
+func (cu *CompartmentUpdate) AddContents(i ...*Item) *CompartmentUpdate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
 	}
 	return cu.AddContentIDs(ids...)
 }
@@ -79,23 +79,23 @@ func (cu *CompartmentUpdate) ClearFridge() *CompartmentUpdate {
 	return cu
 }
 
-// ClearContents clears all "contents" edges to the Content entity.
+// ClearContents clears all "contents" edges to the Item entity.
 func (cu *CompartmentUpdate) ClearContents() *CompartmentUpdate {
 	cu.mutation.ClearContents()
 	return cu
 }
 
-// RemoveContentIDs removes the "contents" edge to Content entities by IDs.
+// RemoveContentIDs removes the "contents" edge to Item entities by IDs.
 func (cu *CompartmentUpdate) RemoveContentIDs(ids ...int) *CompartmentUpdate {
 	cu.mutation.RemoveContentIDs(ids...)
 	return cu
 }
 
-// RemoveContents removes "contents" edges to Content entities.
-func (cu *CompartmentUpdate) RemoveContents(c ...*Content) *CompartmentUpdate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// RemoveContents removes "contents" edges to Item entities.
+func (cu *CompartmentUpdate) RemoveContents(i ...*Item) *CompartmentUpdate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
 	}
 	return cu.RemoveContentIDs(ids...)
 }
@@ -224,7 +224,7 @@ func (cu *CompartmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: content.FieldID,
+					Column: item.FieldID,
 				},
 			},
 		}
@@ -240,7 +240,7 @@ func (cu *CompartmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: content.FieldID,
+					Column: item.FieldID,
 				},
 			},
 		}
@@ -259,7 +259,7 @@ func (cu *CompartmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: content.FieldID,
+					Column: item.FieldID,
 				},
 			},
 		}
@@ -312,17 +312,17 @@ func (cuo *CompartmentUpdateOne) SetFridge(f *Fridge) *CompartmentUpdateOne {
 	return cuo.SetFridgeID(f.ID)
 }
 
-// AddContentIDs adds the "contents" edge to the Content entity by IDs.
+// AddContentIDs adds the "contents" edge to the Item entity by IDs.
 func (cuo *CompartmentUpdateOne) AddContentIDs(ids ...int) *CompartmentUpdateOne {
 	cuo.mutation.AddContentIDs(ids...)
 	return cuo
 }
 
-// AddContents adds the "contents" edges to the Content entity.
-func (cuo *CompartmentUpdateOne) AddContents(c ...*Content) *CompartmentUpdateOne {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddContents adds the "contents" edges to the Item entity.
+func (cuo *CompartmentUpdateOne) AddContents(i ...*Item) *CompartmentUpdateOne {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
 	}
 	return cuo.AddContentIDs(ids...)
 }
@@ -338,23 +338,23 @@ func (cuo *CompartmentUpdateOne) ClearFridge() *CompartmentUpdateOne {
 	return cuo
 }
 
-// ClearContents clears all "contents" edges to the Content entity.
+// ClearContents clears all "contents" edges to the Item entity.
 func (cuo *CompartmentUpdateOne) ClearContents() *CompartmentUpdateOne {
 	cuo.mutation.ClearContents()
 	return cuo
 }
 
-// RemoveContentIDs removes the "contents" edge to Content entities by IDs.
+// RemoveContentIDs removes the "contents" edge to Item entities by IDs.
 func (cuo *CompartmentUpdateOne) RemoveContentIDs(ids ...int) *CompartmentUpdateOne {
 	cuo.mutation.RemoveContentIDs(ids...)
 	return cuo
 }
 
-// RemoveContents removes "contents" edges to Content entities.
-func (cuo *CompartmentUpdateOne) RemoveContents(c ...*Content) *CompartmentUpdateOne {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// RemoveContents removes "contents" edges to Item entities.
+func (cuo *CompartmentUpdateOne) RemoveContents(i ...*Item) *CompartmentUpdateOne {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
 	}
 	return cuo.RemoveContentIDs(ids...)
 }
@@ -507,7 +507,7 @@ func (cuo *CompartmentUpdateOne) sqlSave(ctx context.Context) (_node *Compartmen
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: content.FieldID,
+					Column: item.FieldID,
 				},
 			},
 		}
@@ -523,7 +523,7 @@ func (cuo *CompartmentUpdateOne) sqlSave(ctx context.Context) (_node *Compartmen
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: content.FieldID,
+					Column: item.FieldID,
 				},
 			},
 		}
@@ -542,7 +542,7 @@ func (cuo *CompartmentUpdateOne) sqlSave(ctx context.Context) (_node *Compartmen
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: content.FieldID,
+					Column: item.FieldID,
 				},
 			},
 		}

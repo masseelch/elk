@@ -250,7 +250,7 @@ func HasContents() predicate.Compartment {
 }
 
 // HasContentsWith applies the HasEdge predicate on the "contents" edge with a given conditions (other predicates).
-func HasContentsWith(preds ...predicate.Content) predicate.Compartment {
+func HasContentsWith(preds ...predicate.Item) predicate.Compartment {
 	return predicate.Compartment(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),

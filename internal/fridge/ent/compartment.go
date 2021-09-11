@@ -29,7 +29,7 @@ type CompartmentEdges struct {
 	// Fridge holds the value of the fridge edge.
 	Fridge *Fridge `json:"fridge,omitempty"`
 	// Contents holds the value of the contents edge.
-	Contents []*Content `json:"contents,omitempty"`
+	Contents []*Item `json:"contents,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -51,7 +51,7 @@ func (e CompartmentEdges) FridgeOrErr() (*Fridge, error) {
 
 // ContentsOrErr returns the Contents value or an error if the edge
 // was not loaded in eager-loading.
-func (e CompartmentEdges) ContentsOrErr() ([]*Content, error) {
+func (e CompartmentEdges) ContentsOrErr() ([]*Item, error) {
 	if e.loadedTypes[1] {
 		return e.Contents, nil
 	}
@@ -114,7 +114,7 @@ func (c *Compartment) QueryFridge() *FridgeQuery {
 }
 
 // QueryContents queries the "contents" edge of the Compartment entity.
-func (c *Compartment) QueryContents() *ContentQuery {
+func (c *Compartment) QueryContents() *ItemQuery {
 	return (&CompartmentClient{config: c.config}).QueryContents(c)
 }
 

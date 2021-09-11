@@ -268,8 +268,8 @@
     },
     "/compartments/{id}/contents": {
       "get": {
-        "summary": "Find the attached Contents",
-        "description": "Find the attached Contents of the Compartment with the given ID",
+        "summary": "Find the attached Items",
+        "description": "Find the attached Items of the Compartment with the given ID",
         "tags": [
           "Compartment"
         ],
@@ -306,13 +306,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Contents attached to Compartment with requested ID was found",
+            "description": "Items attached to Compartment with requested ID was found",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Content3310419308View"
+                    "$ref": "#/components/schemas/Item1509516544View"
                   }
                 }
               }
@@ -357,291 +357,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Fridge2716213877View"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/contents": {
-      "get": {
-        "summary": "List Contents",
-        "description": "List Contents.",
-        "tags": [
-          "Content"
-        ],
-        "operationId": "listContent",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "what page to render",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "itemsPerPage",
-            "in": "query",
-            "description": "item count to render per page",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "result Content list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Content3310419308View"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a new Content",
-        "description": "Creates a new Content and persists it to storage.",
-        "tags": [
-          "Content"
-        ],
-        "operationId": "createContent",
-        "requestBody": {
-          "description": "Content to create",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name"
-                ],
-                "properties": {
-                  "compartment": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Content created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Content3310419308View"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/contents/{id}": {
-      "get": {
-        "summary": "Find a Content by ID",
-        "description": "Finds the Content with the requested ID and returns it.",
-        "tags": [
-          "Content"
-        ],
-        "operationId": "readContent",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Content",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Content with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Content3310419308View"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Deletes a Content by ID",
-        "description": "Deletes the Content with the requested ID.",
-        "tags": [
-          "Content"
-        ],
-        "operationId": "deleteContent",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Content to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Content with requested ID was deleted"
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Updates a Content",
-        "description": "Updates a Content and persists changes to storage.",
-        "tags": [
-          "Content"
-        ],
-        "operationId": "updateContent",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Content to update",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Content properties to update",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name"
-                ],
-                "properties": {
-                  "compartment": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Content updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Content3310419308View"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/contents/{id}/compartment": {
-      "get": {
-        "summary": "Find the attached Compartment",
-        "description": "Find the attached Compartment of the Content with the given ID",
-        "tags": [
-          "Content"
-        ],
-        "operationId": "readContentCompartment",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the Content",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Compartment attached to Content with requested ID was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Compartment1151786357View"
                 }
               }
             }
@@ -983,27 +698,296 @@
           }
         }
       ]
+    },
+    "/items": {
+      "get": {
+        "summary": "List Items",
+        "description": "List Items.",
+        "tags": [
+          "Item"
+        ],
+        "operationId": "listItem",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "what page to render",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "item count to render per page",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result Item list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Item1509516544View"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new Item",
+        "description": "Creates a new Item and persists it to storage.",
+        "tags": [
+          "Item"
+        ],
+        "operationId": "createItem",
+        "requestBody": {
+          "description": "Item to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "compartment": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item1509516544View"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/items/{id}": {
+      "get": {
+        "summary": "Find a Item by ID",
+        "description": "Finds the Item with the requested ID and returns it.",
+        "tags": [
+          "Item"
+        ],
+        "operationId": "readItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Item",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item1509516544View"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes a Item by ID",
+        "description": "Deletes the Item with the requested ID.",
+        "tags": [
+          "Item"
+        ],
+        "operationId": "deleteItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Item to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Item with requested ID was deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Updates a Item",
+        "description": "Updates a Item and persists changes to storage.",
+        "tags": [
+          "Item"
+        ],
+        "operationId": "updateItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Item to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Item properties to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "compartment": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item1509516544View"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/items/{id}/compartment": {
+      "get": {
+        "summary": "Find the attached Compartment",
+        "description": "Find the attached Compartment of the Item with the given ID",
+        "tags": [
+          "Item"
+        ],
+        "operationId": "readItemCompartment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Item",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compartment attached to Item with requested ID was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Compartment1151786357View"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
       "Compartment1151786357View": {
-        "type": "object",
-        "required": [
-          "id",
-          "name"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "Content3310419308View": {
         "type": "object",
         "required": [
           "id",
@@ -1031,6 +1015,22 @@
             "format": "int32"
           },
           "title": {
+            "type": "string"
+          }
+        }
+      },
+      "Item1509516544View": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
             "type": "string"
           }
         }

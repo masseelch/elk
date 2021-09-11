@@ -8,8 +8,8 @@ import (
 	"sync"
 
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
 	"github.com/masseelch/elk/internal/fridge/ent/fridge"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 	"github.com/masseelch/elk/internal/fridge/ent/predicate"
 
 	"entgo.io/ent"
@@ -25,8 +25,8 @@ const (
 
 	// Node types.
 	TypeCompartment = "Compartment"
-	TypeContent     = "Content"
 	TypeFridge      = "Fridge"
+	TypeItem        = "Item"
 )
 
 // CompartmentMutation represents an operation that mutates the Compartment nodes in the graph.
@@ -201,7 +201,7 @@ func (m *CompartmentMutation) ResetFridge() {
 	m.clearedfridge = false
 }
 
-// AddContentIDs adds the "contents" edge to the Content entity by ids.
+// AddContentIDs adds the "contents" edge to the Item entity by ids.
 func (m *CompartmentMutation) AddContentIDs(ids ...int) {
 	if m.contents == nil {
 		m.contents = make(map[int]struct{})
@@ -211,17 +211,17 @@ func (m *CompartmentMutation) AddContentIDs(ids ...int) {
 	}
 }
 
-// ClearContents clears the "contents" edge to the Content entity.
+// ClearContents clears the "contents" edge to the Item entity.
 func (m *CompartmentMutation) ClearContents() {
 	m.clearedcontents = true
 }
 
-// ContentsCleared reports if the "contents" edge to the Content entity was cleared.
+// ContentsCleared reports if the "contents" edge to the Item entity was cleared.
 func (m *CompartmentMutation) ContentsCleared() bool {
 	return m.clearedcontents
 }
 
-// RemoveContentIDs removes the "contents" edge to the Content entity by IDs.
+// RemoveContentIDs removes the "contents" edge to the Item entity by IDs.
 func (m *CompartmentMutation) RemoveContentIDs(ids ...int) {
 	if m.removedcontents == nil {
 		m.removedcontents = make(map[int]struct{})
@@ -232,7 +232,7 @@ func (m *CompartmentMutation) RemoveContentIDs(ids ...int) {
 	}
 }
 
-// RemovedContents returns the removed IDs of the "contents" edge to the Content entity.
+// RemovedContents returns the removed IDs of the "contents" edge to the Item entity.
 func (m *CompartmentMutation) RemovedContentsIDs() (ids []int) {
 	for id := range m.removedcontents {
 		ids = append(ids, id)
@@ -471,367 +471,6 @@ func (m *CompartmentMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Compartment edge %s", name)
-}
-
-// ContentMutation represents an operation that mutates the Content nodes in the graph.
-type ContentMutation struct {
-	config
-	op                 Op
-	typ                string
-	id                 *int
-	name               *string
-	clearedFields      map[string]struct{}
-	compartment        *int
-	clearedcompartment bool
-	done               bool
-	oldValue           func(context.Context) (*Content, error)
-	predicates         []predicate.Content
-}
-
-var _ ent.Mutation = (*ContentMutation)(nil)
-
-// contentOption allows management of the mutation configuration using functional options.
-type contentOption func(*ContentMutation)
-
-// newContentMutation creates new mutation for the Content entity.
-func newContentMutation(c config, op Op, opts ...contentOption) *ContentMutation {
-	m := &ContentMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeContent,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withContentID sets the ID field of the mutation.
-func withContentID(id int) contentOption {
-	return func(m *ContentMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Content
-		)
-		m.oldValue = func(ctx context.Context) (*Content, error) {
-			once.Do(func() {
-				if m.done {
-					err = fmt.Errorf("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Content.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withContent sets the old Content of the mutation.
-func withContent(node *Content) contentOption {
-	return func(m *ContentMutation) {
-		m.oldValue = func(context.Context) (*Content, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m ContentMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m ContentMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *ContentMutation) ID() (id int, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// SetName sets the "name" field.
-func (m *ContentMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *ContentMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the Content entity.
-// If the Content object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContentMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *ContentMutation) ResetName() {
-	m.name = nil
-}
-
-// SetCompartmentID sets the "compartment" edge to the Compartment entity by id.
-func (m *ContentMutation) SetCompartmentID(id int) {
-	m.compartment = &id
-}
-
-// ClearCompartment clears the "compartment" edge to the Compartment entity.
-func (m *ContentMutation) ClearCompartment() {
-	m.clearedcompartment = true
-}
-
-// CompartmentCleared reports if the "compartment" edge to the Compartment entity was cleared.
-func (m *ContentMutation) CompartmentCleared() bool {
-	return m.clearedcompartment
-}
-
-// CompartmentID returns the "compartment" edge ID in the mutation.
-func (m *ContentMutation) CompartmentID() (id int, exists bool) {
-	if m.compartment != nil {
-		return *m.compartment, true
-	}
-	return
-}
-
-// CompartmentIDs returns the "compartment" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CompartmentID instead. It exists only for internal usage by the builders.
-func (m *ContentMutation) CompartmentIDs() (ids []int) {
-	if id := m.compartment; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetCompartment resets all changes to the "compartment" edge.
-func (m *ContentMutation) ResetCompartment() {
-	m.compartment = nil
-	m.clearedcompartment = false
-}
-
-// Where appends a list predicates to the ContentMutation builder.
-func (m *ContentMutation) Where(ps ...predicate.Content) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// Op returns the operation name.
-func (m *ContentMutation) Op() Op {
-	return m.op
-}
-
-// Type returns the node type of this mutation (Content).
-func (m *ContentMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *ContentMutation) Fields() []string {
-	fields := make([]string, 0, 1)
-	if m.name != nil {
-		fields = append(fields, content.FieldName)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *ContentMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case content.FieldName:
-		return m.Name()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *ContentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case content.FieldName:
-		return m.OldName(ctx)
-	}
-	return nil, fmt.Errorf("unknown Content field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *ContentMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case content.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Content field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *ContentMutation) AddedFields() []string {
-	return nil
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *ContentMutation) AddedField(name string) (ent.Value, bool) {
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *ContentMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown Content numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *ContentMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *ContentMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *ContentMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Content nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *ContentMutation) ResetField(name string) error {
-	switch name {
-	case content.FieldName:
-		m.ResetName()
-		return nil
-	}
-	return fmt.Errorf("unknown Content field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *ContentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.compartment != nil {
-		edges = append(edges, content.EdgeCompartment)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *ContentMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case content.EdgeCompartment:
-		if id := m.compartment; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *ContentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *ContentMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *ContentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedcompartment {
-		edges = append(edges, content.EdgeCompartment)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *ContentMutation) EdgeCleared(name string) bool {
-	switch name {
-	case content.EdgeCompartment:
-		return m.clearedcompartment
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *ContentMutation) ClearEdge(name string) error {
-	switch name {
-	case content.EdgeCompartment:
-		m.ClearCompartment()
-		return nil
-	}
-	return fmt.Errorf("unknown Content unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *ContentMutation) ResetEdge(name string) error {
-	switch name {
-	case content.EdgeCompartment:
-		m.ResetCompartment()
-		return nil
-	}
-	return fmt.Errorf("unknown Content edge %s", name)
 }
 
 // FridgeMutation represents an operation that mutates the Fridge nodes in the graph.
@@ -1217,4 +856,365 @@ func (m *FridgeMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Fridge edge %s", name)
+}
+
+// ItemMutation represents an operation that mutates the Item nodes in the graph.
+type ItemMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *int
+	name               *string
+	clearedFields      map[string]struct{}
+	compartment        *int
+	clearedcompartment bool
+	done               bool
+	oldValue           func(context.Context) (*Item, error)
+	predicates         []predicate.Item
+}
+
+var _ ent.Mutation = (*ItemMutation)(nil)
+
+// itemOption allows management of the mutation configuration using functional options.
+type itemOption func(*ItemMutation)
+
+// newItemMutation creates new mutation for the Item entity.
+func newItemMutation(c config, op Op, opts ...itemOption) *ItemMutation {
+	m := &ItemMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeItem,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withItemID sets the ID field of the mutation.
+func withItemID(id int) itemOption {
+	return func(m *ItemMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Item
+		)
+		m.oldValue = func(ctx context.Context) (*Item, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Item.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withItem sets the old Item of the mutation.
+func withItem(node *Item) itemOption {
+	return func(m *ItemMutation) {
+		m.oldValue = func(context.Context) (*Item, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ItemMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ItemMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ItemMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetName sets the "name" field.
+func (m *ItemMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *ItemMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *ItemMutation) ResetName() {
+	m.name = nil
+}
+
+// SetCompartmentID sets the "compartment" edge to the Compartment entity by id.
+func (m *ItemMutation) SetCompartmentID(id int) {
+	m.compartment = &id
+}
+
+// ClearCompartment clears the "compartment" edge to the Compartment entity.
+func (m *ItemMutation) ClearCompartment() {
+	m.clearedcompartment = true
+}
+
+// CompartmentCleared reports if the "compartment" edge to the Compartment entity was cleared.
+func (m *ItemMutation) CompartmentCleared() bool {
+	return m.clearedcompartment
+}
+
+// CompartmentID returns the "compartment" edge ID in the mutation.
+func (m *ItemMutation) CompartmentID() (id int, exists bool) {
+	if m.compartment != nil {
+		return *m.compartment, true
+	}
+	return
+}
+
+// CompartmentIDs returns the "compartment" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CompartmentID instead. It exists only for internal usage by the builders.
+func (m *ItemMutation) CompartmentIDs() (ids []int) {
+	if id := m.compartment; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCompartment resets all changes to the "compartment" edge.
+func (m *ItemMutation) ResetCompartment() {
+	m.compartment = nil
+	m.clearedcompartment = false
+}
+
+// Where appends a list predicates to the ItemMutation builder.
+func (m *ItemMutation) Where(ps ...predicate.Item) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ItemMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Item).
+func (m *ItemMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ItemMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.name != nil {
+		fields = append(fields, item.FieldName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ItemMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case item.FieldName:
+		return m.Name()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case item.FieldName:
+		return m.OldName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Item field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ItemMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case item.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Item field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ItemMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ItemMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ItemMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Item numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ItemMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ItemMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ItemMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Item nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ItemMutation) ResetField(name string) error {
+	switch name {
+	case item.FieldName:
+		m.ResetName()
+		return nil
+	}
+	return fmt.Errorf("unknown Item field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ItemMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.compartment != nil {
+		edges = append(edges, item.EdgeCompartment)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ItemMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case item.EdgeCompartment:
+		if id := m.compartment; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ItemMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ItemMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ItemMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedcompartment {
+		edges = append(edges, item.EdgeCompartment)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ItemMutation) EdgeCleared(name string) bool {
+	switch name {
+	case item.EdgeCompartment:
+		return m.clearedcompartment
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ItemMutation) ClearEdge(name string) error {
+	switch name {
+	case item.EdgeCompartment:
+		m.ClearCompartment()
+		return nil
+	}
+	return fmt.Errorf("unknown Item unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ItemMutation) ResetEdge(name string) error {
+	switch name {
+	case item.EdgeCompartment:
+		m.ResetCompartment()
+		return nil
+	}
+	return fmt.Errorf("unknown Item edge %s", name)
 }

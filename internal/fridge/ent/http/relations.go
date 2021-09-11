@@ -10,8 +10,8 @@ import (
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/fridge/ent"
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
 	"github.com/masseelch/elk/internal/fridge/ent/fridge"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 	"go.uber.org/zap"
 )
 
@@ -82,46 +82,12 @@ func (h CompartmentHandler) Contents(w http.ResponseWriter, r *http.Request) {
 	}
 	es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
 	if err != nil {
-		l.Error("error fetching contents from db", zap.Error(err))
+		l.Error("error fetching items from db", zap.Error(err))
 		InternalServerError(w, nil)
 		return
 	}
-	l.Info("contents rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewContent3310419308Views(es), w)
-}
-
-// Compartment fetches the ent.compartment attached to the ent.Content
-// identified by a given url-parameter from the database and renders it to the client.
-func (h ContentHandler) Compartment(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Compartment"))
-	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer")
-		return
-	}
-	// Create the query to fetch the compartment attached to this content
-	q := h.client.Content.Query().Where(content.ID(id)).QueryCompartment()
-	e, err := q.Only(r.Context())
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			NotFound(w, msg)
-		case ent.IsNotSingular(err):
-			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
-			BadRequest(w, msg)
-		default:
-			l.Error("could-not-read-content", zap.Error(err), zap.Int("id", id))
-			InternalServerError(w, nil)
-		}
-		return
-	}
-	l.Info("compartment rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewCompartment1151786357View(e), w)
+	l.Info("items rendered", zap.Int("amount", len(es)))
+	easyjson.MarshalToHTTPResponseWriter(NewItem1509516544Views(es), w)
 }
 
 // Compartments fetches the ent.compartments attached to the ent.Fridge
@@ -163,4 +129,38 @@ func (h FridgeHandler) Compartments(w http.ResponseWriter, r *http.Request) {
 	}
 	l.Info("compartments rendered", zap.Int("amount", len(es)))
 	easyjson.MarshalToHTTPResponseWriter(NewCompartment1151786357Views(es), w)
+}
+
+// Compartment fetches the ent.compartment attached to the ent.Item
+// identified by a given url-parameter from the database and renders it to the client.
+func (h ItemHandler) Compartment(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Compartment"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		BadRequest(w, "id must be an integer")
+		return
+	}
+	// Create the query to fetch the compartment attached to this item
+	q := h.client.Item.Query().Where(item.ID(id)).QueryCompartment()
+	e, err := q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			BadRequest(w, msg)
+		default:
+			l.Error("could-not-read-item", zap.Error(err), zap.Int("id", id))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	l.Info("compartment rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewCompartment1151786357View(e), w)
 }

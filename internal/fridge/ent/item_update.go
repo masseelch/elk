@@ -10,85 +10,85 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 	"github.com/masseelch/elk/internal/fridge/ent/predicate"
 )
 
-// ContentUpdate is the builder for updating Content entities.
-type ContentUpdate struct {
+// ItemUpdate is the builder for updating Item entities.
+type ItemUpdate struct {
 	config
 	hooks    []Hook
-	mutation *ContentMutation
+	mutation *ItemMutation
 }
 
-// Where appends a list predicates to the ContentUpdate builder.
-func (cu *ContentUpdate) Where(ps ...predicate.Content) *ContentUpdate {
-	cu.mutation.Where(ps...)
-	return cu
+// Where appends a list predicates to the ItemUpdate builder.
+func (iu *ItemUpdate) Where(ps ...predicate.Item) *ItemUpdate {
+	iu.mutation.Where(ps...)
+	return iu
 }
 
 // SetName sets the "name" field.
-func (cu *ContentUpdate) SetName(s string) *ContentUpdate {
-	cu.mutation.SetName(s)
-	return cu
+func (iu *ItemUpdate) SetName(s string) *ItemUpdate {
+	iu.mutation.SetName(s)
+	return iu
 }
 
 // SetCompartmentID sets the "compartment" edge to the Compartment entity by ID.
-func (cu *ContentUpdate) SetCompartmentID(id int) *ContentUpdate {
-	cu.mutation.SetCompartmentID(id)
-	return cu
+func (iu *ItemUpdate) SetCompartmentID(id int) *ItemUpdate {
+	iu.mutation.SetCompartmentID(id)
+	return iu
 }
 
 // SetNillableCompartmentID sets the "compartment" edge to the Compartment entity by ID if the given value is not nil.
-func (cu *ContentUpdate) SetNillableCompartmentID(id *int) *ContentUpdate {
+func (iu *ItemUpdate) SetNillableCompartmentID(id *int) *ItemUpdate {
 	if id != nil {
-		cu = cu.SetCompartmentID(*id)
+		iu = iu.SetCompartmentID(*id)
 	}
-	return cu
+	return iu
 }
 
 // SetCompartment sets the "compartment" edge to the Compartment entity.
-func (cu *ContentUpdate) SetCompartment(c *Compartment) *ContentUpdate {
-	return cu.SetCompartmentID(c.ID)
+func (iu *ItemUpdate) SetCompartment(c *Compartment) *ItemUpdate {
+	return iu.SetCompartmentID(c.ID)
 }
 
-// Mutation returns the ContentMutation object of the builder.
-func (cu *ContentUpdate) Mutation() *ContentMutation {
-	return cu.mutation
+// Mutation returns the ItemMutation object of the builder.
+func (iu *ItemUpdate) Mutation() *ItemMutation {
+	return iu.mutation
 }
 
 // ClearCompartment clears the "compartment" edge to the Compartment entity.
-func (cu *ContentUpdate) ClearCompartment() *ContentUpdate {
-	cu.mutation.ClearCompartment()
-	return cu
+func (iu *ItemUpdate) ClearCompartment() *ItemUpdate {
+	iu.mutation.ClearCompartment()
+	return iu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (cu *ContentUpdate) Save(ctx context.Context) (int, error) {
+func (iu *ItemUpdate) Save(ctx context.Context) (int, error) {
 	var (
 		err      error
 		affected int
 	)
-	if len(cu.hooks) == 0 {
-		affected, err = cu.sqlSave(ctx)
+	if len(iu.hooks) == 0 {
+		affected, err = iu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ContentMutation)
+			mutation, ok := m.(*ItemMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			cu.mutation = mutation
-			affected, err = cu.sqlSave(ctx)
+			iu.mutation = mutation
+			affected, err = iu.sqlSave(ctx)
 			mutation.done = true
 			return affected, err
 		})
-		for i := len(cu.hooks) - 1; i >= 0; i-- {
-			if cu.hooks[i] == nil {
+		for i := len(iu.hooks) - 1; i >= 0; i-- {
+			if iu.hooks[i] == nil {
 				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = cu.hooks[i](mut)
+			mut = iu.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, cu.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, iu.mutation); err != nil {
 			return 0, err
 		}
 	}
@@ -96,8 +96,8 @@ func (cu *ContentUpdate) Save(ctx context.Context) (int, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (cu *ContentUpdate) SaveX(ctx context.Context) int {
-	affected, err := cu.Save(ctx)
+func (iu *ItemUpdate) SaveX(ctx context.Context) int {
+	affected, err := iu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -105,49 +105,49 @@ func (cu *ContentUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (cu *ContentUpdate) Exec(ctx context.Context) error {
-	_, err := cu.Save(ctx)
+func (iu *ItemUpdate) Exec(ctx context.Context) error {
+	_, err := iu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cu *ContentUpdate) ExecX(ctx context.Context) {
-	if err := cu.Exec(ctx); err != nil {
+func (iu *ItemUpdate) ExecX(ctx context.Context) {
+	if err := iu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (cu *ContentUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   content.Table,
-			Columns: content.Columns,
+			Table:   item.Table,
+			Columns: item.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: content.FieldID,
+				Column: item.FieldID,
 			},
 		},
 	}
-	if ps := cu.mutation.predicates; len(ps) > 0 {
+	if ps := iu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := cu.mutation.Name(); ok {
+	if value, ok := iu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: content.FieldName,
+			Column: item.FieldName,
 		})
 	}
-	if cu.mutation.CompartmentCleared() {
+	if iu.mutation.CompartmentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   content.CompartmentTable,
-			Columns: []string{content.CompartmentColumn},
+			Table:   item.CompartmentTable,
+			Columns: []string{item.CompartmentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -158,12 +158,12 @@ func (cu *ContentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.CompartmentIDs(); len(nodes) > 0 {
+	if nodes := iu.mutation.CompartmentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   content.CompartmentTable,
-			Columns: []string{content.CompartmentColumn},
+			Table:   item.CompartmentTable,
+			Columns: []string{item.CompartmentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -177,9 +177,9 @@ func (cu *ContentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{content.Label}
+			err = &NotFoundError{item.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}
@@ -188,83 +188,83 @@ func (cu *ContentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// ContentUpdateOne is the builder for updating a single Content entity.
-type ContentUpdateOne struct {
+// ItemUpdateOne is the builder for updating a single Item entity.
+type ItemUpdateOne struct {
 	config
 	fields   []string
 	hooks    []Hook
-	mutation *ContentMutation
+	mutation *ItemMutation
 }
 
 // SetName sets the "name" field.
-func (cuo *ContentUpdateOne) SetName(s string) *ContentUpdateOne {
-	cuo.mutation.SetName(s)
-	return cuo
+func (iuo *ItemUpdateOne) SetName(s string) *ItemUpdateOne {
+	iuo.mutation.SetName(s)
+	return iuo
 }
 
 // SetCompartmentID sets the "compartment" edge to the Compartment entity by ID.
-func (cuo *ContentUpdateOne) SetCompartmentID(id int) *ContentUpdateOne {
-	cuo.mutation.SetCompartmentID(id)
-	return cuo
+func (iuo *ItemUpdateOne) SetCompartmentID(id int) *ItemUpdateOne {
+	iuo.mutation.SetCompartmentID(id)
+	return iuo
 }
 
 // SetNillableCompartmentID sets the "compartment" edge to the Compartment entity by ID if the given value is not nil.
-func (cuo *ContentUpdateOne) SetNillableCompartmentID(id *int) *ContentUpdateOne {
+func (iuo *ItemUpdateOne) SetNillableCompartmentID(id *int) *ItemUpdateOne {
 	if id != nil {
-		cuo = cuo.SetCompartmentID(*id)
+		iuo = iuo.SetCompartmentID(*id)
 	}
-	return cuo
+	return iuo
 }
 
 // SetCompartment sets the "compartment" edge to the Compartment entity.
-func (cuo *ContentUpdateOne) SetCompartment(c *Compartment) *ContentUpdateOne {
-	return cuo.SetCompartmentID(c.ID)
+func (iuo *ItemUpdateOne) SetCompartment(c *Compartment) *ItemUpdateOne {
+	return iuo.SetCompartmentID(c.ID)
 }
 
-// Mutation returns the ContentMutation object of the builder.
-func (cuo *ContentUpdateOne) Mutation() *ContentMutation {
-	return cuo.mutation
+// Mutation returns the ItemMutation object of the builder.
+func (iuo *ItemUpdateOne) Mutation() *ItemMutation {
+	return iuo.mutation
 }
 
 // ClearCompartment clears the "compartment" edge to the Compartment entity.
-func (cuo *ContentUpdateOne) ClearCompartment() *ContentUpdateOne {
-	cuo.mutation.ClearCompartment()
-	return cuo
+func (iuo *ItemUpdateOne) ClearCompartment() *ItemUpdateOne {
+	iuo.mutation.ClearCompartment()
+	return iuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (cuo *ContentUpdateOne) Select(field string, fields ...string) *ContentUpdateOne {
-	cuo.fields = append([]string{field}, fields...)
-	return cuo
+func (iuo *ItemUpdateOne) Select(field string, fields ...string) *ItemUpdateOne {
+	iuo.fields = append([]string{field}, fields...)
+	return iuo
 }
 
-// Save executes the query and returns the updated Content entity.
-func (cuo *ContentUpdateOne) Save(ctx context.Context) (*Content, error) {
+// Save executes the query and returns the updated Item entity.
+func (iuo *ItemUpdateOne) Save(ctx context.Context) (*Item, error) {
 	var (
 		err  error
-		node *Content
+		node *Item
 	)
-	if len(cuo.hooks) == 0 {
-		node, err = cuo.sqlSave(ctx)
+	if len(iuo.hooks) == 0 {
+		node, err = iuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ContentMutation)
+			mutation, ok := m.(*ItemMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			cuo.mutation = mutation
-			node, err = cuo.sqlSave(ctx)
+			iuo.mutation = mutation
+			node, err = iuo.sqlSave(ctx)
 			mutation.done = true
 			return node, err
 		})
-		for i := len(cuo.hooks) - 1; i >= 0; i-- {
-			if cuo.hooks[i] == nil {
+		for i := len(iuo.hooks) - 1; i >= 0; i-- {
+			if iuo.hooks[i] == nil {
 				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = cuo.hooks[i](mut)
+			mut = iuo.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, cuo.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, iuo.mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -272,8 +272,8 @@ func (cuo *ContentUpdateOne) Save(ctx context.Context) (*Content, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (cuo *ContentUpdateOne) SaveX(ctx context.Context) *Content {
-	node, err := cuo.Save(ctx)
+func (iuo *ItemUpdateOne) SaveX(ctx context.Context) *Item {
+	node, err := iuo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -281,66 +281,66 @@ func (cuo *ContentUpdateOne) SaveX(ctx context.Context) *Content {
 }
 
 // Exec executes the query on the entity.
-func (cuo *ContentUpdateOne) Exec(ctx context.Context) error {
-	_, err := cuo.Save(ctx)
+func (iuo *ItemUpdateOne) Exec(ctx context.Context) error {
+	_, err := iuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cuo *ContentUpdateOne) ExecX(ctx context.Context) {
-	if err := cuo.Exec(ctx); err != nil {
+func (iuo *ItemUpdateOne) ExecX(ctx context.Context) {
+	if err := iuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (cuo *ContentUpdateOne) sqlSave(ctx context.Context) (_node *Content, err error) {
+func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   content.Table,
-			Columns: content.Columns,
+			Table:   item.Table,
+			Columns: item.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: content.FieldID,
+				Column: item.FieldID,
 			},
 		},
 	}
-	id, ok := cuo.mutation.ID()
+	id, ok := iuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Content.ID for update")}
+		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Item.ID for update")}
 	}
 	_spec.Node.ID.Value = id
-	if fields := cuo.fields; len(fields) > 0 {
+	if fields := iuo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, content.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, item.FieldID)
 		for _, f := range fields {
-			if !content.ValidColumn(f) {
+			if !item.ValidColumn(f) {
 				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 			}
-			if f != content.FieldID {
+			if f != item.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)
 			}
 		}
 	}
-	if ps := cuo.mutation.predicates; len(ps) > 0 {
+	if ps := iuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := cuo.mutation.Name(); ok {
+	if value, ok := iuo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: content.FieldName,
+			Column: item.FieldName,
 		})
 	}
-	if cuo.mutation.CompartmentCleared() {
+	if iuo.mutation.CompartmentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   content.CompartmentTable,
-			Columns: []string{content.CompartmentColumn},
+			Table:   item.CompartmentTable,
+			Columns: []string{item.CompartmentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -351,12 +351,12 @@ func (cuo *ContentUpdateOne) sqlSave(ctx context.Context) (_node *Content, err e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.CompartmentIDs(); len(nodes) > 0 {
+	if nodes := iuo.mutation.CompartmentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   content.CompartmentTable,
-			Columns: []string{content.CompartmentColumn},
+			Table:   item.CompartmentTable,
+			Columns: []string{item.CompartmentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -370,12 +370,12 @@ func (cuo *ContentUpdateOne) sqlSave(ctx context.Context) (_node *Content, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Content{config: cuo.config}
+	_node = &Item{config: iuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, cuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, iuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{content.Label}
+			err = &NotFoundError{item.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}

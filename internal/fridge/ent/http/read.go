@@ -10,8 +10,8 @@ import (
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/fridge/ent"
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
 	"github.com/masseelch/elk/internal/fridge/ent/fridge"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 	"go.uber.org/zap"
 )
 
@@ -49,40 +49,6 @@ func (h *CompartmentHandler) Read(w http.ResponseWriter, r *http.Request) {
 	easyjson.MarshalToHTTPResponseWriter(NewCompartment1151786357View(e), w)
 }
 
-// Read fetches the ent.Content identified by a given url-parameter from the
-// database and renders it to the client.
-func (h *ContentHandler) Read(w http.ResponseWriter, r *http.Request) {
-	l := h.log.With(zap.String("method", "Read"))
-	// ID is URL parameter.
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
-		BadRequest(w, "id must be an integer")
-		return
-	}
-	// Create the query to fetch the Content
-	q := h.client.Content.Query().Where(content.ID(id))
-	e, err := q.Only(r.Context())
-	if err != nil {
-		switch {
-		case ent.IsNotFound(err):
-			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
-			NotFound(w, msg)
-		case ent.IsNotSingular(err):
-			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
-			BadRequest(w, msg)
-		default:
-			l.Error("could not read content", zap.Error(err), zap.Int("id", id))
-			InternalServerError(w, nil)
-		}
-		return
-	}
-	l.Info("content rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewContent3310419308View(e), w)
-}
-
 // Read fetches the ent.Fridge identified by a given url-parameter from the
 // database and renders it to the client.
 func (h *FridgeHandler) Read(w http.ResponseWriter, r *http.Request) {
@@ -115,4 +81,38 @@ func (h *FridgeHandler) Read(w http.ResponseWriter, r *http.Request) {
 	}
 	l.Info("fridge rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewFridge2716213877View(e), w)
+}
+
+// Read fetches the ent.Item identified by a given url-parameter from the
+// database and renders it to the client.
+func (h *ItemHandler) Read(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Read"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		BadRequest(w, "id must be an integer")
+		return
+	}
+	// Create the query to fetch the Item
+	q := h.client.Item.Query().Where(item.ID(id))
+	e, err := q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			BadRequest(w, msg)
+		default:
+			l.Error("could not read item", zap.Error(err), zap.Int("id", id))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	l.Info("item rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewItem1509516544View(e), w)
 }

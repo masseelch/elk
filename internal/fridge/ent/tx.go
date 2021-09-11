@@ -14,10 +14,10 @@ type Tx struct {
 	config
 	// Compartment is the client for interacting with the Compartment builders.
 	Compartment *CompartmentClient
-	// Content is the client for interacting with the Content builders.
-	Content *ContentClient
 	// Fridge is the client for interacting with the Fridge builders.
 	Fridge *FridgeClient
+	// Item is the client for interacting with the Item builders.
+	Item *ItemClient
 
 	// lazily loaded.
 	client     *Client
@@ -154,8 +154,8 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Compartment = NewCompartmentClient(tx.config)
-	tx.Content = NewContentClient(tx.config)
 	tx.Fridge = NewFridgeClient(tx.config)
+	tx.Item = NewItemClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -10,8 +10,8 @@ import (
 	"github.com/masseelch/elk/internal/fridge/ent/migrate"
 
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
 	"github.com/masseelch/elk/internal/fridge/ent/fridge"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -25,10 +25,10 @@ type Client struct {
 	Schema *migrate.Schema
 	// Compartment is the client for interacting with the Compartment builders.
 	Compartment *CompartmentClient
-	// Content is the client for interacting with the Content builders.
-	Content *ContentClient
 	// Fridge is the client for interacting with the Fridge builders.
 	Fridge *FridgeClient
+	// Item is the client for interacting with the Item builders.
+	Item *ItemClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -43,8 +43,8 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Compartment = NewCompartmentClient(c.config)
-	c.Content = NewContentClient(c.config)
 	c.Fridge = NewFridgeClient(c.config)
+	c.Item = NewItemClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -79,8 +79,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:         ctx,
 		config:      cfg,
 		Compartment: NewCompartmentClient(cfg),
-		Content:     NewContentClient(cfg),
 		Fridge:      NewFridgeClient(cfg),
+		Item:        NewItemClient(cfg),
 	}, nil
 }
 
@@ -100,8 +100,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:      cfg,
 		Compartment: NewCompartmentClient(cfg),
-		Content:     NewContentClient(cfg),
 		Fridge:      NewFridgeClient(cfg),
+		Item:        NewItemClient(cfg),
 	}, nil
 }
 
@@ -132,8 +132,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Compartment.Use(hooks...)
-	c.Content.Use(hooks...)
 	c.Fridge.Use(hooks...)
+	c.Item.Use(hooks...)
 }
 
 // CompartmentClient is a client for the Compartment schema.
@@ -238,13 +238,13 @@ func (c *CompartmentClient) QueryFridge(co *Compartment) *FridgeQuery {
 }
 
 // QueryContents queries the contents edge of a Compartment.
-func (c *CompartmentClient) QueryContents(co *Compartment) *ContentQuery {
-	query := &ContentQuery{config: c.config}
+func (c *CompartmentClient) QueryContents(co *Compartment) *ItemQuery {
+	query := &ItemQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(compartment.Table, compartment.FieldID, id),
-			sqlgraph.To(content.Table, content.FieldID),
+			sqlgraph.To(item.Table, item.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, compartment.ContentsTable, compartment.ContentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
@@ -256,112 +256,6 @@ func (c *CompartmentClient) QueryContents(co *Compartment) *ContentQuery {
 // Hooks returns the client hooks.
 func (c *CompartmentClient) Hooks() []Hook {
 	return c.hooks.Compartment
-}
-
-// ContentClient is a client for the Content schema.
-type ContentClient struct {
-	config
-}
-
-// NewContentClient returns a client for the Content from the given config.
-func NewContentClient(c config) *ContentClient {
-	return &ContentClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `content.Hooks(f(g(h())))`.
-func (c *ContentClient) Use(hooks ...Hook) {
-	c.hooks.Content = append(c.hooks.Content, hooks...)
-}
-
-// Create returns a create builder for Content.
-func (c *ContentClient) Create() *ContentCreate {
-	mutation := newContentMutation(c.config, OpCreate)
-	return &ContentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Content entities.
-func (c *ContentClient) CreateBulk(builders ...*ContentCreate) *ContentCreateBulk {
-	return &ContentCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Content.
-func (c *ContentClient) Update() *ContentUpdate {
-	mutation := newContentMutation(c.config, OpUpdate)
-	return &ContentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ContentClient) UpdateOne(co *Content) *ContentUpdateOne {
-	mutation := newContentMutation(c.config, OpUpdateOne, withContent(co))
-	return &ContentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ContentClient) UpdateOneID(id int) *ContentUpdateOne {
-	mutation := newContentMutation(c.config, OpUpdateOne, withContentID(id))
-	return &ContentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Content.
-func (c *ContentClient) Delete() *ContentDelete {
-	mutation := newContentMutation(c.config, OpDelete)
-	return &ContentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *ContentClient) DeleteOne(co *Content) *ContentDeleteOne {
-	return c.DeleteOneID(co.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *ContentClient) DeleteOneID(id int) *ContentDeleteOne {
-	builder := c.Delete().Where(content.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ContentDeleteOne{builder}
-}
-
-// Query returns a query builder for Content.
-func (c *ContentClient) Query() *ContentQuery {
-	return &ContentQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Content entity by its id.
-func (c *ContentClient) Get(ctx context.Context, id int) (*Content, error) {
-	return c.Query().Where(content.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ContentClient) GetX(ctx context.Context, id int) *Content {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryCompartment queries the compartment edge of a Content.
-func (c *ContentClient) QueryCompartment(co *Content) *CompartmentQuery {
-	query := &CompartmentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(content.Table, content.FieldID, id),
-			sqlgraph.To(compartment.Table, compartment.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, content.CompartmentTable, content.CompartmentColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ContentClient) Hooks() []Hook {
-	return c.hooks.Content
 }
 
 // FridgeClient is a client for the Fridge schema.
@@ -468,4 +362,110 @@ func (c *FridgeClient) QueryCompartments(f *Fridge) *CompartmentQuery {
 // Hooks returns the client hooks.
 func (c *FridgeClient) Hooks() []Hook {
 	return c.hooks.Fridge
+}
+
+// ItemClient is a client for the Item schema.
+type ItemClient struct {
+	config
+}
+
+// NewItemClient returns a client for the Item from the given config.
+func NewItemClient(c config) *ItemClient {
+	return &ItemClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `item.Hooks(f(g(h())))`.
+func (c *ItemClient) Use(hooks ...Hook) {
+	c.hooks.Item = append(c.hooks.Item, hooks...)
+}
+
+// Create returns a create builder for Item.
+func (c *ItemClient) Create() *ItemCreate {
+	mutation := newItemMutation(c.config, OpCreate)
+	return &ItemCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Item entities.
+func (c *ItemClient) CreateBulk(builders ...*ItemCreate) *ItemCreateBulk {
+	return &ItemCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Item.
+func (c *ItemClient) Update() *ItemUpdate {
+	mutation := newItemMutation(c.config, OpUpdate)
+	return &ItemUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ItemClient) UpdateOne(i *Item) *ItemUpdateOne {
+	mutation := newItemMutation(c.config, OpUpdateOne, withItem(i))
+	return &ItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ItemClient) UpdateOneID(id int) *ItemUpdateOne {
+	mutation := newItemMutation(c.config, OpUpdateOne, withItemID(id))
+	return &ItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Item.
+func (c *ItemClient) Delete() *ItemDelete {
+	mutation := newItemMutation(c.config, OpDelete)
+	return &ItemDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ItemClient) DeleteOne(i *Item) *ItemDeleteOne {
+	return c.DeleteOneID(i.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ItemClient) DeleteOneID(id int) *ItemDeleteOne {
+	builder := c.Delete().Where(item.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ItemDeleteOne{builder}
+}
+
+// Query returns a query builder for Item.
+func (c *ItemClient) Query() *ItemQuery {
+	return &ItemQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Item entity by its id.
+func (c *ItemClient) Get(ctx context.Context, id int) (*Item, error) {
+	return c.Query().Where(item.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ItemClient) GetX(ctx context.Context, id int) *Item {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCompartment queries the compartment edge of a Item.
+func (c *ItemClient) QueryCompartment(i *Item) *CompartmentQuery {
+	query := &CompartmentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := i.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, id),
+			sqlgraph.To(compartment.Table, compartment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, item.CompartmentTable, item.CompartmentColumn),
+		)
+		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ItemClient) Hooks() []Hook {
+	return c.hooks.Item
 }

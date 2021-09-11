@@ -24,6 +24,6 @@ func (Compartment) Edges() []ent.Edge {
 		edge.From("fridge", Fridge.Type).
 			Ref("compartments").
 			Unique(),
-		edge.To("contents", Content.Type),
+		edge.To("contents", Item.Type),
 	}
 }

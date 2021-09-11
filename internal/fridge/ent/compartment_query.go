@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
 	"github.com/masseelch/elk/internal/fridge/ent/fridge"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 	"github.com/masseelch/elk/internal/fridge/ent/predicate"
 )
 
@@ -29,7 +29,7 @@ type CompartmentQuery struct {
 	predicates []predicate.Compartment
 	// eager-loading edges.
 	withFridge   *FridgeQuery
-	withContents *ContentQuery
+	withContents *ItemQuery
 	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -90,8 +90,8 @@ func (cq *CompartmentQuery) QueryFridge() *FridgeQuery {
 }
 
 // QueryContents chains the current query on the "contents" edge.
-func (cq *CompartmentQuery) QueryContents() *ContentQuery {
-	query := &ContentQuery{config: cq.config}
+func (cq *CompartmentQuery) QueryContents() *ItemQuery {
+	query := &ItemQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -102,7 +102,7 @@ func (cq *CompartmentQuery) QueryContents() *ContentQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(compartment.Table, compartment.FieldID, selector),
-			sqlgraph.To(content.Table, content.FieldID),
+			sqlgraph.To(item.Table, item.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, compartment.ContentsTable, compartment.ContentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
@@ -313,8 +313,8 @@ func (cq *CompartmentQuery) WithFridge(opts ...func(*FridgeQuery)) *CompartmentQ
 
 // WithContents tells the query-builder to eager-load the nodes that are connected to
 // the "contents" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CompartmentQuery) WithContents(opts ...func(*ContentQuery)) *CompartmentQuery {
-	query := &ContentQuery{config: cq.config}
+func (cq *CompartmentQuery) WithContents(opts ...func(*ItemQuery)) *CompartmentQuery {
+	query := &ItemQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -454,10 +454,10 @@ func (cq *CompartmentQuery) sqlAll(ctx context.Context) ([]*Compartment, error) 
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Contents = []*Content{}
+			nodes[i].Edges.Contents = []*Item{}
 		}
 		query.withFKs = true
-		query.Where(predicate.Content(func(s *sql.Selector) {
+		query.Where(predicate.Item(func(s *sql.Selector) {
 			s.Where(sql.InValues(compartment.ContentsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)

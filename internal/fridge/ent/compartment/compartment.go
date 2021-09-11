@@ -23,10 +23,10 @@ const (
 	// FridgeColumn is the table column denoting the fridge relation/edge.
 	FridgeColumn = "fridge_compartments"
 	// ContentsTable is the table that holds the contents relation/edge.
-	ContentsTable = "contents"
-	// ContentsInverseTable is the table name for the Content entity.
-	// It exists in this package in order to avoid circular dependency with the "content" package.
-	ContentsInverseTable = "contents"
+	ContentsTable = "items"
+	// ContentsInverseTable is the table name for the Item entity.
+	// It exists in this package in order to avoid circular dependency with the "item" package.
+	ContentsInverseTable = "items"
 	// ContentsColumn is the table column denoting the contents relation/edge.
 	ContentsColumn = "compartment_contents"
 )

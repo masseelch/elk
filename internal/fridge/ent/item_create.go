@@ -10,81 +10,81 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 )
 
-// ContentCreate is the builder for creating a Content entity.
-type ContentCreate struct {
+// ItemCreate is the builder for creating a Item entity.
+type ItemCreate struct {
 	config
-	mutation *ContentMutation
+	mutation *ItemMutation
 	hooks    []Hook
 }
 
 // SetName sets the "name" field.
-func (cc *ContentCreate) SetName(s string) *ContentCreate {
-	cc.mutation.SetName(s)
-	return cc
+func (ic *ItemCreate) SetName(s string) *ItemCreate {
+	ic.mutation.SetName(s)
+	return ic
 }
 
 // SetCompartmentID sets the "compartment" edge to the Compartment entity by ID.
-func (cc *ContentCreate) SetCompartmentID(id int) *ContentCreate {
-	cc.mutation.SetCompartmentID(id)
-	return cc
+func (ic *ItemCreate) SetCompartmentID(id int) *ItemCreate {
+	ic.mutation.SetCompartmentID(id)
+	return ic
 }
 
 // SetNillableCompartmentID sets the "compartment" edge to the Compartment entity by ID if the given value is not nil.
-func (cc *ContentCreate) SetNillableCompartmentID(id *int) *ContentCreate {
+func (ic *ItemCreate) SetNillableCompartmentID(id *int) *ItemCreate {
 	if id != nil {
-		cc = cc.SetCompartmentID(*id)
+		ic = ic.SetCompartmentID(*id)
 	}
-	return cc
+	return ic
 }
 
 // SetCompartment sets the "compartment" edge to the Compartment entity.
-func (cc *ContentCreate) SetCompartment(c *Compartment) *ContentCreate {
-	return cc.SetCompartmentID(c.ID)
+func (ic *ItemCreate) SetCompartment(c *Compartment) *ItemCreate {
+	return ic.SetCompartmentID(c.ID)
 }
 
-// Mutation returns the ContentMutation object of the builder.
-func (cc *ContentCreate) Mutation() *ContentMutation {
-	return cc.mutation
+// Mutation returns the ItemMutation object of the builder.
+func (ic *ItemCreate) Mutation() *ItemMutation {
+	return ic.mutation
 }
 
-// Save creates the Content in the database.
-func (cc *ContentCreate) Save(ctx context.Context) (*Content, error) {
+// Save creates the Item in the database.
+func (ic *ItemCreate) Save(ctx context.Context) (*Item, error) {
 	var (
 		err  error
-		node *Content
+		node *Item
 	)
-	if len(cc.hooks) == 0 {
-		if err = cc.check(); err != nil {
+	if len(ic.hooks) == 0 {
+		if err = ic.check(); err != nil {
 			return nil, err
 		}
-		node, err = cc.sqlSave(ctx)
+		node, err = ic.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ContentMutation)
+			mutation, ok := m.(*ItemMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
-			if err = cc.check(); err != nil {
+			if err = ic.check(); err != nil {
 				return nil, err
 			}
-			cc.mutation = mutation
-			if node, err = cc.sqlSave(ctx); err != nil {
+			ic.mutation = mutation
+			if node, err = ic.sqlSave(ctx); err != nil {
 				return nil, err
 			}
 			mutation.id = &node.ID
 			mutation.done = true
 			return node, err
 		})
-		for i := len(cc.hooks) - 1; i >= 0; i-- {
-			if cc.hooks[i] == nil {
+		for i := len(ic.hooks) - 1; i >= 0; i-- {
+			if ic.hooks[i] == nil {
 				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
 			}
-			mut = cc.hooks[i](mut)
+			mut = ic.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, cc.mutation); err != nil {
+		if _, err := mut.Mutate(ctx, ic.mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -92,8 +92,8 @@ func (cc *ContentCreate) Save(ctx context.Context) (*Content, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (cc *ContentCreate) SaveX(ctx context.Context) *Content {
-	v, err := cc.Save(ctx)
+func (ic *ItemCreate) SaveX(ctx context.Context) *Item {
+	v, err := ic.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -101,29 +101,29 @@ func (cc *ContentCreate) SaveX(ctx context.Context) *Content {
 }
 
 // Exec executes the query.
-func (cc *ContentCreate) Exec(ctx context.Context) error {
-	_, err := cc.Save(ctx)
+func (ic *ItemCreate) Exec(ctx context.Context) error {
+	_, err := ic.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cc *ContentCreate) ExecX(ctx context.Context) {
-	if err := cc.Exec(ctx); err != nil {
+func (ic *ItemCreate) ExecX(ctx context.Context) {
+	if err := ic.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (cc *ContentCreate) check() error {
-	if _, ok := cc.mutation.Name(); !ok {
+func (ic *ItemCreate) check() error {
+	if _, ok := ic.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
 	return nil
 }
 
-func (cc *ContentCreate) sqlSave(ctx context.Context) (*Content, error) {
-	_node, _spec := cc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
+func (ic *ItemCreate) sqlSave(ctx context.Context) (*Item, error) {
+	_node, _spec := ic.createSpec()
+	if err := sqlgraph.CreateNode(ctx, ic.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{err.Error(), err}
 		}
@@ -134,31 +134,31 @@ func (cc *ContentCreate) sqlSave(ctx context.Context) (*Content, error) {
 	return _node, nil
 }
 
-func (cc *ContentCreate) createSpec() (*Content, *sqlgraph.CreateSpec) {
+func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Content{config: cc.config}
+		_node = &Item{config: ic.config}
 		_spec = &sqlgraph.CreateSpec{
-			Table: content.Table,
+			Table: item.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeInt,
-				Column: content.FieldID,
+				Column: item.FieldID,
 			},
 		}
 	)
-	if value, ok := cc.mutation.Name(); ok {
+	if value, ok := ic.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: content.FieldName,
+			Column: item.FieldName,
 		})
 		_node.Name = value
 	}
-	if nodes := cc.mutation.CompartmentIDs(); len(nodes) > 0 {
+	if nodes := ic.mutation.CompartmentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   content.CompartmentTable,
-			Columns: []string{content.CompartmentColumn},
+			Table:   item.CompartmentTable,
+			Columns: []string{item.CompartmentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -176,22 +176,22 @@ func (cc *ContentCreate) createSpec() (*Content, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
-// ContentCreateBulk is the builder for creating many Content entities in bulk.
-type ContentCreateBulk struct {
+// ItemCreateBulk is the builder for creating many Item entities in bulk.
+type ItemCreateBulk struct {
 	config
-	builders []*ContentCreate
+	builders []*ItemCreate
 }
 
-// Save creates the Content entities in the database.
-func (ccb *ContentCreateBulk) Save(ctx context.Context) ([]*Content, error) {
-	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
-	nodes := make([]*Content, len(ccb.builders))
-	mutators := make([]Mutator, len(ccb.builders))
-	for i := range ccb.builders {
+// Save creates the Item entities in the database.
+func (icb *ItemCreateBulk) Save(ctx context.Context) ([]*Item, error) {
+	specs := make([]*sqlgraph.CreateSpec, len(icb.builders))
+	nodes := make([]*Item, len(icb.builders))
+	mutators := make([]Mutator, len(icb.builders))
+	for i := range icb.builders {
 		func(i int, root context.Context) {
-			builder := ccb.builders[i]
+			builder := icb.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*ContentMutation)
+				mutation, ok := m.(*ItemMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -202,11 +202,11 @@ func (ccb *ContentCreateBulk) Save(ctx context.Context) ([]*Content, error) {
 				nodes[i], specs[i] = builder.createSpec()
 				var err error
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, ccb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, icb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, ccb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, icb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{err.Error(), err}
 						}
@@ -230,7 +230,7 @@ func (ccb *ContentCreateBulk) Save(ctx context.Context) ([]*Content, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, ccb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, icb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -238,8 +238,8 @@ func (ccb *ContentCreateBulk) Save(ctx context.Context) ([]*Content, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ccb *ContentCreateBulk) SaveX(ctx context.Context) []*Content {
-	v, err := ccb.Save(ctx)
+func (icb *ItemCreateBulk) SaveX(ctx context.Context) []*Item {
+	v, err := icb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -247,14 +247,14 @@ func (ccb *ContentCreateBulk) SaveX(ctx context.Context) []*Content {
 }
 
 // Exec executes the query.
-func (ccb *ContentCreateBulk) Exec(ctx context.Context) error {
-	_, err := ccb.Save(ctx)
+func (icb *ItemCreateBulk) Exec(ctx context.Context) error {
+	_, err := icb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ccb *ContentCreateBulk) ExecX(ctx context.Context) {
-	if err := ccb.Exec(ctx); err != nil {
+func (icb *ItemCreateBulk) ExecX(ctx context.Context) {
+	if err := icb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

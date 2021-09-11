@@ -38,8 +38,8 @@ func (h CompartmentHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// Delete removes a ent.Content from the database.
-func (h ContentHandler) Delete(w http.ResponseWriter, r *http.Request) {
+// Delete removes a ent.Item from the database.
+func (h ItemHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	l := h.log.With(zap.String("method", "Delete"))
 	// ID is URL parameter.
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -48,7 +48,7 @@ func (h ContentHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		BadRequest(w, "id must be an integer")
 		return
 	}
-	err = h.client.Content.DeleteOneID(id).Exec(r.Context())
+	err = h.client.Item.DeleteOneID(id).Exec(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
@@ -56,11 +56,11 @@ func (h ContentHandler) Delete(w http.ResponseWriter, r *http.Request) {
 			l.Info(msg, zap.Error(err), zap.Int("id", id))
 			NotFound(w, msg)
 		default:
-			l.Error("could-not-delete-content", zap.Error(err), zap.Int("id", id))
+			l.Error("could-not-delete-item", zap.Error(err), zap.Int("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("content deleted", zap.Int("id", id))
+	l.Info("item deleted", zap.Int("id", id))
 	w.WriteHeader(http.StatusNoContent)
 }

@@ -9,8 +9,8 @@ import (
 // Compartment is the predicate function for compartment builders.
 type Compartment func(*sql.Selector)
 
-// Content is the predicate function for content builders.
-type Content func(*sql.Selector)
-
 // Fridge is the predicate function for fridge builders.
 type Fridge func(*sql.Selector)
+
+// Item is the predicate function for item builders.
+type Item func(*sql.Selector)

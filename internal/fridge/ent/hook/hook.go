@@ -22,19 +22,6 @@ func (f CompartmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return f(ctx, mv)
 }
 
-// The ContentFunc type is an adapter to allow the use of ordinary
-// function as Content mutator.
-type ContentFunc func(context.Context, *ent.ContentMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ContentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.ContentMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ContentMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The FridgeFunc type is an adapter to allow the use of ordinary
 // function as Fridge mutator.
 type FridgeFunc func(context.Context, *ent.FridgeMutation) (ent.Value, error)
@@ -44,6 +31,19 @@ func (f FridgeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	mv, ok := m.(*ent.FridgeMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FridgeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The ItemFunc type is an adapter to allow the use of ordinary
+// function as Item mutator.
+type ItemFunc func(context.Context, *ent.ItemMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ItemFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ItemMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ItemMutation", m)
 	}
 	return f(ctx, mv)
 }

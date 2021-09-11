@@ -16,18 +16,6 @@ type CompartmentUpdateRequest struct {
 	Contents []int   `json:"contents"`
 }
 
-// Payload of a ent.Content create request.
-type ContentCreateRequest struct {
-	Name        *string `json:"name"`
-	Compartment *int    `json:"compartment"`
-}
-
-// Payload of a ent.Content update request.
-type ContentUpdateRequest struct {
-	Name        *string `json:"name"`
-	Compartment *int    `json:"compartment"`
-}
-
 // Payload of a ent.Fridge create request.
 type FridgeCreateRequest struct {
 	Title        *string `json:"title"`
@@ -38,4 +26,16 @@ type FridgeCreateRequest struct {
 type FridgeUpdateRequest struct {
 	Title        *string `json:"title"`
 	Compartments []int   `json:"compartments"`
+}
+
+// Payload of a ent.Item create request.
+type ItemCreateRequest struct {
+	Name        *string `json:"name"`
+	Compartment *int    `json:"compartment"`
+}
+
+// Payload of a ent.Item update request.
+type ItemUpdateRequest struct {
+	Name        *string `json:"name"`
+	Compartment *int    `json:"compartment"`
 }

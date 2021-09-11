@@ -23,15 +23,6 @@ func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
 		r.Get("/{id}/fridge", compartmentHandler.Fridge)
 		r.Get("/{id}/contents", compartmentHandler.Contents)
 	})
-	contentHandler := NewContentHandler(c, l)
-	r.Route("/contents", func(r chi.Router) {
-		r.Post("/", contentHandler.Create)
-		r.Get("/{id}", contentHandler.Read)
-		r.Patch("/{id}", contentHandler.Update)
-		r.Delete("/{id}", contentHandler.Delete)
-		r.Get("/", contentHandler.List)
-		r.Get("/{id}/compartment", contentHandler.Compartment)
-	})
 	fridgeHandler := NewFridgeHandler(c, l)
 	r.Route("/fridges", func(r chi.Router) {
 		r.Post("/", fridgeHandler.Create)
@@ -39,6 +30,15 @@ func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
 		r.Patch("/{id}", fridgeHandler.Update)
 		r.Get("/", fridgeHandler.List)
 		r.Get("/{id}/compartments", fridgeHandler.Compartments)
+	})
+	itemHandler := NewItemHandler(c, l)
+	r.Route("/items", func(r chi.Router) {
+		r.Post("/", itemHandler.Create)
+		r.Get("/{id}", itemHandler.Read)
+		r.Patch("/{id}", itemHandler.Update)
+		r.Delete("/{id}", itemHandler.Delete)
+		r.Get("/", itemHandler.List)
+		r.Get("/{id}/compartment", itemHandler.Compartment)
 	})
 	return r
 }
@@ -56,19 +56,6 @@ func NewCompartmentHandler(c *ent.Client, l *zap.Logger) *CompartmentHandler {
 	}
 }
 
-// ContentHandler handles http crud operations on ent.Content.
-type ContentHandler struct {
-	client *ent.Client
-	log    *zap.Logger
-}
-
-func NewContentHandler(c *ent.Client, l *zap.Logger) *ContentHandler {
-	return &ContentHandler{
-		client: c,
-		log:    l.With(zap.String("handler", "ContentHandler")),
-	}
-}
-
 // FridgeHandler handles http crud operations on ent.Fridge.
 type FridgeHandler struct {
 	client *ent.Client
@@ -79,6 +66,19 @@ func NewFridgeHandler(c *ent.Client, l *zap.Logger) *FridgeHandler {
 	return &FridgeHandler{
 		client: c,
 		log:    l.With(zap.String("handler", "FridgeHandler")),
+	}
+}
+
+// ItemHandler handles http crud operations on ent.Item.
+type ItemHandler struct {
+	client *ent.Client
+	log    *zap.Logger
+}
+
+func NewItemHandler(c *ent.Client, l *zap.Logger) *ItemHandler {
+	return &ItemHandler{
+		client: c,
+		log:    l.With(zap.String("handler", "ItemHandler")),
 	}
 }
 

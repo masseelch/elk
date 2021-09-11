@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/masseelch/elk/internal/fridge/ent/compartment"
-	"github.com/masseelch/elk/internal/fridge/ent/content"
 	"github.com/masseelch/elk/internal/fridge/ent/fridge"
+	"github.com/masseelch/elk/internal/fridge/ent/item"
 )
 
 // CompartmentCreate is the builder for creating a Compartment entity.
@@ -46,17 +46,17 @@ func (cc *CompartmentCreate) SetFridge(f *Fridge) *CompartmentCreate {
 	return cc.SetFridgeID(f.ID)
 }
 
-// AddContentIDs adds the "contents" edge to the Content entity by IDs.
+// AddContentIDs adds the "contents" edge to the Item entity by IDs.
 func (cc *CompartmentCreate) AddContentIDs(ids ...int) *CompartmentCreate {
 	cc.mutation.AddContentIDs(ids...)
 	return cc
 }
 
-// AddContents adds the "contents" edges to the Content entity.
-func (cc *CompartmentCreate) AddContents(c ...*Content) *CompartmentCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddContents adds the "contents" edges to the Item entity.
+func (cc *CompartmentCreate) AddContents(i ...*Item) *CompartmentCreate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
 	}
 	return cc.AddContentIDs(ids...)
 }
@@ -199,7 +199,7 @@ func (cc *CompartmentCreate) createSpec() (*Compartment, *sqlgraph.CreateSpec) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: content.FieldID,
+					Column: item.FieldID,
 				},
 			},
 		}
