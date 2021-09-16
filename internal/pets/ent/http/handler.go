@@ -13,51 +13,16 @@ import (
 // NewHandler returns a ready to use handler with all generated endpoints mounted.
 func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
 	r := chi.NewRouter()
-	badgeHandler := NewBadgeHandler(c, l)
-	r.Route("/badges", func(r chi.Router) {
-		r.Post("/", badgeHandler.Create)
-		r.Get("/{id}", badgeHandler.Read)
-		r.Patch("/{id}", badgeHandler.Update)
-		r.Delete("/{id}", badgeHandler.Delete)
-		r.Get("/", badgeHandler.List)
-		r.Get("/{id}/wearer", badgeHandler.Wearer)
-	})
-	petHandler := NewPetHandler(c, l)
-	r.Route("/pets", func(r chi.Router) {
-		r.Post("/", petHandler.Create)
-		r.Get("/{id}", petHandler.Read)
-		r.Patch("/{id}", petHandler.Update)
-		r.Delete("/{id}", petHandler.Delete)
-		r.Get("/", petHandler.List)
-		r.Get("/{id}/badge", petHandler.Badge)
-		r.Get("/{id}/protege", petHandler.Protege)
-		r.Get("/{id}/mentor", petHandler.Mentor)
-		r.Get("/{id}/spouse", petHandler.Spouse)
-		r.Get("/{id}/toys", petHandler.Toys)
-		r.Get("/{id}/parent", petHandler.Parent)
-		r.Get("/{id}/children", petHandler.Children)
-		r.Get("/{id}/play-groups", petHandler.PlayGroups)
-		r.Get("/{id}/friends", petHandler.Friends)
-	})
-	play_groupHandler := NewPlayGroupHandler(c, l)
-	r.Route("/play-groups", func(r chi.Router) {
-		r.Post("/", play_groupHandler.Create)
-		r.Get("/{id}", play_groupHandler.Read)
-		r.Patch("/{id}", play_groupHandler.Update)
-		r.Delete("/{id}", play_groupHandler.Delete)
-		r.Get("/", play_groupHandler.List)
-		r.Get("/{id}/participants", play_groupHandler.Participants)
-	})
-	toyHandler := NewToyHandler(c, l)
-	r.Route("/toys", func(r chi.Router) {
-		r.Post("/", toyHandler.Create)
-		r.Get("/{id}", toyHandler.Read)
-		r.Patch("/{id}", toyHandler.Update)
-		r.Delete("/{id}", toyHandler.Delete)
-		r.Get("/", toyHandler.List)
-		r.Get("/{id}/owner", toyHandler.Owner)
-	})
+	MountRoutes(c, l, r)
 	return r
+}
+
+// MountRoutes mounts all generated routes on the given router.
+func MountRoutes(c *ent.Client, l *zap.Logger, r chi.Router) {
+	NewBadgeHandler(c, l).MountRoutes(r)
+	NewPetHandler(c, l).MountRoutes(r)
+	NewPlayGroupHandler(c, l).MountRoutes(r)
+	NewToyHandler(c, l).MountRoutes(r)
 }
 
 // BadgeHandler handles http crud operations on ent.Badge.
@@ -72,6 +37,33 @@ func NewBadgeHandler(c *ent.Client, l *zap.Logger) *BadgeHandler {
 		log:    l.With(zap.String("handler", "BadgeHandler")),
 	}
 }
+func (h *BadgeHandler) MountCreateRoute(r chi.Router) *BadgeHandler {
+	r.Post("/badges", h.Create)
+	return h
+}
+func (h *BadgeHandler) MountReadRoute(r chi.Router) *BadgeHandler {
+	r.Get("/badges/{id}", h.Read)
+	return h
+}
+func (h *BadgeHandler) MountUpdateRoute(r chi.Router) *BadgeHandler {
+	r.Patch("/badges/{id}", h.Update)
+	return h
+}
+func (h *BadgeHandler) MountDeleteRoute(r chi.Router) *BadgeHandler {
+	r.Delete("/badges/{id}", h.Delete)
+	return h
+}
+func (h *BadgeHandler) MountListRoute(r chi.Router) *BadgeHandler {
+	r.Get("/badges", h.List)
+	return h
+}
+func (h *BadgeHandler) MountWearerRoute(r chi.Router) *BadgeHandler {
+	r.Get("/badges/{id}/wearer", h.Wearer)
+	return h
+}
+func (h *BadgeHandler) MountRoutes(r chi.Router) {
+	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountDeleteRoute(r).MountListRoute(r).MountWearerRoute(r)
+}
 
 // PetHandler handles http crud operations on ent.Pet.
 type PetHandler struct {
@@ -84,6 +76,65 @@ func NewPetHandler(c *ent.Client, l *zap.Logger) *PetHandler {
 		client: c,
 		log:    l.With(zap.String("handler", "PetHandler")),
 	}
+}
+func (h *PetHandler) MountCreateRoute(r chi.Router) *PetHandler {
+	r.Post("/pets", h.Create)
+	return h
+}
+func (h *PetHandler) MountReadRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}", h.Read)
+	return h
+}
+func (h *PetHandler) MountUpdateRoute(r chi.Router) *PetHandler {
+	r.Patch("/pets/{id}", h.Update)
+	return h
+}
+func (h *PetHandler) MountDeleteRoute(r chi.Router) *PetHandler {
+	r.Delete("/pets/{id}", h.Delete)
+	return h
+}
+func (h *PetHandler) MountListRoute(r chi.Router) *PetHandler {
+	r.Get("/pets", h.List)
+	return h
+}
+func (h *PetHandler) MountBadgeRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/badge", h.Badge)
+	return h
+}
+func (h *PetHandler) MountProtegeRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/protege", h.Protege)
+	return h
+}
+func (h *PetHandler) MountMentorRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/mentor", h.Mentor)
+	return h
+}
+func (h *PetHandler) MountSpouseRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/spouse", h.Spouse)
+	return h
+}
+func (h *PetHandler) MountToysRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/toys", h.Toys)
+	return h
+}
+func (h *PetHandler) MountParentRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/parent", h.Parent)
+	return h
+}
+func (h *PetHandler) MountChildrenRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/children", h.Children)
+	return h
+}
+func (h *PetHandler) MountPlayGroupsRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/play-groups", h.PlayGroups)
+	return h
+}
+func (h *PetHandler) MountFriendsRoute(r chi.Router) *PetHandler {
+	r.Get("/pets/{id}/friends", h.Friends)
+	return h
+}
+func (h *PetHandler) MountRoutes(r chi.Router) {
+	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountDeleteRoute(r).MountListRoute(r).MountBadgeRoute(r).MountProtegeRoute(r).MountMentorRoute(r).MountSpouseRoute(r).MountToysRoute(r).MountParentRoute(r).MountChildrenRoute(r).MountPlayGroupsRoute(r).MountFriendsRoute(r)
 }
 
 // PlayGroupHandler handles http crud operations on ent.PlayGroup.
@@ -98,6 +149,33 @@ func NewPlayGroupHandler(c *ent.Client, l *zap.Logger) *PlayGroupHandler {
 		log:    l.With(zap.String("handler", "PlayGroupHandler")),
 	}
 }
+func (h *PlayGroupHandler) MountCreateRoute(r chi.Router) *PlayGroupHandler {
+	r.Post("/play-groups", h.Create)
+	return h
+}
+func (h *PlayGroupHandler) MountReadRoute(r chi.Router) *PlayGroupHandler {
+	r.Get("/play-groups/{id}", h.Read)
+	return h
+}
+func (h *PlayGroupHandler) MountUpdateRoute(r chi.Router) *PlayGroupHandler {
+	r.Patch("/play-groups/{id}", h.Update)
+	return h
+}
+func (h *PlayGroupHandler) MountDeleteRoute(r chi.Router) *PlayGroupHandler {
+	r.Delete("/play-groups/{id}", h.Delete)
+	return h
+}
+func (h *PlayGroupHandler) MountListRoute(r chi.Router) *PlayGroupHandler {
+	r.Get("/play-groups", h.List)
+	return h
+}
+func (h *PlayGroupHandler) MountParticipantsRoute(r chi.Router) *PlayGroupHandler {
+	r.Get("/play-groups/{id}/participants", h.Participants)
+	return h
+}
+func (h *PlayGroupHandler) MountRoutes(r chi.Router) {
+	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountDeleteRoute(r).MountListRoute(r).MountParticipantsRoute(r)
+}
 
 // ToyHandler handles http crud operations on ent.Toy.
 type ToyHandler struct {
@@ -110,6 +188,33 @@ func NewToyHandler(c *ent.Client, l *zap.Logger) *ToyHandler {
 		client: c,
 		log:    l.With(zap.String("handler", "ToyHandler")),
 	}
+}
+func (h *ToyHandler) MountCreateRoute(r chi.Router) *ToyHandler {
+	r.Post("/toys", h.Create)
+	return h
+}
+func (h *ToyHandler) MountReadRoute(r chi.Router) *ToyHandler {
+	r.Get("/toys/{id}", h.Read)
+	return h
+}
+func (h *ToyHandler) MountUpdateRoute(r chi.Router) *ToyHandler {
+	r.Patch("/toys/{id}", h.Update)
+	return h
+}
+func (h *ToyHandler) MountDeleteRoute(r chi.Router) *ToyHandler {
+	r.Delete("/toys/{id}", h.Delete)
+	return h
+}
+func (h *ToyHandler) MountListRoute(r chi.Router) *ToyHandler {
+	r.Get("/toys", h.List)
+	return h
+}
+func (h *ToyHandler) MountOwnerRoute(r chi.Router) *ToyHandler {
+	r.Get("/toys/{id}/owner", h.Owner)
+	return h
+}
+func (h *ToyHandler) MountRoutes(r chi.Router) {
+	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountDeleteRoute(r).MountListRoute(r).MountOwnerRoute(r)
 }
 
 func stripEntError(err error) string {

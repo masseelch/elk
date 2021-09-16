@@ -13,34 +13,15 @@ import (
 // NewHandler returns a ready to use handler with all generated endpoints mounted.
 func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
 	r := chi.NewRouter()
-	compartmentHandler := NewCompartmentHandler(c, l)
-	r.Route("/compartments", func(r chi.Router) {
-		r.Post("/", compartmentHandler.Create)
-		r.Get("/{id}", compartmentHandler.Read)
-		r.Patch("/{id}", compartmentHandler.Update)
-		r.Delete("/{id}", compartmentHandler.Delete)
-		r.Get("/", compartmentHandler.List)
-		r.Get("/{id}/fridge", compartmentHandler.Fridge)
-		r.Get("/{id}/contents", compartmentHandler.Contents)
-	})
-	fridgeHandler := NewFridgeHandler(c, l)
-	r.Route("/fridges", func(r chi.Router) {
-		r.Post("/", fridgeHandler.Create)
-		r.Get("/{id}", fridgeHandler.Read)
-		r.Patch("/{id}", fridgeHandler.Update)
-		r.Get("/", fridgeHandler.List)
-		r.Get("/{id}/compartments", fridgeHandler.Compartments)
-	})
-	itemHandler := NewItemHandler(c, l)
-	r.Route("/items", func(r chi.Router) {
-		r.Post("/", itemHandler.Create)
-		r.Get("/{id}", itemHandler.Read)
-		r.Patch("/{id}", itemHandler.Update)
-		r.Delete("/{id}", itemHandler.Delete)
-		r.Get("/", itemHandler.List)
-		r.Get("/{id}/compartment", itemHandler.Compartment)
-	})
+	MountRoutes(c, l, r)
 	return r
+}
+
+// MountRoutes mounts all generated routes on the given router.
+func MountRoutes(c *ent.Client, l *zap.Logger, r chi.Router) {
+	NewCompartmentHandler(c, l).MountRoutes(r)
+	NewFridgeHandler(c, l).MountRoutes(r)
+	NewItemHandler(c, l).MountRoutes(r)
 }
 
 // CompartmentHandler handles http crud operations on ent.Compartment.
@@ -55,6 +36,37 @@ func NewCompartmentHandler(c *ent.Client, l *zap.Logger) *CompartmentHandler {
 		log:    l.With(zap.String("handler", "CompartmentHandler")),
 	}
 }
+func (h *CompartmentHandler) MountCreateRoute(r chi.Router) *CompartmentHandler {
+	r.Post("/compartments", h.Create)
+	return h
+}
+func (h *CompartmentHandler) MountReadRoute(r chi.Router) *CompartmentHandler {
+	r.Get("/compartments/{id}", h.Read)
+	return h
+}
+func (h *CompartmentHandler) MountUpdateRoute(r chi.Router) *CompartmentHandler {
+	r.Patch("/compartments/{id}", h.Update)
+	return h
+}
+func (h *CompartmentHandler) MountDeleteRoute(r chi.Router) *CompartmentHandler {
+	r.Delete("/compartments/{id}", h.Delete)
+	return h
+}
+func (h *CompartmentHandler) MountListRoute(r chi.Router) *CompartmentHandler {
+	r.Get("/compartments", h.List)
+	return h
+}
+func (h *CompartmentHandler) MountFridgeRoute(r chi.Router) *CompartmentHandler {
+	r.Get("/compartments/{id}/fridge", h.Fridge)
+	return h
+}
+func (h *CompartmentHandler) MountContentsRoute(r chi.Router) *CompartmentHandler {
+	r.Get("/compartments/{id}/contents", h.Contents)
+	return h
+}
+func (h *CompartmentHandler) MountRoutes(r chi.Router) {
+	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountDeleteRoute(r).MountListRoute(r).MountFridgeRoute(r).MountContentsRoute(r)
+}
 
 // FridgeHandler handles http crud operations on ent.Fridge.
 type FridgeHandler struct {
@@ -68,6 +80,29 @@ func NewFridgeHandler(c *ent.Client, l *zap.Logger) *FridgeHandler {
 		log:    l.With(zap.String("handler", "FridgeHandler")),
 	}
 }
+func (h *FridgeHandler) MountCreateRoute(r chi.Router) *FridgeHandler {
+	r.Post("/fridges", h.Create)
+	return h
+}
+func (h *FridgeHandler) MountReadRoute(r chi.Router) *FridgeHandler {
+	r.Get("/fridges/{id}", h.Read)
+	return h
+}
+func (h *FridgeHandler) MountUpdateRoute(r chi.Router) *FridgeHandler {
+	r.Patch("/fridges/{id}", h.Update)
+	return h
+}
+func (h *FridgeHandler) MountListRoute(r chi.Router) *FridgeHandler {
+	r.Get("/fridges", h.List)
+	return h
+}
+func (h *FridgeHandler) MountCompartmentsRoute(r chi.Router) *FridgeHandler {
+	r.Get("/fridges/{id}/compartments", h.Compartments)
+	return h
+}
+func (h *FridgeHandler) MountRoutes(r chi.Router) {
+	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountListRoute(r).MountCompartmentsRoute(r)
+}
 
 // ItemHandler handles http crud operations on ent.Item.
 type ItemHandler struct {
@@ -80,6 +115,33 @@ func NewItemHandler(c *ent.Client, l *zap.Logger) *ItemHandler {
 		client: c,
 		log:    l.With(zap.String("handler", "ItemHandler")),
 	}
+}
+func (h *ItemHandler) MountCreateRoute(r chi.Router) *ItemHandler {
+	r.Post("/items", h.Create)
+	return h
+}
+func (h *ItemHandler) MountReadRoute(r chi.Router) *ItemHandler {
+	r.Get("/items/{id}", h.Read)
+	return h
+}
+func (h *ItemHandler) MountUpdateRoute(r chi.Router) *ItemHandler {
+	r.Patch("/items/{id}", h.Update)
+	return h
+}
+func (h *ItemHandler) MountDeleteRoute(r chi.Router) *ItemHandler {
+	r.Delete("/items/{id}", h.Delete)
+	return h
+}
+func (h *ItemHandler) MountListRoute(r chi.Router) *ItemHandler {
+	r.Get("/items", h.List)
+	return h
+}
+func (h *ItemHandler) MountCompartmentRoute(r chi.Router) *ItemHandler {
+	r.Get("/items/{id}/compartment", h.Compartment)
+	return h
+}
+func (h *ItemHandler) MountRoutes(r chi.Router) {
+	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountDeleteRoute(r).MountListRoute(r).MountCompartmentRoute(r)
 }
 
 func stripEntError(err error) string {
