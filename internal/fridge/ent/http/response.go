@@ -3,9 +3,6 @@
 package http
 
 import (
-	"bytes"
-	json "encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -170,23 +167,4 @@ func NewItem1509516544Views(es []*ent.Item) Item1509516544Views {
 		r[i] = NewItem1509516544View(e)
 	}
 	return r
-}
-
-func (e ErrResponse) MarshalJSON() ([]byte, error) {
-	buf := bytes.NewBufferString(fmt.Sprintf(`{"code":%d,"status":"%s"`, e.Code, e.Status))
-	if e.Errors != nil {
-		// If the Errors are of type error marshal Error.Error().
-		if err, ok := e.Errors.(error); ok {
-			buf.WriteString(fmt.Sprintf(`,"errors":"%s"`, err.Error()))
-		} else {
-			j, err := json.Marshal(e.Errors)
-			if err != nil {
-				return nil, err
-			}
-			buf.WriteString(`,"errors":`)
-			buf.Write(j)
-		}
-	}
-	buf.WriteRune('}')
-	return buf.Bytes(), nil
 }
