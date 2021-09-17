@@ -70,6 +70,14 @@ func NotFound(w http.ResponseWriter, msg interface{}) (int, error) {
 	}.MarshalToHTTPResponseWriter(w)
 }
 
+func Unauthorized(w http.ResponseWriter, msg interface{}) (int, error) {
+	return ErrResponse{
+		Code:   http.StatusUnauthorized,
+		Status: http.StatusText(http.StatusUnauthorized),
+		Errors: msg,
+	}.MarshalToHTTPResponseWriter(w)
+}
+
 type (
 	// Category4094953247View represents the data serialized for the following serialization group combinations:
 	// []

@@ -23,7 +23,7 @@
         return w.Write(d)
     }
 
-    {{ range (list "BadRequest" "Conflict" "Forbidden" "InternalServerError" "NotFound") }}
+    {{ range (list "BadRequest" "Conflict" "Forbidden" "InternalServerError" "NotFound" "Unauthorized") }}
         func {{ . }}(w http.ResponseWriter, msg interface{}) (int, error) {
             return ErrResponse{
                 Code: http.Status{{ . }},
