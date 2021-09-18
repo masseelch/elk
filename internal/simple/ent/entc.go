@@ -28,10 +28,10 @@ func main() {
 		log.Fatalf("running ent codegen: %v", err)
 	}
 
-	generateClient(err)
+	generateClient()
 }
 
-func generateClient(err error) {
+func generateClient() {
 	swagger, err := util.LoadSwagger("./openapi.json")
 	if err != nil {
 		log.Fatalf("Failed to load swagger %v", err)
@@ -48,7 +48,7 @@ func generateClient(err error) {
 		AliasTypes:         true,
 	})
 	if err != nil {
-		log.Fatalf("Generating client failed%v", err);
+		log.Fatalf("Generating client failed%v", err)
 	}
 
 	dir := filepath.Join(".", "stub")
