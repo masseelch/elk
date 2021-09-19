@@ -81,7 +81,7 @@ func (h CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("category rendered", zap.Uint64("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewCategory4094953247View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryView(e), w)
 }
 
 // Update updates a given ent.Collar and saves the changes to the database.
@@ -148,7 +148,7 @@ func (h CollarHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("collar rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCollarView(e), w)
 }
 
 // Update updates a given ent.Owner and saves the changes to the database.
@@ -217,7 +217,7 @@ func (h OwnerHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("owner rendered", zap.String("id", id.String()))
-	easyjson.MarshalToHTTPResponseWriter(NewOwner139708381View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerView(e), w)
 }
 
 // Update updates a given ent.Pet and saves the changes to the database.
@@ -293,5 +293,5 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.String("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPet359800019View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }

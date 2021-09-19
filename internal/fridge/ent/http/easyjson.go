@@ -17,181 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp(in *jlexer.Lexer, out *ItemUpdateRequest) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "name":
-			if in.IsNull() {
-				in.Skip()
-				out.Name = nil
-			} else {
-				if out.Name == nil {
-					out.Name = new(string)
-				}
-				*out.Name = string(in.String())
-			}
-		case "compartment":
-			if in.IsNull() {
-				in.Skip()
-				out.Compartment = nil
-			} else {
-				if out.Compartment == nil {
-					out.Compartment = new(int)
-				}
-				*out.Compartment = int(in.Int())
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp(out *jwriter.Writer, in ItemUpdateRequest) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"name\":"
-		out.RawString(prefix[1:])
-		if in.Name == nil {
-			out.RawString("null")
-		} else {
-			out.String(string(*in.Name))
-		}
-	}
-	{
-		const prefix string = ",\"compartment\":"
-		out.RawString(prefix)
-		if in.Compartment == nil {
-			out.RawString("null")
-		} else {
-			out.Int(int(*in.Compartment))
-		}
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ItemUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ItemUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp1(in *jlexer.Lexer, out *ItemCreateRequest) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "name":
-			if in.IsNull() {
-				in.Skip()
-				out.Name = nil
-			} else {
-				if out.Name == nil {
-					out.Name = new(string)
-				}
-				*out.Name = string(in.String())
-			}
-		case "compartment":
-			if in.IsNull() {
-				in.Skip()
-				out.Compartment = nil
-			} else {
-				if out.Compartment == nil {
-					out.Compartment = new(int)
-				}
-				*out.Compartment = int(in.Int())
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp1(out *jwriter.Writer, in ItemCreateRequest) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"name\":"
-		out.RawString(prefix[1:])
-		if in.Name == nil {
-			out.RawString("null")
-		} else {
-			out.String(string(*in.Name))
-		}
-	}
-	{
-		const prefix string = ",\"compartment\":"
-		out.RawString(prefix)
-		if in.Compartment == nil {
-			out.RawString("null")
-		} else {
-			out.Int(int(*in.Compartment))
-		}
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ItemCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp1(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ItemCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp1(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp2(in *jlexer.Lexer, out *Item1509516544Views) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp(in *jlexer.Lexer, out *ItemViews) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -200,21 +26,21 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp2(in *jlexe
 		in.Delim('[')
 		if *out == nil {
 			if !in.IsDelim(']') {
-				*out = make(Item1509516544Views, 0, 8)
+				*out = make(ItemViews, 0, 8)
 			} else {
-				*out = Item1509516544Views{}
+				*out = ItemViews{}
 			}
 		} else {
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v1 *Item1509516544View
+			var v1 *ItemView
 			if in.IsNull() {
 				in.Skip()
 				v1 = nil
 			} else {
 				if v1 == nil {
-					v1 = new(Item1509516544View)
+					v1 = new(ItemView)
 				}
 				(*v1).UnmarshalEasyJSON(in)
 			}
@@ -227,7 +53,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp2(in *jlexe
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp2(out *jwriter.Writer, in Item1509516544Views) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp(out *jwriter.Writer, in ItemViews) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
@@ -247,15 +73,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp2(out *jwri
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Item1509516544Views) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp2(w, v)
+func (v ItemViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Item1509516544Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp2(l, v)
+func (v *ItemViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp3(in *jlexer.Lexer, out *Item1509516544View) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp1(in *jlexer.Lexer, out *ItemView) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -292,7 +118,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp3(in *jlexe
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp3(out *jwriter.Writer, in Item1509516544View) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp1(out *jwriter.Writer, in ItemView) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -316,15 +142,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp3(out *jwri
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Item1509516544View) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp3(w, v)
+func (v ItemView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp1(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Item1509516544View) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp3(l, v)
+func (v *ItemView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp1(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp4(in *jlexer.Lexer, out *FridgeUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp2(in *jlexer.Lexer, out *ItemUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -343,38 +169,25 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp4(in *jlexe
 			continue
 		}
 		switch key {
-		case "title":
+		case "name":
 			if in.IsNull() {
 				in.Skip()
-				out.Title = nil
+				out.Name = nil
 			} else {
-				if out.Title == nil {
-					out.Title = new(string)
+				if out.Name == nil {
+					out.Name = new(string)
 				}
-				*out.Title = string(in.String())
+				*out.Name = string(in.String())
 			}
-		case "compartments":
+		case "compartment":
 			if in.IsNull() {
 				in.Skip()
-				out.Compartments = nil
+				out.Compartment = nil
 			} else {
-				in.Delim('[')
-				if out.Compartments == nil {
-					if !in.IsDelim(']') {
-						out.Compartments = make([]int, 0, 8)
-					} else {
-						out.Compartments = []int{}
-					}
-				} else {
-					out.Compartments = (out.Compartments)[:0]
+				if out.Compartment == nil {
+					out.Compartment = new(int)
 				}
-				for !in.IsDelim(']') {
-					var v4 int
-					v4 = int(in.Int())
-					out.Compartments = append(out.Compartments, v4)
-					in.WantComma()
-				}
-				in.Delim(']')
+				*out.Compartment = int(in.Int())
 			}
 		default:
 			in.AddError(&jlexer.LexerError{
@@ -390,48 +203,261 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp4(in *jlexe
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp4(out *jwriter.Writer, in FridgeUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp2(out *jwriter.Writer, in ItemUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"title\":"
+		const prefix string = ",\"name\":"
 		out.RawString(prefix[1:])
-		if in.Title == nil {
+		if in.Name == nil {
 			out.RawString("null")
 		} else {
-			out.String(string(*in.Title))
+			out.String(string(*in.Name))
 		}
 	}
 	{
-		const prefix string = ",\"compartments\":"
+		const prefix string = ",\"compartment\":"
 		out.RawString(prefix)
-		if in.Compartments == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.Compartment == nil {
 			out.RawString("null")
 		} else {
-			out.RawByte('[')
-			for v5, v6 := range in.Compartments {
-				if v5 > 0 {
-					out.RawByte(',')
-				}
-				out.Int(int(v6))
-			}
-			out.RawByte(']')
+			out.Int(int(*in.Compartment))
 		}
 	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v FridgeUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
+func (v ItemUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp2(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ItemUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp2(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp3(in *jlexer.Lexer, out *ItemCreateRequest) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "name":
+			if in.IsNull() {
+				in.Skip()
+				out.Name = nil
+			} else {
+				if out.Name == nil {
+					out.Name = new(string)
+				}
+				*out.Name = string(in.String())
+			}
+		case "compartment":
+			if in.IsNull() {
+				in.Skip()
+				out.Compartment = nil
+			} else {
+				if out.Compartment == nil {
+					out.Compartment = new(int)
+				}
+				*out.Compartment = int(in.Int())
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp3(out *jwriter.Writer, in ItemCreateRequest) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"name\":"
+		out.RawString(prefix[1:])
+		if in.Name == nil {
+			out.RawString("null")
+		} else {
+			out.String(string(*in.Name))
+		}
+	}
+	{
+		const prefix string = ",\"compartment\":"
+		out.RawString(prefix)
+		if in.Compartment == nil {
+			out.RawString("null")
+		} else {
+			out.Int(int(*in.Compartment))
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ItemCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp3(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ItemCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp3(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp4(in *jlexer.Lexer, out *FridgeViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(FridgeViews, 0, 8)
+			} else {
+				*out = FridgeViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v4 *FridgeView
+			if in.IsNull() {
+				in.Skip()
+				v4 = nil
+			} else {
+				if v4 == nil {
+					v4 = new(FridgeView)
+				}
+				(*v4).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v4)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp4(out *jwriter.Writer, in FridgeViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v5, v6 := range in {
+			if v5 > 0 {
+				out.RawByte(',')
+			}
+			if v6 == nil {
+				out.RawString("null")
+			} else {
+				(*v6).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v FridgeViews) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp4(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *FridgeUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *FridgeViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp4(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp5(in *jlexer.Lexer, out *FridgeCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp5(in *jlexer.Lexer, out *FridgeView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "title":
+			out.Title = string(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp5(out *jwriter.Writer, in FridgeView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Title != "" {
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v FridgeView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp5(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *FridgeView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp5(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp6(in *jlexer.Lexer, out *FridgeUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -497,7 +523,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp5(in *jlexe
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp5(out *jwriter.Writer, in FridgeCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp6(out *jwriter.Writer, in FridgeUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -530,79 +556,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp5(out *jwri
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v FridgeCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp5(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *FridgeCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp5(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp6(in *jlexer.Lexer, out *Fridge2716213877Views) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		in.Skip()
-		*out = nil
-	} else {
-		in.Delim('[')
-		if *out == nil {
-			if !in.IsDelim(']') {
-				*out = make(Fridge2716213877Views, 0, 8)
-			} else {
-				*out = Fridge2716213877Views{}
-			}
-		} else {
-			*out = (*out)[:0]
-		}
-		for !in.IsDelim(']') {
-			var v10 *Fridge2716213877View
-			if in.IsNull() {
-				in.Skip()
-				v10 = nil
-			} else {
-				if v10 == nil {
-					v10 = new(Fridge2716213877View)
-				}
-				(*v10).UnmarshalEasyJSON(in)
-			}
-			*out = append(*out, v10)
-			in.WantComma()
-		}
-		in.Delim(']')
-	}
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp6(out *jwriter.Writer, in Fridge2716213877Views) {
-	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-		out.RawString("null")
-	} else {
-		out.RawByte('[')
-		for v11, v12 := range in {
-			if v11 > 0 {
-				out.RawByte(',')
-			}
-			if v12 == nil {
-				out.RawString("null")
-			} else {
-				(*v12).MarshalEasyJSON(out)
-			}
-		}
-		out.RawByte(']')
-	}
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Fridge2716213877Views) MarshalEasyJSON(w *jwriter.Writer) {
+func (v FridgeUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp6(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Fridge2716213877Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *FridgeUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp6(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp7(in *jlexer.Lexer, out *Fridge2716213877View) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp7(in *jlexer.Lexer, out *FridgeCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -621,10 +583,39 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp7(in *jlexe
 			continue
 		}
 		switch key {
-		case "id":
-			out.ID = int(in.Int())
 		case "title":
-			out.Title = string(in.String())
+			if in.IsNull() {
+				in.Skip()
+				out.Title = nil
+			} else {
+				if out.Title == nil {
+					out.Title = new(string)
+				}
+				*out.Title = string(in.String())
+			}
+		case "compartments":
+			if in.IsNull() {
+				in.Skip()
+				out.Compartments = nil
+			} else {
+				in.Delim('[')
+				if out.Compartments == nil {
+					if !in.IsDelim(']') {
+						out.Compartments = make([]int, 0, 8)
+					} else {
+						out.Compartments = []int{}
+					}
+				} else {
+					out.Compartments = (out.Compartments)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v10 int
+					v10 = int(in.Int())
+					out.Compartments = append(out.Compartments, v10)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		default:
 			in.AddError(&jlexer.LexerError{
 				Offset: in.GetPos(),
@@ -639,36 +630,45 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp7(in *jlexe
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp7(out *jwriter.Writer, in Fridge2716213877View) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp7(out *jwriter.Writer, in FridgeCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Title != "" {
+	{
 		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
+		out.RawString(prefix[1:])
+		if in.Title == nil {
+			out.RawString("null")
 		} else {
-			out.RawString(prefix)
+			out.String(string(*in.Title))
 		}
-		out.String(string(in.Title))
+	}
+	{
+		const prefix string = ",\"compartments\":"
+		out.RawString(prefix)
+		if in.Compartments == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v11, v12 := range in.Compartments {
+				if v11 > 0 {
+					out.RawByte(',')
+				}
+				out.Int(int(v12))
+			}
+			out.RawByte(']')
+		}
 	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Fridge2716213877View) MarshalEasyJSON(w *jwriter.Writer) {
+func (v FridgeCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp7(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Fridge2716213877View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *FridgeCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp7(l, v)
 }
 func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp8(in *jlexer.Lexer, out *ErrResponse) {
@@ -753,7 +753,71 @@ func (v ErrResponse) MarshalEasyJSON(w *jwriter.Writer) {
 func (v *ErrResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp8(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp9(in *jlexer.Lexer, out *CompartmentUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp9(in *jlexer.Lexer, out *CompartmentViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(CompartmentViews, 0, 8)
+			} else {
+				*out = CompartmentViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v13 *CompartmentView
+			if in.IsNull() {
+				in.Skip()
+				v13 = nil
+			} else {
+				if v13 == nil {
+					v13 = new(CompartmentView)
+				}
+				(*v13).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v13)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp9(out *jwriter.Writer, in CompartmentViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v14, v15 := range in {
+			if v14 > 0 {
+				out.RawByte(',')
+			}
+			if v15 == nil {
+				out.RawString("null")
+			} else {
+				(*v15).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v CompartmentViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp9(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *CompartmentViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp9(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp10(in *jlexer.Lexer, out *CompartmentView) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -772,49 +836,10 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp9(in *jlexe
 			continue
 		}
 		switch key {
+		case "id":
+			out.ID = int(in.Int())
 		case "name":
-			if in.IsNull() {
-				in.Skip()
-				out.Name = nil
-			} else {
-				if out.Name == nil {
-					out.Name = new(string)
-				}
-				*out.Name = string(in.String())
-			}
-		case "fridge":
-			if in.IsNull() {
-				in.Skip()
-				out.Fridge = nil
-			} else {
-				if out.Fridge == nil {
-					out.Fridge = new(int)
-				}
-				*out.Fridge = int(in.Int())
-			}
-		case "contents":
-			if in.IsNull() {
-				in.Skip()
-				out.Contents = nil
-			} else {
-				in.Delim('[')
-				if out.Contents == nil {
-					if !in.IsDelim(']') {
-						out.Contents = make([]int, 0, 8)
-					} else {
-						out.Contents = []int{}
-					}
-				} else {
-					out.Contents = (out.Contents)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v13 int
-					v13 = int(in.Int())
-					out.Contents = append(out.Contents, v13)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
+			out.Name = string(in.String())
 		default:
 			in.AddError(&jlexer.LexerError{
 				Offset: in.GetPos(),
@@ -829,57 +854,39 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp9(in *jlexe
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp9(out *jwriter.Writer, in CompartmentUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp10(out *jwriter.Writer, in CompartmentView) {
 	out.RawByte('{')
 	first := true
 	_ = first
-	{
-		const prefix string = ",\"name\":"
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
 		out.RawString(prefix[1:])
-		if in.Name == nil {
-			out.RawString("null")
-		} else {
-			out.String(string(*in.Name))
-		}
+		out.Int(int(in.ID))
 	}
-	{
-		const prefix string = ",\"fridge\":"
-		out.RawString(prefix)
-		if in.Fridge == nil {
-			out.RawString("null")
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
 		} else {
-			out.Int(int(*in.Fridge))
+			out.RawString(prefix)
 		}
-	}
-	{
-		const prefix string = ",\"contents\":"
-		out.RawString(prefix)
-		if in.Contents == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v14, v15 := range in.Contents {
-				if v14 > 0 {
-					out.RawByte(',')
-				}
-				out.Int(int(v15))
-			}
-			out.RawByte(']')
-		}
+		out.String(string(in.Name))
 	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v CompartmentUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp9(w, v)
+func (v CompartmentView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp10(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *CompartmentUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp9(l, v)
+func (v *CompartmentView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp10(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp10(in *jlexer.Lexer, out *CompartmentCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp11(in *jlexer.Lexer, out *CompartmentUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -955,7 +962,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp10(in *jlex
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp10(out *jwriter.Writer, in CompartmentCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp11(out *jwriter.Writer, in CompartmentUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -997,79 +1004,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp10(out *jwr
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v CompartmentCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp10(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *CompartmentCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp10(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp11(in *jlexer.Lexer, out *Compartment1151786357Views) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		in.Skip()
-		*out = nil
-	} else {
-		in.Delim('[')
-		if *out == nil {
-			if !in.IsDelim(']') {
-				*out = make(Compartment1151786357Views, 0, 8)
-			} else {
-				*out = Compartment1151786357Views{}
-			}
-		} else {
-			*out = (*out)[:0]
-		}
-		for !in.IsDelim(']') {
-			var v19 *Compartment1151786357View
-			if in.IsNull() {
-				in.Skip()
-				v19 = nil
-			} else {
-				if v19 == nil {
-					v19 = new(Compartment1151786357View)
-				}
-				(*v19).UnmarshalEasyJSON(in)
-			}
-			*out = append(*out, v19)
-			in.WantComma()
-		}
-		in.Delim(']')
-	}
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp11(out *jwriter.Writer, in Compartment1151786357Views) {
-	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-		out.RawString("null")
-	} else {
-		out.RawByte('[')
-		for v20, v21 := range in {
-			if v20 > 0 {
-				out.RawByte(',')
-			}
-			if v21 == nil {
-				out.RawString("null")
-			} else {
-				(*v21).MarshalEasyJSON(out)
-			}
-		}
-		out.RawByte(']')
-	}
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Compartment1151786357Views) MarshalEasyJSON(w *jwriter.Writer) {
+func (v CompartmentUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp11(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Compartment1151786357Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *CompartmentUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp11(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp12(in *jlexer.Lexer, out *Compartment1151786357View) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp12(in *jlexer.Lexer, out *CompartmentCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1088,10 +1031,49 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp12(in *jlex
 			continue
 		}
 		switch key {
-		case "id":
-			out.ID = int(in.Int())
 		case "name":
-			out.Name = string(in.String())
+			if in.IsNull() {
+				in.Skip()
+				out.Name = nil
+			} else {
+				if out.Name == nil {
+					out.Name = new(string)
+				}
+				*out.Name = string(in.String())
+			}
+		case "fridge":
+			if in.IsNull() {
+				in.Skip()
+				out.Fridge = nil
+			} else {
+				if out.Fridge == nil {
+					out.Fridge = new(int)
+				}
+				*out.Fridge = int(in.Int())
+			}
+		case "contents":
+			if in.IsNull() {
+				in.Skip()
+				out.Contents = nil
+			} else {
+				in.Delim('[')
+				if out.Contents == nil {
+					if !in.IsDelim(']') {
+						out.Contents = make([]int, 0, 8)
+					} else {
+						out.Contents = []int{}
+					}
+				} else {
+					out.Contents = (out.Contents)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v19 int
+					v19 = int(in.Int())
+					out.Contents = append(out.Contents, v19)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		default:
 			in.AddError(&jlexer.LexerError{
 				Offset: in.GetPos(),
@@ -1106,35 +1088,53 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp12(in *jlex
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp12(out *jwriter.Writer, in Compartment1151786357View) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp12(out *jwriter.Writer, in CompartmentCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
-	if in.ID != 0 {
-		const prefix string = ",\"id\":"
-		first = false
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	if in.Name != "" {
+	{
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
+		out.RawString(prefix[1:])
+		if in.Name == nil {
+			out.RawString("null")
 		} else {
-			out.RawString(prefix)
+			out.String(string(*in.Name))
 		}
-		out.String(string(in.Name))
+	}
+	{
+		const prefix string = ",\"fridge\":"
+		out.RawString(prefix)
+		if in.Fridge == nil {
+			out.RawString("null")
+		} else {
+			out.Int(int(*in.Fridge))
+		}
+	}
+	{
+		const prefix string = ",\"contents\":"
+		out.RawString(prefix)
+		if in.Contents == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v20, v21 := range in.Contents {
+				if v20 > 0 {
+					out.RawByte(',')
+				}
+				out.Int(int(v21))
+			}
+			out.RawByte(']')
+		}
 	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Compartment1151786357View) MarshalEasyJSON(w *jwriter.Writer) {
+func (v CompartmentCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalFridgeEntHttp12(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Compartment1151786357View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *CompartmentCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalFridgeEntHttp12(l, v)
 }

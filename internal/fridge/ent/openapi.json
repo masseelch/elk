@@ -46,7 +46,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Compartment1151786357View"
+                    "$ref": "#/components/schemas/CompartmentView"
                   }
                 }
               }
@@ -105,7 +105,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Compartment1151786357View"
+                  "$ref": "#/components/schemas/CompartmentView"
                 }
               }
             }
@@ -145,7 +145,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Compartment1151786357View"
+                  "$ref": "#/components/schemas/CompartmentView"
                 }
               }
             }
@@ -249,7 +249,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Compartment1151786357View"
+                  "$ref": "#/components/schemas/CompartmentView"
                 }
               }
             }
@@ -312,7 +312,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Item1509516544View"
+                    "$ref": "#/components/schemas/ItemView"
                   }
                 }
               }
@@ -356,7 +356,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Fridge2716213877View"
+                  "$ref": "#/components/schemas/FridgeView"
                 }
               }
             }
@@ -409,7 +409,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Fridge2716213877View"
+                    "$ref": "#/components/schemas/FridgeView"
                   }
                 }
               }
@@ -464,7 +464,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Fridge2716213877View"
+                  "$ref": "#/components/schemas/FridgeView"
                 }
               }
             }
@@ -504,7 +504,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Fridge2716213877View"
+                  "$ref": "#/components/schemas/FridgeView"
                 }
               }
             }
@@ -570,7 +570,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Fridge2716213877View"
+                  "$ref": "#/components/schemas/FridgeView"
                 }
               }
             }
@@ -633,7 +633,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Compartment1151786357View"
+                    "$ref": "#/components/schemas/CompartmentView"
                   }
                 }
               }
@@ -735,7 +735,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Item1509516544View"
+                    "$ref": "#/components/schemas/ItemView"
                   }
                 }
               }
@@ -787,7 +787,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Item1509516544View"
+                  "$ref": "#/components/schemas/ItemView"
                 }
               }
             }
@@ -827,7 +827,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Item1509516544View"
+                  "$ref": "#/components/schemas/ItemView"
                 }
               }
             }
@@ -924,7 +924,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Item1509516544View"
+                  "$ref": "#/components/schemas/ItemView"
                 }
               }
             }
@@ -967,7 +967,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Compartment1151786357View"
+                  "$ref": "#/components/schemas/CompartmentView"
                 }
               }
             }
@@ -987,7 +987,7 @@
   },
   "components": {
     "schemas": {
-      "Compartment1151786357View": {
+      "CompartmentView": {
         "type": "object",
         "required": [
           "id",
@@ -1003,7 +1003,7 @@
           }
         }
       },
-      "Fridge2716213877View": {
+      "FridgeView": {
         "type": "object",
         "required": [
           "id",
@@ -1019,7 +1019,7 @@
           }
         }
       },
-      "Item1509516544View": {
+      "ItemView": {
         "type": "object",
         "required": [
           "id",

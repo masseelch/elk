@@ -82,7 +82,7 @@ func (h CompartmentHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("compartment rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewCompartment1151786357View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCompartmentView(e), w)
 }
 
 // Update updates a given ent.Fridge and saves the changes to the database.
@@ -148,7 +148,7 @@ func (h FridgeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("fridge rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewFridge2716213877View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewFridgeView(e), w)
 }
 
 // Update updates a given ent.Item and saves the changes to the database.
@@ -215,5 +215,5 @@ func (h ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("item rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewItem1509516544View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewItemView(e), w)
 }

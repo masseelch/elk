@@ -10,10 +10,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
-	badge "github.com/masseelch/elk/internal/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/pets/ent/toy"
+	"github.com/masseelch/elk/internal/pets/ent/badge"
+	"github.com/masseelch/elk/internal/pets/ent/pet"
+	"github.com/masseelch/elk/internal/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 	"go.uber.org/zap"
 )
 
@@ -49,7 +49,7 @@ func (h *BadgeHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("badge rendered", zap.Uint32("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeView(e), w)
 }
 
 // Read fetches the ent.Pet identified by a given url-parameter from the
@@ -1129,7 +1129,7 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Read fetches the ent.PlayGroup identified by a given url-parameter from the
@@ -1163,7 +1163,7 @@ func (h *PlayGroupHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("play-group rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPlayGroup3432834655View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupView(e), w)
 }
 
 // Read fetches the ent.Toy identified by a given url-parameter from the
@@ -1197,5 +1197,5 @@ func (h *ToyHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("toy rendered", zap.String("id", id.String()))
-	easyjson.MarshalToHTTPResponseWriter(NewToy36157710View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewToyView(e), w)
 }

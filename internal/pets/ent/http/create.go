@@ -8,10 +8,10 @@ import (
 
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
-	badge "github.com/masseelch/elk/internal/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/pets/ent/toy"
+	"github.com/masseelch/elk/internal/pets/ent/badge"
+	"github.com/masseelch/elk/internal/pets/ent/pet"
+	"github.com/masseelch/elk/internal/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 	"go.uber.org/zap"
 )
 
@@ -65,7 +65,7 @@ func (h BadgeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("badge rendered", zap.Uint32("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeView(e), w)
 }
 
 // Create creates a new ent.Pet and stores it in the database.
@@ -1239,7 +1239,7 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Create creates a new ent.PlayGroup and stores it in the database.
@@ -1295,7 +1295,7 @@ func (h PlayGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("play-group rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPlayGroup3432834655View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupView(e), w)
 }
 
 // Create creates a new ent.Toy and stores it in the database.
@@ -1351,5 +1351,5 @@ func (h ToyHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("toy rendered", zap.String("id", e.ID.String()))
-	easyjson.MarshalToHTTPResponseWriter(NewToy36157710View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewToyView(e), w)
 }

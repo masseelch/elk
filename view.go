@@ -4,7 +4,6 @@ import (
 	"entgo.io/ent/entc/gen"
 	"fmt"
 	"github.com/masseelch/elk/serialization"
-	"hash/fnv"
 )
 
 type (
@@ -80,21 +79,7 @@ func newViews(g *gen.Graph) (map[string]*mergedView, error) {
 
 // Name returns a unique name for this view.
 func (v view) Name() (string, error) {
-	h := fnv.New32a()
-	if _, err := h.Write([]byte(v.Node.Name)); err != nil {
-		return "", err
-	}
-	for _, f := range v.Fields {
-		if _, err := h.Write([]byte(f.Name)); err != nil {
-			return "", err
-		}
-	}
-	for _, e := range v.Edges {
-		if _, err := h.Write([]byte(e.Name)); err != nil {
-			return "", err
-		}
-	}
-	return fmt.Sprintf("%s%dView", v.Node.Name, h.Sum32()), nil
+	return fmt.Sprintf("%sView", v.Node.Name), nil
 }
 
 // newView create a new view for the given type and serialization.Groups.

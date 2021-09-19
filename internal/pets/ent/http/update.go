@@ -11,10 +11,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
-	badge "github.com/masseelch/elk/internal/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/pets/ent/toy"
+	"github.com/masseelch/elk/internal/pets/ent/badge"
+	"github.com/masseelch/elk/internal/pets/ent/pet"
+	"github.com/masseelch/elk/internal/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 	"go.uber.org/zap"
 )
 
@@ -86,7 +86,7 @@ func (h BadgeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("badge rendered", zap.Uint32("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeView(e), w)
 }
 
 // Update updates a given ent.Pet and saves the changes to the database.
@@ -235,7 +235,7 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPet340207500View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Update updates a given ent.PlayGroup and saves the changes to the database.
@@ -307,7 +307,7 @@ func (h PlayGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("play-group rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPlayGroup3432834655View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupView(e), w)
 }
 
 // Update updates a given ent.Toy and saves the changes to the database.
@@ -380,5 +380,5 @@ func (h ToyHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("toy rendered", zap.String("id", id.String()))
-	easyjson.MarshalToHTTPResponseWriter(NewToy36157710View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewToyView(e), w)
 }
