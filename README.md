@@ -95,14 +95,13 @@ generating the spec in `entc.go`
 package main
 
 import (
-
-	"github.com/deepmap/oapi-codegen/pkg/codegen"
-	"github.com/deepmap/oapi-codegen/pkg/util"
-
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	
+	"github.com/deepmap/oapi-codegen/pkg/codegen"
+	"github.com/deepmap/oapi-codegen/pkg/util"
 )
 
 func generateClient() {
