@@ -129,9 +129,7 @@ func generateClient() {
 		log.Fatalf("error creating dir: %s", err)
 	}
 
-	err = ioutil.WriteFile(stub, []byte(generated), perm)
-	if err != nil {
-		panic(err)
+	if err := ioutil.WriteFile(stub, []byte(generated), perm); err != nil {
 		log.Fatalf("error writing generated code to file: %s", err)
 	}
 }
