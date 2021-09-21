@@ -116,7 +116,7 @@ func generateClient() {
 		AliasTypes:         true,
 	})
 	if err != nil {
-		log.Fatalf("generaring client failed%v", err);
+		log.Fatalf("generaring client failed %s", err);
 	}
 
 	dir := filepath.Join(".", "stub")
