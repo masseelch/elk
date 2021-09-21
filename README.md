@@ -123,9 +123,7 @@ func generateClient() {
 	dir := filepath.Join(".", "stub")
 	stub := filepath.Join(".", "stub", "http.go")
 	perm := os.FileMode(0777)
-	err = os.MkdirAll(dir, perm)
-
-	if err != nil {
+	if err := os.MkdirAll(dir, perm); err != nil {
 		log.Fatalf("error creating dir: %s", err)
 	}
 
