@@ -112,13 +112,8 @@ func generateClient() {
 	}
 
 	generated, err := codegen.Generate(swagger, "stub", codegen.Options{
-		GenerateChiServer:  false,
-		GenerateEchoServer: false,
 		GenerateClient:     true,
 		GenerateTypes:      true,
-		EmbedSpec:          false,
-		SkipFmt:            false,
-		SkipPrune:          false,
 		AliasTypes:         true,
 	})
 	if err != nil {
