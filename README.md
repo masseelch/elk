@@ -187,7 +187,7 @@ func main() {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 	// Start listen to incoming requests.
-	if err := http.ListenAndServe(":8080", elk.NewHandler(chi.NewRouter(), zap.NewExample())); err != nil {
+	if err := http.ListenAndServe(":8080", elk.NewHandler(c, zap.NewExample())); err != nil {
 		log.Fatal(err)
 	}
 }
