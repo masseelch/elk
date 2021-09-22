@@ -1,9 +1,10 @@
 package elk
 
 import (
+	"path/filepath"
+
 	"entgo.io/ent/entc/gen"
 	"github.com/mailru/easyjson/bootstrap"
-	"path/filepath"
 )
 
 type EasyJsonConfig struct {
@@ -53,7 +54,7 @@ func EasyJSONGenerator(c EasyJsonConfig) gen.Hook {
 			ns = append(ns, "ErrResponse")
 			// Run the easyjson generator.
 			return (&bootstrap.Generator{
-				PkgPath:                  filepath.Join(g.Package, "http"),
+				PkgPath:                  g.Package + "/http",
 				PkgName:                  "http",
 				Types:                    ns,
 				NoStdMarshalers:          c.NoStdMarshalers,
