@@ -5,6 +5,7 @@
         {{- range imports $ }}
             "{{ . }}"
         {{- end }}
+        "{{ $.Config.Package }}"
         "github.com/go-chi/chi/v5"
         "github.com/mailru/easyjson"
     )

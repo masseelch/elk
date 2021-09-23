@@ -5,7 +5,7 @@ package http
 import (
 	"net/http"
 	"strconv"
-	time "time"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/mailru/easyjson"

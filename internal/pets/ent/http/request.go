@@ -3,7 +3,7 @@
 package http
 
 import (
-	time "time"
+	"time"
 
 	"github.com/google/uuid"
 	badge "github.com/masseelch/elk/internal/pets/ent/badge"
