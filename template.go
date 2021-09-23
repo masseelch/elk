@@ -2,11 +2,12 @@ package elk
 
 import (
 	"embed"
-	"entgo.io/ent/entc/gen"
 	"fmt"
-	"github.com/stoewer/go-strcase"
 	"strings"
 	"text/template"
+
+	"entgo.io/ent/entc/gen"
+	"github.com/stoewer/go-strcase"
 )
 
 var (
@@ -224,10 +225,10 @@ func imports(g *gen.Graph) []string {
 		fs := n.Fields
 		if n.ID.UserDefined {
 			fs = append(fs, n.ID)
-			for _, f := range fs {
-				if f.Type.PkgPath != "" {
-					m[f.Type.PkgPath] = struct{}{}
-				}
+		}
+		for _, f := range fs {
+			if f.Type.PkgPath != "" {
+				m[f.Type.PkgPath] = struct{}{}
 			}
 		}
 	}
