@@ -36,6 +36,8 @@
 
             {{- template "helper/http/error-handling" dict "Default" (print "could not create " ($n.Name | kebab)) -}}
 
+            // Store id of fresh entity to log errors for the reload.
+            id := e.{{ $n.ID.StructField }}
             // Reload entry.
             q := h.client.{{ $n.Name }}.Query().Where({{ $n.Name | lower }}.ID(e.{{ $n.ID.StructField }}))
 
@@ -43,9 +45,9 @@
                 // Eager load edges that are required on create operation.
                 q{{ .EntQuery }}
             {{- end }}
-            e, err = q.Only(r.Context())
+            ret, err := q.Only(r.Context())
 
-            {{- $zapID := zapField $n.ID (print "e." $n.ID.StructField) }}
+            {{- $zapID := zapField $n.ID "id" }}
             {{-
                 template "helper/http/error-handling" dict
                 "Errors" (list "not-found" "not-singular")
@@ -54,7 +56,7 @@
             -}}
 
             l.Info("{{ $n.Name | kebab }} rendered", {{ $zapID }})
-            easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.ElkSchema.CreateGroups | stringSlice)).Name }}(e), w)
+            easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.ElkSchema.CreateGroups | stringSlice)).Name }}(ret), w)
         }
     {{ end }}
 {{ end }}

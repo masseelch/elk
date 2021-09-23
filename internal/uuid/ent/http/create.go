@@ -35,25 +35,27 @@ func (h UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	// Store id of fresh entity to log errors for the reload.
+	id := e.ID
 	// Reload entry.
 	q := h.client.User.Query().Where(user.ID(e.ID))
-	e, err = q.Only(r.Context())
+	ret, err := q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read user", zap.Error(err), zap.Int("id", e.ID))
+			l.Error("could not read user", zap.Error(err), zap.Int("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("user rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewUser3451555716View(e), w)
+	l.Info("user rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewUser3451555716View(ret), w)
 }
