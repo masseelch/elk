@@ -35,6 +35,7 @@ var (
 	PetsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
+		{Name: "nicknames", Type: field.TypeJSON, Nullable: true},
 		{Name: "age", Type: field.TypeInt, Nullable: true},
 		{Name: "owner_pets", Type: field.TypeInt, Nullable: true},
 	}
@@ -46,7 +47,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "pets_owners_pets",
-				Columns:    []*schema.Column{PetsColumns[3]},
+				Columns:    []*schema.Column{PetsColumns[4]},
 				RefColumns: []*schema.Column{OwnersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

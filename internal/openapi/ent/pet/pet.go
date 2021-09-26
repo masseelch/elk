@@ -9,6 +9,8 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldNicknames holds the string denoting the nicknames field in the database.
+	FieldNicknames = "nicknames"
 	// FieldAge holds the string denoting the age field in the database.
 	FieldAge = "age"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
@@ -39,6 +41,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
+	FieldNicknames,
 	FieldAge,
 }
 

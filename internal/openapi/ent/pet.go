@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -18,6 +19,8 @@ type Pet struct {
 	ID int `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Nicknames holds the value of the "nicknames" field.
+	Nicknames []string `json:"nicknames,omitempty"`
 	// Age holds the value of the "age" field.
 	Age int `json:"age,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -76,6 +79,8 @@ func (*Pet) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case pet.FieldNicknames:
+			values[i] = new([]byte)
 		case pet.FieldID, pet.FieldAge:
 			values[i] = new(sql.NullInt64)
 		case pet.FieldName:
@@ -108,6 +113,14 @@ func (pe *Pet) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				pe.Name = value.String
+			}
+		case pet.FieldNicknames:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field nicknames", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pe.Nicknames); err != nil {
+					return fmt.Errorf("unmarshal field nicknames: %w", err)
+				}
 			}
 		case pet.FieldAge:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -167,6 +180,8 @@ func (pe *Pet) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", pe.ID))
 	builder.WriteString(", name=")
 	builder.WriteString(pe.Name)
+	builder.WriteString(", nicknames=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Nicknames))
 	builder.WriteString(", age=")
 	builder.WriteString(fmt.Sprintf("%v", pe.Age))
 	builder.WriteByte(')')

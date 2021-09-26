@@ -13,7 +13,6 @@ import (
 func main() {
 	ex, err := elk.NewExtension(
 		elk.GenerateHandlers(),
-		elk.GenerateSpec("openapi.json"),
 	)
 	if err != nil {
 		log.Fatalf("creating elk extension: %v", err)
