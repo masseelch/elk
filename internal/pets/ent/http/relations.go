@@ -1095,7 +1095,7 @@ func (h BadgeHandler) Wearer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Badge fetches the ent.badge attached to the ent.Pet
@@ -1129,7 +1129,7 @@ func (h PetHandler) Badge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("badge rendered", zap.Uint32("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeView(e), w)
 }
 
 // Protege fetches the ent.protege attached to the ent.Pet
@@ -2209,7 +2209,7 @@ func (h PetHandler) Protege(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Mentor fetches the ent.mentor attached to the ent.Pet
@@ -3289,7 +3289,7 @@ func (h PetHandler) Mentor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Spouse fetches the ent.spouse attached to the ent.Pet
@@ -4369,7 +4369,7 @@ func (h PetHandler) Spouse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Toys fetches the ent.toys attached to the ent.Pet
@@ -4410,7 +4410,7 @@ func (h PetHandler) Toys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("toys rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewToy36157710Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewToyViews(es), w)
 }
 
 // Parent fetches the ent.parent attached to the ent.Pet
@@ -5490,7 +5490,7 @@ func (h PetHandler) Parent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Children fetches the ent.children attached to the ent.Pet
@@ -5533,7 +5533,7 @@ func (h PetHandler) Children(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPet340207500Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetViews(es), w)
 }
 
 // PlayGroups fetches the ent.play_groups attached to the ent.Pet
@@ -5574,7 +5574,7 @@ func (h PetHandler) PlayGroups(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("play-groups rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPlayGroup3432834655Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupViews(es), w)
 }
 
 // Friends fetches the ent.friends attached to the ent.Pet
@@ -5617,7 +5617,7 @@ func (h PetHandler) Friends(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPet340207500Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetViews(es), w)
 }
 
 // Participants fetches the ent.participants attached to the ent.PlayGroup
@@ -5660,7 +5660,7 @@ func (h PlayGroupHandler) Participants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPet340207500Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetViews(es), w)
 }
 
 // Owner fetches the ent.owner attached to the ent.Toy
@@ -6740,5 +6740,5 @@ func (h ToyHandler) Owner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }

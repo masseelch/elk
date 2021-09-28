@@ -45,29 +45,27 @@ func (h BadgeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// Store id of fresh entity to log errors for the reload.
-	id := e.ID
 	// Reload entry.
 	q := h.client.Badge.Query().Where(badge.ID(e.ID))
-	ret, err := q.Only(r.Context())
+	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Uint32("id", id))
+			l.Info(msg, zap.Error(err), zap.Uint32("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Uint32("id", id))
+			l.Error(msg, zap.Error(err), zap.Uint32("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read badge", zap.Error(err), zap.Uint32("id", id))
+			l.Error("could not read badge", zap.Error(err), zap.Uint32("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("badge rendered", zap.Uint32("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257View(ret), w)
+	l.Info("badge rendered", zap.Uint32("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeView(e), w)
 }
 
 // Create creates a new ent.Pet and stores it in the database.
@@ -175,8 +173,6 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// Store id of fresh entity to log errors for the reload.
-	id := e.ID
 	// Reload entry.
 	q := h.client.Pet.Query().Where(pet.ID(e.ID))
 	// Eager load edges that are required on create operation.
@@ -1225,25 +1221,25 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}).WithPlayGroups()
 		})
 	})
-	ret, err := q.Only(r.Context())
+	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read pet", zap.Error(err), zap.Int("id", id))
+			l.Error("could not read pet", zap.Error(err), zap.Int("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("pet rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPet3217017920View(ret), w)
+	l.Info("pet rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Create creates a new ent.PlayGroup and stores it in the database.
@@ -1279,29 +1275,27 @@ func (h PlayGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// Store id of fresh entity to log errors for the reload.
-	id := e.ID
 	// Reload entry.
 	q := h.client.PlayGroup.Query().Where(playgroup.ID(e.ID))
-	ret, err := q.Only(r.Context())
+	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read play-group", zap.Error(err), zap.Int("id", id))
+			l.Error("could not read play-group", zap.Error(err), zap.Int("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("play-group rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPlayGroup3432834655View(ret), w)
+	l.Info("play-group rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupView(e), w)
 }
 
 // Create creates a new ent.Toy and stores it in the database.
@@ -1337,27 +1331,25 @@ func (h ToyHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// Store id of fresh entity to log errors for the reload.
-	id := e.ID
 	// Reload entry.
 	q := h.client.Toy.Query().Where(toy.ID(e.ID))
-	ret, err := q.Only(r.Context())
+	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.String("id", id.String()))
+			l.Info(msg, zap.Error(err), zap.String("id", e.ID.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.String("id", id.String()))
+			l.Error(msg, zap.Error(err), zap.String("id", e.ID.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read toy", zap.Error(err), zap.String("id", id.String()))
+			l.Error("could not read toy", zap.Error(err), zap.String("id", e.ID.String()))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("toy rendered", zap.String("id", id.String()))
-	easyjson.MarshalToHTTPResponseWriter(NewToy36157710View(ret), w)
+	l.Info("toy rendered", zap.String("id", e.ID.String()))
+	easyjson.MarshalToHTTPResponseWriter(NewToyView(e), w)
 }

@@ -37,14 +37,16 @@ func (Pet) Fields() []ent.Field {
 func (Pet) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("categories", Category.Type).
+			Annotations(elk.Groups("pet:list")).
 			Ref("pets"),
+
 		edge.From("owner", Owner.Type).
 			Ref("pets").
 			Unique().
-			Annotations(elk.Groups("pet:owner")),
+			Annotations(elk.Groups("owner")),
 		edge.To("friends", Pet.Type).
 			Annotations(
-				elk.Groups("pet"),
+				elk.Groups("friend"),
 				elk.MaxDepth(3),
 			),
 	}
@@ -53,7 +55,9 @@ func (Pet) Edges() []ent.Edge {
 // Annotations of the Pet.
 func (Pet) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		elk.ReadGroups("pet", "pet:owner", "owner"),
+		elk.ReadGroups("friend", "owner"),
+		elk.ListGroups("pet:list"),
+		elk.CreateGroups("friend"),
 		elk.SchemaSecurity(spec.Security{{"apiKeySample": {}}}),
 	}
 }

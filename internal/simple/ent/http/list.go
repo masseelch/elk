@@ -41,7 +41,7 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("categories rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewCategory4094953247Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryViews(es), w)
 }
 
 // Read fetches the ent.Collar identified by a given url-parameter from the
@@ -75,7 +75,7 @@ func (h *CollarHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("collars rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCollarViews(es), w)
 }
 
 // Read fetches the ent.Owner identified by a given url-parameter from the
@@ -109,7 +109,7 @@ func (h *OwnerHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("owners rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewOwner139708381Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerViews(es), w)
 }
 
 // Read fetches the ent.Pet identified by a given url-parameter from the
@@ -143,5 +143,5 @@ func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPet359800019Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetViews(es), w)
 }

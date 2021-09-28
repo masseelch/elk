@@ -77,94 +77,94 @@ func Unauthorized(w http.ResponseWriter, msg interface{}) (int, error) {
 }
 
 type (
-	// Compartment1151786357View represents the data serialized for the following serialization group combinations:
+	// CompartmentView represents the data serialized for the following serialization group combinations:
 	// []
-	Compartment1151786357View struct {
+	CompartmentView struct {
 		ID   int    `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 	}
-	Compartment1151786357Views []*Compartment1151786357View
+	CompartmentViews []*CompartmentView
 )
 
-func NewCompartment1151786357View(e *ent.Compartment) *Compartment1151786357View {
+func NewCompartmentView(e *ent.Compartment) *CompartmentView {
 	if e == nil {
 		return nil
 	}
-	return &Compartment1151786357View{
+	return &CompartmentView{
 		ID:   e.ID,
 		Name: e.Name,
 	}
 }
 
-func NewCompartment1151786357Views(es []*ent.Compartment) Compartment1151786357Views {
+func NewCompartmentViews(es []*ent.Compartment) CompartmentViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(Compartment1151786357Views, len(es))
+	r := make(CompartmentViews, len(es))
 	for i, e := range es {
-		r[i] = NewCompartment1151786357View(e)
+		r[i] = NewCompartmentView(e)
 	}
 	return r
 }
 
 type (
-	// Fridge2716213877View represents the data serialized for the following serialization group combinations:
+	// FridgeView represents the data serialized for the following serialization group combinations:
 	// []
-	Fridge2716213877View struct {
+	FridgeView struct {
 		ID    int    `json:"id,omitempty"`
 		Title string `json:"title,omitempty"`
 	}
-	Fridge2716213877Views []*Fridge2716213877View
+	FridgeViews []*FridgeView
 )
 
-func NewFridge2716213877View(e *ent.Fridge) *Fridge2716213877View {
+func NewFridgeView(e *ent.Fridge) *FridgeView {
 	if e == nil {
 		return nil
 	}
-	return &Fridge2716213877View{
+	return &FridgeView{
 		ID:    e.ID,
 		Title: e.Title,
 	}
 }
 
-func NewFridge2716213877Views(es []*ent.Fridge) Fridge2716213877Views {
+func NewFridgeViews(es []*ent.Fridge) FridgeViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(Fridge2716213877Views, len(es))
+	r := make(FridgeViews, len(es))
 	for i, e := range es {
-		r[i] = NewFridge2716213877View(e)
+		r[i] = NewFridgeView(e)
 	}
 	return r
 }
 
 type (
-	// Item1509516544View represents the data serialized for the following serialization group combinations:
+	// ItemView represents the data serialized for the following serialization group combinations:
 	// []
-	Item1509516544View struct {
+	ItemView struct {
 		ID   int    `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 	}
-	Item1509516544Views []*Item1509516544View
+	ItemViews []*ItemView
 )
 
-func NewItem1509516544View(e *ent.Item) *Item1509516544View {
+func NewItemView(e *ent.Item) *ItemView {
 	if e == nil {
 		return nil
 	}
-	return &Item1509516544View{
+	return &ItemView{
 		ID:   e.ID,
 		Name: e.Name,
 	}
 }
 
-func NewItem1509516544Views(es []*ent.Item) Item1509516544Views {
+func NewItemViews(es []*ent.Item) ItemViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(Item1509516544Views, len(es))
+	r := make(ItemViews, len(es))
 	for i, e := range es {
-		r[i] = NewItem1509516544View(e)
+		r[i] = NewItemView(e)
 	}
 	return r
 }

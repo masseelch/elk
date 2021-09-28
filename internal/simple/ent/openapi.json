@@ -46,7 +46,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Category4094953247View"
+                    "$ref": "#/components/schemas/CategoryView"
                   }
                 }
               }
@@ -100,7 +100,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Category4094953247View"
+                  "$ref": "#/components/schemas/CategoryView"
                 }
               }
             }
@@ -140,7 +140,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Category4094953247View"
+                  "$ref": "#/components/schemas/CategoryView"
                 }
               }
             }
@@ -239,7 +239,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Category4094953247View"
+                  "$ref": "#/components/schemas/CategoryView"
                 }
               }
             }
@@ -302,7 +302,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Pet359800019View"
+                    "$ref": "#/components/schemas/PetView"
                   }
                 }
               }
@@ -356,7 +356,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Collar1522160880View"
+                    "$ref": "#/components/schemas/CollarView"
                   }
                 }
               }
@@ -408,7 +408,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Collar1522160880View"
+                  "$ref": "#/components/schemas/CollarView"
                 }
               }
             }
@@ -448,7 +448,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Collar1522160880View"
+                  "$ref": "#/components/schemas/CollarView"
                 }
               }
             }
@@ -545,7 +545,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Collar1522160880View"
+                  "$ref": "#/components/schemas/CollarView"
                 }
               }
             }
@@ -587,7 +587,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet1876743790View"
+                  "$ref": "#/components/schemas/PetView"
                 }
               }
             }
@@ -640,7 +640,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Owner139708381View"
+                    "$ref": "#/components/schemas/OwnerView"
                   }
                 }
               }
@@ -699,7 +699,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Owner139708381View"
+                  "$ref": "#/components/schemas/OwnerView"
                 }
               }
             }
@@ -738,7 +738,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Owner139708381View"
+                  "$ref": "#/components/schemas/OwnerView"
                 }
               }
             }
@@ -840,7 +840,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Owner139708381View"
+                  "$ref": "#/components/schemas/OwnerView"
                 }
               }
             }
@@ -902,7 +902,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Pet359800019View"
+                    "$ref": "#/components/schemas/PetView"
                   }
                 }
               }
@@ -956,7 +956,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Pet359800019View"
+                    "$ref": "#/components/schemas/PetView"
                   }
                 }
               }
@@ -1029,7 +1029,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet359800019View"
+                  "$ref": "#/components/schemas/PetView"
                 }
               }
             }
@@ -1068,7 +1068,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet1876743790View"
+                  "$ref": "#/components/schemas/PetView"
                 }
               }
             }
@@ -1184,7 +1184,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet359800019View"
+                  "$ref": "#/components/schemas/PetView"
                 }
               }
             }
@@ -1246,7 +1246,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Category4094953247View"
+                    "$ref": "#/components/schemas/CategoryView"
                   }
                 }
               }
@@ -1290,7 +1290,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Collar1522160880View"
+                  "$ref": "#/components/schemas/CollarView"
                 }
               }
             }
@@ -1352,7 +1352,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Pet359800019View"
+                    "$ref": "#/components/schemas/PetView"
                   }
                 }
               }
@@ -1395,7 +1395,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Owner139708381View"
+                  "$ref": "#/components/schemas/OwnerView"
                 }
               }
             }
@@ -1415,7 +1415,7 @@
   },
   "components": {
     "schemas": {
-      "Category4094953247View": {
+      "CategoryView": {
         "type": "object",
         "required": [
           "id",
@@ -1431,7 +1431,7 @@
           }
         }
       },
-      "Collar1522160880View": {
+      "CollarView": {
         "type": "object",
         "required": [
           "color",
@@ -1448,7 +1448,7 @@
           }
         }
       },
-      "Owner139708381View": {
+      "OwnerView": {
         "type": "object",
         "required": [
           "age",
@@ -1468,36 +1468,7 @@
           }
         }
       },
-      "Pet1876743790View": {
-        "type": "object",
-        "required": [
-          "age",
-          "id",
-          "name"
-        ],
-        "properties": {
-          "age": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "friends": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Pet359800019View"
-            }
-          },
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "owner": {
-            "$ref": "#/components/schemas/Owner139708381View"
-          }
-        }
-      },
-      "Pet359800019View": {
+      "PetView": {
         "type": "object",
         "required": [
           "age",

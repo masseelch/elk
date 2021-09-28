@@ -56,7 +56,7 @@ func (h CategoryHandler) Pets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPet359800019Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetViews(es), w)
 }
 
 // Pet fetches the ent.pet attached to the ent.Collar
@@ -98,7 +98,7 @@ func (h CollarHandler) Pet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.String("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPet1876743790View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
 }
 
 // Pets fetches the ent.pets attached to the ent.Owner
@@ -139,7 +139,7 @@ func (h OwnerHandler) Pets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPet359800019Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetViews(es), w)
 }
 
 // Collar fetches the ent.collar attached to the ent.Pet
@@ -169,7 +169,7 @@ func (h PetHandler) Collar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("collar rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCollarView(e), w)
 }
 
 // Categories fetches the ent.categories attached to the ent.Pet
@@ -206,7 +206,7 @@ func (h PetHandler) Categories(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("categories rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewCategory4094953247Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryViews(es), w)
 }
 
 // Owner fetches the ent.owner attached to the ent.Pet
@@ -236,7 +236,7 @@ func (h PetHandler) Owner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("owner rendered", zap.String("id", e.ID.String()))
-	easyjson.MarshalToHTTPResponseWriter(NewOwner139708381View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerView(e), w)
 }
 
 // Friends fetches the ent.friends attached to the ent.Pet
@@ -273,5 +273,5 @@ func (h PetHandler) Friends(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPet359800019Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetViews(es), w)
 }

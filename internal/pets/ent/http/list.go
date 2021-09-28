@@ -41,7 +41,7 @@ func (h *BadgeHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("badges rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewBadge2492344257Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewBadgeViews(es), w)
 }
 
 // Read fetches the ent.Pet identified by a given url-parameter from the
@@ -77,7 +77,7 @@ func (h *PetHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pets rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPet45794832Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetViews(es), w)
 }
 
 // Read fetches the ent.PlayGroup identified by a given url-parameter from the
@@ -111,7 +111,7 @@ func (h *PlayGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("play-groups rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewPlayGroup3432834655Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPlayGroupViews(es), w)
 }
 
 // Read fetches the ent.Toy identified by a given url-parameter from the
@@ -145,5 +145,5 @@ func (h *ToyHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("toys rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewToy36157710Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewToyViews(es), w)
 }

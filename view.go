@@ -3,8 +3,10 @@ package elk
 import (
 	"entgo.io/ent/entc/gen"
 	"fmt"
+	inflect "github.com/go-openapi/inflect"
 	"github.com/masseelch/elk/serialization"
-	"hash/fnv"
+	"log"
+	"strings"
 )
 
 type (
@@ -14,6 +16,7 @@ type (
 		Node   *gen.Type
 		Fields []*gen.Field
 		Edges  []*viewEdge
+		Groups serialization.Groups
 	}
 	// A viewEdge wraps an ent Edge and holds the name of the view to use when this viewEdge is serialized. A viewEdge
 	// is only valid in its views' context.
@@ -68,6 +71,8 @@ func newViews(g *gen.Graph) (map[string]*mergedView, error) {
 			if mv, ok := m[v]; ok && !mv.Groups.Contains(gs) {
 				mv.Groups = append(mv.Groups, gs)
 			} else {
+				name, _ := r.Name()
+				log.Printf("name; groups: %s: %v", name, gs)
 				m[v] = &mergedView{
 					view:   *r,
 					Groups: serialization.Collection{gs},
@@ -80,21 +85,31 @@ func newViews(g *gen.Graph) (map[string]*mergedView, error) {
 
 // Name returns a unique name for this view.
 func (v view) Name() (string, error) {
-	h := fnv.New32a()
-	if _, err := h.Write([]byte(v.Node.Name)); err != nil {
-		return "", err
-	}
-	for _, f := range v.Fields {
-		if _, err := h.Write([]byte(f.Name)); err != nil {
-			return "", err
+	groups := []string{}
+
+	for _, elem := range v.Groups {
+		camelized := inflect.Camelize(elem)
+		if v.Node.Name != camelized {
+			groups = append(groups, camelized)
 		}
 	}
-	for _, e := range v.Edges {
-		if _, err := h.Write([]byte(e.Name)); err != nil {
-			return "", err
+
+	annotations, ok := v.Node.Annotations[elkSchemaName]
+	schemaAnnotation, canCast := annotations.(map[string]interface{})
+	if !ok || len(groups) == 0 || !canCast {
+
+		// if no annotations or no groups (should be same thing) there's only one view
+		return fmt.Sprintf("%sView", v.Node.Name), nil
+	}
+
+	for k, val := range schemaAnnotation {
+		gs, ok := val.(serialization.Groups)
+		if ok && len(gs) > 1 {
+			return fmt.Sprintf("%v%sView", v.Node.Name, k), nil
 		}
 	}
-	return fmt.Sprintf("%s%dView", v.Node.Name, h.Sum32()), nil
+
+	return fmt.Sprintf("%vWith%sView", v.Node.Name, strings.Join(groups, "And")), nil
 }
 
 // newView create a new view for the given type and serialization.Groups.
@@ -113,7 +128,7 @@ func newView(n *gen.Type, gs serialization.Groups) (*view, error) {
 }
 
 func newViewHelper(n *gen.Type, gs serialization.Groups, loadEdges bool) (*view, error) {
-	v := &view{Node: n}
+	v := &view{Node: n, Groups: gs}
 	ok, err := fieldNeedsSerialization(n.ID, gs)
 	if err != nil {
 		return nil, err

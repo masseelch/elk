@@ -41,7 +41,7 @@ func (h *CompartmentHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("compartments rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewCompartment1151786357Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCompartmentViews(es), w)
 }
 
 // Read fetches the ent.Fridge identified by a given url-parameter from the
@@ -75,7 +75,7 @@ func (h *FridgeHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("fridges rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewFridge2716213877Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewFridgeViews(es), w)
 }
 
 // Read fetches the ent.Item identified by a given url-parameter from the
@@ -109,5 +109,5 @@ func (h *ItemHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("items rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewItem1509516544Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewItemViews(es), w)
 }

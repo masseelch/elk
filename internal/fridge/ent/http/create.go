@@ -43,29 +43,27 @@ func (h CompartmentHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// Store id of fresh entity to log errors for the reload.
-	id := e.ID
 	// Reload entry.
 	q := h.client.Compartment.Query().Where(compartment.ID(e.ID))
-	ret, err := q.Only(r.Context())
+	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read compartment", zap.Error(err), zap.Int("id", id))
+			l.Error("could not read compartment", zap.Error(err), zap.Int("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("compartment rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewCompartment1151786357View(ret), w)
+	l.Info("compartment rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewCompartmentView(e), w)
 }
 
 // Create creates a new ent.Fridge and stores it in the database.
@@ -95,29 +93,27 @@ func (h FridgeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// Store id of fresh entity to log errors for the reload.
-	id := e.ID
 	// Reload entry.
 	q := h.client.Fridge.Query().Where(fridge.ID(e.ID))
-	ret, err := q.Only(r.Context())
+	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read fridge", zap.Error(err), zap.Int("id", id))
+			l.Error("could not read fridge", zap.Error(err), zap.Int("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("fridge rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewFridge2716213877View(ret), w)
+	l.Info("fridge rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewFridgeView(e), w)
 }
 
 // Create creates a new ent.Item and stores it in the database.
@@ -147,27 +143,25 @@ func (h ItemHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// Store id of fresh entity to log errors for the reload.
-	id := e.ID
 	// Reload entry.
 	q := h.client.Item.Query().Where(item.ID(e.ID))
-	ret, err := q.Only(r.Context())
+	e, err = q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read item", zap.Error(err), zap.Int("id", id))
+			l.Error("could not read item", zap.Error(err), zap.Int("id", e.ID))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("item rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewItem1509516544View(ret), w)
+	l.Info("item rendered", zap.Int("id", e.ID))
+	easyjson.MarshalToHTTPResponseWriter(NewItemView(e), w)
 }

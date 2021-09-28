@@ -39,9 +39,11 @@ type SchemaAnnotation struct {
 	ListSecurity spec.Security
 }
 
+const elkSchemaName = "ElkSchema"
+
 // Name implements ent.Annotation interface.
 func (SchemaAnnotation) Name() string {
-	return "ElkSchema"
+	return elkSchemaName
 }
 
 // Merge implements ent.Merger interface.
