@@ -19,7 +19,7 @@ func main() {
 		elk.GenerateHandlers(),
 		elk.GenerateSpec(
 			"openapi.json",
-			elk.SpecTitle("Fridge CMS"),                                                      // It is a Content-Management-System ...
+			elk.SpecTitle("Fridge CMS"), // It is a Content-Management-System ...
 			elk.SpecDescription("API to manage fridges and their cooled contents. **ICY!**"), // You can use CommonMark syntax.
 			elk.SpecVersion("0.0.1"),
 			func(next elk.Generator) elk.Generator {
