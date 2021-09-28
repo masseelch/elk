@@ -22,6 +22,9 @@ func (Pet) Fields() []ent.Field {
 				elk.Groups("pet"),
 				elk.Example("Kuro"),
 			),
+		field.JSON("nicknames", []string{}).
+			Optional().
+			Annotations(elk.Groups("pet:read")),
 		field.Int("age").
 			Optional().
 			Annotations(

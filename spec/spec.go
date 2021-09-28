@@ -98,8 +98,9 @@ type (
 		Example  interface{} `json:"example,omitempty"`
 	}
 	Type struct {
-		Type   string `json:"type"`
-		Format string `json:"format,omitempty"`
+		Type   string      `json:"type,omitempty"`
+		Format string      `json:"format,omitempty"`
+		Items  *Type `json:"items,omitempty"`
 	}
 	Edges map[string]Edge
 	Edge  struct {

@@ -216,6 +216,20 @@ func NameContainsFold(v string) predicate.Pet {
 	})
 }
 
+// NicknamesIsNil applies the IsNil predicate on the "nicknames" field.
+func NicknamesIsNil() predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldNicknames)))
+	})
+}
+
+// NicknamesNotNil applies the NotNil predicate on the "nicknames" field.
+func NicknamesNotNil() predicate.Pet {
+	return predicate.Pet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldNicknames)))
+	})
+}
+
 // AgeEQ applies the EQ predicate on the "age" field.
 func AgeEQ(v int) predicate.Pet {
 	return predicate.Pet(func(s *sql.Selector) {

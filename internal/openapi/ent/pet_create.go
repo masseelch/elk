@@ -27,6 +27,12 @@ func (pc *PetCreate) SetName(s string) *PetCreate {
 	return pc
 }
 
+// SetNicknames sets the "nicknames" field.
+func (pc *PetCreate) SetNicknames(s []string) *PetCreate {
+	pc.mutation.SetNicknames(s)
+	return pc
+}
+
 // SetAge sets the "age" field.
 func (pc *PetCreate) SetAge(i int) *PetCreate {
 	pc.mutation.SetAge(i)
@@ -197,6 +203,14 @@ func (pc *PetCreate) createSpec() (*Pet, *sqlgraph.CreateSpec) {
 			Column: pet.FieldName,
 		})
 		_node.Name = value
+	}
+	if value, ok := pc.mutation.Nicknames(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: pet.FieldNicknames,
+		})
+		_node.Nicknames = value
 	}
 	if value, ok := pc.mutation.Age(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

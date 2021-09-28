@@ -896,6 +896,7 @@ type PetMutation struct {
 	typ               string
 	id                *int
 	name              *string
+	nicknames         *[]string
 	age               *int
 	addage            *int
 	clearedFields     map[string]struct{}
@@ -1025,6 +1026,55 @@ func (m *PetMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *PetMutation) ResetName() {
 	m.name = nil
+}
+
+// SetNicknames sets the "nicknames" field.
+func (m *PetMutation) SetNicknames(s []string) {
+	m.nicknames = &s
+}
+
+// Nicknames returns the value of the "nicknames" field in the mutation.
+func (m *PetMutation) Nicknames() (r []string, exists bool) {
+	v := m.nicknames
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNicknames returns the old "nicknames" field's value of the Pet entity.
+// If the Pet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PetMutation) OldNicknames(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldNicknames is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldNicknames requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNicknames: %w", err)
+	}
+	return oldValue.Nicknames, nil
+}
+
+// ClearNicknames clears the value of the "nicknames" field.
+func (m *PetMutation) ClearNicknames() {
+	m.nicknames = nil
+	m.clearedFields[pet.FieldNicknames] = struct{}{}
+}
+
+// NicknamesCleared returns if the "nicknames" field was cleared in this mutation.
+func (m *PetMutation) NicknamesCleared() bool {
+	_, ok := m.clearedFields[pet.FieldNicknames]
+	return ok
+}
+
+// ResetNicknames resets all changes to the "nicknames" field.
+func (m *PetMutation) ResetNicknames() {
+	m.nicknames = nil
+	delete(m.clearedFields, pet.FieldNicknames)
 }
 
 // SetAge sets the "age" field.
@@ -1263,9 +1313,12 @@ func (m *PetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PetMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 3)
 	if m.name != nil {
 		fields = append(fields, pet.FieldName)
+	}
+	if m.nicknames != nil {
+		fields = append(fields, pet.FieldNicknames)
 	}
 	if m.age != nil {
 		fields = append(fields, pet.FieldAge)
@@ -1280,6 +1333,8 @@ func (m *PetMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case pet.FieldName:
 		return m.Name()
+	case pet.FieldNicknames:
+		return m.Nicknames()
 	case pet.FieldAge:
 		return m.Age()
 	}
@@ -1293,6 +1348,8 @@ func (m *PetMutation) OldField(ctx context.Context, name string) (ent.Value, err
 	switch name {
 	case pet.FieldName:
 		return m.OldName(ctx)
+	case pet.FieldNicknames:
+		return m.OldNicknames(ctx)
 	case pet.FieldAge:
 		return m.OldAge(ctx)
 	}
@@ -1310,6 +1367,13 @@ func (m *PetMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case pet.FieldNicknames:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNicknames(v)
 		return nil
 	case pet.FieldAge:
 		v, ok := value.(int)
@@ -1363,6 +1427,9 @@ func (m *PetMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *PetMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(pet.FieldNicknames) {
+		fields = append(fields, pet.FieldNicknames)
+	}
 	if m.FieldCleared(pet.FieldAge) {
 		fields = append(fields, pet.FieldAge)
 	}
@@ -1380,6 +1447,9 @@ func (m *PetMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PetMutation) ClearField(name string) error {
 	switch name {
+	case pet.FieldNicknames:
+		m.ClearNicknames()
+		return nil
 	case pet.FieldAge:
 		m.ClearAge()
 		return nil
@@ -1393,6 +1463,9 @@ func (m *PetMutation) ResetField(name string) error {
 	switch name {
 	case pet.FieldName:
 		m.ResetName()
+		return nil
+	case pet.FieldNicknames:
+		m.ResetNicknames()
 		return nil
 	case pet.FieldAge:
 		m.ResetAge()
