@@ -5,7 +5,6 @@ import (
 	"fmt"
 	inflect "github.com/go-openapi/inflect"
 	"github.com/masseelch/elk/serialization"
-	"log"
 	"strings"
 )
 
@@ -71,8 +70,6 @@ func newViews(g *gen.Graph) (map[string]*mergedView, error) {
 			if mv, ok := m[v]; ok && !mv.Groups.Contains(gs) {
 				mv.Groups = append(mv.Groups, gs)
 			} else {
-				name, _ := r.Name()
-				log.Printf("name; groups: %s: %v", name, gs)
 				m[v] = &mergedView{
 					view:   *r,
 					Groups: serialization.Collection{gs},
