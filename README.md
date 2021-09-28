@@ -88,6 +88,50 @@ contains the OpenAPI Specification. Feel free to have a look
 at [this example spec file](https://github.com/masseelch/elk/tree/master/internal/simple/ent/openapo.json)
 and [the implementing server code](https://github.com/masseelch/elk/tree/master/internal/simple/ent/http).
 
+If you want to generate a client matching the spec as well, you can user the following function and call it after
+generating the spec in `entc.go`
+
+```go
+package main
+
+import (
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	
+	"github.com/deepmap/oapi-codegen/pkg/codegen"
+	"github.com/deepmap/oapi-codegen/pkg/util"
+)
+
+func generateClient() {
+	swagger, err := util.LoadSwagger("./openapi.json")
+	if err != nil {
+		log.Fatalf("Failed to load swagger %v", err)
+	}
+
+	generated, err := codegen.Generate(swagger, "stub", codegen.Options{
+		GenerateClient:     true,
+		GenerateTypes:      true,
+		AliasTypes:         true,
+	})
+	if err != nil {
+		log.Fatalf("generaring client failed %s", err);
+	}
+
+	dir := filepath.Join(".", "stub")
+	stub := filepath.Join(".", "stub", "http.go")
+	perm := os.FileMode(0777)
+	if err := os.MkdirAll(dir, perm); err != nil {
+		log.Fatalf("error creating dir: %s", err)
+	}
+
+	if err := ioutil.WriteFile(stub, []byte(generated), perm); err != nil {
+		log.Fatalf("error writing generated code to file: %s", err)
+	}
+}
+```
+
 ### Setting up a server
 
 This section guides you to a very simple setup for an `elk`-powered Ent. The following two files define the two schemas
