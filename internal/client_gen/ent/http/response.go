@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/client_gen/ent"
-	"github.com/masseelch/elk/internal/client_gen/ent/collar"
+	collar "github.com/masseelch/elk/internal/client_gen/ent/collar"
 )
 
 // Basic HTTP Error Response

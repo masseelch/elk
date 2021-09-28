@@ -8,7 +8,7 @@ import (
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/client_gen/ent"
 	"github.com/masseelch/elk/internal/client_gen/ent/category"
-	"github.com/masseelch/elk/internal/client_gen/ent/collar"
+	collar "github.com/masseelch/elk/internal/client_gen/ent/collar"
 	"github.com/masseelch/elk/internal/client_gen/ent/owner"
 	"github.com/masseelch/elk/internal/client_gen/ent/pet"
 	"go.uber.org/zap"
