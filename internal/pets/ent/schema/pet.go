@@ -36,7 +36,8 @@ func (Pet) Fields() []ent.Field {
 			Optional().
 			Annotations(elk.Groups("pet:read")),
 		field.Enum("sex").
-			Values("male", "female"),
+			Values("male", "female").
+			Immutable(),
 		field.UUID("chip", uuid.UUID{}).
 			Default(uuid.New),
 	}

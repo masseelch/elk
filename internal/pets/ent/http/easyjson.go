@@ -981,16 +981,6 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(in *jlexer.
 					in.Delim(']')
 				}
 			}
-		case "sex":
-			if in.IsNull() {
-				in.Skip()
-				out.Sex = nil
-			} else {
-				if out.Sex == nil {
-					out.Sex = new(pet.Sex)
-				}
-				*out.Sex = pet.Sex(in.String())
-			}
 		case "chip":
 			if in.IsNull() {
 				in.Skip()
@@ -1228,15 +1218,6 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp8(out *jwrite
 				}
 				out.RawByte(']')
 			}
-		}
-	}
-	{
-		const prefix string = ",\"sex\":"
-		out.RawString(prefix)
-		if in.Sex == nil {
-			out.RawString("null")
-		} else {
-			out.String(string(*in.Sex))
 		}
 	}
 	{

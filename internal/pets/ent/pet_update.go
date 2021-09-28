@@ -116,12 +116,6 @@ func (pu *PetUpdate) ClearNicknames() *PetUpdate {
 	return pu
 }
 
-// SetSex sets the "sex" field.
-func (pu *PetUpdate) SetSex(pe pet.Sex) *PetUpdate {
-	pu.mutation.SetSex(pe)
-	return pu
-}
-
 // SetChip sets the "chip" field.
 func (pu *PetUpdate) SetChip(u uuid.UUID) *PetUpdate {
 	pu.mutation.SetChip(u)
@@ -471,11 +465,6 @@ func (pu *PetUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
 		}
 	}
-	if v, ok := pu.mutation.Sex(); ok {
-		if err := pet.SexValidator(v); err != nil {
-			return &ValidationError{Name: "sex", err: fmt.Errorf("ent: validator failed for field \"sex\": %w", err)}
-		}
-	}
 	if _, ok := pu.mutation.BadgeID(); pu.mutation.BadgeCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"badge\"")
 	}
@@ -572,13 +561,6 @@ func (pu *PetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: pet.FieldNicknames,
-		})
-	}
-	if value, ok := pu.mutation.Sex(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: pet.FieldSex,
 		})
 	}
 	if value, ok := pu.mutation.Chip(); ok {
@@ -1082,12 +1064,6 @@ func (puo *PetUpdateOne) ClearNicknames() *PetUpdateOne {
 	return puo
 }
 
-// SetSex sets the "sex" field.
-func (puo *PetUpdateOne) SetSex(pe pet.Sex) *PetUpdateOne {
-	puo.mutation.SetSex(pe)
-	return puo
-}
-
 // SetChip sets the "chip" field.
 func (puo *PetUpdateOne) SetChip(u uuid.UUID) *PetUpdateOne {
 	puo.mutation.SetChip(u)
@@ -1444,11 +1420,6 @@ func (puo *PetUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
 		}
 	}
-	if v, ok := puo.mutation.Sex(); ok {
-		if err := pet.SexValidator(v); err != nil {
-			return &ValidationError{Name: "sex", err: fmt.Errorf("ent: validator failed for field \"sex\": %w", err)}
-		}
-	}
 	if _, ok := puo.mutation.BadgeID(); puo.mutation.BadgeCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"badge\"")
 	}
@@ -1562,13 +1533,6 @@ func (puo *PetUpdateOne) sqlSave(ctx context.Context) (_node *Pet, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: pet.FieldNicknames,
-		})
-	}
-	if value, ok := puo.mutation.Sex(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: pet.FieldSex,
 		})
 	}
 	if value, ok := puo.mutation.Chip(); ok {

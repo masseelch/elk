@@ -11,10 +11,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
-	badge "github.com/masseelch/elk/internal/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/pets/ent/toy"
+	"github.com/masseelch/elk/internal/pets/ent/badge"
+	"github.com/masseelch/elk/internal/pets/ent/pet"
+	"github.com/masseelch/elk/internal/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 	"go.uber.org/zap"
 )
 
@@ -126,11 +126,6 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	} else if err := pet.NameValidator(*d.Name); err != nil {
 		errs["name"] = strings.TrimPrefix(err.Error(), "pet: ")
 	}
-	if d.Sex == nil {
-		errs["sex"] = `missing required field: "sex"`
-	} else if err := pet.SexValidator(*d.Sex); err != nil {
-		errs["sex"] = strings.TrimPrefix(err.Error(), "pet: ")
-	}
 	if d.Badge == nil {
 		errs["badge"] = `missing required edge: "badge"`
 	}
@@ -158,9 +153,6 @@ func (h PetHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	if d.Nicknames != nil {
 		b.SetNicknames(*d.Nicknames)
-	}
-	if d.Sex != nil {
-		b.SetSex(*d.Sex)
 	}
 	if d.Chip != nil {
 		b.SetChip(*d.Chip)

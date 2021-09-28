@@ -8,10 +8,10 @@ import (
 
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
-	badge "github.com/masseelch/elk/internal/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/pets/ent/toy"
+	"github.com/masseelch/elk/internal/pets/ent/badge"
+	"github.com/masseelch/elk/internal/pets/ent/pet"
+	"github.com/masseelch/elk/internal/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 	"go.uber.org/zap"
 )
 

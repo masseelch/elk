@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	badge "github.com/masseelch/elk/internal/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/pets/ent/toy"
+	"github.com/masseelch/elk/internal/pets/ent/badge"
+	"github.com/masseelch/elk/internal/pets/ent/pet"
+	"github.com/masseelch/elk/internal/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 )
 
 // Payload of a ent.Badge create request.
@@ -55,7 +55,6 @@ type PetUpdateRequest struct {
 	Name       *string     `json:"name"`
 	Birthday   *time.Time  `json:"birthday"`
 	Nicknames  *[]string   `json:"nicknames"`
-	Sex        *pet.Sex    `json:"sex"`
 	Chip       *uuid.UUID  `json:"chip"`
 	Badge      *uint32     `json:"badge"`
 	Protege    *int        `json:"protege"`
