@@ -11,7 +11,9 @@ import (
 )
 
 func main() {
-	ex, err := elk.NewExtension(elk.GenerateHandlers())
+	ex, err := elk.NewExtension(
+		elk.GenerateHandlers(),
+	)
 	if err != nil {
 		log.Fatalf("creating elk extension: %v", err)
 	}

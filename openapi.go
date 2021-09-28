@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -673,9 +674,23 @@ func oasType(f *gen.Field) (*spec.Type, error) {
 	if f.IsEnum() {
 		return _string, nil
 	}
-	t, ok := oasTypes[f.Type.String()]
+
+	s := f.Type.String()
+	if strings.Contains(s, "[]") {
+		ending := strings.Replace(s, "[]", "", 1)
+		t, ok := oasTypes[ending]
+		if !ok {
+			return nil, fmt.Errorf("no OAS-type exists for %q", s)
+		}
+		return &spec.Type{
+			Type:   "array",
+			Format: t.Format,
+			Items:  t,
+		}, nil
+	}
+	t, ok := oasTypes[s]
 	if !ok {
-		return nil, fmt.Errorf("no OAS-type exists for %q", f.Type.String())
+		return nil, fmt.Errorf("no OAS-type exists for %q", s)
 	}
 	return t, nil
 }

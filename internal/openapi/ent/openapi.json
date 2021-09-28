@@ -304,7 +304,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Pet359800019View"
+                    "$ref": "#/components/schemas/Pet2903321980View"
                   }
                 }
               }
@@ -626,7 +626,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Pet359800019View"
+                    "$ref": "#/components/schemas/Pet2903321980View"
                   }
                 }
               }
@@ -680,7 +680,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Pet359800019View"
+                    "$ref": "#/components/schemas/Pet2903321980View"
                   }
                 }
               }
@@ -742,6 +742,12 @@
                     "type": "string",
                     "example": "Kuro"
                   },
+                  "nicknames": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
                   "owner": {
                     "type": "integer",
                     "format": "int32"
@@ -757,7 +763,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet359800019View"
+                  "$ref": "#/components/schemas/Pet2903321980View"
                 }
               }
             }
@@ -914,6 +920,12 @@
                     "type": "string",
                     "example": "Kuro"
                   },
+                  "nicknames": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
                   "owner": {
                     "type": "integer",
                     "format": "int32"
@@ -929,7 +941,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet359800019View"
+                  "$ref": "#/components/schemas/Pet2903321980View"
                 }
               }
             }
@@ -1061,7 +1073,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Pet359800019View"
+                    "$ref": "#/components/schemas/Pet2903321980View"
                   }
                 }
               }
@@ -1175,10 +1187,8 @@
             "example": 1
           },
           "friends": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Pet359800019View"
-            }
+            "type": "object",
+            "properties": {}
           },
           "id": {
             "type": "integer",
@@ -1193,7 +1203,7 @@
           }
         }
       },
-      "Pet359800019View": {
+      "Pet2903321980View": {
         "type": "object",
         "required": [
           "id",
@@ -1212,6 +1222,12 @@
           "name": {
             "type": "string",
             "example": "Kuro"
+          },
+          "nicknames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
