@@ -10,8 +10,19 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - run: go generate ./...
-      - run: git diff-index HEAD
+      - name: Diff report
+        run: git diff --stat=80
+      - name: set exit code
+        run: git diff-index HEAD --quiet
   test:
     runs-on: ubuntu-latest
     name: test
@@ -21,4 +32,12 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - run: go test ./...
