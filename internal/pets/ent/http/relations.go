@@ -10,10 +10,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
-	badge "github.com/masseelch/elk/internal/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/pets/ent/toy"
+	"github.com/masseelch/elk/internal/pets/ent/badge"
+	"github.com/masseelch/elk/internal/pets/ent/pet"
+	"github.com/masseelch/elk/internal/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 	"go.uber.org/zap"
 )
 
@@ -1095,7 +1095,7 @@ func (h BadgeHandler) Wearer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetReadView(e), w)
 }
 
 // Badge fetches the ent.badge attached to the ent.Pet
@@ -2209,7 +2209,7 @@ func (h PetHandler) Protege(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetReadView(e), w)
 }
 
 // Mentor fetches the ent.mentor attached to the ent.Pet
@@ -3289,7 +3289,7 @@ func (h PetHandler) Mentor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetReadView(e), w)
 }
 
 // Spouse fetches the ent.spouse attached to the ent.Pet
@@ -4369,7 +4369,7 @@ func (h PetHandler) Spouse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetReadView(e), w)
 }
 
 // Toys fetches the ent.toys attached to the ent.Pet
@@ -5490,7 +5490,7 @@ func (h PetHandler) Parent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetReadView(e), w)
 }
 
 // Children fetches the ent.children attached to the ent.Pet
@@ -6740,5 +6740,5 @@ func (h ToyHandler) Owner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetReadView(e), w)
 }

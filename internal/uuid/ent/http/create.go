@@ -57,5 +57,5 @@ func (h UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("user rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewUser3451555716View(ret), w)
+	easyjson.MarshalToHTTPResponseWriter(NewUserView(ret), w)
 }

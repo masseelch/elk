@@ -73,5 +73,5 @@ func (h UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("user rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewUser3451555716View(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewUserView(e), w)
 }

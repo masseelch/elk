@@ -78,32 +78,32 @@ func Unauthorized(w http.ResponseWriter, msg interface{}) (int, error) {
 }
 
 type (
-	// User3451555716View represents the data serialized for the following serialization group combinations:
+	// UserView represents the data serialized for the following serialization group combinations:
 	// []
-	User3451555716View struct {
+	UserView struct {
 		ID   int       `json:"id,omitempty"`
 		UUID uuid.UUID `json:"uuid,omitempty"`
 	}
-	User3451555716Views []*User3451555716View
+	UserViews []*UserView
 )
 
-func NewUser3451555716View(e *ent.User) *User3451555716View {
+func NewUserView(e *ent.User) *UserView {
 	if e == nil {
 		return nil
 	}
-	return &User3451555716View{
+	return &UserView{
 		ID:   e.ID,
 		UUID: e.UUID,
 	}
 }
 
-func NewUser3451555716Views(es []*ent.User) User3451555716Views {
+func NewUserViews(es []*ent.User) UserViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(User3451555716Views, len(es))
+	r := make(UserViews, len(es))
 	for i, e := range es {
-		r[i] = NewUser3451555716View(e)
+		r[i] = NewUserView(e)
 	}
 	return r
 }

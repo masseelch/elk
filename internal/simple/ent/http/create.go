@@ -41,27 +41,29 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	// Store id of fresh entity to log errors for the reload.
+	id := e.ID
 	// Reload entry.
 	q := h.client.Category.Query().Where(category.ID(e.ID))
-	e, err = q.Only(r.Context())
+	ret, err := q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Uint64("id", e.ID))
+			l.Info(msg, zap.Error(err), zap.Uint64("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Uint64("id", e.ID))
+			l.Error(msg, zap.Error(err), zap.Uint64("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read category", zap.Error(err), zap.Uint64("id", e.ID))
+			l.Error("could not read category", zap.Error(err), zap.Uint64("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("category rendered", zap.Uint64("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewCategoryView(e), w)
+	l.Info("category rendered", zap.Uint64("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryView(ret), w)
 }
 
 // Create creates a new ent.Collar and stores it in the database.
@@ -91,27 +93,29 @@ func (h CollarHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	// Store id of fresh entity to log errors for the reload.
+	id := e.ID
 	// Reload entry.
 	q := h.client.Collar.Query().Where(collar.ID(e.ID))
-	e, err = q.Only(r.Context())
+	ret, err := q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.Int("id", e.ID))
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read collar", zap.Error(err), zap.Int("id", e.ID))
+			l.Error("could not read collar", zap.Error(err), zap.Int("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("collar rendered", zap.Int("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewCollarView(e), w)
+	l.Info("collar rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewCollarView(ret), w)
 }
 
 // Create creates a new ent.Owner and stores it in the database.
@@ -144,27 +148,29 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	// Store id of fresh entity to log errors for the reload.
+	id := e.ID
 	// Reload entry.
 	q := h.client.Owner.Query().Where(owner.ID(e.ID))
-	e, err = q.Only(r.Context())
+	ret, err := q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.String("id", e.ID.String()))
+			l.Info(msg, zap.Error(err), zap.String("id", id.String()))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.String("id", e.ID.String()))
+			l.Error(msg, zap.Error(err), zap.String("id", id.String()))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read owner", zap.Error(err), zap.String("id", e.ID.String()))
+			l.Error("could not read owner", zap.Error(err), zap.String("id", id.String()))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("owner rendered", zap.String("id", e.ID.String()))
-	easyjson.MarshalToHTTPResponseWriter(NewOwnerView(e), w)
+	l.Info("owner rendered", zap.String("id", id.String()))
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerView(ret), w)
 }
 
 // Create creates a new ent.Pet and stores it in the database.
@@ -206,25 +212,27 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	// Store id of fresh entity to log errors for the reload.
+	id := e.ID
 	// Reload entry.
 	q := h.client.Pet.Query().Where(pet.ID(e.ID))
-	e, err = q.Only(r.Context())
+	ret, err := q.Only(r.Context())
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
 			msg := stripEntError(err)
-			l.Info(msg, zap.Error(err), zap.String("id", e.ID))
+			l.Info(msg, zap.Error(err), zap.String("id", id))
 			NotFound(w, msg)
 		case ent.IsNotSingular(err):
 			msg := stripEntError(err)
-			l.Error(msg, zap.Error(err), zap.String("id", e.ID))
+			l.Error(msg, zap.Error(err), zap.String("id", id))
 			BadRequest(w, msg)
 		default:
-			l.Error("could not read pet", zap.Error(err), zap.String("id", e.ID))
+			l.Error("could not read pet", zap.Error(err), zap.String("id", id))
 			InternalServerError(w, nil)
 		}
 		return
 	}
-	l.Info("pet rendered", zap.String("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	l.Info("pet rendered", zap.String("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(ret), w)
 }

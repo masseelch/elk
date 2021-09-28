@@ -155,5 +155,5 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.String("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetWithOwnerAndPetOwnerView(e), w)
 }

@@ -23,7 +23,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp(in *jlexer.Lexer, out *ToyViews) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp(in *jlexer.Lexer, out *ToyWithPetReadViews) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -32,21 +32,21 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp(in *jlexer.L
 		in.Delim('[')
 		if *out == nil {
 			if !in.IsDelim(']') {
-				*out = make(ToyViews, 0, 8)
+				*out = make(ToyWithPetReadViews, 0, 8)
 			} else {
-				*out = ToyViews{}
+				*out = ToyWithPetReadViews{}
 			}
 		} else {
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v1 *ToyView
+			var v1 *ToyWithPetReadView
 			if in.IsNull() {
 				in.Skip()
 				v1 = nil
 			} else {
 				if v1 == nil {
-					v1 = new(ToyView)
+					v1 = new(ToyWithPetReadView)
 				}
 				(*v1).UnmarshalEasyJSON(in)
 			}
@@ -59,7 +59,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp(in *jlexer.L
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp(out *jwriter.Writer, in ToyViews) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp(out *jwriter.Writer, in ToyWithPetReadViews) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
@@ -79,15 +79,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp(out *jwriter
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v ToyViews) MarshalEasyJSON(w *jwriter.Writer) {
+func (v ToyWithPetReadViews) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *ToyViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *ToyWithPetReadViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp1(in *jlexer.Lexer, out *ToyView) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp1(in *jlexer.Lexer, out *ToyWithPetReadView) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -130,7 +130,484 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp1(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp1(out *jwriter.Writer, in ToyView) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp1(out *jwriter.Writer, in ToyWithPetReadView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if true {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.RawText((in.ID).MarshalText())
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	if in.Material != "" {
+		const prefix string = ",\"material\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Material))
+	}
+	if in.Title != "" {
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ToyWithPetReadView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp1(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ToyWithPetReadView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp1(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp2(in *jlexer.Lexer, out *ToyWithPetListViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(ToyWithPetListViews, 0, 8)
+			} else {
+				*out = ToyWithPetListViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v4 *ToyWithPetListView
+			if in.IsNull() {
+				in.Skip()
+				v4 = nil
+			} else {
+				if v4 == nil {
+					v4 = new(ToyWithPetListView)
+				}
+				(*v4).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v4)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp2(out *jwriter.Writer, in ToyWithPetListViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v5, v6 := range in {
+			if v5 > 0 {
+				out.RawByte(',')
+			}
+			if v6 == nil {
+				out.RawString("null")
+			} else {
+				(*v6).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ToyWithPetListViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp2(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ToyWithPetListViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp2(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp3(in *jlexer.Lexer, out *ToyWithPetListView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.ID).UnmarshalText(data))
+			}
+		case "color":
+			out.Color = toy.Color(in.String())
+		case "material":
+			out.Material = toy.Material(in.String())
+		case "title":
+			out.Title = string(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp3(out *jwriter.Writer, in ToyWithPetListView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if true {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.RawText((in.ID).MarshalText())
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	if in.Material != "" {
+		const prefix string = ",\"material\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Material))
+	}
+	if in.Title != "" {
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ToyWithPetListView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp3(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ToyWithPetListView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp3(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp4(in *jlexer.Lexer, out *ToyWithPetListAndPetReadViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(ToyWithPetListAndPetReadViews, 0, 8)
+			} else {
+				*out = ToyWithPetListAndPetReadViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v7 *ToyWithPetListAndPetReadView
+			if in.IsNull() {
+				in.Skip()
+				v7 = nil
+			} else {
+				if v7 == nil {
+					v7 = new(ToyWithPetListAndPetReadView)
+				}
+				(*v7).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v7)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp4(out *jwriter.Writer, in ToyWithPetListAndPetReadViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v8, v9 := range in {
+			if v8 > 0 {
+				out.RawByte(',')
+			}
+			if v9 == nil {
+				out.RawString("null")
+			} else {
+				(*v9).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ToyWithPetListAndPetReadViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp4(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ToyWithPetListAndPetReadViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp4(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp5(in *jlexer.Lexer, out *ToyWithPetListAndPetReadView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.ID).UnmarshalText(data))
+			}
+		case "color":
+			out.Color = toy.Color(in.String())
+		case "material":
+			out.Material = toy.Material(in.String())
+		case "title":
+			out.Title = string(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp5(out *jwriter.Writer, in ToyWithPetListAndPetReadView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if true {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.RawText((in.ID).MarshalText())
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	if in.Material != "" {
+		const prefix string = ",\"material\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Material))
+	}
+	if in.Title != "" {
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ToyWithPetListAndPetReadView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp5(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ToyWithPetListAndPetReadView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp5(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp6(in *jlexer.Lexer, out *ToyViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(ToyViews, 0, 8)
+			} else {
+				*out = ToyViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v10 *ToyView
+			if in.IsNull() {
+				in.Skip()
+				v10 = nil
+			} else {
+				if v10 == nil {
+					v10 = new(ToyView)
+				}
+				(*v10).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v10)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp6(out *jwriter.Writer, in ToyViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v11, v12 := range in {
+			if v11 > 0 {
+				out.RawByte(',')
+			}
+			if v12 == nil {
+				out.RawString("null")
+			} else {
+				(*v12).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ToyViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp6(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ToyViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp6(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp7(in *jlexer.Lexer, out *ToyView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.ID).UnmarshalText(data))
+			}
+		case "color":
+			out.Color = toy.Color(in.String())
+		case "material":
+			out.Material = toy.Material(in.String())
+		case "title":
+			out.Title = string(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp7(out *jwriter.Writer, in ToyView) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -175,14 +652,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp1(out *jwrite
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ToyView) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp1(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp7(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ToyView) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp1(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp7(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp2(in *jlexer.Lexer, out *ToyUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(in *jlexer.Lexer, out *ToyUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -255,7 +732,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp2(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp2(out *jwriter.Writer, in ToyUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp8(out *jwriter.Writer, in ToyUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -300,14 +777,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp2(out *jwrite
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ToyUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp2(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp8(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ToyUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp2(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp3(in *jlexer.Lexer, out *ToyCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp9(in *jlexer.Lexer, out *ToyCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -380,7 +857,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp3(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp3(out *jwriter.Writer, in ToyCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp9(out *jwriter.Writer, in ToyCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -425,14 +902,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp3(out *jwrite
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ToyCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp3(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp9(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ToyCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp3(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp9(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp4(in *jlexer.Lexer, out *PlayGroupViews) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(in *jlexer.Lexer, out *PlayGroupWithPetReadViews) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -441,25 +918,25 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp4(in *jlexer.
 		in.Delim('[')
 		if *out == nil {
 			if !in.IsDelim(']') {
-				*out = make(PlayGroupViews, 0, 8)
+				*out = make(PlayGroupWithPetReadViews, 0, 8)
 			} else {
-				*out = PlayGroupViews{}
+				*out = PlayGroupWithPetReadViews{}
 			}
 		} else {
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v4 *PlayGroupView
+			var v13 *PlayGroupWithPetReadView
 			if in.IsNull() {
 				in.Skip()
-				v4 = nil
+				v13 = nil
 			} else {
-				if v4 == nil {
-					v4 = new(PlayGroupView)
+				if v13 == nil {
+					v13 = new(PlayGroupWithPetReadView)
 				}
-				(*v4).UnmarshalEasyJSON(in)
+				(*v13).UnmarshalEasyJSON(in)
 			}
-			*out = append(*out, v4)
+			*out = append(*out, v13)
 			in.WantComma()
 		}
 		in.Delim(']')
@@ -468,19 +945,19 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp4(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp4(out *jwriter.Writer, in PlayGroupViews) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(out *jwriter.Writer, in PlayGroupWithPetReadViews) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v5, v6 := range in {
-			if v5 > 0 {
+		for v14, v15 := range in {
+			if v14 > 0 {
 				out.RawByte(',')
 			}
-			if v6 == nil {
+			if v15 == nil {
 				out.RawString("null")
 			} else {
-				(*v6).MarshalEasyJSON(out)
+				(*v15).MarshalEasyJSON(out)
 			}
 		}
 		out.RawByte(']')
@@ -488,15 +965,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp4(out *jwrite
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PlayGroupViews) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp4(w, v)
+func (v PlayGroupWithPetReadViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PlayGroupViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp4(l, v)
+func (v *PlayGroupWithPetReadViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp5(in *jlexer.Lexer, out *PlayGroupView) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(in *jlexer.Lexer, out *PlayGroupWithPetReadView) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -537,7 +1014,478 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp5(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp5(out *jwriter.Writer, in PlayGroupView) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(out *jwriter.Writer, in PlayGroupWithPetReadView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Title != "" {
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
+	}
+	if in.Description != "" {
+		const prefix string = ",\"description\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Description))
+	}
+	if in.Weekday != "" {
+		const prefix string = ",\"weekday\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Weekday))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PlayGroupWithPetReadView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PlayGroupWithPetReadView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp12(in *jlexer.Lexer, out *PlayGroupWithPetListViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(PlayGroupWithPetListViews, 0, 8)
+			} else {
+				*out = PlayGroupWithPetListViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v16 *PlayGroupWithPetListView
+			if in.IsNull() {
+				in.Skip()
+				v16 = nil
+			} else {
+				if v16 == nil {
+					v16 = new(PlayGroupWithPetListView)
+				}
+				(*v16).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v16)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp12(out *jwriter.Writer, in PlayGroupWithPetListViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v17, v18 := range in {
+			if v17 > 0 {
+				out.RawByte(',')
+			}
+			if v18 == nil {
+				out.RawString("null")
+			} else {
+				(*v18).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PlayGroupWithPetListViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp12(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PlayGroupWithPetListViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp12(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp13(in *jlexer.Lexer, out *PlayGroupWithPetListView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "title":
+			out.Title = string(in.String())
+		case "description":
+			out.Description = string(in.String())
+		case "weekday":
+			out.Weekday = playgroup.Weekday(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp13(out *jwriter.Writer, in PlayGroupWithPetListView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Title != "" {
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
+	}
+	if in.Description != "" {
+		const prefix string = ",\"description\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Description))
+	}
+	if in.Weekday != "" {
+		const prefix string = ",\"weekday\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Weekday))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PlayGroupWithPetListView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp13(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PlayGroupWithPetListView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp13(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp14(in *jlexer.Lexer, out *PlayGroupWithPetListAndPetReadViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(PlayGroupWithPetListAndPetReadViews, 0, 8)
+			} else {
+				*out = PlayGroupWithPetListAndPetReadViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v19 *PlayGroupWithPetListAndPetReadView
+			if in.IsNull() {
+				in.Skip()
+				v19 = nil
+			} else {
+				if v19 == nil {
+					v19 = new(PlayGroupWithPetListAndPetReadView)
+				}
+				(*v19).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v19)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp14(out *jwriter.Writer, in PlayGroupWithPetListAndPetReadViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v20, v21 := range in {
+			if v20 > 0 {
+				out.RawByte(',')
+			}
+			if v21 == nil {
+				out.RawString("null")
+			} else {
+				(*v21).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PlayGroupWithPetListAndPetReadViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp14(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PlayGroupWithPetListAndPetReadViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp14(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp15(in *jlexer.Lexer, out *PlayGroupWithPetListAndPetReadView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "title":
+			out.Title = string(in.String())
+		case "description":
+			out.Description = string(in.String())
+		case "weekday":
+			out.Weekday = playgroup.Weekday(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp15(out *jwriter.Writer, in PlayGroupWithPetListAndPetReadView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Title != "" {
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
+	}
+	if in.Description != "" {
+		const prefix string = ",\"description\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Description))
+	}
+	if in.Weekday != "" {
+		const prefix string = ",\"weekday\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Weekday))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PlayGroupWithPetListAndPetReadView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp15(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PlayGroupWithPetListAndPetReadView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp15(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp16(in *jlexer.Lexer, out *PlayGroupViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(PlayGroupViews, 0, 8)
+			} else {
+				*out = PlayGroupViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v22 *PlayGroupView
+			if in.IsNull() {
+				in.Skip()
+				v22 = nil
+			} else {
+				if v22 == nil {
+					v22 = new(PlayGroupView)
+				}
+				(*v22).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v22)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp16(out *jwriter.Writer, in PlayGroupViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v23, v24 := range in {
+			if v23 > 0 {
+				out.RawByte(',')
+			}
+			if v24 == nil {
+				out.RawString("null")
+			} else {
+				(*v24).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PlayGroupViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp16(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PlayGroupViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp16(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp17(in *jlexer.Lexer, out *PlayGroupView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "title":
+			out.Title = string(in.String())
+		case "description":
+			out.Description = string(in.String())
+		case "weekday":
+			out.Weekday = playgroup.Weekday(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp17(out *jwriter.Writer, in PlayGroupView) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -582,14 +1530,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp5(out *jwrite
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PlayGroupView) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp5(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp17(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PlayGroupView) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp5(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp17(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp6(in *jlexer.Lexer, out *PlayGroupUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp18(in *jlexer.Lexer, out *PlayGroupUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -654,9 +1602,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp6(in *jlexer.
 					out.Participants = (out.Participants)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v7 int
-					v7 = int(in.Int())
-					out.Participants = append(out.Participants, v7)
+					var v25 int
+					v25 = int(in.Int())
+					out.Participants = append(out.Participants, v25)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -675,7 +1623,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp6(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp6(out *jwriter.Writer, in PlayGroupUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp18(out *jwriter.Writer, in PlayGroupUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -713,11 +1661,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp6(out *jwrite
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v8, v9 := range in.Participants {
-				if v8 > 0 {
+			for v26, v27 := range in.Participants {
+				if v26 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v9))
+				out.Int(int(v27))
 			}
 			out.RawByte(']')
 		}
@@ -727,14 +1675,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp6(out *jwrite
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PlayGroupUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp6(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp18(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PlayGroupUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp6(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp18(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp7(in *jlexer.Lexer, out *PlayGroupCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp19(in *jlexer.Lexer, out *PlayGroupCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -799,9 +1747,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp7(in *jlexer.
 					out.Participants = (out.Participants)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v10 int
-					v10 = int(in.Int())
-					out.Participants = append(out.Participants, v10)
+					var v28 int
+					v28 = int(in.Int())
+					out.Participants = append(out.Participants, v28)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -820,7 +1768,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp7(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp7(out *jwriter.Writer, in PlayGroupCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp19(out *jwriter.Writer, in PlayGroupCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -858,11 +1806,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp7(out *jwrite
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v11, v12 := range in.Participants {
-				if v11 > 0 {
+			for v29, v30 := range in.Participants {
+				if v29 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v12))
+				out.Int(int(v30))
 			}
 			out.RawByte(']')
 		}
@@ -872,14 +1820,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp7(out *jwrite
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PlayGroupCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp7(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp19(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PlayGroupCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp7(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp19(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(in *jlexer.Lexer, out *PetViews) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp20(in *jlexer.Lexer, out *PetViews) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -896,17 +1844,17 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(in *jlexer.
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v13 *PetView
+			var v31 *PetView
 			if in.IsNull() {
 				in.Skip()
-				v13 = nil
+				v31 = nil
 			} else {
-				if v13 == nil {
-					v13 = new(PetView)
+				if v31 == nil {
+					v31 = new(PetView)
 				}
-				(*v13).UnmarshalEasyJSON(in)
+				(*v31).UnmarshalEasyJSON(in)
 			}
-			*out = append(*out, v13)
+			*out = append(*out, v31)
 			in.WantComma()
 		}
 		in.Delim(']')
@@ -915,19 +1863,19 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp8(out *jwriter.Writer, in PetViews) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp20(out *jwriter.Writer, in PetViews) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v14, v15 := range in {
-			if v14 > 0 {
+		for v32, v33 := range in {
+			if v32 > 0 {
 				out.RawByte(',')
 			}
-			if v15 == nil {
+			if v33 == nil {
 				out.RawString("null")
 			} else {
-				(*v15).MarshalEasyJSON(out)
+				(*v33).MarshalEasyJSON(out)
 			}
 		}
 		out.RawByte(']')
@@ -936,14 +1884,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp8(out *jwrite
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PetViews) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp8(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp20(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PetViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp8(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp20(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp9(in *jlexer.Lexer, out *PetView) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp21(in *jlexer.Lexer, out *PetView) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -992,9 +1940,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp9(in *jlexer.
 					out.Nicknames = (out.Nicknames)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v16 string
-					v16 = string(in.String())
-					out.Nicknames = append(out.Nicknames, v16)
+					var v34 string
+					v34 = string(in.String())
+					out.Nicknames = append(out.Nicknames, v34)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1019,7 +1967,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp9(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp9(out *jwriter.Writer, in PetView) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp21(out *jwriter.Writer, in PetView) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1089,11 +2037,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp9(out *jwrite
 		}
 		{
 			out.RawByte('[')
-			for v17, v18 := range in.Nicknames {
-				if v17 > 0 {
+			for v35, v36 := range in.Nicknames {
+				if v35 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v18))
+				out.String(string(v36))
 			}
 			out.RawByte(']')
 		}
@@ -1123,14 +2071,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp9(out *jwrite
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PetView) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp9(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp21(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PetView) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp9(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp21(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(in *jlexer.Lexer, out *PetUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp22(in *jlexer.Lexer, out *PetUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1224,9 +2172,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(in *jlexer
 						*out.Nicknames = (*out.Nicknames)[:0]
 					}
 					for !in.IsDelim(']') {
-						var v19 string
-						v19 = string(in.String())
-						*out.Nicknames = append(*out.Nicknames, v19)
+						var v37 string
+						v37 = string(in.String())
+						*out.Nicknames = append(*out.Nicknames, v37)
 						in.WantComma()
 					}
 					in.Delim(']')
@@ -1300,11 +2248,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(in *jlexer
 					out.Toys = (out.Toys)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v20 uuid.UUID
+					var v38 uuid.UUID
 					if data := in.UnsafeBytes(); in.Ok() {
-						in.AddError((v20).UnmarshalText(data))
+						in.AddError((v38).UnmarshalText(data))
 					}
-					out.Toys = append(out.Toys, v20)
+					out.Toys = append(out.Toys, v38)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1335,9 +2283,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(in *jlexer
 					out.Children = (out.Children)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v21 int
-					v21 = int(in.Int())
-					out.Children = append(out.Children, v21)
+					var v39 int
+					v39 = int(in.Int())
+					out.Children = append(out.Children, v39)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1358,9 +2306,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(in *jlexer
 					out.PlayGroups = (out.PlayGroups)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v22 int
-					v22 = int(in.Int())
-					out.PlayGroups = append(out.PlayGroups, v22)
+					var v40 int
+					v40 = int(in.Int())
+					out.PlayGroups = append(out.PlayGroups, v40)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1381,9 +2329,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(in *jlexer
 					out.Friends = (out.Friends)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v23 int
-					v23 = int(in.Int())
-					out.Friends = append(out.Friends, v23)
+					var v41 int
+					v41 = int(in.Int())
+					out.Friends = append(out.Friends, v41)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1402,7 +2350,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(in *jlexer
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(out *jwriter.Writer, in PetUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp22(out *jwriter.Writer, in PetUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1461,11 +2409,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(out *jwrit
 				out.RawString("null")
 			} else {
 				out.RawByte('[')
-				for v24, v25 := range *in.Nicknames {
-					if v24 > 0 {
+				for v42, v43 := range *in.Nicknames {
+					if v42 > 0 {
 						out.RawByte(',')
 					}
-					out.String(string(v25))
+					out.String(string(v43))
 				}
 				out.RawByte(']')
 			}
@@ -1523,11 +2471,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(out *jwrit
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v26, v27 := range in.Toys {
-				if v26 > 0 {
+			for v44, v45 := range in.Toys {
+				if v44 > 0 {
 					out.RawByte(',')
 				}
-				out.RawText((v27).MarshalText())
+				out.RawText((v45).MarshalText())
 			}
 			out.RawByte(']')
 		}
@@ -1548,11 +2496,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(out *jwrit
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v28, v29 := range in.Children {
-				if v28 > 0 {
+			for v46, v47 := range in.Children {
+				if v46 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v29))
+				out.Int(int(v47))
 			}
 			out.RawByte(']')
 		}
@@ -1564,11 +2512,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(out *jwrit
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v30, v31 := range in.PlayGroups {
-				if v30 > 0 {
+			for v48, v49 := range in.PlayGroups {
+				if v48 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v31))
+				out.Int(int(v49))
 			}
 			out.RawByte(']')
 		}
@@ -1580,11 +2528,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(out *jwrit
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v32, v33 := range in.Friends {
-				if v32 > 0 {
+			for v50, v51 := range in.Friends {
+				if v50 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v33))
+				out.Int(int(v51))
 			}
 			out.RawByte(']')
 		}
@@ -1594,14 +2542,927 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(out *jwrit
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PetUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp10(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp22(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PetUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp10(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp22(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(in *jlexer.Lexer, out *PetCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp23(in *jlexer.Lexer, out *PetReadViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(PetReadViews, 0, 8)
+			} else {
+				*out = PetReadViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v52 *PetReadView
+			if in.IsNull() {
+				in.Skip()
+				v52 = nil
+			} else {
+				if v52 == nil {
+					v52 = new(PetReadView)
+				}
+				(*v52).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v52)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp23(out *jwriter.Writer, in PetReadViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v53, v54 := range in {
+			if v53 > 0 {
+				out.RawByte(',')
+			}
+			if v54 == nil {
+				out.RawString("null")
+			} else {
+				(*v54).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PetReadViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp23(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PetReadViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp23(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp24(in *jlexer.Lexer, out *PetReadView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "height":
+			out.Height = int(in.Int())
+		case "weight":
+			out.Weight = float64(in.Float64())
+		case "castrated":
+			out.Castrated = bool(in.Bool())
+		case "name":
+			out.Name = string(in.String())
+		case "birthday":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Birthday).UnmarshalJSON(data))
+			}
+		case "nicknames":
+			if in.IsNull() {
+				in.Skip()
+				out.Nicknames = nil
+			} else {
+				in.Delim('[')
+				if out.Nicknames == nil {
+					if !in.IsDelim(']') {
+						out.Nicknames = make([]string, 0, 4)
+					} else {
+						out.Nicknames = []string{}
+					}
+				} else {
+					out.Nicknames = (out.Nicknames)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v55 string
+					v55 = string(in.String())
+					out.Nicknames = append(out.Nicknames, v55)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "sex":
+			out.Sex = pet.Sex(in.String())
+		case "chip":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.Chip).UnmarshalText(data))
+			}
+		case "badge":
+			if in.IsNull() {
+				in.Skip()
+				out.Badge = nil
+			} else {
+				if out.Badge == nil {
+					out.Badge = new(BadgeWithPetReadView)
+				}
+				(*out.Badge).UnmarshalEasyJSON(in)
+			}
+		case "protege":
+			if in.IsNull() {
+				in.Skip()
+				out.Protege = nil
+			} else {
+				if out.Protege == nil {
+					out.Protege = new(PetReadView)
+				}
+				(*out.Protege).UnmarshalEasyJSON(in)
+			}
+		case "spouse":
+			if in.IsNull() {
+				in.Skip()
+				out.Spouse = nil
+			} else {
+				if out.Spouse == nil {
+					out.Spouse = new(PetReadView)
+				}
+				(*out.Spouse).UnmarshalEasyJSON(in)
+			}
+		case "toys":
+			(out.Toys).UnmarshalEasyJSON(in)
+		case "parent":
+			if in.IsNull() {
+				in.Skip()
+				out.Parent = nil
+			} else {
+				if out.Parent == nil {
+					out.Parent = new(PetReadView)
+				}
+				(*out.Parent).UnmarshalEasyJSON(in)
+			}
+		case "play_groups":
+			(out.PlayGroups).UnmarshalEasyJSON(in)
+		case "friends":
+			(out.Friends).UnmarshalEasyJSON(in)
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp24(out *jwriter.Writer, in PetReadView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Height != 0 {
+		const prefix string = ",\"height\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int(int(in.Height))
+	}
+	if in.Weight != 0 {
+		const prefix string = ",\"weight\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Float64(float64(in.Weight))
+	}
+	if in.Castrated {
+		const prefix string = ",\"castrated\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.Castrated))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if true {
+		const prefix string = ",\"birthday\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.Birthday).MarshalJSON())
+	}
+	if len(in.Nicknames) != 0 {
+		const prefix string = ",\"nicknames\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		{
+			out.RawByte('[')
+			for v56, v57 := range in.Nicknames {
+				if v56 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v57))
+			}
+			out.RawByte(']')
+		}
+	}
+	if in.Sex != "" {
+		const prefix string = ",\"sex\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Sex))
+	}
+	if true {
+		const prefix string = ",\"chip\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.RawText((in.Chip).MarshalText())
+	}
+	if in.Badge != nil {
+		const prefix string = ",\"badge\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Badge).MarshalEasyJSON(out)
+	}
+	if in.Protege != nil {
+		const prefix string = ",\"protege\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Protege).MarshalEasyJSON(out)
+	}
+	if in.Spouse != nil {
+		const prefix string = ",\"spouse\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Spouse).MarshalEasyJSON(out)
+	}
+	if len(in.Toys) != 0 {
+		const prefix string = ",\"toys\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.Toys).MarshalEasyJSON(out)
+	}
+	if in.Parent != nil {
+		const prefix string = ",\"parent\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Parent).MarshalEasyJSON(out)
+	}
+	if len(in.PlayGroups) != 0 {
+		const prefix string = ",\"play_groups\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.PlayGroups).MarshalEasyJSON(out)
+	}
+	if len(in.Friends) != 0 {
+		const prefix string = ",\"friends\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.Friends).MarshalEasyJSON(out)
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PetReadView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp24(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PetReadView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp24(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp25(in *jlexer.Lexer, out *PetListViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(PetListViews, 0, 8)
+			} else {
+				*out = PetListViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v58 *PetListView
+			if in.IsNull() {
+				in.Skip()
+				v58 = nil
+			} else {
+				if v58 == nil {
+					v58 = new(PetListView)
+				}
+				(*v58).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v58)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp25(out *jwriter.Writer, in PetListViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v59, v60 := range in {
+			if v59 > 0 {
+				out.RawByte(',')
+			}
+			if v60 == nil {
+				out.RawString("null")
+			} else {
+				(*v60).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PetListViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp25(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PetListViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp25(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp26(in *jlexer.Lexer, out *PetListView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "name":
+			out.Name = string(in.String())
+		case "sex":
+			out.Sex = pet.Sex(in.String())
+		case "chip":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.Chip).UnmarshalText(data))
+			}
+		case "badge":
+			if in.IsNull() {
+				in.Skip()
+				out.Badge = nil
+			} else {
+				if out.Badge == nil {
+					out.Badge = new(BadgeWithPetListView)
+				}
+				(*out.Badge).UnmarshalEasyJSON(in)
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp26(out *jwriter.Writer, in PetListView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if in.Sex != "" {
+		const prefix string = ",\"sex\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Sex))
+	}
+	if true {
+		const prefix string = ",\"chip\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.RawText((in.Chip).MarshalText())
+	}
+	if in.Badge != nil {
+		const prefix string = ",\"badge\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Badge).MarshalEasyJSON(out)
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PetListView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp26(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PetListView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp26(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp27(in *jlexer.Lexer, out *PetListAndPetReadViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(PetListAndPetReadViews, 0, 8)
+			} else {
+				*out = PetListAndPetReadViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v61 *PetListAndPetReadView
+			if in.IsNull() {
+				in.Skip()
+				v61 = nil
+			} else {
+				if v61 == nil {
+					v61 = new(PetListAndPetReadView)
+				}
+				(*v61).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v61)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp27(out *jwriter.Writer, in PetListAndPetReadViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v62, v63 := range in {
+			if v62 > 0 {
+				out.RawByte(',')
+			}
+			if v63 == nil {
+				out.RawString("null")
+			} else {
+				(*v63).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PetListAndPetReadViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp27(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PetListAndPetReadViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp27(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp28(in *jlexer.Lexer, out *PetListAndPetReadView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = int(in.Int())
+		case "height":
+			out.Height = int(in.Int())
+		case "weight":
+			out.Weight = float64(in.Float64())
+		case "castrated":
+			out.Castrated = bool(in.Bool())
+		case "name":
+			out.Name = string(in.String())
+		case "birthday":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Birthday).UnmarshalJSON(data))
+			}
+		case "nicknames":
+			if in.IsNull() {
+				in.Skip()
+				out.Nicknames = nil
+			} else {
+				in.Delim('[')
+				if out.Nicknames == nil {
+					if !in.IsDelim(']') {
+						out.Nicknames = make([]string, 0, 4)
+					} else {
+						out.Nicknames = []string{}
+					}
+				} else {
+					out.Nicknames = (out.Nicknames)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v64 string
+					v64 = string(in.String())
+					out.Nicknames = append(out.Nicknames, v64)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "sex":
+			out.Sex = pet.Sex(in.String())
+		case "chip":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.Chip).UnmarshalText(data))
+			}
+		case "badge":
+			if in.IsNull() {
+				in.Skip()
+				out.Badge = nil
+			} else {
+				if out.Badge == nil {
+					out.Badge = new(BadgeWithPetListAndPetReadView)
+				}
+				(*out.Badge).UnmarshalEasyJSON(in)
+			}
+		case "protege":
+			if in.IsNull() {
+				in.Skip()
+				out.Protege = nil
+			} else {
+				if out.Protege == nil {
+					out.Protege = new(PetListAndPetReadView)
+				}
+				(*out.Protege).UnmarshalEasyJSON(in)
+			}
+		case "spouse":
+			if in.IsNull() {
+				in.Skip()
+				out.Spouse = nil
+			} else {
+				if out.Spouse == nil {
+					out.Spouse = new(PetListAndPetReadView)
+				}
+				(*out.Spouse).UnmarshalEasyJSON(in)
+			}
+		case "toys":
+			(out.Toys).UnmarshalEasyJSON(in)
+		case "parent":
+			if in.IsNull() {
+				in.Skip()
+				out.Parent = nil
+			} else {
+				if out.Parent == nil {
+					out.Parent = new(PetListAndPetReadView)
+				}
+				(*out.Parent).UnmarshalEasyJSON(in)
+			}
+		case "play_groups":
+			(out.PlayGroups).UnmarshalEasyJSON(in)
+		case "friends":
+			(out.Friends).UnmarshalEasyJSON(in)
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp28(out *jwriter.Writer, in PetListAndPetReadView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	if in.Height != 0 {
+		const prefix string = ",\"height\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int(int(in.Height))
+	}
+	if in.Weight != 0 {
+		const prefix string = ",\"weight\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Float64(float64(in.Weight))
+	}
+	if in.Castrated {
+		const prefix string = ",\"castrated\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.Castrated))
+	}
+	if in.Name != "" {
+		const prefix string = ",\"name\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Name))
+	}
+	if true {
+		const prefix string = ",\"birthday\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.Birthday).MarshalJSON())
+	}
+	if len(in.Nicknames) != 0 {
+		const prefix string = ",\"nicknames\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		{
+			out.RawByte('[')
+			for v65, v66 := range in.Nicknames {
+				if v65 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v66))
+			}
+			out.RawByte(']')
+		}
+	}
+	if in.Sex != "" {
+		const prefix string = ",\"sex\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Sex))
+	}
+	if true {
+		const prefix string = ",\"chip\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.RawText((in.Chip).MarshalText())
+	}
+	if in.Badge != nil {
+		const prefix string = ",\"badge\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Badge).MarshalEasyJSON(out)
+	}
+	if in.Protege != nil {
+		const prefix string = ",\"protege\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Protege).MarshalEasyJSON(out)
+	}
+	if in.Spouse != nil {
+		const prefix string = ",\"spouse\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Spouse).MarshalEasyJSON(out)
+	}
+	if len(in.Toys) != 0 {
+		const prefix string = ",\"toys\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.Toys).MarshalEasyJSON(out)
+	}
+	if in.Parent != nil {
+		const prefix string = ",\"parent\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(*in.Parent).MarshalEasyJSON(out)
+	}
+	if len(in.PlayGroups) != 0 {
+		const prefix string = ",\"play_groups\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.PlayGroups).MarshalEasyJSON(out)
+	}
+	if len(in.Friends) != 0 {
+		const prefix string = ",\"friends\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.Friends).MarshalEasyJSON(out)
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PetListAndPetReadView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp28(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PetListAndPetReadView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp28(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp29(in *jlexer.Lexer, out *PetCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1695,9 +3556,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(in *jlexer
 						*out.Nicknames = (*out.Nicknames)[:0]
 					}
 					for !in.IsDelim(']') {
-						var v34 string
-						v34 = string(in.String())
-						*out.Nicknames = append(*out.Nicknames, v34)
+						var v67 string
+						v67 = string(in.String())
+						*out.Nicknames = append(*out.Nicknames, v67)
 						in.WantComma()
 					}
 					in.Delim(']')
@@ -1781,11 +3642,11 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(in *jlexer
 					out.Toys = (out.Toys)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v35 uuid.UUID
+					var v68 uuid.UUID
 					if data := in.UnsafeBytes(); in.Ok() {
-						in.AddError((v35).UnmarshalText(data))
+						in.AddError((v68).UnmarshalText(data))
 					}
-					out.Toys = append(out.Toys, v35)
+					out.Toys = append(out.Toys, v68)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1816,9 +3677,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(in *jlexer
 					out.Children = (out.Children)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v36 int
-					v36 = int(in.Int())
-					out.Children = append(out.Children, v36)
+					var v69 int
+					v69 = int(in.Int())
+					out.Children = append(out.Children, v69)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1839,9 +3700,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(in *jlexer
 					out.PlayGroups = (out.PlayGroups)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v37 int
-					v37 = int(in.Int())
-					out.PlayGroups = append(out.PlayGroups, v37)
+					var v70 int
+					v70 = int(in.Int())
+					out.PlayGroups = append(out.PlayGroups, v70)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1862,9 +3723,9 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(in *jlexer
 					out.Friends = (out.Friends)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v38 int
-					v38 = int(in.Int())
-					out.Friends = append(out.Friends, v38)
+					var v71 int
+					v71 = int(in.Int())
+					out.Friends = append(out.Friends, v71)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1883,7 +3744,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(in *jlexer
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(out *jwriter.Writer, in PetCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp29(out *jwriter.Writer, in PetCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1942,11 +3803,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(out *jwrit
 				out.RawString("null")
 			} else {
 				out.RawByte('[')
-				for v39, v40 := range *in.Nicknames {
-					if v39 > 0 {
+				for v72, v73 := range *in.Nicknames {
+					if v72 > 0 {
 						out.RawByte(',')
 					}
-					out.String(string(v40))
+					out.String(string(v73))
 				}
 				out.RawByte(']')
 			}
@@ -2013,11 +3874,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(out *jwrit
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v41, v42 := range in.Toys {
-				if v41 > 0 {
+			for v74, v75 := range in.Toys {
+				if v74 > 0 {
 					out.RawByte(',')
 				}
-				out.RawText((v42).MarshalText())
+				out.RawText((v75).MarshalText())
 			}
 			out.RawByte(']')
 		}
@@ -2038,11 +3899,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(out *jwrit
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v43, v44 := range in.Children {
-				if v43 > 0 {
+			for v76, v77 := range in.Children {
+				if v76 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v44))
+				out.Int(int(v77))
 			}
 			out.RawByte(']')
 		}
@@ -2054,11 +3915,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(out *jwrit
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v45, v46 := range in.PlayGroups {
-				if v45 > 0 {
+			for v78, v79 := range in.PlayGroups {
+				if v78 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v46))
+				out.Int(int(v79))
 			}
 			out.RawByte(']')
 		}
@@ -2070,11 +3931,11 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(out *jwrit
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v47, v48 := range in.Friends {
-				if v47 > 0 {
+			for v80, v81 := range in.Friends {
+				if v80 > 0 {
 					out.RawByte(',')
 				}
-				out.Int(int(v48))
+				out.Int(int(v81))
 			}
 			out.RawByte(']')
 		}
@@ -2084,14 +3945,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(out *jwrit
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v PetCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp11(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp29(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *PetCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp11(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp29(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp12(in *jlexer.Lexer, out *ErrResponse) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp30(in *jlexer.Lexer, out *ErrResponse) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2136,7 +3997,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp12(in *jlexer
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp12(out *jwriter.Writer, in ErrResponse) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp30(out *jwriter.Writer, in ErrResponse) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2166,14 +4027,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp12(out *jwrit
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ErrResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp12(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp30(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ErrResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp12(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp30(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp13(in *jlexer.Lexer, out *BadgeViews) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp31(in *jlexer.Lexer, out *BadgeWithPetReadViews) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -2182,25 +4043,25 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp13(in *jlexer
 		in.Delim('[')
 		if *out == nil {
 			if !in.IsDelim(']') {
-				*out = make(BadgeViews, 0, 8)
+				*out = make(BadgeWithPetReadViews, 0, 8)
 			} else {
-				*out = BadgeViews{}
+				*out = BadgeWithPetReadViews{}
 			}
 		} else {
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v49 *BadgeView
+			var v82 *BadgeWithPetReadView
 			if in.IsNull() {
 				in.Skip()
-				v49 = nil
+				v82 = nil
 			} else {
-				if v49 == nil {
-					v49 = new(BadgeView)
+				if v82 == nil {
+					v82 = new(BadgeWithPetReadView)
 				}
-				(*v49).UnmarshalEasyJSON(in)
+				(*v82).UnmarshalEasyJSON(in)
 			}
-			*out = append(*out, v49)
+			*out = append(*out, v82)
 			in.WantComma()
 		}
 		in.Delim(']')
@@ -2209,19 +4070,19 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp13(in *jlexer
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp13(out *jwriter.Writer, in BadgeViews) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp31(out *jwriter.Writer, in BadgeWithPetReadViews) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
 		out.RawByte('[')
-		for v50, v51 := range in {
-			if v50 > 0 {
+		for v83, v84 := range in {
+			if v83 > 0 {
 				out.RawByte(',')
 			}
-			if v51 == nil {
+			if v84 == nil {
 				out.RawString("null")
 			} else {
-				(*v51).MarshalEasyJSON(out)
+				(*v84).MarshalEasyJSON(out)
 			}
 		}
 		out.RawByte(']')
@@ -2229,15 +4090,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp13(out *jwrit
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v BadgeViews) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp13(w, v)
+func (v BadgeWithPetReadViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp31(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *BadgeViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp13(l, v)
+func (v *BadgeWithPetReadViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp31(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp14(in *jlexer.Lexer, out *BadgeView) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp32(in *jlexer.Lexer, out *BadgeWithPetReadView) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2276,7 +4137,442 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp14(in *jlexer
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp14(out *jwriter.Writer, in BadgeView) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp32(out *jwriter.Writer, in BadgeWithPetReadView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Uint32(uint32(in.ID))
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	if in.Material != "" {
+		const prefix string = ",\"material\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Material))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v BadgeWithPetReadView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp32(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *BadgeWithPetReadView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp32(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp33(in *jlexer.Lexer, out *BadgeWithPetListViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(BadgeWithPetListViews, 0, 8)
+			} else {
+				*out = BadgeWithPetListViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v85 *BadgeWithPetListView
+			if in.IsNull() {
+				in.Skip()
+				v85 = nil
+			} else {
+				if v85 == nil {
+					v85 = new(BadgeWithPetListView)
+				}
+				(*v85).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v85)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp33(out *jwriter.Writer, in BadgeWithPetListViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v86, v87 := range in {
+			if v86 > 0 {
+				out.RawByte(',')
+			}
+			if v87 == nil {
+				out.RawString("null")
+			} else {
+				(*v87).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v BadgeWithPetListViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp33(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *BadgeWithPetListViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp33(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp34(in *jlexer.Lexer, out *BadgeWithPetListView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = uint32(in.Uint32())
+		case "color":
+			out.Color = badge.Color(in.String())
+		case "material":
+			out.Material = badge.Material(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp34(out *jwriter.Writer, in BadgeWithPetListView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Uint32(uint32(in.ID))
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	if in.Material != "" {
+		const prefix string = ",\"material\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Material))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v BadgeWithPetListView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp34(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *BadgeWithPetListView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp34(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp35(in *jlexer.Lexer, out *BadgeWithPetListAndPetReadViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(BadgeWithPetListAndPetReadViews, 0, 8)
+			} else {
+				*out = BadgeWithPetListAndPetReadViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v88 *BadgeWithPetListAndPetReadView
+			if in.IsNull() {
+				in.Skip()
+				v88 = nil
+			} else {
+				if v88 == nil {
+					v88 = new(BadgeWithPetListAndPetReadView)
+				}
+				(*v88).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v88)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp35(out *jwriter.Writer, in BadgeWithPetListAndPetReadViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v89, v90 := range in {
+			if v89 > 0 {
+				out.RawByte(',')
+			}
+			if v90 == nil {
+				out.RawString("null")
+			} else {
+				(*v90).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v BadgeWithPetListAndPetReadViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp35(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *BadgeWithPetListAndPetReadViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp35(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp36(in *jlexer.Lexer, out *BadgeWithPetListAndPetReadView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = uint32(in.Uint32())
+		case "color":
+			out.Color = badge.Color(in.String())
+		case "material":
+			out.Material = badge.Material(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp36(out *jwriter.Writer, in BadgeWithPetListAndPetReadView) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	if in.ID != 0 {
+		const prefix string = ",\"id\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Uint32(uint32(in.ID))
+	}
+	if in.Color != "" {
+		const prefix string = ",\"color\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Color))
+	}
+	if in.Material != "" {
+		const prefix string = ",\"material\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Material))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v BadgeWithPetListAndPetReadView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp36(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *BadgeWithPetListAndPetReadView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp36(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp37(in *jlexer.Lexer, out *BadgeViews) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(BadgeViews, 0, 8)
+			} else {
+				*out = BadgeViews{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v91 *BadgeView
+			if in.IsNull() {
+				in.Skip()
+				v91 = nil
+			} else {
+				if v91 == nil {
+					v91 = new(BadgeView)
+				}
+				(*v91).UnmarshalEasyJSON(in)
+			}
+			*out = append(*out, v91)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp37(out *jwriter.Writer, in BadgeViews) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v92, v93 := range in {
+			if v92 > 0 {
+				out.RawByte(',')
+			}
+			if v93 == nil {
+				out.RawString("null")
+			} else {
+				(*v93).MarshalEasyJSON(out)
+			}
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v BadgeViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp37(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *BadgeViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp37(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp38(in *jlexer.Lexer, out *BadgeView) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "id":
+			out.ID = uint32(in.Uint32())
+		case "color":
+			out.Color = badge.Color(in.String())
+		case "material":
+			out.Material = badge.Material(in.String())
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp38(out *jwriter.Writer, in BadgeView) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2311,14 +4607,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp14(out *jwrit
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v BadgeView) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp14(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp38(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BadgeView) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp14(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp38(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp15(in *jlexer.Lexer, out *BadgeUpdateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp39(in *jlexer.Lexer, out *BadgeUpdateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2381,7 +4677,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp15(in *jlexer
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp15(out *jwriter.Writer, in BadgeUpdateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp39(out *jwriter.Writer, in BadgeUpdateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2417,14 +4713,14 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp15(out *jwrit
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v BadgeUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp15(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp39(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BadgeUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp15(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp39(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp16(in *jlexer.Lexer, out *BadgeCreateRequest) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp40(in *jlexer.Lexer, out *BadgeCreateRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2487,7 +4783,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp16(in *jlexer
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp16(out *jwriter.Writer, in BadgeCreateRequest) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp40(out *jwriter.Writer, in BadgeCreateRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2523,10 +4819,10 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp16(out *jwrit
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v BadgeCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp16(w, v)
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalPetsEntHttp40(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *BadgeCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp16(l, v)
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalPetsEntHttp40(l, v)
 }

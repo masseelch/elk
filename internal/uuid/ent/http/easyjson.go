@@ -18,147 +18,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp(in *jlexer.Lexer, out *UserUpdateRequest) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "uuid":
-			if in.IsNull() {
-				in.Skip()
-				out.UUID = nil
-			} else {
-				if out.UUID == nil {
-					out.UUID = new(uuid.UUID)
-				}
-				if data := in.UnsafeBytes(); in.Ok() {
-					in.AddError((*out.UUID).UnmarshalText(data))
-				}
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp(out *jwriter.Writer, in UserUpdateRequest) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"uuid\":"
-		out.RawString(prefix[1:])
-		if in.UUID == nil {
-			out.RawString("null")
-		} else {
-			out.RawText((*in.UUID).MarshalText())
-		}
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v UserUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *UserUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp1(in *jlexer.Lexer, out *UserCreateRequest) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "uuid":
-			if in.IsNull() {
-				in.Skip()
-				out.UUID = nil
-			} else {
-				if out.UUID == nil {
-					out.UUID = new(uuid.UUID)
-				}
-				if data := in.UnsafeBytes(); in.Ok() {
-					in.AddError((*out.UUID).UnmarshalText(data))
-				}
-			}
-		default:
-			in.AddError(&jlexer.LexerError{
-				Offset: in.GetPos(),
-				Reason: "unknown field",
-				Data:   key,
-			})
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp1(out *jwriter.Writer, in UserCreateRequest) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"uuid\":"
-		out.RawString(prefix[1:])
-		if in.UUID == nil {
-			out.RawString("null")
-		} else {
-			out.RawText((*in.UUID).MarshalText())
-		}
-	}
-	out.RawByte('}')
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v UserCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp1(w, v)
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *UserCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp1(l, v)
-}
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp2(in *jlexer.Lexer, out *User3451555716Views) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp(in *jlexer.Lexer, out *UserViews) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -167,21 +27,21 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp2(in *jlexer.
 		in.Delim('[')
 		if *out == nil {
 			if !in.IsDelim(']') {
-				*out = make(User3451555716Views, 0, 8)
+				*out = make(UserViews, 0, 8)
 			} else {
-				*out = User3451555716Views{}
+				*out = UserViews{}
 			}
 		} else {
 			*out = (*out)[:0]
 		}
 		for !in.IsDelim(']') {
-			var v1 *User3451555716View
+			var v1 *UserView
 			if in.IsNull() {
 				in.Skip()
 				v1 = nil
 			} else {
 				if v1 == nil {
-					v1 = new(User3451555716View)
+					v1 = new(UserView)
 				}
 				(*v1).UnmarshalEasyJSON(in)
 			}
@@ -194,7 +54,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp2(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp2(out *jwriter.Writer, in User3451555716Views) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp(out *jwriter.Writer, in UserViews) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
@@ -214,15 +74,15 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp2(out *jwrite
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v User3451555716Views) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp2(w, v)
+func (v UserViews) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *User3451555716Views) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp2(l, v)
+func (v *UserViews) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp(l, v)
 }
-func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp3(in *jlexer.Lexer, out *User3451555716View) {
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp1(in *jlexer.Lexer, out *UserView) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -261,7 +121,7 @@ func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp3(in *jlexer.
 		in.Consumed()
 	}
 }
-func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp3(out *jwriter.Writer, in User3451555716View) {
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp1(out *jwriter.Writer, in UserView) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -285,12 +145,152 @@ func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp3(out *jwrite
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v User3451555716View) MarshalEasyJSON(w *jwriter.Writer) {
+func (v UserView) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp1(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *UserView) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp1(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp2(in *jlexer.Lexer, out *UserUpdateRequest) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "uuid":
+			if in.IsNull() {
+				in.Skip()
+				out.UUID = nil
+			} else {
+				if out.UUID == nil {
+					out.UUID = new(uuid.UUID)
+				}
+				if data := in.UnsafeBytes(); in.Ok() {
+					in.AddError((*out.UUID).UnmarshalText(data))
+				}
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp2(out *jwriter.Writer, in UserUpdateRequest) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"uuid\":"
+		out.RawString(prefix[1:])
+		if in.UUID == nil {
+			out.RawString("null")
+		} else {
+			out.RawText((*in.UUID).MarshalText())
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v UserUpdateRequest) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp2(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *UserUpdateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp2(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp3(in *jlexer.Lexer, out *UserCreateRequest) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "uuid":
+			if in.IsNull() {
+				in.Skip()
+				out.UUID = nil
+			} else {
+				if out.UUID == nil {
+					out.UUID = new(uuid.UUID)
+				}
+				if data := in.UnsafeBytes(); in.Ok() {
+					in.AddError((*out.UUID).UnmarshalText(data))
+				}
+			}
+		default:
+			in.AddError(&jlexer.LexerError{
+				Offset: in.GetPos(),
+				Reason: "unknown field",
+				Data:   key,
+			})
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp3(out *jwriter.Writer, in UserCreateRequest) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"uuid\":"
+		out.RawString(prefix[1:])
+		if in.UUID == nil {
+			out.RawString("null")
+		} else {
+			out.RawText((*in.UUID).MarshalText())
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v UserCreateRequest) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjsonC5a4559bEncodeGithubComMasseelchElkInternalUuidEntHttp3(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *User3451555716View) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *UserCreateRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp3(l, v)
 }
 func easyjsonC5a4559bDecodeGithubComMasseelchElkInternalUuidEntHttp4(in *jlexer.Lexer, out *ErrResponse) {

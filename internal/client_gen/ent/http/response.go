@@ -79,169 +79,261 @@ func Unauthorized(w http.ResponseWriter, msg interface{}) (int, error) {
 }
 
 type (
-	// Category4094953247View represents the data serialized for the following serialization group combinations:
+	// CategoryView represents the data serialized for the following serialization group combinations:
 	// []
-	// [owner pet pet:owner]
-	Category4094953247View struct {
+	CategoryView struct {
 		ID   uint64 `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 	}
-	Category4094953247Views []*Category4094953247View
+	CategoryViews []*CategoryView
 )
 
-func NewCategory4094953247View(e *ent.Category) *Category4094953247View {
+func NewCategoryView(e *ent.Category) *CategoryView {
 	if e == nil {
 		return nil
 	}
-	return &Category4094953247View{
+	return &CategoryView{
 		ID:   e.ID,
 		Name: e.Name,
 	}
 }
 
-func NewCategory4094953247Views(es []*ent.Category) Category4094953247Views {
+func NewCategoryViews(es []*ent.Category) CategoryViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(Category4094953247Views, len(es))
+	r := make(CategoryViews, len(es))
 	for i, e := range es {
-		r[i] = NewCategory4094953247View(e)
+		r[i] = NewCategoryView(e)
 	}
 	return r
 }
 
 type (
-	// Collar1522160880View represents the data serialized for the following serialization group combinations:
-	// []
+	// CategoryWithOwnerAndPetAndPetOwnerView represents the data serialized for the following serialization group combinations:
 	// [owner pet pet:owner]
-	Collar1522160880View struct {
-		ID    int          `json:"id,omitempty"`
-		Color collar.Color `json:"color,omitempty"`
+	CategoryWithOwnerAndPetAndPetOwnerView struct {
+		ID   uint64 `json:"id,omitempty"`
+		Name string `json:"name,omitempty"`
 	}
-	Collar1522160880Views []*Collar1522160880View
+	CategoryWithOwnerAndPetAndPetOwnerViews []*CategoryWithOwnerAndPetAndPetOwnerView
 )
 
-func NewCollar1522160880View(e *ent.Collar) *Collar1522160880View {
+func NewCategoryWithOwnerAndPetAndPetOwnerView(e *ent.Category) *CategoryWithOwnerAndPetAndPetOwnerView {
 	if e == nil {
 		return nil
 	}
-	return &Collar1522160880View{
+	return &CategoryWithOwnerAndPetAndPetOwnerView{
+		ID:   e.ID,
+		Name: e.Name,
+	}
+}
+
+func NewCategoryWithOwnerAndPetAndPetOwnerViews(es []*ent.Category) CategoryWithOwnerAndPetAndPetOwnerViews {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(CategoryWithOwnerAndPetAndPetOwnerViews, len(es))
+	for i, e := range es {
+		r[i] = NewCategoryWithOwnerAndPetAndPetOwnerView(e)
+	}
+	return r
+}
+
+type (
+	// CollarView represents the data serialized for the following serialization group combinations:
+	// []
+	CollarView struct {
+		ID    int          `json:"id,omitempty"`
+		Color collar.Color `json:"color,omitempty"`
+	}
+	CollarViews []*CollarView
+)
+
+func NewCollarView(e *ent.Collar) *CollarView {
+	if e == nil {
+		return nil
+	}
+	return &CollarView{
 		ID:    e.ID,
 		Color: e.Color,
 	}
 }
 
-func NewCollar1522160880Views(es []*ent.Collar) Collar1522160880Views {
+func NewCollarViews(es []*ent.Collar) CollarViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(Collar1522160880Views, len(es))
+	r := make(CollarViews, len(es))
 	for i, e := range es {
-		r[i] = NewCollar1522160880View(e)
+		r[i] = NewCollarView(e)
 	}
 	return r
 }
 
 type (
-	// Owner139708381View represents the data serialized for the following serialization group combinations:
-	// []
+	// CollarWithOwnerAndPetAndPetOwnerView represents the data serialized for the following serialization group combinations:
 	// [owner pet pet:owner]
-	Owner139708381View struct {
+	CollarWithOwnerAndPetAndPetOwnerView struct {
+		ID    int          `json:"id,omitempty"`
+		Color collar.Color `json:"color,omitempty"`
+	}
+	CollarWithOwnerAndPetAndPetOwnerViews []*CollarWithOwnerAndPetAndPetOwnerView
+)
+
+func NewCollarWithOwnerAndPetAndPetOwnerView(e *ent.Collar) *CollarWithOwnerAndPetAndPetOwnerView {
+	if e == nil {
+		return nil
+	}
+	return &CollarWithOwnerAndPetAndPetOwnerView{
+		ID:    e.ID,
+		Color: e.Color,
+	}
+}
+
+func NewCollarWithOwnerAndPetAndPetOwnerViews(es []*ent.Collar) CollarWithOwnerAndPetAndPetOwnerViews {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(CollarWithOwnerAndPetAndPetOwnerViews, len(es))
+	for i, e := range es {
+		r[i] = NewCollarWithOwnerAndPetAndPetOwnerView(e)
+	}
+	return r
+}
+
+type (
+	// OwnerView represents the data serialized for the following serialization group combinations:
+	// []
+	OwnerView struct {
 		ID   uuid.UUID `json:"id,omitempty"`
 		Name string    `json:"name,omitempty"`
 		Age  int       `json:"age,omitempty"`
 	}
-	Owner139708381Views []*Owner139708381View
+	OwnerViews []*OwnerView
 )
 
-func NewOwner139708381View(e *ent.Owner) *Owner139708381View {
+func NewOwnerView(e *ent.Owner) *OwnerView {
 	if e == nil {
 		return nil
 	}
-	return &Owner139708381View{
+	return &OwnerView{
 		ID:   e.ID,
 		Name: e.Name,
 		Age:  e.Age,
 	}
 }
 
-func NewOwner139708381Views(es []*ent.Owner) Owner139708381Views {
+func NewOwnerViews(es []*ent.Owner) OwnerViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(Owner139708381Views, len(es))
+	r := make(OwnerViews, len(es))
 	for i, e := range es {
-		r[i] = NewOwner139708381View(e)
+		r[i] = NewOwnerView(e)
 	}
 	return r
 }
 
 type (
-	// Pet1876743790View represents the data serialized for the following serialization group combinations:
+	// OwnerWithPetAndPetOwnerView represents the data serialized for the following serialization group combinations:
 	// [owner pet pet:owner]
-	Pet1876743790View struct {
-		ID      string              `json:"id,omitempty"`
-		Name    string              `json:"name,omitempty"`
-		Age     int                 `json:"age,omitempty"`
-		Owner   *Owner139708381View `json:"owner,omitempty"`
-		Friends Pet359800019Views   `json:"friends,omitempty"`
+	OwnerWithPetAndPetOwnerView struct {
+		ID   uuid.UUID `json:"id,omitempty"`
+		Name string    `json:"name,omitempty"`
+		Age  int       `json:"age,omitempty"`
 	}
-	Pet1876743790Views []*Pet1876743790View
+	OwnerWithPetAndPetOwnerViews []*OwnerWithPetAndPetOwnerView
 )
 
-func NewPet1876743790View(e *ent.Pet) *Pet1876743790View {
+func NewOwnerWithPetAndPetOwnerView(e *ent.Owner) *OwnerWithPetAndPetOwnerView {
 	if e == nil {
 		return nil
 	}
-	return &Pet1876743790View{
-		ID:      e.ID,
-		Name:    e.Name,
-		Age:     e.Age,
-		Owner:   NewOwner139708381View(e.Edges.Owner),
-		Friends: NewPet359800019Views(e.Edges.Friends),
+	return &OwnerWithPetAndPetOwnerView{
+		ID:   e.ID,
+		Name: e.Name,
+		Age:  e.Age,
 	}
 }
 
-func NewPet1876743790Views(es []*ent.Pet) Pet1876743790Views {
+func NewOwnerWithPetAndPetOwnerViews(es []*ent.Owner) OwnerWithPetAndPetOwnerViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(Pet1876743790Views, len(es))
+	r := make(OwnerWithPetAndPetOwnerViews, len(es))
 	for i, e := range es {
-		r[i] = NewPet1876743790View(e)
+		r[i] = NewOwnerWithPetAndPetOwnerView(e)
 	}
 	return r
 }
 
 type (
-	// Pet359800019View represents the data serialized for the following serialization group combinations:
+	// PetView represents the data serialized for the following serialization group combinations:
 	// []
-	Pet359800019View struct {
+	PetView struct {
 		ID   string `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 		Age  int    `json:"age,omitempty"`
 	}
-	Pet359800019Views []*Pet359800019View
+	PetViews []*PetView
 )
 
-func NewPet359800019View(e *ent.Pet) *Pet359800019View {
+func NewPetView(e *ent.Pet) *PetView {
 	if e == nil {
 		return nil
 	}
-	return &Pet359800019View{
+	return &PetView{
 		ID:   e.ID,
 		Name: e.Name,
 		Age:  e.Age,
 	}
 }
 
-func NewPet359800019Views(es []*ent.Pet) Pet359800019Views {
+func NewPetViews(es []*ent.Pet) PetViews {
 	if len(es) == 0 {
 		return nil
 	}
-	r := make(Pet359800019Views, len(es))
+	r := make(PetViews, len(es))
 	for i, e := range es {
-		r[i] = NewPet359800019View(e)
+		r[i] = NewPetView(e)
+	}
+	return r
+}
+
+type (
+	// PetWithOwnerAndPetOwnerView represents the data serialized for the following serialization group combinations:
+	// [owner pet pet:owner]
+	PetWithOwnerAndPetOwnerView struct {
+		ID      string                       `json:"id,omitempty"`
+		Name    string                       `json:"name,omitempty"`
+		Age     int                          `json:"age,omitempty"`
+		Owner   *OwnerWithPetAndPetOwnerView `json:"owner,omitempty"`
+		Friends PetWithOwnerAndPetOwnerViews `json:"friends,omitempty"`
+	}
+	PetWithOwnerAndPetOwnerViews []*PetWithOwnerAndPetOwnerView
+)
+
+func NewPetWithOwnerAndPetOwnerView(e *ent.Pet) *PetWithOwnerAndPetOwnerView {
+	if e == nil {
+		return nil
+	}
+	return &PetWithOwnerAndPetOwnerView{
+		ID:      e.ID,
+		Name:    e.Name,
+		Age:     e.Age,
+		Owner:   NewOwnerWithPetAndPetOwnerView(e.Edges.Owner),
+		Friends: NewPetWithOwnerAndPetOwnerViews(e.Edges.Friends),
+	}
+}
+
+func NewPetWithOwnerAndPetOwnerViews(es []*ent.Pet) PetWithOwnerAndPetOwnerViews {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(PetWithOwnerAndPetOwnerViews, len(es))
+	for i, e := range es {
+		r[i] = NewPetWithOwnerAndPetOwnerView(e)
 	}
 	return r
 }

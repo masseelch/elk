@@ -41,5 +41,5 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("users rendered", zap.Int("amount", len(es)))
-	easyjson.MarshalToHTTPResponseWriter(NewUser3451555716Views(es), w)
+	easyjson.MarshalToHTTPResponseWriter(NewUserViews(es), w)
 }

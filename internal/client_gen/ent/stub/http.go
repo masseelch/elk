@@ -17,39 +17,46 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 )
 
-// Category4094953247View defines model for Category4094953247View.
-type Category4094953247View struct {
+// CategoryView defines model for CategoryView.
+type CategoryView struct {
 	Id   int64  `json:"id"`
 	Name string `json:"name"`
 }
 
-// Collar1522160880View defines model for Collar1522160880View.
-type Collar1522160880View struct {
+// CollarView defines model for CollarView.
+type CollarView struct {
 	Color string `json:"color"`
 	Id    int32  `json:"id"`
 }
 
-// Owner139708381View defines model for Owner139708381View.
-type Owner139708381View struct {
+// OwnerView defines model for OwnerView.
+type OwnerView struct {
 	Age  int32  `json:"age"`
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
 
-// Pet1876743790View defines model for Pet1876743790View.
-type Pet1876743790View struct {
-	Age     int32               `json:"age"`
-	Friends *[]Pet359800019View `json:"friends,omitempty"`
-	Id      string              `json:"id"`
-	Name    string              `json:"name"`
-	Owner   *Owner139708381View `json:"owner,omitempty"`
-}
-
-// Pet359800019View defines model for Pet359800019View.
-type Pet359800019View struct {
+// OwnerWithPetAndPetOwnerView defines model for OwnerWithPetAndPetOwnerView.
+type OwnerWithPetAndPetOwnerView struct {
 	Age  int32  `json:"age"`
 	Id   string `json:"id"`
 	Name string `json:"name"`
+}
+
+// PetView defines model for PetView.
+type PetView struct {
+	Age  int32  `json:"age"`
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// PetWithOwnerAndPetOwnerView defines model for PetWithOwnerAndPetOwnerView.
+type PetWithOwnerAndPetOwnerView struct {
+	Age     int32                          `json:"age"`
+	Friends *[]PetWithOwnerAndPetOwnerView `json:"friends,omitempty"`
+	Id      string                         `json:"id"`
+	Name    string                         `json:"name"`
+	Owner   *OwnerWithPetAndPetOwnerView   `json:"owner,omitempty"`
 }
 
 // N400 defines model for 400.
@@ -2216,7 +2223,7 @@ type ClientWithResponsesInterface interface {
 type ListCategoryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Category4094953247View
+	JSON200      *[]CategoryView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2253,7 +2260,7 @@ func (r ListCategoryResponse) StatusCode() int {
 type CreateCategoryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Category4094953247View
+	JSON200      *CategoryView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2321,7 +2328,7 @@ func (r DeleteCategoryResponse) StatusCode() int {
 type ReadCategoryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Category4094953247View
+	JSON200      *CategoryView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2358,7 +2365,7 @@ func (r ReadCategoryResponse) StatusCode() int {
 type UpdateCategoryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Category4094953247View
+	JSON200      *CategoryView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2395,7 +2402,7 @@ func (r UpdateCategoryResponse) StatusCode() int {
 type ListCategoryPetsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Pet359800019View
+	JSON200      *[]PetView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2432,7 +2439,7 @@ func (r ListCategoryPetsResponse) StatusCode() int {
 type ListCollarResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Collar1522160880View
+	JSON200      *[]CollarView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2469,7 +2476,7 @@ func (r ListCollarResponse) StatusCode() int {
 type CreateCollarResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Collar1522160880View
+	JSON200      *CollarView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2537,7 +2544,7 @@ func (r DeleteCollarResponse) StatusCode() int {
 type ReadCollarResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Collar1522160880View
+	JSON200      *CollarView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2574,7 +2581,7 @@ func (r ReadCollarResponse) StatusCode() int {
 type UpdateCollarResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Collar1522160880View
+	JSON200      *CollarView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2611,7 +2618,7 @@ func (r UpdateCollarResponse) StatusCode() int {
 type ReadCollarPetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Pet1876743790View
+	JSON200      *PetWithOwnerAndPetOwnerView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2648,7 +2655,7 @@ func (r ReadCollarPetResponse) StatusCode() int {
 type ListOwnerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Owner139708381View
+	JSON200      *[]OwnerView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2685,7 +2692,7 @@ func (r ListOwnerResponse) StatusCode() int {
 type CreateOwnerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Owner139708381View
+	JSON200      *OwnerView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2753,7 +2760,7 @@ func (r DeleteOwnerResponse) StatusCode() int {
 type ReadOwnerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Owner139708381View
+	JSON200      *OwnerView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2790,7 +2797,7 @@ func (r ReadOwnerResponse) StatusCode() int {
 type UpdateOwnerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Owner139708381View
+	JSON200      *OwnerView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2827,7 +2834,7 @@ func (r UpdateOwnerResponse) StatusCode() int {
 type ListOwnerPetsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Pet359800019View
+	JSON200      *[]PetView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2864,7 +2871,7 @@ func (r ListOwnerPetsResponse) StatusCode() int {
 type ListPetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Pet359800019View
+	JSON200      *[]PetView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2901,7 +2908,7 @@ func (r ListPetResponse) StatusCode() int {
 type CreatePetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Pet359800019View
+	JSON200      *PetView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -2969,7 +2976,7 @@ func (r DeletePetResponse) StatusCode() int {
 type ReadPetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Pet1876743790View
+	JSON200      *PetWithOwnerAndPetOwnerView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -3006,7 +3013,7 @@ func (r ReadPetResponse) StatusCode() int {
 type UpdatePetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Pet359800019View
+	JSON200      *PetView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -3043,7 +3050,7 @@ func (r UpdatePetResponse) StatusCode() int {
 type ListPetCategoriesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Category4094953247View
+	JSON200      *[]CategoryView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -3080,7 +3087,7 @@ func (r ListPetCategoriesResponse) StatusCode() int {
 type ReadPetCollarResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Collar1522160880View
+	JSON200      *CollarView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -3117,7 +3124,7 @@ func (r ReadPetCollarResponse) StatusCode() int {
 type ListPetFriendsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]Pet359800019View
+	JSON200      *[]PetView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -3154,7 +3161,7 @@ func (r ListPetFriendsResponse) StatusCode() int {
 type ReadPetOwnerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *Owner139708381View
+	JSON200      *OwnerView
 	JSON400      *struct {
 		Code   *int32                  `json:"code,omitempty"`
 		Errors *map[string]interface{} `json:"errors,omitempty"`
@@ -3510,7 +3517,7 @@ func ParseListCategoryResponse(rsp *http.Response) (*ListCategoryResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Category4094953247View
+		var dest []CategoryView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3569,7 +3576,7 @@ func ParseCreateCategoryResponse(rsp *http.Response) (*CreateCategoryResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Category4094953247View
+		var dest CategoryView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3669,7 +3676,7 @@ func ParseReadCategoryResponse(rsp *http.Response) (*ReadCategoryResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Category4094953247View
+		var dest CategoryView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3728,7 +3735,7 @@ func ParseUpdateCategoryResponse(rsp *http.Response) (*UpdateCategoryResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Category4094953247View
+		var dest CategoryView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3787,7 +3794,7 @@ func ParseListCategoryPetsResponse(rsp *http.Response) (*ListCategoryPetsRespons
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Pet359800019View
+		var dest []PetView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3846,7 +3853,7 @@ func ParseListCollarResponse(rsp *http.Response) (*ListCollarResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Collar1522160880View
+		var dest []CollarView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3905,7 +3912,7 @@ func ParseCreateCollarResponse(rsp *http.Response) (*CreateCollarResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Collar1522160880View
+		var dest CollarView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4005,7 +4012,7 @@ func ParseReadCollarResponse(rsp *http.Response) (*ReadCollarResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Collar1522160880View
+		var dest CollarView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4064,7 +4071,7 @@ func ParseUpdateCollarResponse(rsp *http.Response) (*UpdateCollarResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Collar1522160880View
+		var dest CollarView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4123,7 +4130,7 @@ func ParseReadCollarPetResponse(rsp *http.Response) (*ReadCollarPetResponse, err
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Pet1876743790View
+		var dest PetWithOwnerAndPetOwnerView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4182,7 +4189,7 @@ func ParseListOwnerResponse(rsp *http.Response) (*ListOwnerResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Owner139708381View
+		var dest []OwnerView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4241,7 +4248,7 @@ func ParseCreateOwnerResponse(rsp *http.Response) (*CreateOwnerResponse, error) 
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Owner139708381View
+		var dest OwnerView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4341,7 +4348,7 @@ func ParseReadOwnerResponse(rsp *http.Response) (*ReadOwnerResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Owner139708381View
+		var dest OwnerView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4400,7 +4407,7 @@ func ParseUpdateOwnerResponse(rsp *http.Response) (*UpdateOwnerResponse, error) 
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Owner139708381View
+		var dest OwnerView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4459,7 +4466,7 @@ func ParseListOwnerPetsResponse(rsp *http.Response) (*ListOwnerPetsResponse, err
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Pet359800019View
+		var dest []PetView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4518,7 +4525,7 @@ func ParseListPetResponse(rsp *http.Response) (*ListPetResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Pet359800019View
+		var dest []PetView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4577,7 +4584,7 @@ func ParseCreatePetResponse(rsp *http.Response) (*CreatePetResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Pet359800019View
+		var dest PetView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4677,7 +4684,7 @@ func ParseReadPetResponse(rsp *http.Response) (*ReadPetResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Pet1876743790View
+		var dest PetWithOwnerAndPetOwnerView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4736,7 +4743,7 @@ func ParseUpdatePetResponse(rsp *http.Response) (*UpdatePetResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Pet359800019View
+		var dest PetView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4795,7 +4802,7 @@ func ParseListPetCategoriesResponse(rsp *http.Response) (*ListPetCategoriesRespo
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Category4094953247View
+		var dest []CategoryView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4854,7 +4861,7 @@ func ParseReadPetCollarResponse(rsp *http.Response) (*ReadPetCollarResponse, err
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Collar1522160880View
+		var dest CollarView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4913,7 +4920,7 @@ func ParseListPetFriendsResponse(rsp *http.Response) (*ListPetFriendsResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []Pet359800019View
+		var dest []PetView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4972,7 +4979,7 @@ func ParseReadPetOwnerResponse(rsp *http.Response) (*ReadPetOwnerResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Owner139708381View
+		var dest OwnerView
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

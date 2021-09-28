@@ -94,19 +94,14 @@ func (v view) Name() (string, error) {
 		}
 	}
 
-	annotations, ok := v.Node.Annotations[elkSchemaName]
-	schemaAnnotation, canCast := annotations.(map[string]interface{})
-	if !ok || len(groups) == 0 || !canCast {
-
+	if len(groups) == 0 {
 		// if no annotations or no groups (should be same thing) there's only one view
 		return fmt.Sprintf("%sView", v.Node.Name), nil
 	}
 
-	for k, val := range schemaAnnotation {
-		gs, ok := val.(serialization.Groups)
-		if ok && len(gs) > 1 {
-			return fmt.Sprintf("%v%sView", v.Node.Name, k), nil
-		}
+	if strings.HasPrefix(groups[0], v.Node.Name) {
+		// special case to avoid repetitive names
+		return fmt.Sprintf("%sView", strings.Join(groups, "And")), nil
 	}
 
 	return fmt.Sprintf("%vWith%sView", v.Node.Name, strings.Join(groups, "And")), nil

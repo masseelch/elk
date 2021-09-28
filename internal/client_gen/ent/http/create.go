@@ -63,7 +63,7 @@ func (h CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("category rendered", zap.Uint64("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewCategory4094953247View(ret), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCategoryView(ret), w)
 }
 
 // Create creates a new ent.Collar and stores it in the database.
@@ -115,7 +115,7 @@ func (h CollarHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("collar rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880View(ret), w)
+	easyjson.MarshalToHTTPResponseWriter(NewCollarView(ret), w)
 }
 
 // Create creates a new ent.Owner and stores it in the database.
@@ -170,7 +170,7 @@ func (h OwnerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("owner rendered", zap.String("id", id.String()))
-	easyjson.MarshalToHTTPResponseWriter(NewOwner139708381View(ret), w)
+	easyjson.MarshalToHTTPResponseWriter(NewOwnerView(ret), w)
 }
 
 // Create creates a new ent.Pet and stores it in the database.
@@ -234,5 +234,5 @@ func (h PetHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.String("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPet359800019View(ret), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetView(ret), w)
 }

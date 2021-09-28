@@ -10,10 +10,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/mailru/easyjson"
 	"github.com/masseelch/elk/internal/pets/ent"
-	badge "github.com/masseelch/elk/internal/pets/ent/badge"
-	pet "github.com/masseelch/elk/internal/pets/ent/pet"
-	playgroup "github.com/masseelch/elk/internal/pets/ent/playgroup"
-	toy "github.com/masseelch/elk/internal/pets/ent/toy"
+	"github.com/masseelch/elk/internal/pets/ent/badge"
+	"github.com/masseelch/elk/internal/pets/ent/pet"
+	"github.com/masseelch/elk/internal/pets/ent/playgroup"
+	"github.com/masseelch/elk/internal/pets/ent/toy"
 	"go.uber.org/zap"
 )
 
@@ -1129,7 +1129,7 @@ func (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.Int("id", id))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetReadView(e), w)
 }
 
 // Read fetches the ent.PlayGroup identified by a given url-parameter from the

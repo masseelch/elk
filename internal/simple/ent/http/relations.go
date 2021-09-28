@@ -98,7 +98,7 @@ func (h CollarHandler) Pet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.Info("pet rendered", zap.String("id", e.ID))
-	easyjson.MarshalToHTTPResponseWriter(NewPetView(e), w)
+	easyjson.MarshalToHTTPResponseWriter(NewPetWithOwnerAndPetOwnerView(e), w)
 }
 
 // Pets fetches the ent.pets attached to the ent.Owner
