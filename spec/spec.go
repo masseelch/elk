@@ -100,7 +100,7 @@ type (
 	Type struct {
 		Type   string      `json:"type,omitempty"`
 		Format string      `json:"format,omitempty"`
-		Items  interface{} `json:"items,omitempty"` // of type `Type`, but recursive types are not valid.
+		Items  *Type `json:"items,omitempty"`
 	}
 	Edges map[string]Edge
 	Edge  struct {
