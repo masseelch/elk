@@ -5,7 +5,7 @@ go 1.17
 require (
 	entgo.io/ent v0.9.2-0.20210822190728-d84ac191b1c7
 	github.com/Pallinder/go-randomdata v1.2.0
-	github.com/deepmap/oapi-codegen v1.8.2
+	github.com/deepmap/oapi-codegen v1.8.3
 	github.com/go-chi/chi/v5 v5.0.4
 	github.com/go-openapi/inflect v0.19.0
 	github.com/google/uuid v1.3.0
@@ -19,7 +19,6 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
