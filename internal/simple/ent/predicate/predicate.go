@@ -12,6 +12,9 @@ type Category func(*sql.Selector)
 // Collar is the predicate function for collar builders.
 type Collar func(*sql.Selector)
 
+// Media is the predicate function for media builders.
+type Media func(*sql.Selector)
+
 // Owner is the predicate function for owner builders.
 type Owner func(*sql.Selector)
 

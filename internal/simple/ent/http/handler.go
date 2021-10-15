@@ -21,6 +21,7 @@ func NewHandler(c *ent.Client, l *zap.Logger) chi.Router {
 func MountRoutes(c *ent.Client, l *zap.Logger, r chi.Router) {
 	NewCategoryHandler(c, l).MountRoutes(r)
 	NewCollarHandler(c, l).MountRoutes(r)
+	NewMediaHandler(c, l).MountRoutes(r)
 	NewOwnerHandler(c, l).MountRoutes(r)
 	NewPetHandler(c, l).MountRoutes(r)
 }
@@ -103,6 +104,42 @@ func (h *CollarHandler) MountPetRoute(r chi.Router) *CollarHandler {
 }
 func (h *CollarHandler) MountRoutes(r chi.Router) {
 	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountDeleteRoute(r).MountListRoute(r).MountPetRoute(r)
+}
+
+// MediaHandler handles http crud operations on ent.Media.
+type MediaHandler struct {
+	client *ent.Client
+	log    *zap.Logger
+}
+
+func NewMediaHandler(c *ent.Client, l *zap.Logger) *MediaHandler {
+	return &MediaHandler{
+		client: c,
+		log:    l.With(zap.String("handler", "MediaHandler")),
+	}
+}
+func (h *MediaHandler) MountCreateRoute(r chi.Router) *MediaHandler {
+	r.Post("/media", h.Create)
+	return h
+}
+func (h *MediaHandler) MountReadRoute(r chi.Router) *MediaHandler {
+	r.Get("/media/{id}", h.Read)
+	return h
+}
+func (h *MediaHandler) MountUpdateRoute(r chi.Router) *MediaHandler {
+	r.Patch("/media/{id}", h.Update)
+	return h
+}
+func (h *MediaHandler) MountDeleteRoute(r chi.Router) *MediaHandler {
+	r.Delete("/media/{id}", h.Delete)
+	return h
+}
+func (h *MediaHandler) MountListRoute(r chi.Router) *MediaHandler {
+	r.Get("/media", h.List)
+	return h
+}
+func (h *MediaHandler) MountRoutes(r chi.Router) {
+	h.MountCreateRoute(r).MountReadRoute(r).MountUpdateRoute(r).MountDeleteRoute(r).MountListRoute(r)
 }
 
 // OwnerHandler handles http crud operations on ent.Owner.

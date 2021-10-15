@@ -143,6 +143,36 @@ func NewCollar1522160880Views(es []*ent.Collar) Collar1522160880Views {
 }
 
 type (
+	// Media1941033838View represents the data serialized for the following serialization group combinations:
+	// []
+	// [owner pet pet:owner]
+	Media1941033838View struct {
+		ID int `json:"id,omitempty"`
+	}
+	Media1941033838Views []*Media1941033838View
+)
+
+func NewMedia1941033838View(e *ent.Media) *Media1941033838View {
+	if e == nil {
+		return nil
+	}
+	return &Media1941033838View{
+		ID: e.ID,
+	}
+}
+
+func NewMedia1941033838Views(es []*ent.Media) Media1941033838Views {
+	if len(es) == 0 {
+		return nil
+	}
+	r := make(Media1941033838Views, len(es))
+	for i, e := range es {
+		r[i] = NewMedia1941033838View(e)
+	}
+	return r
+}
+
+type (
 	// Owner139708381View represents the data serialized for the following serialization group combinations:
 	// []
 	// [owner pet pet:owner]

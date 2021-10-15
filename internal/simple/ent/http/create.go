@@ -9,6 +9,7 @@ import (
 	"github.com/masseelch/elk/internal/simple/ent"
 	"github.com/masseelch/elk/internal/simple/ent/category"
 	collar "github.com/masseelch/elk/internal/simple/ent/collar"
+	"github.com/masseelch/elk/internal/simple/ent/media"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"go.uber.org/zap"
@@ -116,6 +117,52 @@ func (h CollarHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	l.Info("collar rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880View(ret), w)
+}
+
+// Create creates a new ent.Media and stores it in the database.
+func (h MediaHandler) Create(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Create"))
+	// Get the post data.
+	var d MediaCreateRequest
+	if err := easyjson.UnmarshalFromReader(r.Body, &d); err != nil {
+		l.Error("error decoding json", zap.Error(err))
+		BadRequest(w, "invalid json string")
+		return
+	}
+	// Save the data.
+	b := h.client.Media.Create()
+	e, err := b.Save(r.Context())
+	if err != nil {
+		switch {
+		default:
+			l.Error("could not create media", zap.Error(err))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	// Store id of fresh entity to log errors for the reload.
+	id := e.ID
+	// Reload entry.
+	q := h.client.Media.Query().Where(media.ID(e.ID))
+	ret, err := q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			BadRequest(w, msg)
+		default:
+			l.Error("could not read media", zap.Error(err), zap.Int("id", id))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	l.Info("media rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewMedia1941033838View(ret), w)
 }
 
 // Create creates a new ent.Owner and stores it in the database.

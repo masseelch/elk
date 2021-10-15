@@ -16,6 +16,8 @@ type Tx struct {
 	Category *CategoryClient
 	// Collar is the client for interacting with the Collar builders.
 	Collar *CollarClient
+	// Media is the client for interacting with the Media builders.
+	Media *MediaClient
 	// Owner is the client for interacting with the Owner builders.
 	Owner *OwnerClient
 	// Pet is the client for interacting with the Pet builders.
@@ -157,6 +159,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Category = NewCategoryClient(tx.config)
 	tx.Collar = NewCollarClient(tx.config)
+	tx.Media = NewMediaClient(tx.config)
 	tx.Owner = NewOwnerClient(tx.config)
 	tx.Pet = NewPetClient(tx.config)
 }

@@ -123,7 +123,7 @@
     }
     es, err := q.Limit(itemsPerPage).Offset((page - 1) * itemsPerPage).All(r.Context())
     if err != nil {
-        l.Error("error fetching {{ $.Name | kebab | plural}} from db", zap.Error(err))
+        l.Error("error fetching {{ $.Name | kebab | pluralize }} from db", zap.Error(err))
         InternalServerError(w, nil)
         return
     }

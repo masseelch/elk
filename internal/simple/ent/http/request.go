@@ -31,6 +31,14 @@ type CollarUpdateRequest struct {
 	Pet   *string       `json:"pet"`
 }
 
+// Payload of a ent.Media create request.
+type MediaCreateRequest struct {
+}
+
+// Payload of a ent.Media update request.
+type MediaUpdateRequest struct {
+}
+
 // Payload of a ent.Owner create request.
 type OwnerCreateRequest struct {
 	Name *string  `json:"name"`

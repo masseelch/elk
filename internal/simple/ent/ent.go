@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/masseelch/elk/internal/simple/ent/category"
 	"github.com/masseelch/elk/internal/simple/ent/collar"
+	"github.com/masseelch/elk/internal/simple/ent/media"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 )
@@ -34,6 +35,7 @@ func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		category.Table: category.ValidColumn,
 		collar.Table:   collar.ValidColumn,
+		media.Table:    media.ValidColumn,
 		owner.Table:    owner.ValidColumn,
 		pet.Table:      pet.ValidColumn,
 	}

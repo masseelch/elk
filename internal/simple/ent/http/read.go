@@ -12,6 +12,7 @@ import (
 	"github.com/masseelch/elk/internal/simple/ent"
 	"github.com/masseelch/elk/internal/simple/ent/category"
 	collar "github.com/masseelch/elk/internal/simple/ent/collar"
+	"github.com/masseelch/elk/internal/simple/ent/media"
 	"github.com/masseelch/elk/internal/simple/ent/owner"
 	"github.com/masseelch/elk/internal/simple/ent/pet"
 	"go.uber.org/zap"
@@ -84,6 +85,40 @@ func (h *CollarHandler) Read(w http.ResponseWriter, r *http.Request) {
 	}
 	l.Info("collar rendered", zap.Int("id", id))
 	easyjson.MarshalToHTTPResponseWriter(NewCollar1522160880View(e), w)
+}
+
+// Read fetches the ent.Media identified by a given url-parameter from the
+// database and renders it to the client.
+func (h *MediaHandler) Read(w http.ResponseWriter, r *http.Request) {
+	l := h.log.With(zap.String("method", "Read"))
+	// ID is URL parameter.
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		l.Error("error getting id from url parameter", zap.String("id", chi.URLParam(r, "id")), zap.Error(err))
+		BadRequest(w, "id must be an integer")
+		return
+	}
+	// Create the query to fetch the Media
+	q := h.client.Media.Query().Where(media.ID(id))
+	e, err := q.Only(r.Context())
+	if err != nil {
+		switch {
+		case ent.IsNotFound(err):
+			msg := stripEntError(err)
+			l.Info(msg, zap.Error(err), zap.Int("id", id))
+			NotFound(w, msg)
+		case ent.IsNotSingular(err):
+			msg := stripEntError(err)
+			l.Error(msg, zap.Error(err), zap.Int("id", id))
+			BadRequest(w, msg)
+		default:
+			l.Error("could not read media", zap.Error(err), zap.Int("id", id))
+			InternalServerError(w, nil)
+		}
+		return
+	}
+	l.Info("media rendered", zap.Int("id", id))
+	easyjson.MarshalToHTTPResponseWriter(NewMedia1941033838View(e), w)
 }
 
 // Read fetches the ent.Owner identified by a given url-parameter from the

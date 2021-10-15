@@ -43,37 +43,37 @@
         {{- if or $ops $edgs }}
             {{- if contains $ops "create" }}
                 func (h *{{ $h }}) MountCreateRoute(r chi.Router) *{{ $h }} {
-                    r.Post("/{{ $n.Name | kebab | plural }}", h.Create)
+                    r.Post("/{{ $n.Name | kebab | pluralize }}", h.Create)
                     return h
                 }
             {{- end }}
             {{- if contains $ops "read" }}
                 func (h *{{ $h }}) MountReadRoute(r chi.Router) *{{ $h }} {
-                    r.Get("/{{ $n.Name | kebab | plural }}/{id}", h.Read)
+                    r.Get("/{{ $n.Name | kebab | pluralize }}/{id}", h.Read)
                     return h
                 }
             {{- end }}
             {{- if contains $ops "update" }}
                 func (h *{{ $h }}) MountUpdateRoute(r chi.Router) *{{ $h }} {
-                    r.Patch("/{{ $n.Name | kebab | plural }}/{id}", h.Update)
+                    r.Patch("/{{ $n.Name | kebab | pluralize }}/{id}", h.Update)
                     return h
                 }
             {{- end }}
             {{- if contains $ops "delete" }}
                 func (h *{{ $h }}) MountDeleteRoute(r chi.Router) *{{ $h }} {
-                    r.Delete("/{{ $n.Name | kebab | plural }}/{id}", h.Delete)
+                    r.Delete("/{{ $n.Name | kebab | pluralize }}/{id}", h.Delete)
                     return h
                 }
             {{- end }}
             {{- if contains $ops "list" }}
                 func (h *{{ $h }}) MountListRoute(r chi.Router) *{{ $h }} {
-                    r.Get("/{{ $n.Name | kebab | plural }}", h.List)
+                    r.Get("/{{ $n.Name | kebab | pluralize }}", h.List)
                     return h
                 }
             {{- end }}
             {{- range $e := $edgs }}
                 func (h *{{ $h }}) Mount{{ $e.Name | pascal }}Route(r chi.Router) *{{ $h }} {
-                	r.Get("/{{ $n.Name | kebab | plural }}/{id}/{{ $e.Name | kebab }}", h.{{ $e.Name | pascal }})
+                	r.Get("/{{ $n.Name | kebab | pluralize }}/{id}/{{ $e.Name | kebab }}", h.{{ $e.Name | pascal }})
                 	return h
                 }
             {{- end }}

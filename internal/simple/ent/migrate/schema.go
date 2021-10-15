@@ -39,6 +39,16 @@ var (
 			},
 		},
 	}
+	// MediaColumns holds the columns for the "media" table.
+	MediaColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// MediaTable holds the schema information for the "media" table.
+	MediaTable = &schema.Table{
+		Name:       "media",
+		Columns:    MediaColumns,
+		PrimaryKey: []*schema.Column{MediaColumns[0]},
+	}
 	// OwnersColumns holds the columns for the "owners" table.
 	OwnersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -126,6 +136,7 @@ var (
 	Tables = []*schema.Table{
 		CategoriesTable,
 		CollarsTable,
+		MediaTable,
 		OwnersTable,
 		PetsTable,
 		CategoryPetsTable,

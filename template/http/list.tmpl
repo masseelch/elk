@@ -20,7 +20,7 @@
             var err error
             {{- template "helper/http/pagination" $n -}}
 
-            l.Info("{{ $n.Name | kebab | plural }} rendered", zap.Int("amount", len(es)))
+            l.Info("{{ $n.Name | kebab | pluralize }} rendered", zap.Int("amount", len(es)))
             easyjson.MarshalToHTTPResponseWriter(New{{ (view $n ($n.Annotations.ElkSchema.ListGroups | stringSlice)).Name }}s(es), w)
         }
     {{ end }}

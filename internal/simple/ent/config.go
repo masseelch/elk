@@ -26,6 +26,7 @@ type config struct {
 type hooks struct {
 	Category []ent.Hook
 	Collar   []ent.Hook
+	Media    []ent.Hook
 	Owner    []ent.Hook
 	Pet      []ent.Hook
 }

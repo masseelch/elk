@@ -23,6 +23,7 @@ var (
 		"kebab":           strcase.KebabCase,
 		"needsValidation": needsValidation,
 		"nodeOperations":  nodeOperations,
+		"pluralize":       rules.Pluralize,
 		"view":            newView,
 		"views":           newViews,
 		"stringSlice":     stringSlice,
