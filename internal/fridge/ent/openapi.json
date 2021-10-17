@@ -278,7 +278,7 @@
           {
             "name": "page",
             "in": "query",
-            "description": "ID of the Compartment",
+            "description": "what page to render",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -599,7 +599,7 @@
           {
             "name": "page",
             "in": "query",
-            "description": "ID of the Fridge",
+            "description": "what page to render",
             "schema": {
               "type": "integer",
               "format": "int32"

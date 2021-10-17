@@ -96,7 +96,7 @@ type UpdateCategoryJSONBody struct {
 
 // ListCategoryPetsParams defines parameters for ListCategoryPets.
 type ListCategoryPetsParams struct {
-	// ID of the Category
+	// what page to render
 	Page *int32 `json:"page,omitempty"`
 
 	// item count to render per page
@@ -149,7 +149,7 @@ type UpdateOwnerJSONBody struct {
 
 // ListOwnerPetsParams defines parameters for ListOwnerPets.
 type ListOwnerPetsParams struct {
-	// ID of the Owner
+	// what page to render
 	Page *int32 `json:"page,omitempty"`
 
 	// item count to render per page
@@ -187,7 +187,7 @@ type UpdatePetJSONBody struct {
 
 // ListPetCategoriesParams defines parameters for ListPetCategories.
 type ListPetCategoriesParams struct {
-	// ID of the Pet
+	// what page to render
 	Page *int32 `json:"page,omitempty"`
 
 	// item count to render per page
@@ -196,7 +196,7 @@ type ListPetCategoriesParams struct {
 
 // ListPetFriendsParams defines parameters for ListPetFriends.
 type ListPetFriendsParams struct {
-	// ID of the Pet
+	// what page to render
 	Page *int32 `json:"page,omitempty"`
 
 	// item count to render per page
@@ -342,7 +342,7 @@ type ClientInterface interface {
 	UpdateCollar(ctx context.Context, id int32, body UpdateCollarJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ReadCollarPet request
-	ReadCollarPet(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	ReadCollarPet(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListOwner request
 	ListOwner(ctx context.Context, params *ListOwnerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -389,7 +389,7 @@ type ClientInterface interface {
 	ListPetCategories(ctx context.Context, id string, params *ListPetCategoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ReadPetCollar request
-	ReadPetCollar(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error)
+	ReadPetCollar(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListPetFriends request
 	ListPetFriends(ctx context.Context, id string, params *ListPetFriendsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -578,7 +578,7 @@ func (c *Client) UpdateCollar(ctx context.Context, id int32, body UpdateCollarJS
 	return c.Client.Do(req)
 }
 
-func (c *Client) ReadCollarPet(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) ReadCollarPet(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewReadCollarPetRequest(c.Server, id)
 	if err != nil {
 		return nil, err
@@ -782,7 +782,7 @@ func (c *Client) ListPetCategories(ctx context.Context, id string, params *ListP
 	return c.Client.Do(req)
 }
 
-func (c *Client) ReadPetCollar(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) ReadPetCollar(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewReadPetCollarRequest(c.Server, id)
 	if err != nil {
 		return nil, err
@@ -1325,7 +1325,7 @@ func NewUpdateCollarRequestWithBody(server string, id int32, contentType string,
 }
 
 // NewReadCollarPetRequest generates requests for ReadCollarPet
-func NewReadCollarPetRequest(server string, id string) (*http.Request, error) {
+func NewReadCollarPetRequest(server string, id int32) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1935,7 +1935,7 @@ func NewListPetCategoriesRequest(server string, id string, params *ListPetCatego
 }
 
 // NewReadPetCollarRequest generates requests for ReadPetCollar
-func NewReadPetCollarRequest(server string, id int32) (*http.Request, error) {
+func NewReadPetCollarRequest(server string, id string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -2157,7 +2157,7 @@ type ClientWithResponsesInterface interface {
 	UpdateCollarWithResponse(ctx context.Context, id int32, body UpdateCollarJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCollarResponse, error)
 
 	// ReadCollarPet request
-	ReadCollarPetWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ReadCollarPetResponse, error)
+	ReadCollarPetWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*ReadCollarPetResponse, error)
 
 	// ListOwner request
 	ListOwnerWithResponse(ctx context.Context, params *ListOwnerParams, reqEditors ...RequestEditorFn) (*ListOwnerResponse, error)
@@ -2204,7 +2204,7 @@ type ClientWithResponsesInterface interface {
 	ListPetCategoriesWithResponse(ctx context.Context, id string, params *ListPetCategoriesParams, reqEditors ...RequestEditorFn) (*ListPetCategoriesResponse, error)
 
 	// ReadPetCollar request
-	ReadPetCollarWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*ReadPetCollarResponse, error)
+	ReadPetCollarWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ReadPetCollarResponse, error)
 
 	// ListPetFriends request
 	ListPetFriendsWithResponse(ctx context.Context, id string, params *ListPetFriendsParams, reqEditors ...RequestEditorFn) (*ListPetFriendsResponse, error)
@@ -3320,7 +3320,7 @@ func (c *ClientWithResponses) UpdateCollarWithResponse(ctx context.Context, id i
 }
 
 // ReadCollarPetWithResponse request returning *ReadCollarPetResponse
-func (c *ClientWithResponses) ReadCollarPetWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ReadCollarPetResponse, error) {
+func (c *ClientWithResponses) ReadCollarPetWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*ReadCollarPetResponse, error) {
 	rsp, err := c.ReadCollarPet(ctx, id, reqEditors...)
 	if err != nil {
 		return nil, err
@@ -3469,7 +3469,7 @@ func (c *ClientWithResponses) ListPetCategoriesWithResponse(ctx context.Context,
 }
 
 // ReadPetCollarWithResponse request returning *ReadPetCollarResponse
-func (c *ClientWithResponses) ReadPetCollarWithResponse(ctx context.Context, id int32, reqEditors ...RequestEditorFn) (*ReadPetCollarResponse, error) {
+func (c *ClientWithResponses) ReadPetCollarWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ReadPetCollarResponse, error) {
 	rsp, err := c.ReadPetCollar(ctx, id, reqEditors...)
 	if err != nil {
 		return nil, err

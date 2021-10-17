@@ -2,15 +2,16 @@ package elk
 
 import (
 	"encoding/json"
-	"entgo.io/ent/entc/gen"
 	"fmt"
-	"github.com/go-openapi/inflect"
-	"github.com/masseelch/elk/spec"
-	"github.com/stoewer/go-strcase"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+
+	"entgo.io/ent/entc/gen"
+	"github.com/go-openapi/inflect"
+	"github.com/masseelch/elk/spec"
+	"github.com/stoewer/go-strcase"
 )
 
 var (
@@ -592,6 +593,10 @@ func readEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error)
 	if err != nil {
 		return nil, err
 	}
+	nrop, err := readOp(s, n)
+	if err != nil {
+		return nil, err
+	}
 	ant, err := edgeAnnotation(e)
 	if err != nil {
 		return nil, err
@@ -600,6 +605,7 @@ func readEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error)
 	op.Summary = fmt.Sprintf("Find the attached %s", e.Type.Name)
 	op.Description = fmt.Sprintf("Find the attached %s of the %s with the given ID", e.Type.Name, n.Name)
 	op.Tags = []string{n.Name}
+	op.Parameters = nrop.Parameters
 	op.Parameters[0].Description = fmt.Sprintf("ID of the %s", n.Name)
 	op.OperationID = opRead + n.Name + strcase.UpperCamelCase(e.Name)
 	op.Responses[strconv.Itoa(http.StatusOK)].Response.Description = fmt.Sprintf(
@@ -628,7 +634,6 @@ func listEdgeOp(s *spec.Spec, n *gen.Type, e *gen.Edge) (*spec.Operation, error)
 	op.Tags = []string{n.Name}
 	op.OperationID = opList + n.Name + strcase.UpperCamelCase(e.Name)
 	op.Parameters = append(op.Parameters, rop.Parameters...)
-	op.Parameters[0].Description = fmt.Sprintf("ID of the %s", n.Name)
 	op.Responses[strconv.Itoa(http.StatusOK)].Response.Description = fmt.Sprintf(
 		"%s attached to %s with requested ID was found", rules.Pluralize(e.Type.Name), n.Name,
 	)

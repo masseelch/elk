@@ -268,7 +268,7 @@
           {
             "name": "page",
             "in": "query",
-            "description": "ID of the Category",
+            "description": "what page to render",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -577,7 +577,8 @@
             "description": "ID of the Collar",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -869,7 +870,7 @@
           {
             "name": "page",
             "in": "query",
-            "description": "ID of the Owner",
+            "description": "what page to render",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -1213,7 +1214,7 @@
           {
             "name": "page",
             "in": "query",
-            "description": "ID of the Pet",
+            "description": "what page to render",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -1279,8 +1280,7 @@
             "description": "ID of the Pet",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -1319,7 +1319,7 @@
           {
             "name": "page",
             "in": "query",
-            "description": "ID of the Pet",
+            "description": "what page to render",
             "schema": {
               "type": "integer",
               "format": "int32"
