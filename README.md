@@ -1,5 +1,14 @@
 # elk
 
+---
+## Important
+
+The OpenAPI Specification generator is now part of [ent/contrib](https://github.com/ent/contrib/tree/maser/entoas). The
+OAS generator API has changed as has the generated spec. However, this package will follow the changes done in the OAS
+generator and eventually behave as described by the spec.
+
+---
+
 This package provides an extension to the [awesome entgo.io](https://github.com/ent/ent) code generator.
 
 `elk` can do two things for you:
@@ -99,7 +108,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	
+
 	"github.com/deepmap/oapi-codegen/pkg/codegen"
 	"github.com/deepmap/oapi-codegen/pkg/util"
 )
@@ -111,9 +120,9 @@ func generateClient() {
 	}
 
 	generated, err := codegen.Generate(swagger, "stub", codegen.Options{
-		GenerateClient:     true,
-		GenerateTypes:      true,
-		AliasTypes:         true,
+		GenerateClient: true,
+		GenerateTypes:  true,
+		AliasTypes:     true,
 	})
 	if err != nil {
 		log.Fatalf("generaring client failed %s", err);
@@ -546,7 +555,7 @@ func (User) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		// Generate creation and read endpoints.
 		elk.Expose(elk.Create, elk.Read),
-    }
+	}
 }
 ```
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// ParameterPlace denotes where to find a parameter in the request.
 type ParameterPlace uint
 
 const (
