@@ -1,13 +1,12 @@
 package spec
 
-const (
-	// OpenAPI version 3.0.x is used.
-	version = "3.0.3"
+// OpenAPI version 3.0.x is used.
+const version = "3.0.3"
 
-	JSON MediaType = "application/json"
-)
+const JSON MediaType = "application/json"
 
 type (
+	// Spec represents a OAS.
 	Spec struct {
 		Info         *Info            `json:"info"`
 		Tags         []Tag            `json:"tags,omitempty"`
