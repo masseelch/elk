@@ -3,6 +3,7 @@ module github.com/masseelch/elk
 go 1.17
 
 require (
+	entgo.io/contrib v0.0.0-00010101000000-000000000000
 	entgo.io/ent v0.9.2-0.20210822190728-d84ac191b1c7
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/deepmap/oapi-codegen v1.8.2
@@ -15,6 +16,8 @@ require (
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/zap v1.19.1
 )
+
+replace entgo.io/contrib => ../../ent_contrib
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

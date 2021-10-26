@@ -1,0 +1,115 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "http/handler" }}
+    {{- with extend $ "Package" "http" }}{{ template "header" . }}{{ end }}
+
+	import (
+		"github.com/go-chi/chi/v5"
+
+		"{{ $.Config.Package }}"
+	)
+
+	// NewHandler returns a ready to use handler with all generated endpoints mounted.
+    func NewHandler(c *ent.Client) chi.Router {
+        r := chi.NewRouter()
+        MountRoutes(c, r)
+        return r
+    }
+
+	// MountRoutes mounts all generated routes on the given router.
+    func MountRoutes(c *ent.Client, r chi.Router) {
+        {{- range $n := $.Nodes }}
+            {{- if or (nodeOperations $n) (hasEdgeOperations $ $n) }}
+                New{{ $n.Name }}Handler(c).MountRoutes(r)
+            {{- end }}
+        {{- end }}
+    }
+
+    {{ $pkg := base $.Config.Package }}
+    {{- range $n := $.Nodes }}
+	    // {{ $n.Name }}Handler handles http crud operations on the {{ $n.Name }} entity.
+        type {{ $n.Name }}Handler struct { client *ent.Client }
+
+        func New{{ $n.Name }}Handler(c *ent.Client) *{{ $n.Name }}Handler { return &{{ $n.Name }}Handler{c} }
+
+        {{- $ops := nodeOperations $n }}
+        {{- $h := print $n.Name "Handler" }}
+        {{- if or $ops (hasEdgeOperations $ $n) }}
+            {{- if $ops.Has "create" }}
+                func (h *{{ $h }}) MountCreateRoute(r chi.Router) *{{ $h }} {
+                    r.Post("/{{ $n.Name | kebab | pluralize }}", h.Create)
+                    return h
+                }
+            {{- end }}
+            {{- if $ops.Has "read" }}
+                func (h *{{ $h }}) MountReadRoute(r chi.Router) *{{ $h }} {
+                    r.Get("/{{ $n.Name | kebab | pluralize }}/{id}", h.Read)
+                    return h
+                }
+            {{- end }}
+            {{- if $ops.Has "update" }}
+                func (h *{{ $h }}) MountUpdateRoute(r chi.Router) *{{ $h }} {
+                    r.Patch("/{{ $n.Name | kebab | pluralize }}/{id}", h.Update)
+                    return h
+                }
+            {{- end }}
+            {{- if $ops.Has "delete" }}
+                func (h *{{ $h }}) MountDeleteRoute(r chi.Router) *{{ $h }} {
+                    r.Delete("/{{ $n.Name | kebab | pluralize }}/{id}", h.Delete)
+                    return h
+                }
+            {{- end }}
+            {{- if $ops.Has "list" }}
+                func (h *{{ $h }}) MountListRoute(r chi.Router) *{{ $h }} {
+                    r.Get("/{{ $n.Name | kebab | pluralize }}", h.List)
+                    return h
+                }
+            {{- end }}
+			{{- range $e := $n.Edges }}
+			    {{- with $ops := edgeOperations $e }}
+				    {{- if $ops.Has "create" }}
+                        func (h *{{ $h }}) Mount{{ $e.Name | pascal }}CreateRoute(r chi.Router) *{{ $h }} {
+                            r.Post("/{{ $n.Name | kebab | pluralize }}/{id}/{{ $e.Name | kebab }}", h.Create{{ $e.Name | singularize | pascal }})
+                            return h
+                        }
+                    {{- end }}
+                    {{- if $ops.Has "read" }}
+                        func (h *{{ $h }}) Mount{{ $e.Name | pascal }}ReadRoute(r chi.Router) *{{ $h }} {
+                            r.Get("/{{ $n.Name | kebab | pluralize }}/{id}/{{ $e.Name | kebab }}", h.Read{{ $e.Name | singularize | pascal }})
+                            return h
+                        }
+                    {{- end }}
+                    {{- if $ops.Has "delete" }}
+                        func (h *{{ $h }}) Mount{{ $e.Name | pascal }}DeleteRoute(r chi.Router) *{{ $h }} {
+                            r.Delete("/{{ $n.Name | kebab | pluralize }}/{id}/{{ $e.Name | kebab }}", h.Delete{{ $e.Name | singularize | pascal }})
+                            return h
+                        }
+                    {{- end }}
+                    {{- if $ops.Has "list" }}
+                        func (h *{{ $h }}) Mount{{ $e.Name | pascal }}ListRoute(r chi.Router) *{{ $h }} {
+                            r.Get("/{{ $n.Name | kebab | pluralize }}/{id}/{{ $e.Name | kebab }}", h.List{{ $e.Name | pascal }})
+                            return h
+                        }
+                    {{- end }}
+				{{- end }}
+			{{- end }}
+
+            func (h *{{ $h }}) MountRoutes(r chi.Router) {
+            	h
+                {{- if $ops.Has "create" }}.MountCreateRoute(r){{ end }}
+                {{- if $ops.Has "read" }}.MountReadRoute(r){{ end }}
+                {{- if $ops.Has "update" }}.MountUpdateRoute(r){{ end }}
+                {{- if $ops.Has "delete" }}.MountDeleteRoute(r){{ end }}
+                {{- if $ops.Has "list" }}.MountListRoute(r){{ end }}
+				{{- range $e := $n.Edges }}
+                    {{- with $ops := edgeOperations $e }}
+                        {{- if $ops.Has "create" }}.Mount{{ $e.Name | pascal }}CreateRoute(r){{ end }}
+                        {{- if $ops.Has "read" }}.Mount{{ $e.Name | pascal }}ReadRoute(r){{ end }}
+                        {{- if $ops.Has "delete" }}.Mount{{ $e.Name | pascal }}DeleteRoute(r){{ end }}
+                        {{- if $ops.Has "list" }}.Mount{{ $e.Name | pascal }}ListRoute(r){{ end }}
+                    {{- end }}
+				{{- end }}
+            }
+        {{- end }}
+    {{- end }}
+{{ end }}
