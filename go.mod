@@ -13,7 +13,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.7.0
-	go.uber.org/zap v1.19.1
+	go.uber.org/zap v1.20.0
 )
 
 require (
