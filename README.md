@@ -3,7 +3,7 @@
 ---
 ## Important
 
-The OpenAPI Specification generator is now part of [ent/contrib](https://github.com/ent/contrib/tree/maser/entoas). The
+The OpenAPI Specification generator is now part of [ent/contrib](https://github.com/ent/contrib/tree/master/entoas). The
 OAS generator API has changed as has the generated spec. However, this package will follow the changes done in the OAS
 generator and eventually behave as described by the spec.
 
